@@ -2,6 +2,7 @@ nose
 nose-progressive
 nose-testconfig
 nose_parameterized
+rednose
 selenium
 git+https://github.com/islamTaha12/pytractor.git
 requests
