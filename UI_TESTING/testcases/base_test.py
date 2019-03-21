@@ -1,7 +1,7 @@
 from testconfig import config
 from unittest import TestCase
-from pages.base_selenium import BaseSelenium
-from pages.login_page import Login
+from UI_TESTING.pages.base_selenium import BaseSelenium
+from UI_TESTING.pages.login_page import Login
 
 
 class BaseTest(TestCase):
