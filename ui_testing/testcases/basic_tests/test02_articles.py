@@ -1,5 +1,5 @@
-from UI_TESTING.testcases.base_test import BaseTest
-from UI_TESTING.pages.login_page import Login
+from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.login_page import Login
 
 
 class ArticlesTestCases(BaseTest):

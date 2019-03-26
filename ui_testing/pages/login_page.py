@@ -1,4 +1,4 @@
-from UI_TESTING.pages.base_selenium import BaseSelenium
+from ui_testing.pages.base_selenium import BaseSelenium
 
 
 class Login:
