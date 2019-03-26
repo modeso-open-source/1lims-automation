@@ -1,5 +1,5 @@
 ### Programming Language:
-We chossed python as a programming language. You need to read the Basics part from NoStarch_python_crash_course.pdf then You need to develop a website crawling project.
+We choose python as a programming language. You need to read the Basics part from NoStarch_python_crash_course.pdf then You need to develop a website crawling project.
 
 ### Crawling project:
 Crawling means get the url of a web site with a specific structure. You need to use python requests and beautiful soup libraries.
