@@ -1,2 +1,0 @@
-# nosetests -s -v --logging-level=WARNING --with-selenium --headless --browser chrome  testcases/admin_portal/cloud_broker/test03_users.py --tc-file=config.ini --tc=site.password:admin
-nosetests -sv --logging-level=WARNING  --rednose testcases/basic_tests/login_testcases.py --tc-file=config.ini --tc=site.password:admin
