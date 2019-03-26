@@ -16,3 +16,4 @@ We need to use linux as our OS development system and I prefer Ubuntu distributi
 ### Tools:
 Pycharm - IDE for python
 Postman - API requests tool
+git - Control version tool
