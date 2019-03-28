@@ -109,13 +109,13 @@ class BaseSelenium:
                 self.log(" * Can't locate the left menu. Error : %s" % error)
                 time.sleep(2)
 
-    def get(self, url):
+    def get(self, url, sleep=0):
         try:
             self.driver.get(url)
+            time.sleep(sleep)
         except Exception as e:
             self.log(' * %s Exception at get(%s) ' % (str(e), url))
         else:
-            self.execute_angular_script()
             self.maximize_window()
 
     def element_is_enabled(self, element):

@@ -1,6 +1,6 @@
 from ui_testing.pages.base_selenium import BaseSelenium
 from random import randint
-
+import time
 
 class Articles:
     def __init__(self):
@@ -11,11 +11,12 @@ class Articles:
         self.base_selenium.get(url=self.article_url)
 
     def get_random_article(self):
-        self.rows = self.base_selenium.get_table_rows(element='article_table')
-        self.row_id = randint(1, len(self.rows) - 1)
-        self.row = self.rows[self.row_id]
-        article_edit_button = self.base_selenium.find_element_in_element(source=self.row, destination_element='article_edit_button')
+        row = self.base_selenium.get_table_rows(element='article_table')
+        row_id = randint(1, len(row) - 1)
+        row= row[row_id]
+        article_edit_button = self.base_selenium.find_element_in_element(source=row, destination_element='article_edit_button')
         article_edit_button.click()
+        time.sleep(2)
 
     def edit_random_article(self, edit_method, edit_value, save=True):
         if 'unit' in edit_method:
@@ -33,7 +34,7 @@ class Articles:
             self.cancel_edit()
 
     def get_unit(self):
-        return self.base_selenium.get_text(element="unit")
+        return self.base_selenium.get_value(element="unit")
 
     def edit_unit(self, unit):
         self.base_selenium.set_text(element="unit", value=unit)
@@ -45,7 +46,7 @@ class Articles:
         self.base_selenium.set_text(element="no", value=no)
 
     def get_name(self):
-        return self.base_selenium.get_text(element="name")
+        return self.base_selenium.get_value(element="name")
 
     def edit_name(self, name):
         self.base_selenium.set_text(element="name", value=name)
@@ -58,6 +59,7 @@ class Articles:
 
     def save_edit(self):
         self.base_selenium.click(element='save')
+        time.sleep(2)
 
     def cancel_edit(self, force=True):
         self.base_selenium.click(element='cancel')
