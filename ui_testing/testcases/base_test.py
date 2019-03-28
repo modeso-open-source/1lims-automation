@@ -2,7 +2,7 @@ from testconfig import config
 from unittest import TestCase
 from ui_testing.pages.base_selenium import BaseSelenium
 from ui_testing.pages.login_page import Login
-
+from uuid import uuid4
 
 class BaseTest(TestCase):
     def __init__(self, *args, **kwargs):
@@ -15,5 +15,5 @@ class BaseTest(TestCase):
     def tearDown(self):
         self.base_selenium.quit_driver()
 
-
-
+    def generate_random_string(self):
+        return str(uuid4()).replace("-", "")[:10]
