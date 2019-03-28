@@ -11,14 +11,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page = Articles()
 
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
-    #
-    # def test001_create_new_article(self):
-    #     self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
-    #
-    # @parameterized.expand([('edit_unit', 'editText'),
-    #                        ('edit_no', 20),
-    #                        ('edit_name', 'editName'),
-    #                        ('edit_comment', 'editComment')])
+
     def test002_cancel_button_edit_unit(self):
         """
         New: Article: Cancel button: After I edit unit field then press on cancel button,
