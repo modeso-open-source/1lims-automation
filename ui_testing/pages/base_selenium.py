@@ -8,13 +8,17 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 from ui_testing.elements import elements
 from random import randint
 import time
 
 
 class BaseSelenium:
-    IMPLICITY_TIME = 20
+    TIME_SMALL = 2
+    TIME_MEDIUM = 10
+    TIME_LARGE = 15
+    TIME_X_LARGE = 20
 
     _instance = None
 
@@ -28,8 +32,8 @@ class BaseSelenium:
         self.username = config['site']['username']
         self.password = config['site']['password']
         self.browser = config['browser']['browser'].lower()
-        self.headless_mode = config['browser']['headless_mode']
-        self.remote_webdriver = config['browser']['remote_driver']
+        self.headless_mode = config['browser']['headless_mode'].capitalize()
+        self.remote_webdriver = config['browser']['remote_driver'].capitalize()
         self.elements = elements
 
     def get_driver(self):
@@ -40,6 +44,12 @@ class BaseSelenium:
                 desired_capabilities = DesiredCapabilities.FIREFOX
             self.driver = webdriver.Remote(command_executor=self.remote_webdriver + '/wd/hub',
                                            desired_capabilities=desired_capabilities)
+        elif self.headless_mode == 'True':
+            options = Options()
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-gpu')
+            self.driver = webdriver.Chrome(chrome_options=options)
         else:
             if self.browser == 'chrome':
                 self.driver = webdriver.Chrome()
@@ -51,9 +61,9 @@ class BaseSelenium:
                 self.driver = webdriver.Opera()
             elif self.browser == 'safari':
                 self.driver = webdriver.Safari
-        self.driver.implicitly_wait(BaseSelenium.IMPLICITY_TIME)
+        self.driver.implicitly_wait(BaseSelenium.TIME_X_LARGE)
         self.driver.maximize_window()
-        self.wait = WebDriverWait(self.driver, BaseSelenium.IMPLICITY_TIME)
+        self.wait = WebDriverWait(self.driver, BaseSelenium.TIME_X_LARGE)
 
     def quit_driver(self):
         self.driver.quit()

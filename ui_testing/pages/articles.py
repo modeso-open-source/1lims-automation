@@ -17,7 +17,7 @@ class Articles:
         row= row[row_id]
         article_edit_button = self.base_selenium.find_element_in_element(source=row, destination_element='article_edit_button')
         article_edit_button.click()
-        time.sleep(2)
+        time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def edit_random_article(self, edit_method, edit_value, save=True):
         if 'unit' in edit_method:
@@ -70,7 +70,7 @@ class Articles:
 
     def save_edit(self):
         self.base_selenium.click(element='save')
-        time.sleep(2)
+        time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def cancel_edit(self, force=True):
         self.base_selenium.click(element='cancel')
@@ -79,3 +79,4 @@ class Articles:
                 self.base_selenium.click(element='confirm_pop')
             else:
                 self.base_selenium.click(element='confirm_cancel')
+        time.sleep(self.base_selenium.TIME_MEDIUM)

@@ -34,7 +34,7 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel_edit(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=2)
+        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_unit, self.article_page.get_unit())
@@ -54,7 +54,6 @@ class ArticlesTestCases(BaseTest):
         self.article_page.get_article_page()
         self.article_page.get_random_article()
         article_url = self.base_selenium.get_url()
-
         current_no = self.article_page.get_no()
         new_no = self.generate_random_string()
         self.article_page.edit_no(new_no)
@@ -63,7 +62,7 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel_edit(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=2)
+        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_no, self.article_page.get_no())
@@ -93,7 +92,7 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel_edit(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=2)
+        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_name, self.article_page.get_name())
@@ -121,7 +120,7 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel_edit(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=2)
+        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_comment, self.article_page.get_comment())
@@ -149,7 +148,6 @@ class ArticlesTestCases(BaseTest):
             self.article_page.save_edit()
         else:
             self.article_page.cancel_edit(force=True)
-            time.sleep(5)
 
         self.base_selenium.get(url=article_url, sleep=5)
 
