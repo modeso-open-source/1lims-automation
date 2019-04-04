@@ -28,11 +28,11 @@ class ArticlesTestCases(BaseTest):
         article_url = self.base_selenium.get_url()
         current_unit = self.article_page.get_unit()
         new_unit = self.generate_random_string()
-        self.article_page.edit_unit(new_unit)
+        self.article_page.set_unit(new_unit)
         if 'save' == save:
-            self.article_page.save_edit()
+            self.article_page.save()
         else:
-            self.article_page.cancel_edit(force=True)
+            self.article_page.cancel(force=True)
 
         self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
@@ -56,11 +56,11 @@ class ArticlesTestCases(BaseTest):
         article_url = self.base_selenium.get_url()
         current_no = self.article_page.get_no()
         new_no = self.generate_random_string()
-        self.article_page.edit_no(new_no)
+        self.article_page.set_no(new_no)
         if 'save' == save:
-            self.article_page.save_edit()
+            self.article_page.save()
         else:
-            self.article_page.cancel_edit(force=True)
+            self.article_page.cancel(force=True)
 
         self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
@@ -85,12 +85,12 @@ class ArticlesTestCases(BaseTest):
 
         current_name = self.article_page.get_name()
         new_name = self.generate_random_string()
-        self.article_page.edit_name(new_name)
+        self.article_page.set_name(new_name)
 
         if 'save' == save:
-            self.article_page.save_edit()
+            self.article_page.save()
         else:
-            self.article_page.cancel_edit(force=True)
+            self.article_page.cancel(force=True)
 
         self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
@@ -114,11 +114,11 @@ class ArticlesTestCases(BaseTest):
         article_url = self.base_selenium.get_url()
         current_comment = self.article_page.get_comment()
         new_comment = self.generate_random_string()
-        self.article_page.edit_comment(new_comment)
+        self.article_page.set_comment(new_comment)
         if 'save' == save:
-            self.article_page.save_edit()
+            self.article_page.save()
         else:
-            self.article_page.cancel_edit(force=True)
+            self.article_page.cancel(force=True)
 
         self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
@@ -142,12 +142,12 @@ class ArticlesTestCases(BaseTest):
         article_url = self.base_selenium.get_url()
         time.sleep(2)
         current_material_type = self.article_page.get_material_type()
-        self.article_page.edit_material_type(random=True)
+        self.article_page.set_material_type(random=True)
         new_material_type = self.article_page.get_material_type()
         if 'save' == save:
-            self.article_page.save_edit()
+            self.article_page.save()
         else:
-            self.article_page.cancel_edit(force=True)
+            self.article_page.cancel(force=True)
 
         self.base_selenium.get(url=article_url, sleep=5)
 

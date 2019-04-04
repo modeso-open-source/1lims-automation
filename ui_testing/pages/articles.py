@@ -21,29 +21,29 @@ class Articles:
 
     def edit_random_article(self, edit_method, edit_value, save=True):
         if 'unit' in edit_method:
-            self.edit_unit(edit_value)
+            self.set_unit(edit_value)
         elif 'no' in edit_method:
-            self.edit_no(edit_value)
+            self.set_no(edit_value)
         elif 'name' in edit_method:
-            self.edit_name(edit_value)
+            self.set_name(edit_value)
         elif 'comment' in edit_method:
-            self.edit_comment(edit_value)
+            self.set_comment(edit_value)
 
         if save:
-            self.save_edit()
+            self.save()
         else:
-            self.cancel_edit()
+            self.cancel()
 
     def get_unit(self):
         return self.base_selenium.get_value(element="unit")
 
-    def edit_unit(self, unit):
+    def set_unit(self, unit):
         self.base_selenium.set_text(element="unit", value=unit)
 
     def get_material_type(self):
         return self.base_selenium.get_text(element='material_type')
 
-    def edit_material_type(self, data='', random=False):
+    def set_material_type(self, data='', random=False):
         if random:
             self.base_selenium.click(element='material_type')
             self.base_selenium.select_random_item('material_type_options')
@@ -53,26 +53,26 @@ class Articles:
     def get_no(self):
         return self.base_selenium.get_value(element="no")
 
-    def edit_no(self, no):
+    def set_no(self, no):
         self.base_selenium.set_text(element="no", value=no)
 
     def get_name(self):
         return self.base_selenium.get_value(element="name")
 
-    def edit_name(self, name):
+    def set_name(self, name):
         self.base_selenium.set_text(element="name", value=name)
 
     def get_comment(self):
         return self.base_selenium.get_value(element="comment")
 
-    def edit_comment(self, comment):
+    def set_comment(self, comment):
         self.base_selenium.set_text(element="comment", value=comment)
 
-    def save_edit(self):
+    def save(self):
         self.base_selenium.click(element='save')
         time.sleep(self.base_selenium.TIME_MEDIUM)
 
-    def cancel_edit(self, force=True):
+    def cancel(self, force=True):
         self.base_selenium.click(element='cancel')
         if self.base_selenium.check_element_is_exist(element='confirmation_pop_up'):
             if force:
@@ -80,3 +80,4 @@ class Articles:
             else:
                 self.base_selenium.click(element='confirm_cancel')
         time.sleep(self.base_selenium.TIME_MEDIUM)
+        
