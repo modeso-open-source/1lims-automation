@@ -7,6 +7,6 @@ class Login:
 
     def login(self, username, password):
         self.base_selenium.get(url=self.base_selenium.url)
-        self.base_selenium.set_text(element='username', value=username)
-        self.base_selenium.set_text(element='password', value=password)
-        self.base_selenium.click(element='login_btn')
+        self.base_selenium.set_text(element='login:username', value=username)
+        self.base_selenium.set_text(element='login:password', value=password)
+        self.base_selenium.click(element='login:login_btn')

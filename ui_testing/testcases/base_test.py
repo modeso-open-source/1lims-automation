@@ -1,8 +1,8 @@
 from testconfig import config
 from unittest import TestCase
 from ui_testing.pages.base_selenium import BaseSelenium
-from ui_testing.pages.login_page import Login
 from uuid import uuid4
+
 
 class BaseTest(TestCase):
     def __init__(self, *args, **kwargs):

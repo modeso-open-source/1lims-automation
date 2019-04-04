@@ -12,10 +12,10 @@ class Articles:
         self.base_selenium.get(url=self.article_url)
 
     def get_random_article(self):
-        row = self.base_selenium.get_table_rows(element='article_table')
+        row = self.base_selenium.get_table_rows(element='articles:article_table')
         row_id = randint(1, len(row) - 1)
         row= row[row_id]
-        article_edit_button = self.base_selenium.find_element_in_element(source=row, destination_element='article_edit_button')
+        article_edit_button = self.base_selenium.find_element_in_element(source=row, destination_element='articles:article_edit_button')
         article_edit_button.click()
         time.sleep(self.base_selenium.TIME_MEDIUM)
 
@@ -35,49 +35,48 @@ class Articles:
             self.cancel()
 
     def get_unit(self):
-        return self.base_selenium.get_value(element="unit")
+        return self.base_selenium.get_value(element="article:unit")
 
     def set_unit(self, unit):
-        self.base_selenium.set_text(element="unit", value=unit)
+        self.base_selenium.set_text(element="article:unit", value=unit)
 
     def get_material_type(self):
-        return self.base_selenium.get_text(element='material_type')
+        return self.base_selenium.get_text(element='article:material_type')
 
     def set_material_type(self, data='', random=False):
         if random:
-            self.base_selenium.click(element='material_type')
-            self.base_selenium.select_random_item('material_type_options')
+            self.base_selenium.click(element='article:material_type')
+            self.base_selenium.select_random_item('article:material_type_options')
         else:
-            self.base_selenium.set_text(element='material_type', value=data)
+            self.base_selenium.set_text(element='article:material_type', value=data)
 
     def get_no(self):
-        return self.base_selenium.get_value(element="no")
+        return self.base_selenium.get_value(element="article:no")
 
     def set_no(self, no):
-        self.base_selenium.set_text(element="no", value=no)
+        self.base_selenium.set_text(element="article:no", value=no)
 
     def get_name(self):
-        return self.base_selenium.get_value(element="name")
+        return self.base_selenium.get_value(element="article:name")
 
     def set_name(self, name):
-        self.base_selenium.set_text(element="name", value=name)
+        self.base_selenium.set_text(element="article:name", value=name)
 
     def get_comment(self):
-        return self.base_selenium.get_value(element="comment")
+        return self.base_selenium.get_value(element="article:comment")
 
     def set_comment(self, comment):
-        self.base_selenium.set_text(element="comment", value=comment)
+        self.base_selenium.set_text(element="article:comment", value=comment)
 
     def save(self):
-        self.base_selenium.click(element='save')
+        self.base_selenium.click(element='article:save')
         time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def cancel(self, force=True):
-        self.base_selenium.click(element='cancel')
-        if self.base_selenium.check_element_is_exist(element='confirmation_pop_up'):
+        self.base_selenium.click(element='article:cancel')
+        if self.base_selenium.check_element_is_exist(element='article:confirmation_pop_up'):
             if force:
-                self.base_selenium.click(element='confirm_pop')
+                self.base_selenium.click(element='article:confirm_pop')
             else:
-                self.base_selenium.click(element='confirm_cancel')
+                self.base_selenium.click(element='article:confirm_cancel')
         time.sleep(self.base_selenium.TIME_MEDIUM)
-        

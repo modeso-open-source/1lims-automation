@@ -1,7 +1,6 @@
 from testconfig import config
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
@@ -67,10 +66,19 @@ class BaseSelenium:
 
     def quit_driver(self):
         self.driver.quit()
-        
+
+    def get_method_value_order(self, element):
+        element_page, element_name = element.split(':')
+        method = self.elements[element_page][element_name]['method'].upper()
+        value = self.elements[element_page][element_name]['value'].upper()
+        if 'order' in self.elements[element_page][element_name]:
+            order = self.elements[element_page][element_name]['order']
+        else:
+            order = None
+        return method, value, order
+
     def find_elements(self, element):
-        method = self.elements[element]['method'].upper()
-        value = self.elements[element]['value']
+        method, value, order = self.get_method_value_order(element=element)
         if method in ['XPATH', 'ID', 'LINK_TEXT', 'CLASS_NAME', 'NAME', 'TAG_NAME']:
             elements_value = self.driver.find_elements(getattr(By, method), value)
         else:
@@ -78,12 +86,10 @@ class BaseSelenium:
         return elements_value
 
     def find_element(self, element):
-        method = self.elements[element]['method'].upper()
-        value = self.elements[element]['value']
+        method, value, order = self.get_method_value_order(element=element)
         if method in ['XPATH', 'ID', 'LINK_TEXT']:
             element_value = self.driver.find_element(getattr(By, method), value)
         elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
-            order = self.elements[element]['order']
             elements_value = self.driver.find_elements(getattr(By, method), value)
             if order == -1:
                 element_value = elements_value
@@ -94,12 +100,10 @@ class BaseSelenium:
         return element_value
 
     def find_element_in_element(self, source, destination_element):
-        method = self.elements[destination_element]['method'].upper()
-        value = self.elements[destination_element]['value']
+        method, value, order = self.get_method_value_order(element=destination_element)
         if method in ['XPATH', 'ID', 'LINK_TEXT']:
             element_value = source.find_element(getattr(By, method), value)
         elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
-            order = self.elements[destination_element]['order']
             elements_value = source.find_elements(getattr(By, method), value)
             if order == -1:
                 element_value = elements_value
@@ -129,8 +133,7 @@ class BaseSelenium:
         return str(self.find_element(element).value_of_css_property('background-color'))
 
     def wait_until_element_located(self, element):
-        method = self.elements[element]['method'].upper()
-        value = self.elements[element]['value']
+        method, value, order = self.get_method_value_order(element=element)
         for temp in range(3):
             try:
                 self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
@@ -165,8 +168,7 @@ class BaseSelenium:
             return False
 
     def wait_until_element_located_and_has_text(self, element, text):
-        method = self.elements[element][0]
-        value = self.elements[element][1]
+        method, value, order = self.get_method_value_order(element=element)
         for temp in range(10):
             try:
                 self.wait.until(EC.text_to_be_present_in_element((getattr(By, method), value), text))
@@ -189,8 +191,7 @@ class BaseSelenium:
             return False
 
     def wait_unti_element_clickable(self, element):
-        method = self.elements[element][0]
-        value = self.elements[element][1]
+        method, value, order = self.get_method_value_order(element=element)
         for temp in range(10):
             try:
                 self.wait.until(EC.element_to_be_clickable((getattr(By, method), value)))
@@ -215,8 +216,7 @@ class BaseSelenium:
 
     def click_item(self, element, ID):
         for temp in range(10):
-            method = self.elements[element][0]
-            value = self.elements[element][1]
+            method, value, order = self.get_method_value_order(element=element)
             try:
                 self.driver.find_element(getattr(By, method), value % tuple(ID)).click()
                 break
@@ -269,19 +269,6 @@ class BaseSelenium:
         self.find_element(element).clear()
         self.find_element(element).send_keys(value)
 
-    def set_text_columns(self, element, search_value, ID):
-        method = self.elements[element][0]
-        value = self.elements[element][1] % ID
-        # self.wait_until_element_located(element)
-        time.sleep(1)
-        try:
-            element_value = self.driver.find_element(getattr(By, method), value)
-            element_value.send_keys(search_value)
-            return True
-        except:
-            self.log("can't locate element")
-            return False
-
     def clear_text(self, element):
         self.wait_until_element_located(element)
         self.find_element(element).clear()
@@ -290,24 +277,6 @@ class BaseSelenium:
     def clear_element_text(self, element):
         element.clear()
         element.send_keys(Keys.ENTER)
-
-    def clear_text_columns(self, element, ID):
-        method = self.elements[element][0]
-        value = self.elements[element][1] % ID
-        time.sleep(1)
-        try:
-            element_value = self.driver.find_element(getattr(By, method), value)
-            element_value.clear()
-            element_value.send_keys(Keys.ENTER)
-            return True
-        except:
-            self.log("can't find element")
-            return False
-
-    def move_curser_to_element(self, element):
-        element = self.elements[element]
-        location = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, element)))
-        ActionChains(self.driver).move_to_element(location).perform()
 
     def check_element_is_exist(self, element):
         if self.wait_element(element):
