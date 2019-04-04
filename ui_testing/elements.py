@@ -1,10 +1,10 @@
 elements = {
     'username': {'method': 'name',
                  'value': 'username',
-                 'item_order': 0},
+                 'order': 0},
     'password': {'method': 'name',
                  'value': 'password',
-                 'item_order': 0},
+                 'order': 0},
     'login_btn': {'method': 'id',
                   'value': 'm_login_signin_submit'},
 
@@ -12,29 +12,34 @@ elements = {
                       'value': 'table'},
     'article_edit_button': {'method': 'tag_name',
                             'value': 'a',
-                            'item_order': 2},
+                            'order': 2},
     'unit': {'method': 'id',
              'value': 'unit'},
+    'material_type': {'method': 'id',
+                      'value': 'materialType'},
+    'material_type_options': {'method': 'class_name',
+                              'value': 'ng-option'},
     'no': {'method': 'id',
            'value': 'No'},
     'comment': {'method': 'id',
                 'value': 'comment'},
+
     'name': {'method': 'id',
              'value': 'name'},
     'save': {'method': 'class_name',
              'value': 'btn-primary',
-             'item_order': 0},
+             'order': 0},
     'cancel': {'method': 'class_name',
                'value': 'btn-secondary',
-               'item_order': 2},
+               'order': 1},
     'confirmation_pop_up': {
         'method': 'id',
         'value': 'swal2-title'},
 
     'confirm_pop': {'method': 'class_name',
                     'value': 'btn-success',
-                    'item_order': 0},
+                    'order': 0},
     'confirm_cancel': {'method': 'class_name',
                        'value': 'btn-secondary',
-                       'item_order': 0}
+                       'order': 0}
 }

@@ -9,6 +9,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from ui_testing.elements import elements
+from random import randint
 import time
 
 
@@ -58,8 +59,8 @@ class BaseSelenium:
         self.driver.quit()
         
     def find_elements(self, element):
-        method = self.elements[element][0]
-        value = self.elements[element][1]
+        method = self.elements[element]['method'].upper()
+        value = self.elements[element]['value']
         if method in ['XPATH', 'ID', 'LINK_TEXT', 'CLASS_NAME', 'NAME', 'TAG_NAME']:
             elements_value = self.driver.find_elements(getattr(By, method), value)
         else:
@@ -72,12 +73,12 @@ class BaseSelenium:
         if method in ['XPATH', 'ID', 'LINK_TEXT']:
             element_value = self.driver.find_element(getattr(By, method), value)
         elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
-            item_order = self.elements[element]['item_order']
+            order = self.elements[element]['order']
             elements_value = self.driver.find_elements(getattr(By, method), value)
-            if item_order == -1:
+            if order == -1:
                 element_value = elements_value
             else:
-                element_value = elements_value[item_order]
+                element_value = elements_value[order]
         else:
             self.fail("This %s method isn't defined" % method)
         return element_value
@@ -88,26 +89,15 @@ class BaseSelenium:
         if method in ['XPATH', 'ID', 'LINK_TEXT']:
             element_value = source.find_element(getattr(By, method), value)
         elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
-            item_order = self.elements[destination_element]['item_order']
+            order = self.elements[destination_element]['order']
             elements_value = source.find_elements(getattr(By, method), value)
-            if item_order == -1:
+            if order == -1:
                 element_value = elements_value
             else:
-                element_value = elements_value[item_order]
+                element_value = elements_value[order]
         else:
             self.fail("This %s method isn't defined" % method)
         return element_value
-
-    def check_side_list(self):
-        self.wait_until_element_located('left_menu_button')
-        for temp in range(5):
-            try:
-                if self.find_element("left_menu").location["x"] < 0:
-                    self.click("left_menu_button")
-                break
-            except Exception as error:
-                self.log(" * Can't locate the left menu. Error : %s" % error)
-                time.sleep(2)
 
     def get(self, url, sleep=0):
         try:
@@ -155,6 +145,15 @@ class BaseSelenium:
         else:
             return False
 
+    def wait_until_page_url_has(self, text, timeout=15):
+        for _ in range(timeout):
+            if text in self.driver.current_url:
+                return True
+            else:
+                time.sleep(0.5)
+        else:
+            return False
+
     def wait_until_element_located_and_has_text(self, element, text):
         method = self.elements[element][0]
         value = self.elements[element][1]
@@ -197,11 +196,12 @@ class BaseSelenium:
             try:
                 self.find_element(element).click()
                 break
-            except:
-                time.sleep(1)
+            except Exception as e:
+                self.fail(e)
+                time.sleep(0.1)
         else:
             self.fail("can't find %s element" % element)
-        time.sleep(1)
+        time.sleep(0.1)
 
     def click_item(self, element, ID):
         for temp in range(10):
@@ -319,8 +319,6 @@ class BaseSelenium:
         else:
             self.fail("This %s item isn't an option in %s list" % (item_value, list_element))
 
-        self.assertEqual(item_value, self.select_obeject.first_selected_option.text)
-
     def get_list_items(self, list_element):
         html_list = self.find_element(list_element)
         return html_list.find_elements_by_tag_name("li")
@@ -337,6 +335,16 @@ class BaseSelenium:
                     compo_menu_exist.append(item.text)
         return compo_menu_exist
 
+    def select_random_item_in_list(self, list_element):
+        list_items = self.get_list_items(list_element)
+        list_items[randint(0, len(list_items)-1)].click()
+
+    def select_random_item(self, element):
+        items = self.find_elements(element=element)
+        if len(items) <= 1:
+            return
+        items[randint(0, len(items)-1)].click()
+
     def element_in_url(self, text_item):
         if " " in text_item:
             text_item = text_item.replace(" ", "%20")
@@ -348,13 +356,6 @@ class BaseSelenium:
                 time.sleep(1)
         else:
             self.fail("this %s item isn't exist in this url: %s" % (text_item, self.get_url()))
-
-    def get_storage_list(self):
-        locations = self.environment_storage.split(',')
-        if len(locations) < 2:
-            return []
-        else:
-            return locations
 
     def get_table_rows(self, element=None):
         'This method return all rows in the current page else return false'
@@ -421,7 +422,7 @@ class BaseSelenium:
                     self.log(' * Exception : %s ' % str(e))
 
     def log(self, message):
-        pass
+        print(message)
     
     def fail(self, message):
-        pass
+        print(message)

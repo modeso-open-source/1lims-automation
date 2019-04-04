@@ -2,6 +2,7 @@ from ui_testing.pages.base_selenium import BaseSelenium
 from random import randint
 import time
 
+
 class Articles:
     def __init__(self):
         self.base_selenium = BaseSelenium()
@@ -38,6 +39,16 @@ class Articles:
 
     def edit_unit(self, unit):
         self.base_selenium.set_text(element="unit", value=unit)
+
+    def get_material_type(self):
+        return self.base_selenium.get_text(element='material_type')
+
+    def edit_material_type(self, data='', random=False):
+        if random:
+            self.base_selenium.click(element='material_type')
+            self.base_selenium.select_random_item('material_type_options')
+        else:
+            self.base_selenium.set_text(element='material_type', value=data)
 
     def get_no(self):
         return self.base_selenium.get_value(element="no")

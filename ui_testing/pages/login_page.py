@@ -10,4 +10,3 @@ class Login:
         self.base_selenium.set_text(element='username', value=username)
         self.base_selenium.set_text(element='password', value=password)
         self.base_selenium.click(element='login_btn')
-
