@@ -1,5 +1,5 @@
 elements = {
-    {'login': {
+    'login': {
         'username': {'method': 'name',
                      'value': 'username',
                      'order': 0},
@@ -8,17 +8,16 @@ elements = {
                      'order': 0},
         'login_btn': {'method': 'id',
                       'value': 'm_login_signin_submit'}
-    }},
+    },
 
-    {'articles': {
+    'articles': {
         'article_table': {'method': 'id',
                           'value': 'table'},
         'article_edit_button': {'method': 'tag_name',
                                 'value': 'a',
                                 'order': 2}
-    }},
-
-    {'article': {
+    },
+    'article': {
         'unit': {'method': 'id',
                  'value': 'unitfield'},
         'material_type': {'method': 'id',
@@ -48,5 +47,5 @@ elements = {
         'confirm_cancel': {'method': 'class_name',
                            'value': 'btn-secondary',
                            'order': 0}
-    }}
+    }
 }

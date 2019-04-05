@@ -17,7 +17,7 @@ class BaseSelenium:
     TIME_SMALL = 2
     TIME_MEDIUM = 10
     TIME_LARGE = 15
-    TIME_X_LARGE = 20
+    TIME_X_LARGE = 60
 
     _instance = None
 
@@ -70,7 +70,7 @@ class BaseSelenium:
     def get_method_value_order(self, element):
         element_page, element_name = element.split(':')
         method = self.elements[element_page][element_name]['method'].upper()
-        value = self.elements[element_page][element_name]['value'].upper()
+        value = self.elements[element_page][element_name]['value']
         if 'order' in self.elements[element_page][element_name]:
             order = self.elements[element_page][element_name]['order']
         else:
@@ -134,7 +134,7 @@ class BaseSelenium:
 
     def wait_until_element_located(self, element):
         method, value, order = self.get_method_value_order(element=element)
-        for temp in range(3):
+        for temp in range(5):
             try:
                 self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
                 return True
