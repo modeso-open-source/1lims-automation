@@ -14,7 +14,8 @@ import time
 
 
 class BaseSelenium:
-    TIME_SMALL = 2
+    TIME_TINY = 2
+    TIME_SMALL = 5
     TIME_MEDIUM = 10
     TIME_LARGE = 15
     TIME_X_LARGE = 60
