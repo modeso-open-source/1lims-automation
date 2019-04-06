@@ -80,7 +80,7 @@ class BaseSelenium:
 
     def find_elements(self, element):
         method, value, order = self.get_method_value_order(element=element)
-        if method in ['XPATH', 'ID', 'LINK_TEXT', 'CLASS_NAME', 'NAME', 'TAG_NAME']:
+        if method in ['XPATH', 'ID', 'LINK_TEXT', 'CLASS_NAME', 'NAME', 'TAG_NAME', 'CSS_SELECTOR']:
             elements_value = self.driver.find_elements(getattr(By, method), value)
         else:
             self.fail("This %s method isn't defined" % method)
@@ -88,7 +88,7 @@ class BaseSelenium:
 
     def find_element(self, element):
         method, value, order = self.get_method_value_order(element=element)
-        if method in ['XPATH', 'ID', 'LINK_TEXT']:
+        if method in ['XPATH', 'ID', 'LINK_TEXT', 'CSS_SELECTOR']:
             element_value = self.driver.find_element(getattr(By, method), value)
         elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
             elements_value = self.driver.find_elements(getattr(By, method), value)
@@ -102,7 +102,7 @@ class BaseSelenium:
 
     def find_element_in_element(self, source, destination_element):
         method, value, order = self.get_method_value_order(element=destination_element)
-        if method in ['XPATH', 'ID', 'LINK_TEXT']:
+        if method in ['XPATH', 'ID', 'LINK_TEXT', 'CSS_SELECTOR']:
             element_value = source.find_element(getattr(By, method), value)
         elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
             elements_value = source.find_elements(getattr(By, method), value)
@@ -285,45 +285,41 @@ class BaseSelenium:
         else:
             return False
 
-    def select(self, list_element, item_value):
-        item_value = str(item_value)
-        self.select_obeject = Select(self.find_element(list_element))
-        self.select_list = self.select_obeject.options
-
-        for option in self.select_list:
-            if item_value in option.text:
-                self.log("select %s from list" % str(option.text))
-                self.select_obeject.select_by_visible_text(option.text)
-                item_value = option.text
-                break
-        else:
-            self.fail("This %s item isn't an option in %s list" % (item_value, list_element))
-
-    def get_list_items(self, list_element):
-        html_list = self.find_element(list_element)
-        return html_list.find_elements_by_tag_name("li")
-
-    def get_list_items_text(self, list_element):
-        compo_menu = self.get_list_items(list_element)
-        compo_menu_exist = []
-        for item in compo_menu:
-            if item.text != "":
-                if '\n' in item.text:
-                    data = item.text.split('\n')
-                    compo_menu_exist += data
-                else:
-                    compo_menu_exist.append(item.text)
-        return compo_menu_exist
-
-    def select_random_item_in_list(self, list_element):
-        list_items = self.get_list_items(list_element)
-        list_items[randint(0, len(list_items)-1)].click()
-
     def select_random_item(self, element):
         items = self.find_elements(element=element)
         if len(items) <= 1:
             return
-        items[randint(0, len(items)-1)].click()
+        items[randint(0, len(items) - 1)].click()
+
+    def select_item_from_items(self, item_text, items_element):
+        items = self.find_elements(element=items_element)
+        for item in items:
+            if item_text == item.text:
+                item.click()
+                break
+
+    def select_item_from_drop_down(self, element='', item_text='', options_element='general:drop_down_options', random=False):
+        self.click(element=element)
+        items = self.find_elements(element=options_element)
+        if random:
+            if len(items) <= 1:
+                return
+            items[randint(0, len(items) - 1)].click()
+        else:
+            for item in items:
+                if item_text == item.text:
+                    item.click()
+                    break
+
+    def check_item_in_items(self, element, item_text, options_element='general:drop_down_options'):
+        self.click(element=element)
+        items = self.find_elements(element=options_element)
+        for item in items:
+            if item_text == item.text:
+                return True
+        else:
+            return False
+
 
     def element_in_url(self, text_item):
         if " " in text_item:
@@ -403,6 +399,6 @@ class BaseSelenium:
 
     def log(self, message):
         print(message)
-    
+
     def fail(self, message):
         print(message)
