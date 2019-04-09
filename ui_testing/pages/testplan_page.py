@@ -48,6 +48,6 @@ class TestPlan(TestPlans):
         # SAVE
 
     def is_article_existing(self, article):
-        return self.base_selenium.check_item_in_items(element='test_plan:article', item_text=article)
+        return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)
 
 

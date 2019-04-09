@@ -320,6 +320,15 @@ class BaseSelenium:
         else:
             return False
 
+    def check_item_partially_in_items(self, element, item_text, options_element='general:drop_down_options'):
+        self.click(element=element)
+        items = self.find_elements(element=options_element)
+        for item in items:
+            if item_text in item.text:
+                return True
+        else:
+            return False
+
 
     def element_in_url(self, text_item):
         if " " in text_item:
