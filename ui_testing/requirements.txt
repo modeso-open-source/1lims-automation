@@ -6,3 +6,4 @@ rednose
 selenium
 git+https://github.com/islamTaha12/pytractor.git
 requests
+flaky

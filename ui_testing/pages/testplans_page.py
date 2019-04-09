@@ -9,6 +9,7 @@ class TestPlans(BasePages):
 
     def get_test_plans_page(self):
         self.base_selenium.get(url=self.test_plans_url)
+        self.sleep_small()
 
     def get_random_test_plans(self):
         row = self.base_selenium.get_table_rows(element='test_plans:test_plans_table')

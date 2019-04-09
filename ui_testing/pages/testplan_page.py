@@ -35,7 +35,7 @@ class TestPlan(TestPlans):
         self.material_type = material_type
         self.article = article
         self.click_create_test_plan_button()
-        self.base_selenium.set_text(element='test_plan:test_plan')
+        self.base_selenium.set_text(element='test_plan:test_plan', value=name)
         self.base_selenium.click(element='test_plan:add_test_plan')
 
         if self.material_type:

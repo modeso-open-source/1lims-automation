@@ -127,7 +127,7 @@ class ArticlesTestCases(BaseTest):
         else:
             self.assertEqual(current_comment, self.article_page.get_comment())
 
-    @parameterized.expand(['cancel', 'save'])
+    @parameterized.expand(['save', 'cancel'])
     def test006_cancel_button_edit_material_type(self, save):
         """
         New: Article: Save/Cancel button: After I edit material_type then press on cancel button,
@@ -163,6 +163,7 @@ class ArticlesTestCases(BaseTest):
          LIMS-3668
         :return: 
         """
+        import ipdb; ipdb.set_trace()
         self.article_page.create_new_article()
         self.article_page.archive_article(name=self.article_page.article_name)
         self.test_plan.get_test_plans_page()
@@ -171,9 +172,9 @@ class ArticlesTestCases(BaseTest):
         self.article_page.sleep_tiny()
         self.assertFalse(self.test_plan.is_article_existing(article=self.article_page.article_name))
 
-    def test008_archived_articles_shoudnt_dispaly_in_test_plan(self):
+    def test008_archived_articles_shoudnt_dispaly_in_order(self):
         """
-        New: Article: Archived any article this article shouldn't display in the test plan module
+        New: Article: Archived any article this article shouldn't display in the order module
 
          LIMS-3668
         :return:
