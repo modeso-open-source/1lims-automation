@@ -100,7 +100,9 @@ class BaseSelenium:
             self.fail("This %s method isn't defined" % method)
         return element_value
 
-    def find_element_in_element(self, source, destination_element):
+    def find_element_in_element(self, destination_element, source_element='', source=''):
+        if not source:
+            source = self.find_element(element=source_element)
         method, value, order = self.get_method_value_order(element=destination_element)
         if method in ['XPATH', 'ID', 'LINK_TEXT', 'CSS_SELECTOR']:
             element_value = source.find_element(getattr(By, method), value)
@@ -276,8 +278,16 @@ class BaseSelenium:
         self.find_element(element).send_keys(Keys.ENTER)
 
     def clear_element_text(self, element):
+        element = self.find_element(element)
         element.clear()
         element.send_keys(Keys.ENTER)
+
+    def clear_items_in_drop_down(self, element, values='general:ng_values'):
+        # element is ng-select element
+        ng_values = self.find_element_in_element(destination_element=values, source_element=element)
+        for ng_value in ng_values:
+            cancel = self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
+            cancel.click()
 
     def check_element_is_exist(self, element):
         if self.wait_element(element):
@@ -298,18 +308,35 @@ class BaseSelenium:
                 item.click()
                 break
 
-    def select_item_from_drop_down(self, element='', item_text='', options_element='general:drop_down_options', random=False):
-        self.click(element=element)
+    def select_item_from_drop_down(self, element='', item_text='', options_element='general:drop_down_options',
+                                   random=False, by_text=False):
+        #element should refer to ng-select tag
+        if by_text:
+            input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
+            input_element.send_keys(item_text)
+        else:
+            self.click(element=element)
+            time.sleep(self.TIME_TINY)
+
         items = self.find_elements(element=options_element)
         if random:
             if len(items) <= 1:
+                self.log('There is no drop down options')
                 return
             items[randint(0, len(items) - 1)].click()
         else:
             for item in items:
-                if item_text == item.text:
+                if item_text in item.text:
                     item.click()
                     break
+            else:
+                self.log('There is no {} option in the drop down'.format(item_text))
+
+    def set_text_in_drop_down(self, ng_select_element, text, input_element='general:input', confirm_button='general:drop_down_options'):
+        input_field = self.find_element_in_element(destination_element=input_element, source_element=ng_select_element)
+        input_field.send_keys(text)
+        confirm_button = self.find_elements(confirm_button)
+        confirm_button[0].click()
 
     def check_item_in_items(self, element, item_text, options_element='general:drop_down_options'):
         self.click(element=element)
@@ -328,7 +355,6 @@ class BaseSelenium:
                 return True
         else:
             return False
-
 
     def element_in_url(self, text_item):
         if " " in text_item:

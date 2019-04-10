@@ -17,12 +17,18 @@ class BasePages:
         """
         self.base_selenium.set_text(element='general:search', value=value)
         self.base_selenium.click(element='general:search')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        time.sleep(self.base_selenium.TIME_MEDIUM)
+        return self.result_table()
+
+    def result_table(self):
         rows = self.base_selenium.get_table_rows(element='general:table')
         if len(rows) > 0:
-            return rows[0]
+            return rows
         else:
             return None
+
+    def clear_search(self):
+        self.base_selenium.clear_element_text(element='general:search')
 
     def sleep_tiny(self):
         time.sleep(self.base_selenium.TIME_TINY)
@@ -48,3 +54,24 @@ class BasePages:
             else:
                 self.base_selenium.click(element='general:confirm_cancel')
         time.sleep(self.base_selenium.TIME_MEDIUM)
+
+    def open_filter_menu(self):
+        filter = self.base_selenium.find_element_in_element(source_element='general:menu_filter_view',
+                                                            destination_element='general:filter')
+        filter.click()
+
+    def filter_by(self, filter_element, filter_text):
+        self.open_filter_menu()
+        self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text, by_text=True)
+
+    def filter_apply(self):
+        self.base_selenium.find_element_in_element(destination_element='article:filter_apply_btn',
+                                                   source_element='article:filter_actions').click()
+
+    def filter_reset(self):
+        self.base_selenium.find_element_in_element(destination_element='article:filter_reset_btn',
+                                                   source_element='article:filter_actions').click()
+        time.sleep(self.base_selenium.TIME_SMALL)
+
+    def filter_result(self):
+        return self.result_table()

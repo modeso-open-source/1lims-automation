@@ -63,3 +63,8 @@ class Article(Articles):
 
     def set_comment(self, comment):
         self.base_selenium.set_text(element="article:comment", value=comment)
+
+    def filter_by_test_plan(self, filter_text):
+        self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
+        self.filter_apply()
+

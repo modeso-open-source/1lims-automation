@@ -12,7 +12,7 @@ class Articles(BasePages):
 
     def archive_article(self, name='', random=False, force=True):
         if not random:
-            article = self.search(value=name)
+            article = self.search(value=name)[0]
             if article is not None:
                 article_archive_button = self.base_selenium.find_element_in_element(source=article,
                                                                                     destination_element='articles:article_archive_button')
@@ -27,7 +27,9 @@ class Articles(BasePages):
     def get_random_article(self):
         row = self.base_selenium.get_table_rows(element='articles:article_table')
         row_id = randint(1, len(row) - 1)
-        row= row[row_id]
-        article_edit_button = self.base_selenium.find_element_in_element(source=row, destination_element='articles:article_edit_button')
+        row = row[row_id]
+        article_edit_button = self.base_selenium.find_element_in_element(source=row,
+                                                                         destination_element='articles:article_edit_button')
         article_edit_button.click()
         self.sleep_medium()
+

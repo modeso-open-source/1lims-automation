@@ -23,3 +23,8 @@ class TestPlans(BasePages):
     def click_create_test_plan_button(self):
         self.base_selenium.click(element='test_plans:new_test_plan')
         self.sleep_small()
+
+    def get_test_plan_edit_page(self, name):
+        test_plan = self.search(value=name)[0]
+        test_plan.click()
+        self.sleep_small()
