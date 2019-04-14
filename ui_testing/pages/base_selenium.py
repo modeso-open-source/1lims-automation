@@ -374,7 +374,6 @@ class BaseSelenium:
             if element == None:
                 tbody = self.driver.find_element_by_tag_name('tbody')
             else:
-
                 element = self.find_element(element)
                 tbody = element.find_element_by_tag_name('tbody')
 
@@ -415,10 +414,6 @@ class BaseSelenium:
         if screen_size < 1800 * 1000:
             self.driver.set_window_size(1800, 1000)
 
-    def get_navigation_bar(self, element):
-        elements = self.get_list_items(element)
-        return [x.text for x in elements]
-
     def execute_angular_script(self):
         # This method is trying to load angular elements.
         for _ in range(30):
@@ -431,6 +426,12 @@ class BaseSelenium:
                     time.sleep(2)
                 except Exception as e:
                     self.log(' * Exception : %s ' % str(e))
+
+    def scroll(self, up=True):
+        if up:
+            self.driver.execute_script('window.scrollTo(0, -1*document.body.scrollHeight);')
+        else:
+            self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 
     def log(self, message):
         print(message)

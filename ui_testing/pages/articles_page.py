@@ -9,6 +9,7 @@ class Articles(BasePages):
 
     def get_article_page(self):
         self.base_selenium.get(url=self.article_url)
+        self.sleep_small()
 
     def archive_article(self, name='', random=False, force=True):
         if not random:
@@ -33,3 +34,36 @@ class Articles(BasePages):
         article_edit_button.click()
         self.sleep_medium()
 
+    def archive_selected_articles(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='articles:right_menu')
+        self.base_selenium.click(element='articles:archive')
+        self.confirm_popup()
+
+    def restore_selected_articles(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='articles:right_menu')
+        self.base_selenium.click(element='articles:restore')
+        self.confirm_popup()
+
+    def is_article_archived(self, value):
+        results = self.search(value=value)
+        if len(results) == 0:
+            return False
+        else:
+            if value in results[0].text:
+                return True
+            else:
+                return False
+
+    def get_archived_articles(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='articles:right_menu')
+        self.base_selenium.click(element='articles:archived')
+        self.sleep_small()
+
+    def get_active_articles(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='articles:right_menu')
+        self.base_selenium.click(element='articles:active')
+        self.sleep_small()

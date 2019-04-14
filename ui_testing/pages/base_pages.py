@@ -1,6 +1,7 @@
 from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
 import time
+from random import randint
 
 class BasePages:
     def __init__(self):
@@ -48,6 +49,9 @@ class BasePages:
 
     def cancel(self, force=True):
         self.base_selenium.click(element='general:cancel')
+        self.confirm_popup(force)
+
+    def confirm_popup(self, force=True):
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
             if force:
                 self.base_selenium.click(element='general:confirm_pop')
@@ -75,3 +79,18 @@ class BasePages:
 
     def filter_result(self):
         return self.result_table()
+
+    def select_random_multiple_table_rows(self, element='general:table'):
+        selected_rows_text = []
+        rows = self.base_selenium.get_table_rows(element=element)
+        for _ in range(0, randint(0, 5)):
+            row = rows[randint(0, len(rows)-1)]
+            row_text = row.text
+            if not row_text:
+                continue
+            if row_text in selected_rows_text:
+                continue
+            check_box = self.base_selenium.find_element_in_element(destination_element='general:checkbox', source=row)
+            check_box.click()
+            selected_rows_text.append(row_text)
+        return selected_rows_text

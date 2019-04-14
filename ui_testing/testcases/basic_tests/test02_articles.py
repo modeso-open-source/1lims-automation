@@ -190,6 +190,8 @@ class ArticlesTestCases(BaseTest):
     def test009_created_article_appear_in_test_plan(self):
         """
             New: Article/Test plan: Any article I created should appear in the test plan according to the materiel type.
+
+            LIMS-3581
         :return:
         """
         self.article_page.create_new_article()
@@ -198,4 +200,77 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.set_material_type(material_type=self.article_page.article_material_type)
         self.article_page.sleep_tiny()
         self.assertTrue(self.test_plan.is_article_existing(article=self.article_page.article_name))
+
+    def test010_create_article_with_test_plan_search_by_test_plan(self):
+        """
+        In case I create test plan with the article that I created, this test plan should display in the table view
+
+        LIMS-3583
+        :return:
+        """
+        self.article_page.create_new_article()
+        self.test_plan.get_test_plans_page()
+        self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
+                                            article=self.article_page.article_name)
+        self.article_page.get_article_page()
+        self.article_page.sleep_small()
+        article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+        self.assertIn(self.test_plan.test_plan_name, article.text)
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(name=self.test_plan.test_plan_name)
+
+        self.test_plan.clear_article()
+        self.test_plan.set_article(article='All')
+        self.test_plan.save()
+        self.article_page.get_article_page()
+        article = self.article_page.search(self.article_page.article_name)[0]
+        self.assertNotIn(self.test_plan.test_plan_name, article.text)
+
+    def test011_create_article_with_test_plan_filter_by_test_plan(self):
+        """
+        In case I create test plan with the article that I created, user could filter with test plan
+
+        LIMS-3583
+        :return:
+        """
+        self.article_page.create_new_article()
+        self.test_plan.get_test_plans_page()
+        self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
+                                            article=self.article_page.article_name)
+        self.article_page.get_article_page()
+        self.article_page.sleep_small()
+
+        self.article_page.filter_by_test_plan(filter_text=self.test_plan.test_plan_name)
+        article = self.article_page.filter_result()[0]
+        self.assertIn(self.test_plan.test_plan_name, article.text)
+
+    def test012_archive_articles(self):
+        """
+        New: Article: Archive Approach: I can archive/restore any article successfully
+
+        LIMS-3587
+        :return:
+        """
+        selected_articles = self.article_page.select_random_multiple_table_rows()
+        self.article_page.archive_selected_articles()
+        self.article_page.get_archived_articles()
+        for article in selected_articles:
+            article_name = article.split('\n')[-4]
+            self.assertTrue(self.article_page.is_article_archived(value=article_name))
+
+    def test013_restore_articles(self):
+        """
+        New: Article: Restore Approach: I can archive/restore any article successfully
+
+        LIMS-3587
+        :return:
+        """
+        self.article_page.get_archived_articles()
+        selected_articles = self.article_page.select_random_multiple_table_rows()
+        self.article_page.restore_selected_articles()
+        self.article_page.get_active_articles()
+        for article in selected_articles:
+            article_name = article.split('\n')[-4]
+            self.assertTrue(self.article_page.is_article_archived(value=article_name))
 
