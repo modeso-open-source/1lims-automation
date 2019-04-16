@@ -26,13 +26,17 @@ class Articles(BasePages):
                 self.sleep_medium()
 
     def get_random_article(self):
-        row = self.base_selenium.get_table_rows(element='articles:article_table')
-        row_id = randint(1, len(row) - 1)
-        row = row[row_id]
+        row = self.get_random_article_row()
         article_edit_button = self.base_selenium.find_element_in_element(source=row,
                                                                          destination_element='articles:article_edit_button')
         article_edit_button.click()
         self.sleep_medium()
+
+    def get_random_article_row(self):
+        row = self.base_selenium.get_table_rows(element='articles:article_table')
+        row_id = randint(1, len(row) - 1)
+        row = row[row_id]
+        return row
 
     def archive_selected_articles(self):
         self.base_selenium.scroll()

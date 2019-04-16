@@ -4,14 +4,17 @@ import time
 
 
 class Article(Articles):
-    def create_new_article(self):
+    def create_new_article(self, material_type=''):
         self.base_selenium.click(element='articles:new_article')
         time.sleep(self.base_selenium.TIME_SMALL)
         self.article_name = self.generate_random_text()
         self.article_comment = self.generate_random_text()
         self.set_name(name=self.article_name)
         self.set_comment(comment=self.article_comment)
-        self.set_material_type(random=True)
+        if material_type:
+            self.set_material_type(material_type)
+        else:
+            self.set_material_type(random=True)
         self.article_material_type = self.get_material_type()
         self.save()
 
@@ -44,7 +47,7 @@ class Article(Articles):
             self.base_selenium.select_item_from_drop_down(element='article:material_type', random=True)
             return self.get_material_type()
         else:
-            self.base_selenium.select_item_from_drop_down(element='article:material_type', item_text=material_type)
+            self.base_selenium.select_item_from_drop_down(element='article:material_type', item_text=material_type, by_text=True)
 
     def get_no(self):
         return self.base_selenium.get_value(element="article:no")

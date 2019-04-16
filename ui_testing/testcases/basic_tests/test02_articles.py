@@ -4,6 +4,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.testplan_page import TestPlan
 from ui_testing.pages.order_page import Order
 from parameterized import parameterized
+import re
 
 
 class ArticlesTestCases(BaseTest):
@@ -274,3 +275,26 @@ class ArticlesTestCases(BaseTest):
             article_name = article.split('\n')[-4]
             self.assertTrue(self.article_page.is_article_archived(value=article_name))
 
+    def test014_create_new_material_type(self):
+        """
+        Article: Materiel type Approach: make sure you can create new materiel type & this materiel type displayed correct according to this article.
+        
+        LIMS-3582
+        :return: 
+        """
+        pass
+
+    def test015_article_search(self):
+        """
+        New: Articles: Search Approach: I can search by any field in the table view
+
+        LIMS-3594
+        :return:
+        """
+        row = self.article_page.get_random_article_row()
+        row_text = row.text
+        for row_text_item in row_text.split('\n'):
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item):
+                continue
+            tmp_row = self.article_page.search(row_text_item)[0].text
+            self.assertEqual(tmp_row, row_text)

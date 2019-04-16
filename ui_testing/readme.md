@@ -16,6 +16,6 @@ xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING  --with-flaky --force-flak
 For chrome execution, please download the [chromedriver](http://chromedriver.chromium.org/downloads) which is compatible with your chrome browser then move it to `/usr/bin` dir. 
 
 ### Report:
-| __Hours____ | __Jira Test cases__ | __Coded Test cases__ |__#Line of codes__ |
-|-------------|---------------------|----------------------|-------------------|
-|    ~50H     |          5          |          31          |      1362         |  
+| ____Hours____ | __Jira Test cases__ | __Coded Test cases__ |__#Line of codes__ |
+|---------------|---------------------|----------------------|-------------------|
+|     ~50H      |          5          |          31          |      1362         |  
