@@ -304,3 +304,13 @@ class ArticlesTestCases(BaseTest):
                 continue
             tmp_row = self.article_page.search(row_text_item)[0].text
             self.assertEqual(tmp_row, row_text)
+
+    def test016_green_border(self):
+        """
+        New: All modules: Creation Approach: Green border displayed when I create new record
+
+        LIMS-3597
+        :return:
+        """
+        self.article_page.create_new_article(sleep=False)
+        self.assertEqual(self.base_selenium.get_text(element='articles:alert_confirmation'), 'Successfully created')

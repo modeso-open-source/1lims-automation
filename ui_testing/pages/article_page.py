@@ -4,7 +4,7 @@ import time
 
 
 class Article(Articles):
-    def create_new_article(self, material_type=''):
+    def create_new_article(self, material_type='', sleep=True):
         self.base_selenium.click(element='articles:new_article')
         time.sleep(self.base_selenium.TIME_SMALL)
         self.article_name = self.generate_random_text()
@@ -16,7 +16,7 @@ class Article(Articles):
         else:
             self.set_material_type(random=True)
         self.article_material_type = self.get_material_type()
-        self.save()
+        self.save(sleep)
 
     def edit_random_article(self, edit_method, edit_value, save=True):
         if 'unit' in edit_method:

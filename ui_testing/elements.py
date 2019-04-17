@@ -79,6 +79,8 @@ elements = {
                     'value': 'Restore'},
         'right_menu': {'method': 'xpath',
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+        'alert_confirmation': {'method': 'id',
+                               'value': 'noty_layout__topCenter'}
 
     },
     'article': {
@@ -105,7 +107,7 @@ elements = {
                              'order': 0},
         'filter_reset_btn': {'method': 'class_name',
                              'value': 'btn-secondary',
-                             'order': 1},
+                             'order': 1}
 
     },
     'test_plans': {
