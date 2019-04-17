@@ -282,7 +282,13 @@ class ArticlesTestCases(BaseTest):
         LIMS-3582
         :return: 
         """
-        pass
+        material_type = self.generate_random_string()
+        self.article_page.create_new_article(material_type=material_type)
+        self.test_plan.get_test_plans_page()
+        self.test_plan.click_create_test_plan_button()
+        self.test_plan.set_material_type(material_type=self.article_page.article_material_type)
+        self.article_page.sleep_tiny()
+        self.assertTrue(self.test_plan.is_article_existing(article=self.article_page.article_name))
 
     def test015_article_search(self):
         """
