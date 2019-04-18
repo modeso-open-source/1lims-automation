@@ -107,7 +107,9 @@ elements = {
                              'order': 0},
         'filter_reset_btn': {'method': 'class_name',
                              'value': 'btn-secondary',
-                             'order': 1}
+                             'order': 1},
+        'related_article': {'method': 'id',
+                             'value': 'selectedArticles'}
 
     },
     'test_plans': {

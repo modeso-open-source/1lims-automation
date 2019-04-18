@@ -314,3 +314,16 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.create_new_article(sleep=False)
         self.assertEqual(self.base_selenium.get_text(element='articles:alert_confirmation'), 'Successfully created')
+
+    def test017_create_full_options_article(self):
+        """
+        New: Articles: Creation Approach: I can create new article successfully
+
+        LIMS-3575
+        :return:
+        """
+        self.article_page.create_new_article(full_options=True)
+        article_text = self.article_page.search(value=self.article_page.article_name)[0].text
+        self.assertIn(self.article_page.article_unit, article_text)
+        self.assertIn(self.article_page.article_comment, article_text)
+        self.assertIn(self.article_page.article_material_type, article_text)

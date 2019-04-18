@@ -4,7 +4,7 @@ import time
 
 
 class Article(Articles):
-    def create_new_article(self, material_type='', sleep=True):
+    def create_new_article(self, material_type='', sleep=True, full_options=False):
         self.base_selenium.click(element='articles:new_article')
         time.sleep(self.base_selenium.TIME_SMALL)
         self.article_name = self.generate_random_text()
@@ -16,6 +16,13 @@ class Article(Articles):
         else:
             self.set_material_type(random=True)
         self.article_material_type = self.get_material_type()
+
+        if full_options:
+            self.article_unit = self.generate_random_text()
+            self.set_unit(self.article_unit)
+            self.set_related_article()
+            self.article_related_article = self.get_related_article()
+
         self.save(sleep)
 
     def edit_random_article(self, edit_method, edit_value, save=True):
@@ -70,4 +77,11 @@ class Article(Articles):
     def filter_by_test_plan(self, filter_text):
         self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
         self.filter_apply()
+
+
+    def set_related_article(self):
+        self.base_selenium.select_item_from_drop_down(element='article:related_article', random=True)
+
+    def get_related_article(self):
+        return self.base_selenium.get_text(element='article:related_article').split('\n')[0]
 
