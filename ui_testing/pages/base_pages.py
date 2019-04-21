@@ -91,7 +91,10 @@ class BasePages:
                 continue
             if row_text in selected_rows_text:
                 continue
-            check_box = self.base_selenium.find_element_in_element(destination_element='general:checkbox', source=row)
-            check_box.click()
+            self.click_check_box(source=row)
             selected_rows_text.append(row_text)
         return selected_rows_text
+
+    def click_check_box(self, source):
+        check_box = self.base_selenium.find_element_in_element(destination_element='general:checkbox', source=source)
+        check_box.click()

@@ -19,6 +19,11 @@ elements = {
                 'confirm_cancel': {'method': 'class_name',
                                    'value': 'btn-secondary',
                                    'order': 0},
+                'cant_delete_message': {'method': 'id',
+                                         'value': 'swal2-title'},
+                'drop_down': {'method': 'class_name',
+                              'value': 'ng-select',
+                              'order': 0},
                 'drop_down_options': {'method': 'class_name',
                                       'value': 'ng-option'},
                 'input': {'method': 'tag_name',
@@ -37,7 +42,10 @@ elements = {
                                 'order': 0},
                 'checkbox': {'method': 'class_name',
                              'value': 'checkbox',
-                             'order': 0}
+                             'order': 0},
+                'label': {'method': 'tag_name',
+                          'value': 'label',
+                          'order': 0}
                 },
     'login': {
         'username': {'method': 'name',
@@ -77,6 +85,8 @@ elements = {
                    'value': 'Active'},
         'restore': {'method': 'link_text',
                     'value': 'Restore'},
+        'delete': {'method': 'link_text',
+                   'value': 'Delete'},
         'right_menu': {'method': 'xpath',
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
         'alert_confirmation': {'method': 'id',
@@ -109,7 +119,12 @@ elements = {
                              'value': 'btn-secondary',
                              'order': 1},
         'related_article': {'method': 'id',
-                             'value': 'selectedArticles'}
+                            'value': 'selectedArticles'},
+        'field': {'method': 'id',
+                  'value': 'field'},
+        'field_items': {'method': 'class_name',
+                        'value': 'padding',
+                        'order': -1}
 
     },
     'test_plans': {

@@ -78,10 +78,22 @@ class Article(Articles):
         self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
         self.filter_apply()
 
-
     def set_related_article(self):
         self.base_selenium.select_item_from_drop_down(element='article:related_article', random=True)
 
     def get_related_article(self):
         return self.base_selenium.get_text(element='article:related_article').split('\n')[0]
+
+    def set_dynamic_field(self):
+        input_items = self.base_selenium.find_element_in_element(source_element='article:field',
+                                                                 destination_element='article:field_items')
+        for item in input_items:
+            label = self.base_selenium.find_element_in_element(source=item, destination_element='general:label')
+            if 'select' in label:
+                drop_down = self.base_selenium.find_element_in_element(source=item, destination_element='general:drop_down')
+                self.base_selenium.select_item_from_drop_down(element_source=drop_down, random=True)
+            if 'text' in label:
+                input_item = self.base_selenium.find_element_in_element(source=item, destination_element='general:input')
+                # send text
+
 

@@ -327,3 +327,27 @@ class ArticlesTestCases(BaseTest):
         self.assertIn(self.article_page.article_unit, article_text)
         self.assertIn(self.article_page.article_comment, article_text)
         self.assertIn(self.article_page.article_material_type, article_text)
+
+    def test018_delete_article_with_test_plan(self):
+        """
+        New: Articles: Delete Approach; I can't delete any article if this article related to some data
+
+        LIMS-3577
+        :return:
+        """
+        self.article_page.create_new_article()
+        self.test_plan.get_test_plans_page()
+        self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
+                                            article=self.article_page.article_name)
+        self.article_page.get_article_page()
+        self.article_page.sleep_small()
+        article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+
+        self.article_page.click_check_box(source=article)
+        self.article_page.archive_selected_articles()
+
+        self.article_page.get_archived_articles()
+        archived_article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+        self.article_page.click_check_box(source=archived_article)
+        self.assertFalse(self.article_page.delete_selected_article())
+

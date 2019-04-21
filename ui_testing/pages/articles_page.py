@@ -71,3 +71,15 @@ class Articles(BasePages):
         self.base_selenium.click(element='articles:right_menu')
         self.base_selenium.click(element='articles:active')
         self.sleep_small()
+
+    def delete_selected_article(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='articles:right_menu')
+        self.base_selenium.click(element='articles:delete')
+        self.confirm_popup()
+
+        if self.base_selenium.check_element_is_exist(element='general:cant_delete_message'):
+            self.base_selenium.click(element='general:confirm_pop')
+            return False
+        return True
+
