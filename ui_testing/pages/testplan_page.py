@@ -41,7 +41,13 @@ class TestPlan(TestPlans):
         self.base_selenium.set_text_in_drop_down(ng_select_element='test_plan:test_plan', text=name)
         return name
 
-    def create_new_test_plan(self, name='', material_type='', article=''):
+    def set_test_unit(self, test_unit='', **kwargs):
+        self.base_selenium.click('test_plan:next')
+        self.base_selenium.click('test_plan:add_test_units')
+        self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text='Qualitative', by_text=True)
+        self.base_selenium.click('test_plan:add')
+
+    def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
         self.article = article
@@ -55,7 +61,12 @@ class TestPlan(TestPlans):
             self.set_article(article=article)
         else:
             self.article = self.set_article(random=True)
-        self.save()
+
+        if test_unit:
+            self.set_test_unit(test_unit=test_unit, **kwargs)
+            self.save(save_btn='test_plan:save')
+        else:
+            self.save()
 
     def is_article_existing(self, article):
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)

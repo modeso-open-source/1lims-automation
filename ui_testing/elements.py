@@ -20,7 +20,7 @@ elements = {
                                    'value': 'btn-secondary',
                                    'order': 0},
                 'cant_delete_message': {'method': 'id',
-                                         'value': 'swal2-title'},
+                                        'value': 'swal2-title'},
                 'drop_down': {'method': 'class_name',
                               'value': 'ng-select',
                               'order': 0},
@@ -151,6 +151,18 @@ elements = {
                     },
         'article_options': {'method': 'class_name',
                             'value': 'ng-option'},
+        'next': {'method': 'link_text',
+                 'value': 'Next'},
+        'test_units': {'method': 'id',
+                       'value': 'selectedTestUnitsfield'},
+        'add': {'method': 'class_name',
+                'value': 'btn-primary',
+                'order': 0},
+        'save': {'method': 'class_name',
+                 'value': 'btn-primary',
+                 'order': 1},
+        'add_test_units': {'method': 'id',
+                           'value': 'first-col'}
     },
 
     'orders': {
@@ -160,7 +172,8 @@ elements = {
                                'value': 'a',
                                'order': 4},
         'new_order': {'method': 'link_text',
-                      'value': 'New Order'}
+                      'value': 'New Order'},
+
     },
 
     'order': {
@@ -168,9 +181,26 @@ elements = {
                   'value': 'orderTypefield'},
         'material_type': {'method': 'xpath',
                           'value': '//*[@id="materialTypefield"]'},
-
         'article': {'method': 'css_selector',
-                    'value': '#articlefield > div'}
+                    'value': '#articlefield > div'},
+        'contact': {'method': 'id',
+                    'value': 'contactfield'},
+        'tests': {'method': 'id',
+                  'value': 'tests'},
+        'test_plan': {'method': 'id',
+                      'value': 'testPlans'},
+        'test_plan_btn': {'method': 'tag_name',
+                          'value': 'span',
+                          'order': 0},
+        'test_unit_btn': {'method': 'tag_name',
+                          'value': 'span',
+                          'order': 1},
+        'save': {'method': 'class_name',
+                 'value': 'btn-primary',
+                 'order': 1},
+        'cancel': {'method': 'class_name',
+                   'value': 'btn-secondary',
+                   'order': 1},
     }
 
 }

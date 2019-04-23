@@ -43,8 +43,8 @@ class BasePages:
     def sleep_large(self):
         time.sleep(self.base_selenium.TIME_LARGE)
 
-    def save(self, sleep=True):
-        self.base_selenium.click(element='general:save')
+    def save(self, sleep=True, save_btn='general:save'):
+        self.base_selenium.click(element=save_btn)
         if sleep:
             time.sleep(self.base_selenium.TIME_MEDIUM)
 
