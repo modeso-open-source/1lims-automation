@@ -308,10 +308,10 @@ class BaseSelenium:
                 item.click()
                 break
 
-    def select_item_from_drop_down(self, element='', element_source='', item_text='', options_element='general:drop_down_options',
-                                   random=False, by_text=False):
+    def select_item_from_drop_down(self, element='', element_source='', item_text='',
+                                   options_element='general:drop_down_options'):
         #element should refer to ng-select tag
-        if by_text:
+        if item_text:
             input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
             input_element.send_keys(item_text)
         else:
@@ -322,7 +322,7 @@ class BaseSelenium:
             time.sleep(self.TIME_TINY)
 
         items = self.find_elements(element=options_element)
-        if random:
+        if not item_text: #random selection
             if len(items) <= 1:
                 self.log('There is no drop down options')
                 return

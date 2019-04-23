@@ -15,7 +15,7 @@ class Order(Orders):
         if material_type:
             self.base_selenium.select_item_from_drop_down(element='order:material_type', item_text=material_type)
         else:
-            self.base_selenium.select_item_from_drop_down(element='order:material_type', random=True)
+            self.base_selenium.select_item_from_drop_down(element='order:material_type')
             return self.get_material_type()
 
     def get_material_type(self):
@@ -28,7 +28,7 @@ class Order(Orders):
         if article:
             self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
         else:
-            self.base_selenium.select_item_from_drop_down(element='order:article', random=True)
+            self.base_selenium.select_item_from_drop_down(element='order:article')
             return self.get_article()
 
     def is_article_existing(self, article):
@@ -38,7 +38,7 @@ class Order(Orders):
         if contact:
             self.base_selenium.select_item_from_drop_down(element='order:contact', item_text=contact)
         else:
-            self.base_selenium.select_item_from_drop_down(element='order:contact', random=True)
+            self.base_selenium.select_item_from_drop_down(element='order:contact')
             return self.get_contact()
 
     def get_contact(self):
@@ -51,7 +51,7 @@ class Order(Orders):
         if test_plan:
             self.base_selenium.select_item_from_drop_down(element='order:test_plan', item_text=test_plan)
         else:
-            self.base_selenium.select_item_from_drop_down(element='order:test_plan', random=True)
+            self.base_selenium.select_item_from_drop_down(element='order:test_plan')
             return self.get_test_plan()
 
     def get_test_plan(self):
@@ -64,7 +64,7 @@ class Order(Orders):
         if test_unit:
             self.base_selenium.select_item_from_drop_down(element='order:test_unit', item_text=test_unit)
         else:
-            self.base_selenium.select_item_from_drop_down(element='order:test_unit', random=True)
+            self.base_selenium.select_item_from_drop_down(element='order:test_unit')
             return self.get_test_unit()
 
     def get_test_unit(self):

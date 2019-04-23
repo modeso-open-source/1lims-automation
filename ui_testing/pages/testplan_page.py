@@ -15,7 +15,7 @@ class TestPlan(TestPlans):
 
     def set_article(self, article='', random=False):
         if random:
-            self.base_selenium.select_item_from_drop_down(element='test_plan:article', random=True)
+            self.base_selenium.select_item_from_drop_down(element='test_plan:article')
             return self.get_article()
         else:
             self.base_selenium.select_item_from_drop_down(element='test_plan:article', item_text=article)
@@ -28,7 +28,7 @@ class TestPlan(TestPlans):
 
     def set_material_type(self, material_type='', random=False):
         if random:
-            self.base_selenium.select_item_from_drop_down(element='test_plan:material_type', random=True)
+            self.base_selenium.select_item_from_drop_down(element='test_plan:material_type')
             return self.get_material_type()
         else:
             self.base_selenium.select_item_from_drop_down(element='test_plan:material_type', item_text=material_type)
@@ -44,7 +44,7 @@ class TestPlan(TestPlans):
     def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
-        self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text='Qualitative', by_text=True)
+        self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text='Qualitative')
         self.base_selenium.click('test_plan:add')
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
