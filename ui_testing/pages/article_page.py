@@ -51,7 +51,7 @@ class Article(Articles):
 
     def set_material_type(self, material_type='', random=False):
         if random:
-            self.base_selenium.select_item_from_drop_down(element='article:material_type')
+            self.base_selenium.select_item_from_drop_down(element='article:material_type', avoid_duplicate=True)
             return self.get_material_type()
         else:
             self.base_selenium.select_item_from_drop_down(element='article:material_type', item_text=material_type)

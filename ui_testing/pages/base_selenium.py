@@ -308,7 +308,7 @@ class BaseSelenium:
                 item.click()
                 break
 
-    def select_item_from_drop_down(self, element='', element_source='', item_text='', avoid_duplicate=True,
+    def select_item_from_drop_down(self, element='', element_source='', item_text='', avoid_duplicate=False,
                                    options_element='general:drop_down_options'):
         #element should refer to ng-select tag
         if item_text:
