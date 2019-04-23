@@ -9,7 +9,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from ui_testing.elements import elements
-from random import randint
+import random
 import time
 
 
@@ -299,7 +299,7 @@ class BaseSelenium:
         items = self.find_elements(element=element)
         if len(items) <= 1:
             return
-        items[randint(0, len(items) - 1)].click()
+        items[random.randint(0, len(items) - 1)].click()
 
     def select_item_from_items(self, item_text, items_element):
         items = self.find_elements(element=items_element)
@@ -308,7 +308,7 @@ class BaseSelenium:
                 item.click()
                 break
 
-    def select_item_from_drop_down(self, element='', element_source='', item_text='',
+    def select_item_from_drop_down(self, element='', element_source='', item_text='', avoid_duplicate=True,
                                    options_element='general:drop_down_options'):
         #element should refer to ng-select tag
         if item_text:
@@ -326,7 +326,10 @@ class BaseSelenium:
             if len(items) <= 1:
                 self.log('There is no drop down options')
                 return
-            items[randint(0, len(items) - 1)].click()
+            if avoid_duplicate:
+                items[random.choice(self._unique_index_list(data=items))].click()
+            else:
+                items[random.randint(0, len(items) - 1)].click()
         else:
             for item in items:
                 if item_text in item.text:
@@ -334,6 +337,17 @@ class BaseSelenium:
                     break
             else:
                 self.log('There is no {} option in the drop down'.format(item_text))
+
+    def _unique_index_list(self, data):
+        result = []
+        for index in range(0, len(data)):
+            count = 0
+            for tmp in data:
+                if data[index].text == tmp.text:
+                    count +=1
+            if count == 1:
+                result.append(index)
+        return result
 
     def set_text_in_drop_down(self, ng_select_element, text, input_element='general:input', confirm_button='general:drop_down_options'):
         input_field = self.find_element_in_element(destination_element=input_element, source_element=ng_select_element)
