@@ -3,14 +3,13 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from ui_testing.elements import elements
-import random
-import time
+import random, time, os
+import pandas as pd
 
 
 class BaseSelenium:
@@ -53,6 +52,12 @@ class BaseSelenium:
         else:
             if self.browser == 'chrome':
                 self.driver = webdriver.Chrome()
+                # options = Options()
+                # options.set_preference("browser.download.folderList", 2)
+                # options.set_preference("browser.download.manager.showWhenStarting", False)
+                # options.set_preference("browser.download.dir", "/tmp")
+                # options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream,application / vnd.ms - excel")
+                # self.driver = webdriver.Chrome(options=options)
             elif self.browser == 'firefox':
                 self.driver = webdriver.Firefox()
             elif self.browser == 'ie':
@@ -445,6 +450,19 @@ class BaseSelenium:
                     time.sleep(2)
                 except Exception as e:
                     self.log(' * Exception : %s ' % str(e))
+
+    def download_excel_file(self, element, sleep=30):
+        self.click(element=element)
+        time.sleep(sleep)
+        sheets = []
+        for file_name in os.listdir(os.path.expanduser("~/Downloads")):
+            if '.xlsx' in file_name:
+                sheets.append(os.path.expanduser("~/Downloads/")+file_name)
+        downloaded_file_name = max(sheets, key=os.path.getctime)
+        data = pd.read_excel(downloaded_file_name)
+        #row = data.iloc[1]
+        #values = row.values
+        return data
 
     def scroll(self, up=True):
         if up:

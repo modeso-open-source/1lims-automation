@@ -380,3 +380,21 @@ class ArticlesTestCases(BaseTest):
         archived_article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
         self.article_page.click_check_box(source=archived_article)
         self.assertFalse(self.article_page.delete_selected_article())
+
+    def test020_download_article_sheet(self):
+        """
+        New: Articles: XSLX File: I can download all the data in the table view in the excel sheet
+
+        LIMS:3589
+        :return:
+        """
+        self.article_page.download_xslx_sheet()
+        rows_data = self.article_page.get_articles_rows_data()
+        for index in range(len(rows_data)):
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.article_page.article_sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                self.assertIn(item, fixed_sheet_row_data)
+
+

@@ -1,7 +1,7 @@
-from testconfig import config
 from unittest import TestCase
 from ui_testing.pages.base_selenium import BaseSelenium
 from uuid import uuid4
+import datetime
 
 
 class BaseTest(TestCase):
@@ -17,3 +17,17 @@ class BaseTest(TestCase):
 
     def generate_random_string(self):
         return str(uuid4()).replace("-", "")[:10]
+
+    def fix_data_format(self, data_list):
+        tmp = []
+        for item in data_list:
+            if len(str(item)) > 0:
+                if "." in str(item):
+                    tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y'))
+                elif "-" == str(item):
+                    continue
+                elif ' ' == str(item)[-1]:
+                    tmp.append(item[:-1])
+                else:
+                    tmp.append(item)
+        return tmp

@@ -33,10 +33,13 @@ class Articles(BasePages):
         self.sleep_medium()
 
     def get_random_article_row(self):
-        row = self.base_selenium.get_table_rows(element='articles:article_table')
-        row_id = randint(1, len(row) - 1)
-        row = row[row_id]
+        rows = self.base_selenium.get_table_rows(element='articles:article_table')
+        row_id = randint(1, len(rows) - 1)
+        row = rows[row_id]
         return row
+
+    def get_articles_rows_data(self):
+        return [row.text for row in self.base_selenium.get_table_rows(element='articles:article_table')]
 
     def archive_selected_articles(self):
         self.base_selenium.scroll()
@@ -71,6 +74,11 @@ class Articles(BasePages):
         self.base_selenium.click(element='articles:right_menu')
         self.base_selenium.click(element='articles:active')
         self.sleep_small()
+
+    def download_xslx_sheet(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='articles:right_menu')
+        self.article_sheet = self.base_selenium.download_excel_file(element='articles:xslx')
 
     def delete_selected_article(self):
         self.base_selenium.scroll()
