@@ -57,6 +57,7 @@ class TestPlan(TestPlans):
             self.set_material_type(material_type=self.material_type)
         else:
             self.material_type = self.set_material_type(random=True)
+        self.sleep_tiny()
         if self.article:
             self.set_article(article=article)
         else:

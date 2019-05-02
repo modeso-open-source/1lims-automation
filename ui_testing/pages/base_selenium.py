@@ -319,7 +319,7 @@ class BaseSelenium:
                 element_source.click()
             else:
                 self.click(element=element)
-            time.sleep(self.TIME_TINY)
+        time.sleep(self.TIME_TINY)
 
         items = self.find_elements(element=options_element)
         if not item_text: #random selection
@@ -344,7 +344,9 @@ class BaseSelenium:
             count = 0
             for tmp in data:
                 if data[index].text == tmp.text:
-                    count +=1
+                    count += 1
+                    if count > 1:
+                        break
             if count == 1:
                 result.append(index)
         return result

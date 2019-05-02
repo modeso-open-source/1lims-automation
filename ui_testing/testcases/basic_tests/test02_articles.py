@@ -164,7 +164,7 @@ class ArticlesTestCases(BaseTest):
          LIMS-3668
         :return: 
         """
-        self.article_page.create_new_article()
+        self.article_page.create_new_article(material_type='Raw Material')
         self.article_page.archive_article(name=self.article_page.article_name)
         self.test_plan.get_test_plans_page()
         self.test_plan.click_create_test_plan_button()
@@ -179,7 +179,7 @@ class ArticlesTestCases(BaseTest):
          LIMS-3668
         :return:
         """
-        self.article_page.create_new_article()
+        self.article_page.create_new_article(material_type='Raw Material')
         self.article_page.archive_article(name=self.article_page.article_name)
         self.order.get_orders_page()
         self.order.click_create_order_button()
@@ -195,7 +195,7 @@ class ArticlesTestCases(BaseTest):
             LIMS-3581
         :return:
         """
-        self.article_page.create_new_article()
+        self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan.get_test_plans_page()
         self.test_plan.click_create_test_plan_button()
         self.test_plan.set_material_type(material_type=self.article_page.article_material_type)
@@ -209,7 +209,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-3583
         :return:
         """
-        self.article_page.create_new_article()
+        self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name)
@@ -235,7 +235,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-3583
         :return:
         """
-        self.article_page.create_new_article()
+        self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name)
@@ -312,7 +312,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-3597
         :return:
         """
-        self.article_page.create_new_article(sleep=False)
+        self.article_page.create_new_article(sleep=False, material_type='Raw Material')
         self.assertEqual(self.base_selenium.get_text(element='articles:alert_confirmation'), 'Successfully created')
 
     def test017_create_full_options_article(self):
@@ -322,7 +322,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-3575
         :return:
         """
-        self.article_page.create_new_article(full_options=True)
+        self.article_page.create_new_article(full_options=True, material_type='Raw Material')
         article_text = self.article_page.search(value=self.article_page.article_name)[0].text
         self.assertIn(self.article_page.article_unit, article_text)
         self.assertIn(self.article_page.article_comment, article_text)
@@ -335,7 +335,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-3577
         :return:
         """
-        self.article_page.create_new_article()
+        self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name)
@@ -358,7 +358,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-3577
         :return:
         """
-        self.article_page.create_new_article()
+        self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name,
