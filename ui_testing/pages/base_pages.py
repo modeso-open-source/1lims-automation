@@ -28,6 +28,14 @@ class BasePages:
         else:
             return None
 
+    def table_headers(self):
+        rows = self.base_selenium.get_table_head_elements(element='general:table')
+        if len(rows) > 0:
+            return rows
+        else:
+            return None
+
+
     def clear_search(self):
         self.base_selenium.clear_element_text(element='general:search')
 

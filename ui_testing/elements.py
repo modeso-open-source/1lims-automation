@@ -45,7 +45,11 @@ elements = {
                              'order': 0},
                 'label': {'method': 'tag_name',
                           'value': 'label',
-                          'order': 0}
+                          'order': 0},
+                'right_menu': {'method': 'xpath',
+                               'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+                'archive': {'method': 'link_text',
+                            'value': 'Archive'}
                 },
     'login': {
         'username': {'method': 'name',
@@ -173,7 +177,10 @@ elements = {
                                'order': 4},
         'new_order': {'method': 'link_text',
                       'value': 'New Order'},
-
+        'right_menu': {'method': 'xpath',
+                       'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+        'archive': {'method': 'link_text',
+                    'value': 'Archive'}
     },
 
     'order': {
@@ -201,6 +208,8 @@ elements = {
         'cancel': {'method': 'class_name',
                    'value': 'btn-secondary',
                    'order': 1},
+        'orderNumber': {'method': 'id',
+                        'value': 'orderNoWithYearfield'}
     }
 
 }

@@ -1,9 +1,13 @@
 from ui_testing.pages.orders_page import Orders
+from random import randint
 
 
 class Order(Orders):
     def get_order(self):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]
+
+    def get_order_number(self):
+        return self.base_selenium.get_value(element="order:orderNumber")
 
     def set_new_order(self):
         self.base_selenium.select_item_from_drop_down(element='order:order', item_text='New Order')
@@ -85,3 +89,15 @@ class Order(Orders):
         self.base_selenium.click(element='order:save')
         if sleep:
             self.sleep_medium()
+
+    def get_random_order(self):
+        row = self.get_random_order_row()
+        order_edit_button = self.base_selenium.find_element_in_element(source=row, destination_element='orders:orders_edit_button')
+        order_edit_button.click()
+        self.sleep_medium()
+
+    def get_random_order_row(self):
+        rows = self.base_selenium.get_table_rows(element='orders:orders_table')
+        row_id = randint(1, len(rows) - 1)
+        row = rows[row_id]
+        return row
