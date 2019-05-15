@@ -28,8 +28,5 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:right_menu')
         self.base_selenium.click(element='orders:archive')
         self.confirm_popup()
-        if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
-            return 'true'
-        else:
-            return 'false'
-
+        if self.base_selenium.check_element_is_exist(element='orders:analysis-confirmation'):
+            return False

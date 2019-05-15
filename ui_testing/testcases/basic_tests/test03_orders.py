@@ -22,26 +22,28 @@ class OrdersTestCases(BaseTest):
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
         order_row_array = order_row.text.split('\n')
-        headers = self.order_page.table_headers()
-        headers = [header.text for header in headers]
-        headers = list(filter(lambda x: (x != ''), headers))
-        analysis_index = headers.index('Analysis No.')
-        self.order_page.archive_selected_orders()
-        self.analyses_page.get_analyses_page()
-        self.analyses_page.sleep_small()
-        analysisNumberArr = order_row_array[analysis_index].split(',')
-        for x in analysisNumberArr:
-            print(x)
-            rows = self.analyses_page.search(x)
-            self.analyses_page.click_check_box(source=rows[0])
-            self.analyses_page.archive_selected_analysis()
-            self.analyses_page.clear_search()
 
-        self.order_page.get_orders_page()
-        self.order_page.sleep_large()
-        self.order_page.get_random_order_row()
-        self.order_page.click_check_box(source=order_row)
-        self.order_page.archive_selected_orders()
+        headers = self.order_page.table_headers()
+        headers = list(filter(lambda x: (x != ''), [header.text for header in headers]))
+        analysis_index = headers.index('Analysis No.')
+        analysis_numbers_array = order_row_array[analysis_index].split(',')
+
+        order_deleted = self.order_page.archive_selected_orders()
+        self.analyses_page.get_analyses_page()
+        self.order_page.sleep_medium()
+
+        if order_deleted:
+           has_active_analysis = self.analyses_page.search_if_analysis_not_deleted(analysis_numbers_array)
+           self.assertFalse(has_active_analysis)
+        else:
+            self.analyses_page.search_by_number_and_archive(analysis_numbers_array)
+            self.order_page.get_orders_page()
+            self.order_page.sleep_medium()
+            rows = self.order_page.search(analysis_numbers_array[0])
+            self.order_page.click_check_box(source=rows[0])
+            self.order_page.archive_selected_orders()
+            self.assertEqual(self.base_selenium.get_text(element='general:alert_confirmation'), 'Successfully Archived')
+
 
 
 
