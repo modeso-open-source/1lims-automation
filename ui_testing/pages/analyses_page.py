@@ -29,6 +29,6 @@ class Analyses(BasePages):
     def search_if_analysis_not_deleted(self,analysisNumberArr):
         for x in analysisNumberArr:
             rows = self.search(x)
-            if len(rows) > 0:
+            if len(rows) > 1:
                 return True
         return False        

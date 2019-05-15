@@ -23,12 +23,12 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:new_order')
         self.sleep_small()
 
-    def archive_selected_orders(self):
+    def archive_selected_orders(self, check_pop_up = False):
         self.base_selenium.scroll()
         self.base_selenium.click(element='orders:right_menu')
         self.base_selenium.click(element='orders:archive')
         self.confirm_popup()
-        if self.base_selenium.check_element_is_exist(element='orders:analysis-confirmation'):
-            return False
-        else:
-            return True    
+        if check_pop_up:
+            if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
+                return False
+        return True    
