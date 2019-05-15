@@ -30,3 +30,5 @@ class Orders(BasePages):
         self.confirm_popup()
         if self.base_selenium.check_element_is_exist(element='orders:analysis-confirmation'):
             return False
+        else:
+            return True    
