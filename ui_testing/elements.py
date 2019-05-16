@@ -83,6 +83,8 @@ elements = {
                     'value': 'Archive'},
         'active': {'method': 'link_text',
                    'value': 'Active'},
+        'xslx': {'method': 'link_text',
+                 'value': 'XSLX'},
         'restore': {'method': 'link_text',
                     'value': 'Restore'},
         'delete': {'method': 'link_text',
