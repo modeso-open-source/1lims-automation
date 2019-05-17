@@ -1,7 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.article_page import Article
-from ui_testing.pages.testplan_page import TestPlan
+from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.order_page import Order
 from parameterized import parameterized
 import re
@@ -12,7 +12,7 @@ class ArticlesTestCases(BaseTest):
         super().setUp()
         self.login_page = Login()
         self.article_page = Article()
-        self.test_plan = TestPlan()
+        self.test_plan = TstPlan()
         self.order = Order()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')

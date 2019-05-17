@@ -1,9 +1,7 @@
 from ui_testing.pages.testplans_page import TestPlans
-from random import randint
-import time
 
 
-class TestPlan(TestPlans):
+class TstPlan(TestPlans):
     def get_no(self):
         return self.base_selenium.get_value(element="test_plan:no")
 
