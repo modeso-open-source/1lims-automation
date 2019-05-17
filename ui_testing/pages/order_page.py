@@ -79,9 +79,4 @@ class Order(Orders):
             self.set_test_plan(test_plan=test_plan)
         elif test_unit:
             self.set_test_unit(test_unit=test_unit)
-        self.save()
-
-    def save(self, sleep=True):
-        self.base_selenium.click(element='order:save')
-        if sleep:
-            self.sleep_medium()
+        self.save(save_btn='order:save')
