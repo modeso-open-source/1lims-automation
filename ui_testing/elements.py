@@ -45,7 +45,10 @@ elements = {
                              'order': 0},
                 'label': {'method': 'tag_name',
                           'value': 'label',
-                          'order': 0}
+                          'order': 0},
+                'table_cells': {'method': 'tag_name',
+                                'value': 'td',
+                                'order': -1}
                 },
     'login': {
         'username': {'method': 'name',

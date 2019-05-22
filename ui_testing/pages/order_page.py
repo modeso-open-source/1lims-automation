@@ -32,6 +32,7 @@ class Order(Orders):
             return self.get_article()
 
     def is_article_existing(self, article):
+        self.set_article(article=article)
         return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
 
     def set_contact(self, contact=''):

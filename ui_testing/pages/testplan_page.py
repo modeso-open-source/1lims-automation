@@ -68,6 +68,7 @@ class TstPlan(TestPlans):
             self.save()
 
     def is_article_existing(self, article):
+        self.set_article(article=article)
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)
 
 

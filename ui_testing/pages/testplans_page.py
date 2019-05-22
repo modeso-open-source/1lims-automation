@@ -13,12 +13,7 @@ class TestPlans(BasePages):
 
     def get_random_test_plans(self):
         row = self.base_selenium.get_table_rows(element='test_plans:test_plans_table')
-        row_id = randint(1, len(row) - 1)
-        row = row[row_id]
-        test_plans_edit_button = self.base_selenium.find_element_in_element(source=row,
-                                                                            destination_element='test_plans:test_plans_edit_button')
-        test_plans_edit_button.click()
-        self.sleep_medium()
+        self.get_random_x(row=row)
 
     def click_create_test_plan_button(self):
         self.base_selenium.click(element='test_plans:new_test_plan')
