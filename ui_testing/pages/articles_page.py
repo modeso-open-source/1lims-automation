@@ -27,10 +27,7 @@ class Articles(BasePages):
 
     def get_random_article(self):
         row = self.get_random_article_row()
-        article_edit_button = self.base_selenium.find_element_in_element(source=row,
-                                                                         destination_element='articles:article_edit_button')
-        article_edit_button.click()
-        self.sleep_medium()
+        self.get_random_x(row=row)
 
     def get_random_article_row(self):
         rows = self.base_selenium.get_table_rows(element='articles:article_table')
@@ -90,4 +87,3 @@ class Articles(BasePages):
             self.base_selenium.click(element='general:confirm_pop')
             return False
         return True
-

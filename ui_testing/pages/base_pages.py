@@ -3,6 +3,7 @@ from ui_testing.pages.base_selenium import BaseSelenium
 import time
 from random import randint
 
+
 class BasePages:
     def __init__(self):
         self.base_selenium = BaseSelenium()
@@ -91,9 +92,10 @@ class BasePages:
 
     def select_random_multiple_table_rows(self, element='general:table'):
         selected_rows_text = []
+        selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
-        for _ in range(0, randint(0, 5)):
-            row = rows[randint(0, len(rows)-1)]
+        for _ in range(1, randint(1, 5)):
+            row = rows[randint(0, len(rows) - 1)]
             row_text = row.text
             if not row_text:
                 continue
@@ -101,8 +103,31 @@ class BasePages:
                 continue
             self.click_check_box(source=row)
             selected_rows_text.append(row_text)
-        return selected_rows_text
+            selected_rows.append(row)
+        return selected_rows_text, selected_rows
 
     def click_check_box(self, source):
         check_box = self.base_selenium.find_element_in_element(destination_element='general:checkbox', source=source)
         check_box.click()
+
+    def get_random_x(self, row):
+        x_cells = self.base_selenium.get_row_cells(row=row)
+
+        for x_cell in x_cells:
+            if x_cell.text:
+                x_cell.click()
+                break
+        self.sleep_medium()
+
+    def get_row_cell_text_related_to_header(self, row, column_value):
+        """
+
+        :param row: table row selenium item
+        :param column_value: table column value
+        :return:
+        """
+        headers = self.base_selenium.get_table_head_elements(element='general:table')
+        headers_text = [header.text for header in headers]
+        row_cells = self.base_selenium.get_row_cells(row=row)
+        row_text = [cell.text for cell in row_cells]
+        return row_text[headers_text.index(column_value)]

@@ -1,9 +1,7 @@
 from ui_testing.pages.testplans_page import TestPlans
-from random import randint
-import time
 
 
-class TestPlan(TestPlans):
+class TstPlan(TestPlans):
     def get_no(self):
         return self.base_selenium.get_value(element="test_plan:no")
 
@@ -70,6 +68,7 @@ class TestPlan(TestPlans):
             self.save()
 
     def is_article_existing(self, article):
+        self.set_article(article=article)
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)
 
 

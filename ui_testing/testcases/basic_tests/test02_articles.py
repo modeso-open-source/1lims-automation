@@ -1,7 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.article_page import Article
-from ui_testing.pages.testplan_page import TestPlan
+from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.order_page import Order
 from parameterized import parameterized
 import re
@@ -12,7 +12,7 @@ class ArticlesTestCases(BaseTest):
         super().setUp()
         self.login_page = Login()
         self.article_page = Article()
-        self.test_plan = TestPlan()
+        self.test_plan = TstPlan()
         self.order = Order()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
@@ -253,7 +253,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-3587
         :return:
         """
-        selected_articles = self.article_page.select_random_multiple_table_rows()
+        selected_articles, _ = self.article_page.select_random_multiple_table_rows()
         self.article_page.archive_selected_articles()
         self.article_page.get_archived_articles()
         for article in selected_articles:
@@ -267,12 +267,16 @@ class ArticlesTestCases(BaseTest):
         LIMS-3587
         :return:
         """
+        article_names = []
         self.article_page.get_archived_articles()
-        selected_articles = self.article_page.select_random_multiple_table_rows()
+        selected_articles, selected_rows = self.article_page.select_random_multiple_table_rows()
+        for article in selected_rows:
+            article_names.append(self.article_page.get_row_cell_text_related_to_header(row=article,
+                                                                                       column_value='Article Name'))
+
         self.article_page.restore_selected_articles()
         self.article_page.get_active_articles()
-        for article in selected_articles:
-            article_name = article.split('\n')[-4]
+        for article_name in article_names:
             self.assertTrue(self.article_page.is_article_archived(value=article_name))
 
     def test014_create_new_material_type(self):

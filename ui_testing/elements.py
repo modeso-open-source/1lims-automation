@@ -51,7 +51,10 @@ elements = {
                 'archive': {'method': 'link_text',
                             'value': 'Archive'},
                 'alert_confirmation': {'method': 'id',
-                                       'value': 'noty_layout__topCenter'}
+                                       'value': 'noty_layout__topCenter'},
+                'table_cells': {'method': 'tag_name',
+                                'value': 'td',
+                                'order': -1}
                 },
     'login': {
         'username': {'method': 'name',
@@ -89,6 +92,8 @@ elements = {
                     'value': 'Archive'},
         'active': {'method': 'link_text',
                    'value': 'Active'},
+        'xslx': {'method': 'link_text',
+                 'value': 'XSLX'},
         'restore': {'method': 'link_text',
                     'value': 'Restore'},
         'delete': {'method': 'link_text',
