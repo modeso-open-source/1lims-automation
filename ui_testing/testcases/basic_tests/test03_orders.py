@@ -27,7 +27,7 @@ class OrdersTestCases(BaseTest):
         """
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-        order_row_array = order_row.text.split('\n')
+        order_row_list = order_row.text.split('\n')
 
         headers = self.order_page.table_headers()
         headers = list(filter(lambda x: (x != ''), [
