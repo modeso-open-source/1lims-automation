@@ -18,16 +18,16 @@ class Analyses(BasePages):
 
 
 
-    def search_by_number_and_archive(self,analysisNumberArr):
-        for x in analysisNumberArr:
+    def search_by_number_and_archive(self,analysis_numbers_list):
+        for x in analysis_numbers_list:
             rows = self.search(x)
             if len(rows) > 0:
                 self.click_check_box(source=rows[0])
                 self.archive_selected_analysis()
                 self.clear_search()
 
-    def search_if_analysis_not_deleted(self,analysisNumberArr):
-        for x in analysisNumberArr:
+    def search_if_analysis_not_deleted(self,analysis_numbers_list):
+        for x in analysis_numbers_list:
             rows = self.search(x)
             if len(rows) > 1:
                 return True

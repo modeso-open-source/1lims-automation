@@ -2,7 +2,7 @@
 ```bash
 apt-get install -y python3-dev python3-pip git xvfb
 git clone https://github.com/Modeso/1lims-automation.git
-cd 1lims-automation/ui 
+cd 1lims-automation/ui_testing 
 pip3 install -r requirements.txt
 export PYTHONPATH='./'
 cd ui_testing
