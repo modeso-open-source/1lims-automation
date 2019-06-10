@@ -60,7 +60,9 @@ elements = {
                 'restore': {'method': 'link_text',
                             'value': 'Restore'},
                 'active': {'method': 'link_text',
-                   'value': 'Active'}
+                           'value': 'Active'},
+                'delete': {'method': 'link_text',
+                           'value': 'Delete'},
                 },
     'login': {
         'username': {'method': 'name',

@@ -72,8 +72,11 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(len(rows), 1)
 
     def test03_restore(self):
-        "LIMS-4374 i can restore any order successfully"
-
+        """
+        Restore Order	
+        I can restore any order successfully
+        LIMS-4374
+        """
 
         analysis_numbers = []
         self.order_page.get_archived_items()
@@ -86,4 +89,18 @@ class OrdersTestCases(BaseTest):
         self.order_page.restore_selected_items()
         self.order_page.get_active_items()
         for analysis_number in analysis_numbers:
-            self.assertTrue(self.order_page.is_order_exist(value=analysis_number))
+            self.assertTrue(self.order_page.is_order_exist(
+                value=analysis_number))
+
+    def test04_deleted_archived_order(self):
+        """
+        New: Order without/with article: Deleting of orders
+        The user can hard delete any archived order
+        LIMS-3257
+
+        """
+        self.order_page.get_archived_items()
+        order_row = self.order_page.get_random_order_row()
+        self.order_page.click_check_box(source=order_row)
+        self.order_page.delete_selected_item()
+        self.assertFalse(self.order_page.confirm_popup())
