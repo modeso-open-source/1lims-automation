@@ -54,7 +54,13 @@ elements = {
                                        'value': 'noty_layout__topCenter'},
                 'table_cells': {'method': 'tag_name',
                                 'value': 'td',
-                                'order': -1}
+                                'order': -1},
+                'archived': {'method': 'link_text',
+                             'value': 'Archived'},
+                'restore': {'method': 'link_text',
+                            'value': 'Restore'},
+                'active': {'method': 'link_text',
+                   'value': 'Active'}
                 },
     'login': {
         'username': {'method': 'name',

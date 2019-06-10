@@ -39,7 +39,7 @@ class OrdersTestCases(BaseTest):
             self.analyses_page.get_analyses_page()
             self.order_page.sleep_medium()
             has_active_analysis = self.analyses_page.search_if_analysis_not_deleted(
-            analysis_numbers_list)
+                analysis_numbers_list)
             self.assertEqual(has_active_analysis, False)
 
     def test02_archiveOrder_has_active_analysis(self):
@@ -58,7 +58,6 @@ class OrdersTestCases(BaseTest):
         order_deleted = self.order_page.archive_selected_orders(
             check_pop_up=True)
 
-
         if not order_deleted:
             self.analyses_page.get_analyses_page()
             self.order_page.sleep_medium()
@@ -71,3 +70,20 @@ class OrdersTestCases(BaseTest):
             self.order_page.archive_selected_orders()
             rows = self.order_page.result_table()
             self.assertEqual(len(rows), 1)
+
+    def test03_restore(self):
+        "LIMS-4374 i can restore any order successfully"
+
+
+        analysis_numbers = []
+        self.order_page.get_archived_items()
+        self.order_page.sleep_medium()
+
+        selected_orders, selected_rows = self.order_page.select_random_multiple_table_rows()
+        for order in selected_rows:
+            analysis_numbers.extend(self.article_page.get_row_cell_text_related_to_header(row=order,
+                                                                                          column_value='Analysis No.').split(','))
+        self.order_page.restore_selected_items()
+        self.order_page.get_active_items()
+        for analysis_number in analysis_numbers:
+            self.assertTrue(self.order_page.is_order_exist(value=analysis_number))

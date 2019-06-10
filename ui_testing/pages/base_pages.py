@@ -30,12 +30,12 @@ class BasePages:
             return None
 
     def table_headers(self):
-        rows = self.base_selenium.get_table_head_elements(element='general:table')
+        rows = self.base_selenium.get_table_head_elements(
+            element='general:table')
         if len(rows) > 0:
             return rows
         else:
             return None
-
 
     def clear_search(self):
         self.base_selenium.clear_element_text(element='general:search')
@@ -76,7 +76,8 @@ class BasePages:
 
     def filter_by(self, filter_element, filter_text):
         self.open_filter_menu()
-        self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
+        self.base_selenium.select_item_from_drop_down(
+            element=filter_element, item_text=filter_text)
 
     def filter_apply(self):
         self.base_selenium.find_element_in_element(destination_element='article:filter_apply_btn',
@@ -107,7 +108,8 @@ class BasePages:
         return selected_rows_text, selected_rows
 
     def click_check_box(self, source):
-        check_box = self.base_selenium.find_element_in_element(destination_element='general:checkbox', source=source)
+        check_box = self.base_selenium.find_element_in_element(
+            destination_element='general:checkbox', source=source)
         check_box.click()
 
     def get_random_x(self, row):
@@ -126,8 +128,27 @@ class BasePages:
         :param column_value: table column value
         :return:
         """
-        headers = self.base_selenium.get_table_head_elements(element='general:table')
+        headers = self.base_selenium.get_table_head_elements(
+            element='general:table')
         headers_text = [header.text for header in headers]
         row_cells = self.base_selenium.get_row_cells(row=row)
         row_text = [cell.text for cell in row_cells]
         return row_text[headers_text.index(column_value)]
+
+    def get_archived_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:archived')
+        self.sleep_small()
+
+    def get_active_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:active')
+        self.sleep_small()
+
+    def restore_selected_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:restore')
+        self.confirm_popup()

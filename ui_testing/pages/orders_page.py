@@ -18,7 +18,7 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:new_order')
         self.sleep_small()
 
-    def archive_selected_orders(self, check_pop_up = False):
+    def archive_selected_orders(self, check_pop_up=False):
         self.base_selenium.scroll()
         self.base_selenium.click(element='orders:right_menu')
         self.base_selenium.click(element='orders:archive')
@@ -26,4 +26,23 @@ class Orders(BasePages):
         if check_pop_up:
             if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
                 return False
-        return True    
+        return True
+        
+    def is_order_exist(self, value):
+        results = self.search(value=value)
+        if len(results) == 0:
+            return False
+        else:
+            if value in results[0].text:
+                return True
+            else:
+                return False
+    def is_article_archived(self, value):
+        results = self.search(value=value)
+        if len(results) == 0:
+            return False
+        else:
+            if value in results[0].text:
+                return True
+            else:
+                return False            

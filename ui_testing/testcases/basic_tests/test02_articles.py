@@ -274,7 +274,7 @@ class ArticlesTestCases(BaseTest):
             article_names.append(self.article_page.get_row_cell_text_related_to_header(row=article,
                                                                                        column_value='Article Name'))
 
-        self.article_page.restore_selected_articles()
+        self.article_page.restore_selected_items()
         self.article_page.get_active_articles()
         for article_name in article_names:
             self.assertTrue(self.article_page.is_article_archived(value=article_name))
