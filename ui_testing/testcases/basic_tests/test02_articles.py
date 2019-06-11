@@ -14,7 +14,8 @@ class ArticlesTestCases(BaseTest):
         self.article_page = Article()
         self.test_plan = TstPlan()
         self.order = Order()
-        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
+        self.login_page.login(
+            username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.article_page.get_article_page()
 
@@ -38,7 +39,8 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
+        self.base_selenium.get(
+            url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_unit, self.article_page.get_unit())
@@ -65,7 +67,8 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
+        self.base_selenium.get(
+            url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_no, self.article_page.get_no())
@@ -94,7 +97,8 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
+        self.base_selenium.get(
+            url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_name, self.article_page.get_name())
@@ -121,7 +125,8 @@ class ArticlesTestCases(BaseTest):
         else:
             self.article_page.cancel(force=True)
 
-        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
+        self.base_selenium.get(
+            url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         if 'save' == save:
             self.assertEqual(new_comment, self.article_page.get_comment())
@@ -152,15 +157,17 @@ class ArticlesTestCases(BaseTest):
         self.base_selenium.get(url=article_url, sleep=5)
 
         if 'save' == save:
-            self.assertEqual(new_material_type, self.article_page.get_material_type())
+            self.assertEqual(new_material_type,
+                             self.article_page.get_material_type())
         else:
-            self.assertEqual(current_material_type, self.article_page.get_material_type())
+            self.assertEqual(current_material_type,
+                             self.article_page.get_material_type())
 
     def test007_archived_articles_shoudnt_dispaly_in_test_plan(self):
         """
         New: Article: In case I archived any article this article shouldn't display in the test plan module when
          I create test plan or edit it
-         
+
          LIMS-3668
         :return: 
         """
@@ -168,9 +175,11 @@ class ArticlesTestCases(BaseTest):
         self.article_page.archive_article(name=self.article_page.article_name)
         self.test_plan.get_test_plans_page()
         self.test_plan.click_create_test_plan_button()
-        self.test_plan.set_material_type(material_type=self.article_page.article_material_type)
+        self.test_plan.set_material_type(
+            material_type=self.article_page.article_material_type)
         self.article_page.sleep_tiny()
-        self.assertFalse(self.test_plan.is_article_existing(article=self.article_page.article_name))
+        self.assertFalse(self.test_plan.is_article_existing(
+            article=self.article_page.article_name))
 
     def test008_archived_articles_shoudnt_dispaly_in_order(self):
         """
@@ -184,9 +193,11 @@ class ArticlesTestCases(BaseTest):
         self.order.get_orders_page()
         self.order.click_create_order_button()
         self.order.set_new_order()
-        self.order.set_material_type(material_type=self.article_page.article_material_type)
+        self.order.set_material_type(
+            material_type=self.article_page.article_material_type)
         self.article_page.sleep_tiny()
-        self.assertFalse(self.order.is_article_existing(article=self.article_page.article_name))
+        self.assertFalse(self.order.is_article_existing(
+            article=self.article_page.article_name))
 
     def test009_created_article_appear_in_test_plan(self):
         """
@@ -198,9 +209,11 @@ class ArticlesTestCases(BaseTest):
         self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan.get_test_plans_page()
         self.test_plan.click_create_test_plan_button()
-        self.test_plan.set_material_type(material_type=self.article_page.article_material_type)
+        self.test_plan.set_material_type(
+            material_type=self.article_page.article_material_type)
         self.article_page.sleep_tiny()
-        self.assertTrue(self.test_plan.is_article_existing(article=self.article_page.article_name))
+        self.assertTrue(self.test_plan.is_article_existing(
+            article=self.article_page.article_name))
 
     def test010_create_article_with_test_plan_search_by_test_plan(self):
         """
@@ -215,11 +228,13 @@ class ArticlesTestCases(BaseTest):
                                             article=self.article_page.article_name)
         self.article_page.get_article_page()
         self.article_page.sleep_small()
-        article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+        article = self.article_page.search(
+            value=self.test_plan.test_plan_name)[0]
         self.assertIn(self.test_plan.test_plan_name, article.text)
 
         self.test_plan.get_test_plans_page()
-        self.test_plan.get_test_plan_edit_page(name=self.test_plan.test_plan_name)
+        self.test_plan.get_test_plan_edit_page(
+            name=self.test_plan.test_plan_name)
 
         self.test_plan.clear_article()
         self.test_plan.set_article(article='All')
@@ -242,7 +257,8 @@ class ArticlesTestCases(BaseTest):
         self.article_page.get_article_page()
         self.article_page.sleep_small()
 
-        self.article_page.filter_by_test_plan(filter_text=self.test_plan.test_plan_name)
+        self.article_page.filter_by_test_plan(
+            filter_text=self.test_plan.test_plan_name)
         article = self.article_page.filter_result()[0]
         self.assertIn(self.test_plan.test_plan_name, article.text)
 
@@ -258,7 +274,8 @@ class ArticlesTestCases(BaseTest):
         self.article_page.get_archived_articles()
         for article in selected_articles:
             article_name = article.split('\n')[-4]
-            self.assertTrue(self.article_page.is_article_archived(value=article_name))
+            self.assertTrue(
+                self.article_page.is_article_archived(value=article_name))
 
     def test013_restore_articles(self):
         """
@@ -277,12 +294,13 @@ class ArticlesTestCases(BaseTest):
         self.article_page.restore_selected_items()
         self.article_page.get_active_articles()
         for article_name in article_names:
-            self.assertTrue(self.article_page.is_article_archived(value=article_name))
+            self.assertTrue(
+                self.article_page.is_article_archived(value=article_name))
 
     def test014_create_new_material_type(self):
         """
         Article: Materiel type Approach: make sure you can create new materiel type & this materiel type displayed correct according to this article.
-        
+
         LIMS-3582
         :return: 
         """
@@ -290,9 +308,11 @@ class ArticlesTestCases(BaseTest):
         self.article_page.create_new_article(material_type=material_type)
         self.test_plan.get_test_plans_page()
         self.test_plan.click_create_test_plan_button()
-        self.test_plan.set_material_type(material_type=self.article_page.article_material_type)
+        self.test_plan.set_material_type(
+            material_type=self.article_page.article_material_type)
         self.article_page.sleep_tiny()
-        self.assertTrue(self.test_plan.is_article_existing(article=self.article_page.article_name))
+        self.assertTrue(self.test_plan.is_article_existing(
+            article=self.article_page.article_name))
 
     def test015_article_search(self):
         """
@@ -316,8 +336,10 @@ class ArticlesTestCases(BaseTest):
         LIMS-3597
         :return:
         """
-        self.article_page.create_new_article(sleep=False, material_type='Raw Material')
-        self.assertEqual(self.base_selenium.get_text(element='articles:alert_confirmation'), 'Successfully created')
+        self.article_page.create_new_article(
+            sleep=False, material_type='Raw Material')
+        self.assertEqual(self.base_selenium.get_text(
+            element='articles:alert_confirmation'), 'Successfully created')
 
     def test017_create_full_options_article(self):
         """
@@ -326,8 +348,10 @@ class ArticlesTestCases(BaseTest):
         LIMS-3575
         :return:
         """
-        self.article_page.create_new_article(full_options=True, material_type='Raw Material')
-        article_text = self.article_page.search(value=self.article_page.article_name)[0].text
+        self.article_page.create_new_article(
+            full_options=True, material_type='Raw Material')
+        article_text = self.article_page.search(
+            value=self.article_page.article_name)[0].text
         self.assertIn(self.article_page.article_unit, article_text)
         self.assertIn(self.article_page.article_comment, article_text)
         self.assertIn(self.article_page.article_material_type, article_text)
@@ -345,13 +369,15 @@ class ArticlesTestCases(BaseTest):
                                             article=self.article_page.article_name)
         self.article_page.get_article_page()
         self.article_page.sleep_small()
-        article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+        article = self.article_page.search(
+            value=self.test_plan.test_plan_name)[0]
 
         self.article_page.click_check_box(source=article)
         self.article_page.archive_selected_articles()
 
         self.article_page.get_archived_articles()
-        archived_article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+        archived_article = self.article_page.search(
+            value=self.test_plan.test_plan_name)[0]
         self.article_page.click_check_box(source=archived_article)
         self.assertFalse(self.article_page.delete_selected_article())
 
@@ -375,13 +401,15 @@ class ArticlesTestCases(BaseTest):
 
         self.article_page.get_article_page()
         self.article_page.sleep_small()
-        article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+        article = self.article_page.search(
+            value=self.test_plan.test_plan_name)[0]
 
         self.article_page.click_check_box(source=article)
         self.article_page.archive_selected_articles()
 
         self.article_page.get_archived_articles()
-        archived_article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
+        archived_article = self.article_page.search(
+            value=self.test_plan.test_plan_name)[0]
         self.article_page.click_check_box(source=archived_article)
         self.assertFalse(self.article_page.delete_selected_article())
 
@@ -400,5 +428,3 @@ class ArticlesTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
-
-

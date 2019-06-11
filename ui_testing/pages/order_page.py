@@ -111,3 +111,10 @@ class Order(Orders):
         row_id = randint(1, len(rows) - 1)
         row = rows[row_id]
         return row
+
+
+
+    def get_last_order_row(self):
+        rows = self.result_table()
+        return rows[0]
+        

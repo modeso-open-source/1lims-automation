@@ -4,6 +4,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.analyses_page import Analyses
+import re
 
 
 class OrdersTestCases(BaseTest):
@@ -41,6 +42,8 @@ class OrdersTestCases(BaseTest):
             has_active_analysis = self.analyses_page.search_if_analysis_not_deleted(
                 analysis_numbers_list)
             self.assertEqual(has_active_analysis, False)
+
+
 
     def test02_archiveOrder_has_active_analysis(self):
         """
@@ -104,3 +107,22 @@ class OrdersTestCases(BaseTest):
         self.order_page.click_check_box(source=order_row)
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
+
+
+
+
+    def test05_order_search(self):
+        """
+        New: Orders: Search Approach: User can search by any field & each field should display with yellow color
+        
+        LIMS-3492
+        """
+
+        row = self.order_page.get_last_order_row()
+        row_text =  row.text
+        for row_text_item in row_text.split('\n'):
+            # neglect dates
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item):
+                continue
+            tmp_row = self.order_page.search(row_text_item.replace("...", ""))[0].text
+            self.assertEqual(tmp_row, row_text)  
