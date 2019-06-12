@@ -4,6 +4,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.analyses_page import Analyses
+from parameterized import parameterized
 import re
 
 
@@ -106,11 +107,14 @@ class OrdersTestCases(BaseTest):
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
 
-    def test05_order_search(self):
+    @parameterized.expand(['True', 'False'])
+    def test05_order_search(self,small_letters):
         """
         New: Orders: Search Approach: User can search by any field & each field should display with yellow color
 
         LIMS-3492
+        LIMS-3061
+        :return:
         """
 
         row = self.order_page.get_last_order_row()
@@ -124,8 +128,12 @@ class OrdersTestCases(BaseTest):
                 continue
             elif row_text_item ==  analysis_result:
                 row_text_item = analysis_result.split(' (')[0]
-                 
+
             row_text_item = row_text_item.split(",")[0]
-            tmp_row = self.order_page.search(
-                row_text_item.replace("...", "").split(',')[0])[0].text
+            if small_letters == 'True':
+                tmp_row = self.order_page.search(
+                    row_text_item.replace("...", "").split(',')[0])[0].text
+            else: 
+                tmp_row = self.order_page.search(
+                    row_text_item.replace("...", "").split(',')[0].upper())[0].text        
             self.assertEqual(tmp_row, row_text)
