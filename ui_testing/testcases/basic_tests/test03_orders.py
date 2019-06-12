@@ -114,13 +114,18 @@ class OrdersTestCases(BaseTest):
         """
 
         row = self.order_page.get_last_order_row()
-        time_differencee = self.order_page.get_row_cell_text_related_to_header(
-            row, 'Time Difference')
         row_text = row.text
+        time_difference = self.order_page.get_row_cell_text_related_to_header(
+            row, 'Time Difference')
+        analysis_result = self.order_page.get_row_cell_text_related_to_header(row, 'Analysis Results')
         for row_text_item in row_text.split('\n'):
             # neglect searching by dates or time differnce
-            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item) or row_text_item == time_differencee:
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item) or row_text_item == time_difference:
                 continue
+            elif row_text_item ==  analysis_result:
+                row_text_item = analysis_result.split(' (')[0]
+                 
+            row_text_item = row_text_item.split(",")[0]
             tmp_row = self.order_page.search(
-                row_text_item.replace("...", "").split(",")[0])[0].text
+                row_text_item.replace("...", "").split(',')[0])[0].text
             self.assertEqual(tmp_row, row_text)
