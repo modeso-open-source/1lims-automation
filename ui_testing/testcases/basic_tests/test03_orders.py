@@ -43,8 +43,6 @@ class OrdersTestCases(BaseTest):
                 analysis_numbers_list)
             self.assertEqual(has_active_analysis, False)
 
-
-
     def test02_archiveOrder_has_active_analysis(self):
         """
             New: Archive order has active analysis
@@ -87,8 +85,8 @@ class OrdersTestCases(BaseTest):
 
         selected_orders, selected_rows = self.order_page.select_random_multiple_table_rows()
         for order in selected_rows:
-            analysis_numbers.extend(self.article_page.get_row_cell_text_related_to_header(row=order,
-                                                                                          column_value='Analysis No.').split(','))
+            analysis_numbers.extend(self.order_page.get_row_cell_text_related_to_header(row=order,
+                                                                                        column_value='Analysis No.').split(','))
         self.order_page.restore_selected_items()
         self.order_page.get_active_items()
         for analysis_number in analysis_numbers:
@@ -108,21 +106,21 @@ class OrdersTestCases(BaseTest):
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
 
-
-
-
     def test05_order_search(self):
         """
         New: Orders: Search Approach: User can search by any field & each field should display with yellow color
-        
+
         LIMS-3492
         """
 
         row = self.order_page.get_last_order_row()
-        row_text =  row.text
+        time_differencee = self.order_page.get_row_cell_text_related_to_header(
+            row, 'Time Difference')
+        row_text = row.text
         for row_text_item in row_text.split('\n'):
-            # neglect dates
-            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item):
+            # neglect searching by dates or time differnce
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item) or row_text_item == time_differencee:
                 continue
-            tmp_row = self.order_page.search(row_text_item.replace("...", ""))[0].text
-            self.assertEqual(tmp_row, row_text)  
+            tmp_row = self.order_page.search(
+                row_text_item.replace("...", "").split(",")[0])[0].text
+            self.assertEqual(tmp_row, row_text)
