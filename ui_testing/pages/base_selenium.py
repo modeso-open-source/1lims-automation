@@ -419,7 +419,7 @@ class BaseSelenium:
             return rows
         except:
             self.LOGGER.exception(" Can't get the tbody elements")
-            return False
+            return []
 
     def get_row_cells(self, row):
         'This method take a row and return its cells elements else return false'

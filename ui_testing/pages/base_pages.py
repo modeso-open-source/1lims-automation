@@ -27,7 +27,7 @@ class BasePages:
         if len(rows) > 0:
             return rows
         else:
-            return None
+            return []
 
     def clear_search(self):
         self.base_selenium.clear_element_text(element='general:search')

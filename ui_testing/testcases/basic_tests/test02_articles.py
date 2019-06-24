@@ -301,12 +301,18 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         row = self.article_page.get_random_article_row()
-        row_text = row.text
-        for row_text_item in row_text.split('\n'):
-            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item):
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
+        for column in row_data:
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[column] == '':
                 continue
-            tmp_row = self.article_page.search(row_text_item)[0].text
-            self.assertEqual(tmp_row, row_text)
+            self.base_selenium.LOGGER.info(' * search for {} : {}'.format(column, row_data[column]))
+            search_results = self.article_page.search(row_data[column])
+            self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+            for search_result in search_results:
+                search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+                if search_data[column] == row_data[column]:
+                    break
+            self.assertEqual(row_data[column], search_data[column])
 
     def test016_green_border(self):
         """
