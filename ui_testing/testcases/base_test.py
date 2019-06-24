@@ -10,6 +10,7 @@ class BaseTest(TestCase):
         self.base_selenium = BaseSelenium()
 
     def setUp(self):
+        print('\n')
         self.base_selenium.get_driver()
 
     def tearDown(self):
