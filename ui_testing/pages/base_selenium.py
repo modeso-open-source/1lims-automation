@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from ui_testing.elements import elements
 import random, time, os
 import pandas as pd
+from loguru import logger
 
 
 class BaseSelenium:
@@ -18,6 +19,12 @@ class BaseSelenium:
     TIME_MEDIUM = 10
     TIME_LARGE = 15
     TIME_X_LARGE = 60
+
+    IMPLICITLY_WAIT = 60
+    EXPLICITLY_WAIT = 120
+
+    LOGGER = logger
+    LOGGER.add('log_{time}.log')
 
     _instance = None
 
@@ -66,9 +73,9 @@ class BaseSelenium:
                 self.driver = webdriver.Opera()
             elif self.browser == 'safari':
                 self.driver = webdriver.Safari
-        self.driver.implicitly_wait(BaseSelenium.TIME_X_LARGE)
+        self.driver.implicitly_wait(BaseSelenium.IMPLICITLY_WAIT)
         self.driver.maximize_window()
-        self.wait = WebDriverWait(self.driver, BaseSelenium.TIME_X_LARGE)
+        self.wait = WebDriverWait(self.driver, BaseSelenium.EXPLICITLY_WAIT)
 
     def quit_driver(self):
         self.driver.quit()
@@ -87,9 +94,10 @@ class BaseSelenium:
         method, value, order = self.get_method_value_order(element=element)
         if method in ['XPATH', 'ID', 'LINK_TEXT', 'CLASS_NAME', 'NAME', 'TAG_NAME', 'CSS_SELECTOR']:
             elements_value = self.driver.find_elements(getattr(By, method), value)
+            return elements_value
         else:
-            self.fail("This %s method isn't defined" % method)
-        return elements_value
+            self.LOGGER.error(" This %s method isn't defined" % method)
+            raise BaseException
 
     def find_element(self, element):
         method, value, order = self.get_method_value_order(element=element)
@@ -102,7 +110,8 @@ class BaseSelenium:
             else:
                 element_value = elements_value[order]
         else:
-            self.fail("This %s method isn't defined" % method)
+            self.LOGGER.error(" This %s method isn't defined" % method)
+            raise BaseException
         return element_value
 
     def find_element_in_element(self, destination_element, source_element='', source=''):
@@ -118,7 +127,8 @@ class BaseSelenium:
             else:
                 element_value = elements_value[order]
         else:
-            self.fail("This %s method isn't defined" % method)
+            self.LOGGER.error(" This %s method isn't defined" % method)
+            raise BaseException
         return element_value
 
     def get(self, url, sleep=0):
@@ -126,33 +136,76 @@ class BaseSelenium:
             self.driver.get(url)
             time.sleep(sleep)
         except Exception as e:
-            self.log(' * %s Exception at get(%s) ' % (str(e), url))
+            self.LOGGER.exception(' * %s Exception at get(%s) ' % (str(e), url))
         else:
             self.maximize_window()
-
-    def element_is_enabled(self, element):
-        return self.find_element(element).is_enabled()
-
-    def element_is_displayed(self, element):
-        self.wait_until_element_located(element)
-        return self.find_element(element).is_displayed()
 
     def element_background_color(self, element):
         return str(self.find_element(element).value_of_css_property('background-color'))
 
+    def element_is_displayed(self, element):
+        return self.find_element(element).is_displayed()
+
+    def element_is_enabled(self, element):
+        return self.find_element(element).is_enabled()
+
     def wait_until_element_located(self, element):
         method, value, order = self.get_method_value_order(element=element)
-        for temp in range(5):
-            try:
-                self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
-                return True
-            except:
-                time.sleep(1)
+        if order == 0:
+            return self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
         else:
-            return False
+            dom_element = self.find_element(element=element)
+            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+            while True:
+                if dom_element.is_displayed():
+                    return dom_element
+                else:
+                    time.sleep(0.5)
+                if time.time() > end_time:
+                    break
+            raise TimeoutException()
+
+    def wait_until_element_clickable(self, element):
+        method, value, order = self.get_method_value_order(element=element)
+        if order == 0:
+            return self.wait.until(EC.element_to_be_clickable((getattr(By, method), value)))
+        else:
+            dom_element = self.find_element(element=element)
+            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+            while True:
+                if dom_element.is_displayed() and dom_element.is_enabled():
+                    return dom_element
+                else:
+                    time.sleep(0.5)
+                if time.time() > end_time:
+                    break
+            raise TimeoutException()
+
+    def wait_until_element_located_and_has_text(self, element, text):
+        method, value, order = self.get_method_value_order(element=element)
+        if order == 0:
+            return self.wait.until(EC.text_to_be_present_in_element((getattr(By, method), value), text))
+        else:
+            dom_element = self.find_element(element=element)
+            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+            while True:
+                if text in dom_element.text:
+                    return dom_element
+                else:
+                    time.sleep(0.5)
+                if time.time() > end_time:
+                    break
+            raise TimeoutException()
 
     def wait_element(self, element):
-        if self.wait_until_element_located(element):
+        try:
+            self.wait_until_element_located(element)
+            return True
+        except:
+            return False
+
+    def wait_until_element_attribute_has_text(self, element, attribute, text):
+        if element.get_attribute(attribute) == text:
             return True
         else:
             return False
@@ -175,52 +228,9 @@ class BaseSelenium:
         else:
             return False
 
-    def wait_until_element_located_and_has_text(self, element, text):
-        method, value, order = self.get_method_value_order(element=element)
-        for temp in range(10):
-            try:
-                self.wait.until(EC.text_to_be_present_in_element((getattr(By, method), value), text))
-                return True
-            except:
-                time.sleep(1)
-        else:
-            return False
-
-    def wait_until_element_attribute_has_text(self, element, attribute, text):
-        for _ in range(10):
-            try:
-                if element.get_attribute(attribute) == text:
-                    return True
-                else:
-                    time.sleep(2)
-            except:
-                time.sleep(3)
-        else:
-            return False
-
-    def wait_unti_element_clickable(self, element):
-        method, value, order = self.get_method_value_order(element=element)
-        for temp in range(10):
-            try:
-                self.wait.until(EC.element_to_be_clickable((getattr(By, method), value)))
-            except (TimeoutException, StaleElementReferenceException):
-                time.sleep(1)
-            else:
-                return True
-        else:
-            self.fail('StaleElementReferenceException')
-
     def click(self, element):
-        for temp in range(10):
-            try:
-                self.find_element(element).click()
-                break
-            except Exception as e:
-                self.fail(e)
-                time.sleep(0.1)
-        else:
-            self.fail("can't find %s element" % element)
-        time.sleep(0.1)
+        dom_element = self.wait_until_element_clickable(element=element)
+        dom_element.click()
 
     def click_item(self, element, ID):
         for temp in range(10):
@@ -231,20 +241,15 @@ class BaseSelenium:
             except:
                 time.sleep(1)
         else:
-            self.fail("can't find %s element" % element)
+            self.LOGGER.warning(" can't find %s element" % element)
         time.sleep(1)
 
     def click_link(self, link):
         self.get(link)
 
     def get_text(self, element):
-        for temp in range(10):
-            try:
-                return self.find_element(element).text
-            except:
-                time.sleep(0.5)
-        else:
-            self.fail('NoSuchElementException(%s)' % element)
+        self.wait_until_element_located(element)
+        return self.find_element(element).text
 
     def get_size(self, element):
         self.wait_until_element_located(element)
@@ -289,6 +294,7 @@ class BaseSelenium:
 
     def clear_items_in_drop_down(self, element, values='general:ng_values'):
         # element is ng-select element
+        self.wait_until_element_located(element)
         ng_values = self.find_element_in_element(destination_element=values, source_element=element)
         for ng_value in ng_values:
             cancel = self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
@@ -316,6 +322,11 @@ class BaseSelenium:
     def select_item_from_drop_down(self, element='', element_source='', item_text='', avoid_duplicate=False,
                                    options_element='general:drop_down_options'):
         #element should refer to ng-select tag
+        if element:
+            if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
+                self.LOGGER.info(' Drop down is disabled')
+                return
+
         if item_text:
             input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
             input_element.send_keys(item_text)
@@ -329,19 +340,22 @@ class BaseSelenium:
         items = self.find_elements(element=options_element)
         if not item_text: #random selection
             if len(items) <= 1:
-                self.log('There is no drop down options')
+                self.LOGGER.info(' There is no drop down options')
                 return
             if avoid_duplicate:
                 items[random.choice(self._unique_index_list(data=items))].click()
             else:
                 items[random.randint(0, len(items) - 1)].click()
         else:
+            if item_text not in [item.text for item in items]:
+                time.sleep(self.TIME_TINY)
+                items = self.find_elements(element=options_element)
             for item in items:
                 if item_text in item.text:
                     item.click()
                     break
             else:
-                self.log('There is no {} option in the drop down'.format(item_text))
+                self.LOGGER.info(' There is no {} option in the drop down'.format(item_text))
 
     def _unique_index_list(self, data):
         result = []
@@ -390,7 +404,7 @@ class BaseSelenium:
             except:
                 time.sleep(1)
         else:
-            self.fail("this %s item isn't exist in this url: %s" % (text_item, self.get_url()))
+            self.LOGGER.warning(" this %s item isn't exist in this url: %s" % (text_item, self.get_url()))
 
     def get_table_rows(self, element=None):
         'This method return all rows in the current page else return false'
@@ -404,7 +418,7 @@ class BaseSelenium:
             rows = tbody.find_elements_by_tag_name('tr')
             return rows
         except:
-            self.log("Can't get the tbody elements")
+            self.LOGGER.exception(" Can't get the tbody elements")
             return False
 
     def get_row_cells(self, row):
@@ -413,14 +427,13 @@ class BaseSelenium:
             cells = row.find_elements_by_tag_name('td')
             return cells
         except:
-            self.log("Can't get the row cells")
+            self.LOGGER.exception(" Can't get the row cells")
             return False
 
     def get_table_head_elements(self, element):
         # This method return a table head elements.
         for _ in range(10):
             try:
-
                 table = self.find_element(element)
                 thead = table.find_elements_by_tag_name('thead')
                 thead_row = thead[0].find_elements_by_tag_name('tr')
@@ -428,8 +441,32 @@ class BaseSelenium:
             except:
                 time.sleep(0.5)
         else:
-
             return False
+
+    def get_row_cell_text_related_to_header(self, row, column_value):
+        """
+
+        :param row: table row selenium item
+        :param column_value: table column value
+        :return:
+        """
+        headers = self.get_table_head_elements(element='general:table')
+        headers_text = [header.text for header in headers]
+        row_cells = self.get_row_cells(row=row)
+        row_text = [cell.text for cell in row_cells]
+        return row_text[headers_text.index(column_value)]
+
+    def get_row_cells_dict_related_to_header(self, row):
+        cells_dict = {}
+        headers = self.get_table_head_elements(element='general:table')
+        headers_text = [header.text for header in headers]
+        row_cells = self.get_row_cells(row=row)
+        row_text = [cell.text for cell in row_cells]
+
+        for column_value in headers_text:
+            cells_dict[column_value] = row_text[headers_text.index(column_value)]
+
+        return cells_dict
 
     def maximize_window(self):
         time.sleep(1)
@@ -449,7 +486,7 @@ class BaseSelenium:
                     self.driver.execute_script('angular.resumeBootstrap();')
                     time.sleep(2)
                 except Exception as e:
-                    self.log(' * Exception : %s ' % str(e))
+                    self.LOGGER.exception(' * Exception : %s ' % str(e))
 
     def download_excel_file(self, element, sleep=30):
         self.click(element=element)
@@ -470,8 +507,3 @@ class BaseSelenium:
         else:
             self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 
-    def log(self, message):
-        print(message)
-
-    def fail(self, message):
-        print(message)

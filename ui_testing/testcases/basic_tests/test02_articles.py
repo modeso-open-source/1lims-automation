@@ -140,7 +140,6 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.get_random_article()
         article_url = self.base_selenium.get_url()
-        self.article_page.sleep_tiny()
         current_material_type = self.article_page.get_material_type()
         self.article_page.set_material_type(random=True)
         new_material_type = self.article_page.get_material_type()
@@ -160,9 +159,9 @@ class ArticlesTestCases(BaseTest):
         """
         New: Article: In case I archived any article this article shouldn't display in the test plan module when
          I create test plan or edit it
-         
+
          LIMS-3668
-        :return: 
+        :return:
         """
         self.article_page.create_new_article(material_type='Raw Material')
         self.article_page.archive_article(name=self.article_page.article_name)
@@ -253,11 +252,12 @@ class ArticlesTestCases(BaseTest):
         LIMS-3587
         :return:
         """
-        selected_articles, _ = self.article_page.select_random_multiple_table_rows()
+        selected_articles_data, _ = self.article_page.select_random_multiple_table_rows()
         self.article_page.archive_selected_articles()
         self.article_page.get_archived_articles()
-        for article in selected_articles:
-            article_name = article.split('\n')[-4]
+        for article in selected_articles_data:
+            article_name = article['Article Name']
+            self.base_selenium.LOGGER.info(' * {} article should be activated.'.format(article_name))
             self.assertTrue(self.article_page.is_article_archived(value=article_name))
 
     def test013_restore_articles(self):
@@ -269,10 +269,9 @@ class ArticlesTestCases(BaseTest):
         """
         article_names = []
         self.article_page.get_archived_articles()
-        selected_articles, selected_rows = self.article_page.select_random_multiple_table_rows()
-        for article in selected_rows:
-            article_names.append(self.article_page.get_row_cell_text_related_to_header(row=article,
-                                                                                       column_value='Article Name'))
+        selected_articles_data, _ = self.article_page.select_random_multiple_table_rows()
+        for article in selected_articles_data:
+            article_names.append(article['Article Name'])
 
         self.article_page.restore_selected_articles()
         self.article_page.get_active_articles()
@@ -282,9 +281,9 @@ class ArticlesTestCases(BaseTest):
     def test014_create_new_material_type(self):
         """
         Article: Materiel type Approach: make sure you can create new materiel type & this materiel type displayed correct according to this article.
-        
+
         LIMS-3582
-        :return: 
+        :return:
         """
         material_type = self.generate_random_string()
         self.article_page.create_new_article(material_type=material_type)
