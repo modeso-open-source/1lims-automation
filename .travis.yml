@@ -20,5 +20,5 @@ install:
   - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
 
 script:
-  - cd $TRAVIS_BUILD_DIR/ui_testing && nosetests-3.4 -vs --nologcapture testcases --tc-file=../config.ini --tc=site.password:admin
+  - cd $TRAVIS_BUILD_DIR/ui_testing && xvfb-run -a nosetests-3.4 -vs testcases/basic_tests/test02_articles.py:ArticlesTestCases.test018_delete_article_with_order --nologcapture testcases --tc-file=../config.ini --tc=site.password:admin
 
