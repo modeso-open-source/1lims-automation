@@ -61,7 +61,9 @@ elements = {
                      'value': 'password',
                      'order': 0},
         'login_btn': {'method': 'id',
-                      'value': 'm_login_signin_submit'}
+                      'value': 'm_login_signin_submit'},
+        'refresh': {'method': 'xpath',
+                    'value': '/html/body/div[3]/div/div[2]/div[2]/button'}
     },
 
     'articles': {
