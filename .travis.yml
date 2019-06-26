@@ -1,0 +1,24 @@
+language: python
+sudo: enabled
+dist: trusty
+group: edge
+
+python:
+  - "3.5"
+
+addons:
+  chrome: stable
+
+install:
+  - wget -N https://chromedriver.storage.googleapis.com/76.0.3809.25/chromedriver_linux64.zip -P ~/
+  - unzip ~/chromedriver_linux64.zip -d ~/
+  - rm ~/chromedriver_linux64.zip
+  - sudo mv -f ~/chromedriver /usr/local/share/
+  - sudo chmod +x /usr/local/share/chromedriver
+  - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+  - sudo apt-get install -y xvfb
+  - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
+
+script:
+  - cd $TRAVIS_BUILD_DIR/ui_testing && nosetests-3.4 -vs --nologcapture testcases --tc-file=../config.ini --tc=site.password:admin
+
