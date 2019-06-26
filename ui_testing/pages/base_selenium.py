@@ -59,12 +59,6 @@ class BaseSelenium:
         else:
             if self.browser == 'chrome':
                 self.driver = webdriver.Chrome()
-                # options = Options()
-                # options.set_preference("browser.download.folderList", 2)
-                # options.set_preference("browser.download.manager.showWhenStarting", False)
-                # options.set_preference("browser.download.dir", "/tmp")
-                # options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream,application / vnd.ms - excel")
-                # self.driver = webdriver.Chrome(options=options)
             elif self.browser == 'firefox':
                 self.driver = webdriver.Firefox()
             elif self.browser == 'ie':
@@ -74,6 +68,8 @@ class BaseSelenium:
             elif self.browser == 'safari':
                 self.driver = webdriver.Safari
         self.driver.implicitly_wait(BaseSelenium.IMPLICITLY_WAIT)
+        self.driver.set_window_position(0, 0)
+        self.driver.set_window_size(1800, 1200)
         self.driver.maximize_window()
         self.wait = WebDriverWait(self.driver, BaseSelenium.EXPLICITLY_WAIT)
 
