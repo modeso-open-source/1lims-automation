@@ -226,7 +226,7 @@ elements = {
         'cancel': {'method': 'class_name',
                    'value': 'btn-secondary',
                    'order': 1},
-        'orderNumber': {'method': 'id',
+        'order_number': {'method': 'id',
                         'value': 'orderNoWithYearfield'}
     }
 }

@@ -7,7 +7,7 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]
 
     def get_order_number(self):
-        return self.base_selenium.get_value(element="order:orderNumber")
+        return self.base_selenium.get_value(element="order:order_number")
 
     def set_new_order(self):
         self.base_selenium.select_item_from_drop_down(
@@ -87,7 +87,6 @@ class Order(Orders):
     def get_test_unit(self):
         return self.base_selenium.get_text(element='order:test_unit').split('\n')[0]
 
-
     def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit=''):
         self.set_new_order()
         self.set_material_type(material_type=material_type)
@@ -112,9 +111,6 @@ class Order(Orders):
         row = rows[row_id]
         return row
 
-
-
     def get_last_order_row(self):
         rows = self.result_table()
         return rows[0]
-        
