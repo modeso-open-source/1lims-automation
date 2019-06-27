@@ -98,10 +98,10 @@ class Order(Orders):
             self.set_test_unit(test_unit=test_unit)
         self.save(save_btn='order:save')
 
-
     def get_random_order(self):
         row = self.get_random_order_row()
-        order_edit_button = self.base_selenium.find_element_in_element(source=row, destination_element='orders:orders_edit_button')
+        order_edit_button = self.base_selenium.find_element_in_element(source=row,
+                                                                       destination_element='orders:orders_edit_button')
         order_edit_button.click()
         self.sleep_medium()
 

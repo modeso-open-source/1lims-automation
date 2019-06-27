@@ -28,4 +28,4 @@ class Analyses(BasePages):
             rows = self.search(analysis_number)
             if len(rows) > 1:
                 return True
-        return False        
+        return False

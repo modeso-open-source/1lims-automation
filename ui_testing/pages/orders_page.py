@@ -24,10 +24,10 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:archive')
         self.confirm_popup()
         if check_pop_up:
-            if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
+            if self.base_selenium.wait_element(element='general:confirmation_pop_up'):
                 return False
         return True
-        
+
     def is_order_exist(self, value):
         results = self.search(value=value)
         if len(results) == 0:
@@ -37,6 +37,7 @@ class Orders(BasePages):
                 return True
             else:
                 return False
+
     def is_article_archived(self, value):
         results = self.search(value=value)
         if len(results) == 0:
@@ -45,4 +46,4 @@ class Orders(BasePages):
             if value in results[0].text:
                 return True
             else:
-                return False            
+                return False
