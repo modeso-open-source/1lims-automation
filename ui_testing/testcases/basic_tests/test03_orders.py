@@ -21,6 +21,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
 
+
     def test01_archive_order(self):
         """
             New: Orders: Archive
@@ -43,6 +44,7 @@ class OrdersTestCases(BaseTest):
             has_active_analysis = self.analyses_page.search_if_analysis_not_deleted(
                 analysis_numbers_list)
             self.assertEqual(has_active_analysis, False)
+
 
     def test02_archiveOrder_has_active_analysis(self):
         """
@@ -73,6 +75,7 @@ class OrdersTestCases(BaseTest):
             rows = self.order_page.result_table()
             self.assertEqual(len(rows), 1)
 
+
     def test03_restore(self):
         """
         Restore Order	
@@ -94,6 +97,8 @@ class OrdersTestCases(BaseTest):
             self.assertTrue(self.order_page.is_order_exist(
                 value=analysis_number))
 
+
+
     def test04_deleted_archived_order(self):
         """
         New: Order without/with article: Deleting of orders
@@ -106,6 +111,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.click_check_box(source=order_row)
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
+
 
     @parameterized.expand(['True', 'False'])
     def test05_order_search(self,small_letters):
@@ -137,3 +143,53 @@ class OrdersTestCases(BaseTest):
                 tmp_row = self.order_page.search(
                     row_text_item.replace("...", "").split(',')[0].upper())[0].text        
             self.assertEqual(tmp_row, row_text)
+
+
+    def test06_duplicate_order_one_copy(self):
+        """
+        New: Orders with test units: Duplicate an order with test unit 1 copy
+
+        LIMS-3270
+        :return:
+
+        """
+        order_row_from_table_list = []
+        order_row_from_form_list = []
+        selected_row = self.order_page.get_random_order_row()
+        self.order_page.click_check_box(source=selected_row)
+        
+
+        # add order number
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'",''))
+        # contact 
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...',''))
+        #material type
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...',''))
+        #article name
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...',''))
+        #article number
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...','').replace("'",''))
+
+        # #shipment date
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
+        # #test Date
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Date'))         
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...',''))
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Departments'))
+
+
+
+        self.order_page.duplicate_order_from_table_overview(1)
+        order_row_from_form_list.extend([self.order_page.get_order_number(),self.order_page.get_contact(),self.order_page.get_material_type()])
+        order_row_from_form_list.append(self.order_page.get_article().split(' No')[0][0:30])
+        order_row_from_form_list.append(self.order_page.get_article().split('No:')[1][0:30])
+        order_row_from_form_list.append(self.order_page.get_shimpment_date())
+        order_row_from_form_list.append(self.order_page.get_test_date())
+        order_row_from_form_list.append(self.order_page.get_test_plan())
+        order_row_from_form_list.append(self.order_page.get_departments())
+
+        print(order_row_from_table_list)
+        print(order_row_from_form_list)
+        self.assertListEqual(order_row_from_form_list,order_row_from_table_list)
+
+

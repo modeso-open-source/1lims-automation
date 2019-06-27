@@ -199,6 +199,14 @@ elements = {
         'analysis-confirmation': {
             'method': 'class_name',
             'value': 'swal2-header'},
+        'duplicate': {'method': 'link_text',
+            'value': 'Duplicate'},
+        'number_of_copies': {'method': 'id' ,
+                            'value': 'numberOfCopies'},
+        'create_copies': {'method': 'id',
+                'value': 'create_copies_id'},
+        'save_order': {'method': 'id',
+                'value': 'button_save_order'}                                  
     },
 
     'order': {
@@ -227,6 +235,14 @@ elements = {
                    'value': 'btn-secondary',
                    'order': 1},
         'orderNumber': {'method': 'id',
-                        'value': 'orderNoWithYearfield'}
+                        'value': 'orderNoWithYearfield'},
+        'order_number_add_form': {'method': 'id',
+                    'value': 'selectedOrderNofield'},
+        'shipment_date': {'method': 'id',
+                    'value': 'date_shipmentDate'},
+        'test_date': {'method': 'id',
+                    'value': 'date_testDate'},
+        'departments': {'method': 'id',
+                    'value': 'departments'}                                                           
     }
 }
