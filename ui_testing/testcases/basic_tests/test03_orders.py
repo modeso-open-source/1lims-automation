@@ -28,9 +28,9 @@ class OrdersTestCases(BaseTest):
             LIMS-3425
         :return:
         """
+        self.order_page.sleep_medium()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-
         analysis_number_value = self.order_page.get_row_cell_text_related_to_header(
             order_row, 'Analysis No.')
         analysis_numbers_list = analysis_number_value.split(',')
@@ -51,6 +51,7 @@ class OrdersTestCases(BaseTest):
             LIMS-4329
         :return:
         """
+        self.order_page.sleep_medium()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
 
@@ -101,6 +102,7 @@ class OrdersTestCases(BaseTest):
         LIMS-3257
 
         """
+        self.order_page.sleep_medium()
         self.order_page.get_archived_items()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
@@ -116,7 +118,7 @@ class OrdersTestCases(BaseTest):
         LIMS-3061
         :return:
         """
-
+        self.order_page.sleep_medium()
         row = self.order_page.get_last_order_row()
         row_text = row.text
         time_difference = self.order_page.get_row_cell_text_related_to_header(
