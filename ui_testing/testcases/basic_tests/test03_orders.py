@@ -54,41 +54,47 @@ class OrdersTestCases(BaseTest):
         self.order_page.sleep_medium()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-
         analysis_number_value = self.order_page.get_row_cell_text_related_to_header(
             order_row, 'Analysis No.')
         analysis_numbers_list = analysis_number_value.split(',')
+        self.base_selenium.LOGGER.info(
+            ' + try to archive order with number : {}'.format(self.order_page.get_row_cell_text_related_to_header(
+                order_row, 'Order No.')))
         order_deleted = self.order_page.archive_selected_orders(
             check_pop_up=True)
 
         if not order_deleted:
             self.analyses_page.get_analyses_page()
             self.order_page.sleep_medium()
+            self.base_selenium.LOGGER.info(
+                ' + Archive Analysis with numbers : {}'.format(analysis_numbers_list))
             self.analyses_page.search_by_number_and_archive(
                 analysis_numbers_list)
             self.order_page.get_orders_page()
             self.order_page.sleep_medium()
             rows = self.order_page.search(analysis_numbers_list[0])
             self.order_page.click_check_box(source=rows[0])
+            self.base_selenium.LOGGER.info(
+                ' + archive order has analysis number =  {}'.format(analysis_numbers_list[0]))
             self.order_page.archive_selected_orders()
             rows = self.order_page.result_table()
             self.assertEqual(len(rows), 1)
 
     def test03_restore(self):
         """
-        Restore Order	
+        Restore Order
         I can restore any order successfully
         LIMS-4374
         """
-
         analysis_numbers = []
+        self.order_page.sleep_medium()
         self.order_page.get_archived_items()
         self.order_page.sleep_medium()
-
         selected_orders, selected_rows = self.order_page.select_random_multiple_table_rows()
         for order in selected_rows:
             analysis_numbers.extend(self.order_page.get_row_cell_text_related_to_header(row=order,
-                                                                                        column_value='Analysis No.').split(','))
+                                                                                        column_value='Analysis No.').split(
+                ','))
         self.order_page.restore_selected_items()
         self.order_page.get_active_items()
         for analysis_number in analysis_numbers:
@@ -110,7 +116,7 @@ class OrdersTestCases(BaseTest):
         self.assertFalse(self.order_page.confirm_popup())
 
     @parameterized.expand(['True', 'False'])
-    def test05_order_search(self,small_letters):
+    def test05_order_search(self, small_letters):
         """
         New: Orders: Search Approach: User can search by any field & each field should display with yellow color
 
@@ -123,19 +129,20 @@ class OrdersTestCases(BaseTest):
         row_text = row.text
         time_difference = self.order_page.get_row_cell_text_related_to_header(
             row, 'Time Difference')
-        analysis_result = self.order_page.get_row_cell_text_related_to_header(row, 'Analysis Results')
+        analysis_result = self.order_page.get_row_cell_text_related_to_header(
+            row, 'Analysis Results')
         for row_text_item in row_text.split('\n'):
             # neglect searching by dates or time differnce
             if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item) or row_text_item == time_difference:
                 continue
-            elif row_text_item ==  analysis_result:
+            elif row_text_item == analysis_result:
                 row_text_item = analysis_result.split(' (')[0]
 
             row_text_item = row_text_item.split(",")[0]
             if small_letters == 'True':
                 tmp_row = self.order_page.search(
                     row_text_item.replace("...", "").split(',')[0])[0].text
-            else: 
+            else:
                 tmp_row = self.order_page.search(
-                    row_text_item.replace("...", "").split(',')[0].upper())[0].text        
+                    row_text_item.replace("...", "").split(',')[0].upper())[0].text
             self.assertEqual(tmp_row, row_text)
