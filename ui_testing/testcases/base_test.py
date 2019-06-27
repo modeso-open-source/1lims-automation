@@ -10,10 +10,13 @@ class BaseTest(TestCase):
         self.base_selenium = BaseSelenium()
 
     def setUp(self):
+        print('\t')
+        self.base_selenium.LOGGER.info('* Test case : {}'.format(self._testMethodName))
         self.base_selenium.get_driver()
 
     def tearDown(self):
         self.base_selenium.quit_driver()
+        self.base_selenium.LOGGER.info(' * TearDown time. \t')
 
     def generate_random_string(self):
         return str(uuid4()).replace("-", "")[:10]
@@ -29,5 +32,6 @@ class BaseTest(TestCase):
                 elif ' ' == str(item)[-1]:
                     tmp.append(item[:-1])
                 else:
+                    str(item).replace(',', '&').replace("'", "")
                     tmp.append(item)
         return tmp

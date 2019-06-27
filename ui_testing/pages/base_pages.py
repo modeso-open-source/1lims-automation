@@ -27,7 +27,7 @@ class BasePages:
         if len(rows) > 0:
             return rows
         else:
-            return None
+            return []
 
     def table_headers(self):
         rows = self.base_selenium.get_table_head_elements(
@@ -92,20 +92,26 @@ class BasePages:
         return self.result_table()
 
     def select_random_multiple_table_rows(self, element='general:table'):
-        selected_rows_text = []
+        _selected_rows_text = []
+        selected_rows_data = []
         selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
-        for _ in range(1, randint(1, 5)):
+        no_of_rows = randint(1, 5)
+        count = 0
+        self.base_selenium.LOGGER.info(' * No. of selected rows {} '.format(no_of_rows))
+        while count < no_of_rows:
             row = rows[randint(0, len(rows) - 1)]
             row_text = row.text
             if not row_text:
                 continue
-            if row_text in selected_rows_text:
+            if row_text in _selected_rows_text:
                 continue
+            count = count + 1
             self.click_check_box(source=row)
-            selected_rows_text.append(row_text)
+            _selected_rows_text.append(row_text)
             selected_rows.append(row)
-        return selected_rows_text, selected_rows
+            selected_rows_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=row))
+        return selected_rows_data, selected_rows
 
     def click_check_box(self, source):
         check_box = self.base_selenium.find_element_in_element(

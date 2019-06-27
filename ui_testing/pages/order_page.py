@@ -58,9 +58,9 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:contact').split('\n')[0]
 
     def set_test_plan(self, test_plan=''):
-        test_plan_btn = self.base_selenium.find_element_in_element(destination_element='order:test_plan_btn',
-                                                                   source_element='order:tests')
-        test_plan_btn.click()
+        # test_plan_btn = self.base_selenium.find_element_in_element(destination_element='order:test_plan_btn',
+        #                                                            source_element='order:tests')
+        # test_plan_btn.click()
         if test_plan:
             self.base_selenium.select_item_from_drop_down(
                 element='order:test_plan', item_text=test_plan)
@@ -73,9 +73,9 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:test_plan').split('\n')[0]
 
     def set_test_unit(self, test_unit):
-        test_unit_btn = self.base_selenium.find_element_in_element(destination_element='order:test_unit_btn',
-                                                                   source_element='order:tests')
-        test_unit_btn.click()
+        # test_unit_btn = self.base_selenium.find_element_in_element(destination_element='order:test_unit_btn',
+        #                                                            source_element='order:tests')
+        # test_unit_btn.click()
         if test_unit:
             self.base_selenium.select_item_from_drop_down(
                 element='order:test_unit', item_text=test_unit)

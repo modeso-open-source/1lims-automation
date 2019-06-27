@@ -21,5 +21,4 @@ class TestPlans(BasePages):
 
     def get_test_plan_edit_page(self, name):
         test_plan = self.search(value=name)[0]
-        test_plan.click()
-        self.sleep_small()
+        self.get_random_x(row=test_plan)
