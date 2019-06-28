@@ -23,7 +23,7 @@ class Analyses(BasePages):
                 self.archive_selected_analysis()
                 self.clear_search()
 
-    def search_if_analysis_not_deleted(self, analysis_numbers_list):
+    def search_if_analysis_exist(self, analysis_numbers_list):
         for analysis_number in analysis_numbers_list:
             rows = self.search(analysis_number)
             if len(rows) > 1:

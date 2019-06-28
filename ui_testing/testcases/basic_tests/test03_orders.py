@@ -40,7 +40,7 @@ class OrdersTestCases(BaseTest):
         if order_deleted:
             self.analyses_page.get_analyses_page()
             self.order_page.sleep_medium()
-            has_active_analysis = self.analyses_page.search_if_analysis_not_deleted(
+            has_active_analysis = self.analyses_page.search_if_analysis_exist(
                 analysis_numbers_list)
             self.assertEqual(has_active_analysis, False)
 
@@ -106,14 +106,25 @@ class OrdersTestCases(BaseTest):
         New: Order without/with article: Deleting of orders
         The user can hard delete any archived order
         LIMS-3257
-
         """
         self.order_page.sleep_medium()
         self.order_page.get_archived_items()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
+        analysis_numbers_list = self.order_page.get_row_cell_text_related_to_header(
+            order_row, 'Analysis No.').split(',')
+        self.base_selenium.LOGGER.info(
+            ' + delete order has number = {}'.format(self.order_page.get_row_cell_text_related_to_header(
+                order_row, 'Order No.')))
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
+        self.analyses_page.get_analyses_page()
+        self.analyses_page.get_archived_items()
+        self.base_selenium.LOGGER.info(
+            ' + check that analysis numbers {} is deleted successfully'.format(analysis_numbers_list))
+        has_active_analysis = self.analyses_page.search_if_analysis_exist(
+            analysis_numbers_list)
+        self.assertFalse(has_active_analysis, True)
 
     @parameterized.expand(['True', 'False'])
     def test05_order_search(self, small_letters):
