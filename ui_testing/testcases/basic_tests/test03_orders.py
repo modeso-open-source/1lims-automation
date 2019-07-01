@@ -164,7 +164,6 @@ class OrdersTestCases(BaseTest):
 
         LIMS-3270
         :return:
-
         """
         order_row_from_table_list = []
         order_row_from_form_list = []
