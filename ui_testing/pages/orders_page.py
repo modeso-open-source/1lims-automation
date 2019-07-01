@@ -38,7 +38,7 @@ class Orders(BasePages):
             else:
                 return False
 
-    def is_article_archived(self, value):
+    def is_order_archived(self, value):
         results = self.search(value=value)
         if len(results) == 0:
             return False
@@ -47,3 +47,12 @@ class Orders(BasePages):
                 return True
             else:
                 return False
+
+    def duplicate_order_from_table_overview(self, number_of_copies):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='orders:duplicate')
+        self.base_selenium.set_text(
+            element='orders:number_of_copies', value=number_of_copies)
+        self.base_selenium.click(element='orders:create_copies')
+        self.sleep_medium()

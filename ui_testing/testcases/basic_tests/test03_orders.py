@@ -157,3 +157,57 @@ class OrdersTestCases(BaseTest):
                 tmp_row = self.order_page.search(
                     row_text_item.replace("...", "").split(',')[0].upper())[0].text
             self.assertEqual(tmp_row, row_text)
+
+    def test06_duplicate_order_one_copy(self):
+        """
+        New: Orders with test units: Duplicate an order with test unit 1 copy
+
+        LIMS-3270
+        :return:
+
+        """
+        order_row_from_table_list = []
+        order_row_from_form_list = []
+        self.order_page.sleep_medium()
+        selected_row = self.order_page.get_random_order_row()
+        self.order_page.click_check_box(source=selected_row)
+
+        # add order number
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
+        # contact 
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
+        # material type
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
+        # article name
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
+        # article number
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...', '').replace(
+                "'", ''))
+
+        # #shipment date
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
+        # #test Date
+        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Departments'))
+
+        self.order_page.duplicate_order_from_table_overview(1)
+        order_row_from_form_list.extend(
+            [self.order_page.get_order_number().replace("'", ''), self.order_page.get_contact(),
+             self.order_page.get_material_type()])
+        order_row_from_form_list.append(self.order_page.get_article().split(' No')[0][0:30])
+        order_row_from_form_list.append(self.order_page.get_article().split('No:')[1].replace("'", '')[0:30])
+        order_row_from_form_list.append(self.order_page.get_shimpment_date())
+        order_row_from_form_list.append(self.order_page.get_test_date())
+        order_row_from_form_list.append(self.order_page.get_test_plan(first_only=False))
+        order_row_from_form_list.append(self.order_page.get_departments())
+
+        self.assertListEqual(order_row_from_form_list, order_row_from_table_list)

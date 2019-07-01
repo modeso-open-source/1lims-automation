@@ -7,7 +7,7 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]
 
     def get_order_number(self):
-        return self.base_selenium.get_value(element="order:order_number")
+        return self.base_selenium.get_text(element='order:order_number_add_form').split('\n')[0]
 
     def set_new_order(self):
         self.base_selenium.select_item_from_drop_down(
@@ -69,8 +69,15 @@ class Order(Orders):
                 element='order:test_plan')
             return self.get_test_plan()
 
-    def get_test_plan(self):
-        return self.base_selenium.get_text(element='order:test_plan').split('\n')[0]
+    def get_test_plan(self, first_only=True):
+        if first_only:
+            return self.base_selenium.get_text(element='order:test_plan').split('\n')[0]
+        else:
+            test_plans = []
+            test_plans_list = self.base_selenium.get_text(element='order:test_plan').split('\n')
+            for test_plan in test_plans_list:
+                test_plans.append(test_plan.split('× ')[1])
+            return ','.join(test_plans)
 
     def set_test_unit(self, test_unit):
         # test_unit_btn = self.base_selenium.find_element_in_element(destination_element='order:test_unit_btn',
@@ -114,3 +121,17 @@ class Order(Orders):
     def get_last_order_row(self):
         rows = self.result_table()
         return rows[0]
+
+    def get_shimpment_date(self):
+        return self.base_selenium.get_value(element='order:shipment_date')
+
+    def get_test_date(self):
+        return self.base_selenium.get_value(element='order:test_date')
+
+    def get_departments(self):
+        departments = self.base_selenium.get_text(
+            element='order:departments').split('\n')[0]
+        print(departments)
+        if departments == 'Search':
+            return ''
+        return departments
