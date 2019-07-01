@@ -6,7 +6,7 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.analyses_page import Analyses
 from parameterized import parameterized
 import re
-
+from unittest import skip
 
 class OrdersTestCases(BaseTest):
     def setUp(self):
@@ -126,6 +126,7 @@ class OrdersTestCases(BaseTest):
             analysis_numbers_list)
         self.assertFalse(has_active_analysis, True)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-4466')
     @parameterized.expand(['True', 'False'])
     def test05_order_search(self, small_letters):
         """
@@ -158,6 +159,7 @@ class OrdersTestCases(BaseTest):
                     row_text_item.replace("...", "").split(',')[0].upper())[0].text
             self.assertEqual(tmp_row, row_text)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-4766')
     def test06_duplicate_order_one_copy(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
