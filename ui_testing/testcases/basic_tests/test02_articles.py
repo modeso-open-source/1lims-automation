@@ -194,7 +194,6 @@ class ArticlesTestCases(BaseTest):
          LIMS-3668
         :return:
         """
-        self.base_selenium.LOGGER.info(' + Create new article with Raw Material.')
         self.article_page.create_new_article(material_type='Raw Material')
         self.base_selenium.LOGGER.info(' + Archive the article.')
         self.article_page.archive_article(name=self.article_page.article_name)
@@ -278,6 +277,7 @@ class ArticlesTestCases(BaseTest):
 
         self.article_page.filter_by_test_plan(filter_text=self.test_plan.test_plan_name)
         article = self.article_page.filter_result()[0]
+        self.base_selenium.LOGGER.info(' + Assert user could filter with test plan.')
         self.assertIn(self.test_plan.test_plan_name, article.text)
 
     def test011_archive_articles(self):

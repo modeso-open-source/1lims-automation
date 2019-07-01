@@ -46,6 +46,7 @@ class TstPlan(TestPlans):
         self.base_selenium.click('test_plan:add')
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
+        self.base_selenium.LOGGER.info(' + Create new test plan')
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
         self.article = article
@@ -66,6 +67,8 @@ class TstPlan(TestPlans):
             self.save(save_btn='test_plan:save')
         else:
             self.save()
+
+        self.base_selenium.LOGGER.info(' + Test plan name : {}'.format(self.test_plan_name))
 
     def is_article_existing(self, article):
         self.set_article(article=article)

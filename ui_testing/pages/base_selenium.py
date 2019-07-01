@@ -437,7 +437,7 @@ class BaseSelenium:
             except:
                 time.sleep(0.5)
         else:
-            return False
+            return []
 
     def get_row_cell_text_related_to_header(self, row, column_value):
         """

@@ -16,7 +16,7 @@ class BaseTest(TestCase):
 
     def tearDown(self):
         self.base_selenium.quit_driver()
-        self.base_selenium.LOGGER.info(' * TearDown time. \t')
+        self.base_selenium.LOGGER.info(' * TearDown. \t')
 
     def generate_random_string(self):
         return str(uuid4()).replace("-", "")[:10]

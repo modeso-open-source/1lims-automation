@@ -73,6 +73,7 @@ class BasePages:
     def filter_apply(self):
         self.base_selenium.find_element_in_element(destination_element='article:filter_apply_btn',
                                                    source_element='article:filter_actions').click()
+        time.sleep(self.base_selenium.TIME_SMALL)
 
     def filter_reset(self):
         self.base_selenium.find_element_in_element(destination_element='article:filter_reset_btn',
