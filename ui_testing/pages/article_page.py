@@ -90,10 +90,10 @@ class Article(Articles):
         for item in input_items:
             label = self.base_selenium.find_element_in_element(source=item, destination_element='general:label')
             if 'select' in label:
-                drop_down = self.base_selenium.find_element_in_element(source=item, destination_element='general:drop_down')
+                drop_down = self.base_selenium.find_element_in_element(source=item,
+                                                                       destination_element='general:drop_down')
                 self.base_selenium.select_item_from_drop_down(element_source=drop_down)
             if 'text' in label:
-                input_item = self.base_selenium.find_element_in_element(source=item, destination_element='general:input')
+                input_item = self.base_selenium.find_element_in_element(source=item,
+                                                                        destination_element='general:input')
                 # send text
-
-

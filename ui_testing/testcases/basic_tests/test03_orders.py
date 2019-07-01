@@ -138,26 +138,32 @@ class OrdersTestCases(BaseTest):
         """
         self.order_page.sleep_medium()
         row = self.order_page.get_last_order_row()
-        row_text = row.text
-        time_difference = self.order_page.get_row_cell_text_related_to_header(
-            row, 'Time Difference')
-        analysis_result = self.order_page.get_row_cell_text_related_to_header(
-            row, 'Analysis Results')
-        for row_text_item in row_text.split('\n'):
-            # neglect searching by dates or time differnce
-            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_text_item) or row_text_item == time_difference:
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=row)
+        for column in row_data:
+            search_by = row_data[column]
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[
+                column] == '' or column == 'Time Difference' or row_data[column] == '-':
                 continue
-            elif row_text_item == analysis_result:
-                row_text_item = analysis_result.split(' (')[0]
+            elif column == 'Analysis Results':
+                search_by = row_data[column].split(' (')[0]
 
-            row_text_item = row_text_item.split(",")[0]
+            row_data[column] = row_data[column].split(',')[0]
+            self.base_selenium.LOGGER.info(
+                ' + search for {} : {}'.format(column, row_data[column]))
             if small_letters == 'True':
-                tmp_row = self.order_page.search(
-                    row_text_item.replace("...", "").split(',')[0])[0].text
+                search_results = self.order_page.search(search_by)
             else:
-                tmp_row = self.order_page.search(
-                    row_text_item.replace("...", "").split(',')[0].upper())[0].text
-            self.assertEqual(tmp_row, row_text)
+                search_results = self.order_page.search(search_by.upper())
+            self.assertGreater(
+                len(search_results), 1, " * There is no search results for it, Report a bug.")
+            for search_result in search_results:
+                search_data = self.base_selenium.get_row_cells_dict_related_to_header(
+                    search_result)
+                if search_data[column].split(',')[0] == row_data[column].split(',')[0]:
+                    break
+            self.assertEqual(row_data[column].split(
+                ',')[0], search_data[column].split(',')[0])
 
     @skip('https://modeso.atlassian.net/browse/LIMS-4766')
     def test06_duplicate_order_one_copy(self):
@@ -176,7 +182,7 @@ class OrdersTestCases(BaseTest):
         # add order number
         order_row_from_table_list.append(
             self.order_page.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
-        # contact 
+        # contact
         order_row_from_table_list.append(
             self.order_page.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
         # material type
@@ -194,7 +200,8 @@ class OrdersTestCases(BaseTest):
         order_row_from_table_list.append(
             self.order_page.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
         # #test Date
-        order_row_from_table_list.append(self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
+        order_row_from_table_list.append(
+            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
         order_row_from_table_list.append(
             self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
         order_row_from_table_list.append(
@@ -204,11 +211,15 @@ class OrdersTestCases(BaseTest):
         order_row_from_form_list.extend(
             [self.order_page.get_order_number().replace("'", ''), self.order_page.get_contact(),
              self.order_page.get_material_type()])
-        order_row_from_form_list.append(self.order_page.get_article().split(' No')[0][0:30])
-        order_row_from_form_list.append(self.order_page.get_article().split('No:')[1].replace("'", '')[0:30])
+        order_row_from_form_list.append(
+            self.order_page.get_article().split(' No')[0][0:30])
+        order_row_from_form_list.append(self.order_page.get_article().split('No:')[
+                                            1].replace("'", '')[0:30])
         order_row_from_form_list.append(self.order_page.get_shimpment_date())
         order_row_from_form_list.append(self.order_page.get_test_date())
-        order_row_from_form_list.append(self.order_page.get_test_plan(first_only=False))
+        order_row_from_form_list.append(
+            self.order_page.get_test_plan(first_only=False))
         order_row_from_form_list.append(self.order_page.get_departments())
 
-        self.assertListEqual(order_row_from_form_list, order_row_from_table_list)
+        self.assertListEqual(order_row_from_form_list,
+                             order_row_from_table_list)
