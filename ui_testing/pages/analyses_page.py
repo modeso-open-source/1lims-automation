@@ -9,18 +9,12 @@ class Analyses(BasePages):
     def get_analyses_page(self):
         self.base_selenium.get(url=self.analysis_url)
 
-    def archive_selected_analysis(self):
-        self.base_selenium.scroll()
-        self.base_selenium.click(element='general:right_menu')
-        self.base_selenium.click(element='general:archive')
-        self.confirm_popup()
-
     def search_by_number_and_archive(self, analysis_numbers_list):
         for analysis_number in analysis_numbers_list:
             rows = self.search(analysis_number)
             if len(rows) > 0:
                 self.click_check_box(source=rows[0])
-                self.archive_selected_analysis()
+                self.archive_selected_items()
                 self.clear_search()
 
     def search_if_analysis_exist(self, analysis_numbers_list):

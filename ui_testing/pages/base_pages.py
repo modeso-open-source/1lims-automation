@@ -29,14 +29,6 @@ class BasePages:
         else:
             return []
 
-    def table_headers(self):
-        rows = self.base_selenium.get_table_head_elements(
-            element='general:table')
-        if len(rows) > 0:
-            return rows
-        else:
-            return None
-
     def clear_search(self):
         self.base_selenium.clear_element_text(element='general:search')
 
@@ -127,20 +119,6 @@ class BasePages:
                 break
         self.sleep_medium()
 
-    def get_row_cell_text_related_to_header(self, row, column_value):
-        """
-
-        :param row: table row selenium item
-        :param column_value: table column value
-        :return:
-        """
-        headers = self.base_selenium.get_table_head_elements(
-            element='general:table')
-        headers_text = [header.text for header in headers]
-        row_cells = self.base_selenium.get_row_cells(row=row)
-        row_text = [cell.text for cell in row_cells]
-        return row_text[headers_text.index(column_value)]
-
     def get_archived_items(self):
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
@@ -163,4 +141,10 @@ class BasePages:
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:delete')
+        self.confirm_popup()
+
+    def archive_selected_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:archive')
         self.confirm_popup()
