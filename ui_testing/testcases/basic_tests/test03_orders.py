@@ -31,7 +31,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.sleep_medium()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-        analysis_number_value = self.order_page.get_row_cell_text_related_to_header(
+        analysis_number_value = self.base_selenium.get_row_cell_text_related_to_header(
             order_row, 'Analysis No.')
         analysis_numbers_list = analysis_number_value.split(',')
         order_deleted = self.order_page.archive_selected_orders(
@@ -54,11 +54,11 @@ class OrdersTestCases(BaseTest):
         self.order_page.sleep_medium()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-        analysis_number_value = self.order_page.get_row_cell_text_related_to_header(
+        analysis_number_value = self.base_selenium.get_row_cell_text_related_to_header(
             order_row, 'Analysis No.')
         analysis_numbers_list = analysis_number_value.split(',')
         self.base_selenium.LOGGER.info(
-            ' + try to archive order with number : {}'.format(self.order_page.get_row_cell_text_related_to_header(
+            ' + try to archive order with number : {}'.format(self.base_selenium.get_row_cell_text_related_to_header(
                 order_row, 'Order No.')))
         order_deleted = self.order_page.archive_selected_orders(
             check_pop_up=True)
@@ -92,7 +92,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.sleep_medium()
         selected_orders, selected_rows = self.order_page.select_random_multiple_table_rows()
         for order in selected_rows:
-            analysis_numbers.extend(self.order_page.get_row_cell_text_related_to_header(row=order,
+            analysis_numbers.extend(self.base_selenium.get_row_cell_text_related_to_header(row=order,
                                                                                         column_value='Analysis No.').split(
                 ','))
         self.order_page.restore_selected_items()
@@ -111,10 +111,10 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_archived_items()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-        analysis_numbers_list = self.order_page.get_row_cell_text_related_to_header(
+        analysis_numbers_list = self.base_selenium.get_row_cell_text_related_to_header(
             order_row, 'Analysis No.').split(',')
         self.base_selenium.LOGGER.info(
-            ' + delete order has number = {}'.format(self.order_page.get_row_cell_text_related_to_header(
+            ' + delete order has number = {}'.format(self.base_selenium.get_row_cell_text_related_to_header(
                 order_row, 'Order No.')))
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
@@ -181,31 +181,31 @@ class OrdersTestCases(BaseTest):
 
         # add order number
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
         # contact
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
         # material type
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
         # article name
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
         # article number
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...', '').replace(
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...', '').replace(
                 "'", ''))
 
         # #shipment date
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
         # #test Date
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
         order_row_from_table_list.append(
-            self.order_page.get_row_cell_text_related_to_header(selected_row, 'Departments'))
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Departments'))
 
         self.order_page.duplicate_order_from_table_overview(1)
         order_row_from_form_list.extend(
