@@ -5,6 +5,7 @@ import time
 
 class Article(Articles):
     def create_new_article(self, material_type='', sleep=True, full_options=False):
+        self.base_selenium.LOGGER.info(' + Create new article.')
         self.base_selenium.click(element='articles:new_article')
         time.sleep(self.base_selenium.TIME_SMALL)
         self.article_name = self.generate_random_text()
@@ -24,6 +25,7 @@ class Article(Articles):
             self.article_related_article = self.get_related_article()
 
         self.save(sleep)
+        self.base_selenium.LOGGER.info(' + Article name : {}'.format(self.article_name))
 
     def edit_random_article(self, edit_method, edit_value, save=True):
         if 'unit' in edit_method:
@@ -75,6 +77,7 @@ class Article(Articles):
         self.base_selenium.set_text(element="article:comment", value=comment)
 
     def filter_by_test_plan(self, filter_text):
+        self.base_selenium.LOGGER.info(' + Filter by test plan : {}'.format(filter_text))
         self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
         self.filter_apply()
 
