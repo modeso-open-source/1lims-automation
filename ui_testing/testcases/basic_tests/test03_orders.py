@@ -1,12 +1,15 @@
-from ui_testing.testcases.base_test import BaseTest
-from ui_testing.pages.login_page import Login
-from ui_testing.pages.article_page import Article
-from ui_testing.pages.testplan_page import TstPlan
-from ui_testing.pages.order_page import Order
-from ui_testing.pages.analyses_page import Analyses
-from parameterized import parameterized
 import re
 from unittest import skip
+
+from parameterized import parameterized
+
+from ui_testing.pages.analyses_page import Analyses
+from ui_testing.pages.article_page import Article
+from ui_testing.pages.login_page import Login
+from ui_testing.pages.order_page import Order
+from ui_testing.pages.testplan_page import TstPlan
+from ui_testing.testcases.base_test import BaseTest
+
 
 class OrdersTestCases(BaseTest):
     def setUp(self):
@@ -93,7 +96,7 @@ class OrdersTestCases(BaseTest):
         selected_orders, selected_rows = self.order_page.select_random_multiple_table_rows()
         for order in selected_rows:
             analysis_numbers.extend(self.base_selenium.get_row_cell_text_related_to_header(row=order,
-                                                                                        column_value='Analysis No.').split(
+                                                                                           column_value='Analysis No.').split(
                 ','))
         self.order_page.restore_selected_items()
         self.order_page.get_active_items()
@@ -141,7 +144,7 @@ class OrdersTestCases(BaseTest):
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=row)
         for column in row_data:
-            search_by = row_data[column]
+            search_by = row_data[column].split(',')[0]
             if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[
                 column] == '' or column == 'Time Difference' or row_data[column] == '-':
                 continue
@@ -160,10 +163,9 @@ class OrdersTestCases(BaseTest):
             for search_result in search_results:
                 search_data = self.base_selenium.get_row_cells_dict_related_to_header(
                     search_result)
-                if search_data[column].split(',')[0] == row_data[column].split(',')[0]:
+                if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[0]:
                     break
-            self.assertEqual(row_data[column].split(
-                ',')[0], search_data[column].split(',')[0])
+            self.assertEqual(row_data[column].replace("'", '').split(',')[0], search_data[column].replace("'", '').split(',')[0])
 
     @skip('https://modeso.atlassian.net/browse/LIMS-4766')
     def test06_duplicate_order_one_copy(self):
@@ -193,7 +195,7 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
         # article number
         order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...', '').replace(
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...',                                                                                        '').replace(
                 "'", ''))
 
         # #shipment date
