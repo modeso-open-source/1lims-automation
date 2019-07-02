@@ -36,13 +36,17 @@ class OrdersTestCases(BaseTest):
         self.order_page.click_check_box(source=order_row)
         analysis_number_value = self.base_selenium.get_row_cell_text_related_to_header(
             order_row, 'Analysis No.')
+        order_number = self.base_selenium.get_row_cell_text_related_to_header(order_row, 'Order No.')
         analysis_numbers_list = analysis_number_value.split(',')
+        self.base_selenium.LOGGER.info(' + try to archive order with number : {}'.format(order_number))
         order_deleted = self.order_page.archive_selected_orders(
             check_pop_up=True)
 
         if order_deleted:
+            self.base_selenium.LOGGER.info(' + order number : {} deleted successfully'.format(order_number))
             self.analyses_page.get_analyses_page()
             self.order_page.sleep_medium()
+            self.base_selenium.LOGGER.info(' +search if analysis numbers : {} is active'.format(analysis_numbers_list))
             has_active_analysis = self.analyses_page.search_if_analysis_exist(
                 analysis_numbers_list)
             self.assertEqual(has_active_analysis, False)
@@ -91,16 +95,22 @@ class OrdersTestCases(BaseTest):
         """
         analysis_numbers = []
         self.order_page.sleep_medium()
+        self.base_selenium.LOGGER.info(' + Get Archived orders ')
         self.order_page.get_archived_items()
         self.order_page.sleep_medium()
+        self.base_selenium.LOGGER.info(' + Select Rows ')
         selected_orders, selected_rows = self.order_page.select_random_multiple_table_rows()
         for order in selected_rows:
             analysis_numbers.extend(self.base_selenium.get_row_cell_text_related_to_header(row=order,
                                                                                            column_value='Analysis No.').split(
                 ','))
+        self.base_selenium.LOGGER.info(' + Restore Selected Rows ')
         self.order_page.restore_selected_items()
+        self.base_selenium.LOGGER.info(' + Get Active orders')
         self.order_page.get_active_items()
         for analysis_number in analysis_numbers:
+            self.base_selenium.LOGGER.info(
+                ' + check that order with analysis number =  {} restored successfully'.format(analysis_number))
             self.assertTrue(self.order_page.is_order_exist(
                 value=analysis_number))
 
@@ -129,7 +139,6 @@ class OrdersTestCases(BaseTest):
             analysis_numbers_list)
         self.assertFalse(has_active_analysis, True)
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-4466')
     @parameterized.expand(['True', 'False'])
     def test05_order_search(self, small_letters):
         """
@@ -163,9 +172,11 @@ class OrdersTestCases(BaseTest):
             for search_result in search_results:
                 search_data = self.base_selenium.get_row_cells_dict_related_to_header(
                     search_result)
-                if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[0]:
+                if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[
+                    0]:
                     break
-            self.assertEqual(row_data[column].replace("'", '').split(',')[0], search_data[column].replace("'", '').split(',')[0])
+            self.assertEqual(row_data[column].replace("'", '').split(',')[0],
+                             search_data[column].replace("'", '').split(',')[0])
 
     @skip('https://modeso.atlassian.net/browse/LIMS-4766')
     def test06_duplicate_order_one_copy(self):
@@ -195,7 +206,8 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
         # article number
         order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...',                                                                                        '').replace(
+            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...',
+                                                                                                        '').replace(
                 "'", ''))
 
         # #shipment date
@@ -222,6 +234,8 @@ class OrdersTestCases(BaseTest):
         order_row_from_form_list.append(
             self.order_page.get_test_plan(first_only=False))
         order_row_from_form_list.append(self.order_page.get_departments())
-
+        self.base_selenium.LOGGER.info(
+            ' + compare if data from table : {} is equal data in form {} '.format(order_row_from_table_list,
+                                                                                  order_row_from_form_list))
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
