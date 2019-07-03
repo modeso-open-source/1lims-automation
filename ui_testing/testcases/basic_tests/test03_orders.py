@@ -19,8 +19,7 @@ class OrdersTestCases(BaseTest):
         self.test_plan = TstPlan()
         self.order_page = Order()
         self.analyses_page = Analyses()
-        self.login_page.login(
-            username=self.base_selenium.username, password=self.base_selenium.password)
+        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
 
@@ -80,8 +79,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(' + Get Active orders')
         self.order_page.get_active_items()
         for selected_order_data in selected_orders_data:
-            self.base_selenium.LOGGER.info(
-                ' + Order with analysis number =  {} restored successfully?'.format(selected_order_data['Analysis No.']))
+            self.base_selenium.LOGGER.info(' + Order with analysis number =  {} restored successfully?'.format(
+                selected_order_data['Analysis No.']))
             self.assertTrue(self.order_page.is_order_exist(value=selected_order_data['Analysis No.']))
 
     def test04_deleted_archived_order(self):
@@ -93,20 +92,20 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_archived_items()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-        analysis_numbers_list = self.base_selenium.get_row_cell_text_related_to_header(
-            order_row, 'Analysis No.').split(',')
-        self.base_selenium.LOGGER.info(
-            ' + delete order has number = {}'.format(self.base_selenium.get_row_cell_text_related_to_header(
-                order_row, 'Order No.')))
+
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        analysis_numbers_list = order_data['Analysis No.'].split(',')
+
+        self.base_selenium.LOGGER.info(' + Delete order has number = {}'.format(order_data['Order No.']))
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
+
         self.analyses_page.get_analyses_page()
         self.analyses_page.get_archived_items()
-        self.base_selenium.LOGGER.info(
-            ' + check that analysis numbers {} is deleted successfully'.format(analysis_numbers_list))
-        has_active_analysis = self.analyses_page.search_if_analysis_exist(
-            analysis_numbers_list)
-        self.assertFalse(has_active_analysis, True)
+        self.base_selenium.LOGGER.info(' + Is analysis number {} deleted successfully?'.format(analysis_numbers_list))
+        has_active_analysis = self.analyses_page.search_if_analysis_exist(analysis_numbers_list)
+        self.base_selenium.LOGGER.info(' + {} '.format(has_active_analysis))
+        self.assertFalse(has_active_analysis)
 
     @parameterized.expand(['True', 'False'])
     def test05_order_search(self, small_letters):

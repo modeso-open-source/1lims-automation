@@ -105,19 +105,6 @@ class Order(Orders):
             self.set_test_unit(test_unit=test_unit)
         self.save(save_btn='order:save')
 
-    def get_random_order(self):
-        row = self.get_random_order_row()
-        order_edit_button = self.base_selenium.find_element_in_element(source=row,
-                                                                       destination_element='orders:orders_edit_button')
-        order_edit_button.click()
-        self.sleep_medium()
-
-    def get_random_order_row(self):
-        rows = self.base_selenium.get_table_rows(element='orders:orders_table')
-        row_id = randint(1, len(rows) - 1)
-        row = rows[row_id]
-        return row
-
     def get_last_order_row(self):
         rows = self.result_table()
         return rows[0]

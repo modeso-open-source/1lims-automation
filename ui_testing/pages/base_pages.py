@@ -149,3 +149,13 @@ class BasePages:
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:archive')
         self.confirm_popup()
+
+    def open_random_table_row_page(self, table_element):
+        row = self.get_random_table_row(table_element)
+        self.get_random_x(row=row)
+
+    def get_random_table_row(self, table_element):
+        rows = self.base_selenium.get_table_rows(element=table_element)
+        row_id = randint(0, len(rows) - 2)
+        row = rows[row_id]
+        return row
