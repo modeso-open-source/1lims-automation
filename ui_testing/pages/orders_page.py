@@ -12,7 +12,21 @@ class Orders(BasePages):
 
     def get_random_orders(self):
         row = self.base_selenium.get_table_rows(element='orders:orders_table')
-        self.get_random_x(row=row)
+        row_id = randint(1, len(row) - 1)
+        row = row[row_id]
+        orders_edit_button = self.base_selenium.find_element_in_element(source=row,
+                                                                        destination_element='orders:orders_edit_button')
+        orders_edit_button.click()
+        self.sleep_medium()
+
+
+    #def get_random_orders(self):
+        #row = self.base_selenium.get_table_rows(element='orders:orders_table')
+        #self.get_random_x(row=row)
+        #orders_edit_button = self.base_selenium.find_element_in_element(source=row,
+                                                                        #destination_element='orders:orders_edit_button')
+        #orders_edit_button.click()
+        #self.sleep_medium()
 
     def click_create_order_button(self):
         self.base_selenium.click(element='orders:new_order')

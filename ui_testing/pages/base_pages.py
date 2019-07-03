@@ -117,3 +117,5 @@ class BasePages:
                 x_cell.click()
                 break
         self.sleep_medium()
+
+
