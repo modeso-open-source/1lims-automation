@@ -64,9 +64,9 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:create_copies')
         self.sleep_medium()
 
-    def get_random_order(self):
-        row = self.get_random_order_row()
-        self.get_random_x(row=row)
+    #def get_random_order(self):
+        #row = self.get_random_order_row()
+        #self.get_random_x(row=row)
 
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')
