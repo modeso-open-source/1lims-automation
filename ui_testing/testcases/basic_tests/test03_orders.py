@@ -117,8 +117,7 @@ class OrdersTestCases(BaseTest):
         :return:
         """
         row = self.order_page.get_last_order_row()
-        row_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=row)
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         for column in row_data:
             search_by = row_data[column].split(',')[0]
             if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[
@@ -128,17 +127,15 @@ class OrdersTestCases(BaseTest):
                 search_by = row_data[column].split(' (')[0]
 
             row_data[column] = row_data[column].split(',')[0]
-            self.base_selenium.LOGGER.info(
-                ' + search for {} : {}'.format(column, row_data[column]))
+            self.base_selenium.LOGGER.info(' + search for {} : {}'.format(column, row_data[column]))
             if small_letters == 'True':
                 search_results = self.order_page.search(search_by)
             else:
                 search_results = self.order_page.search(search_by.upper())
-            self.assertGreater(
-                len(search_results), 1, " * There is no search results for it, Report a bug.")
+
+            self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
             for search_result in search_results:
-                search_data = self.base_selenium.get_row_cells_dict_related_to_header(
-                    search_result)
+                search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
                 if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[
                     0]:
                     break
