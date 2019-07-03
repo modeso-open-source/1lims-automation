@@ -30,10 +30,7 @@ class Articles(BasePages):
         self.get_random_x(row=row)
 
     def get_random_article_row(self):
-        rows = self.base_selenium.get_table_rows(element='articles:article_table')
-        row_id = randint(1, len(rows) - 1)
-        row = rows[row_id]
-        return row
+        return self.get_random_table_row(table_element='articles:article_table')
 
     def get_articles_rows_data(self):
         return [row.text for row in self.base_selenium.get_table_rows(element='articles:article_table')]
