@@ -94,7 +94,7 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:departments').split('\n')[0]
 
     def get_no(self):
-            return self.base_selenium.get_value(element="order:no")
+        return self.base_selenium.get_value(element="order:no")
 
     def set_no(self, no):
         self.base_selenium.set_text(element="order:no", value=no)

@@ -4,6 +4,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.order_page import Order
 from parameterized import parameterized
+from unittest import skip
 
 
 class OrdersTestCases(BaseTest):
@@ -17,7 +18,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
 
-    @parameterized.expand(['cancel', 'save'])
+    @skip('https://modeso.atlassian.net/browse/LIMS-4768')
+    @parameterized.expand(['save', 'cancel'])
     def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
@@ -42,7 +44,7 @@ class OrdersTestCases(BaseTest):
         order_no = self.order_page.get_no()
         if 'save' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (new_no) == {} (order_unit)'.format(new_no, order_no))
+                ' + Assert {} (new_no) == {} (order_no)'.format(new_no, order_no))
             self.assertEqual(new_no, order_no)
         else:
             self.base_selenium.LOGGER.info(
