@@ -72,11 +72,6 @@ class Articles(BasePages):
         self.base_selenium.click(element='articles:active')
         self.sleep_small()
 
-    def download_xslx_sheet(self):
-        self.base_selenium.scroll()
-        self.base_selenium.click(element='articles:right_menu')
-        self.article_sheet = self.base_selenium.download_excel_file(element='articles:xslx')
-
     def delete_selected_article(self):
         self.base_selenium.scroll()
         self.base_selenium.click(element='articles:right_menu')

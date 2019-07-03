@@ -149,3 +149,8 @@ class BasePages:
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:archive')
         self.confirm_popup()
+
+    def download_xslx_sheet(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.article_sheet = self.base_selenium.download_excel_file(element='general:xslx')   

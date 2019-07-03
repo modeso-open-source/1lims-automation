@@ -66,6 +66,8 @@ elements = {
                            'value': 'Active'},
                 'delete': {'method': 'link_text',
                            'value': 'Delete'},
+                'xslx': {'method': 'link_text',
+                            'value': 'XSLX'},           
                 },
     'login': {
         'username': {'method': 'name',
@@ -105,8 +107,6 @@ elements = {
                     'value': 'Archive'},
         'active': {'method': 'link_text',
                    'value': 'Active'},
-        'xslx': {'method': 'link_text',
-                 'value': 'XSLX'},
         'restore': {'method': 'link_text',
                     'value': 'Restore'},
         'delete': {'method': 'link_text',
