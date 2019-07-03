@@ -68,7 +68,8 @@ class BasePages:
 
     def filter_by(self, filter_element, filter_text):
         self.open_filter_menu()
-        self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
+        self.base_selenium.select_item_from_drop_down(
+            element=filter_element, item_text=filter_text)
 
     def filter_apply(self):
         self.base_selenium.find_element_in_element(destination_element='article:filter_apply_btn',
@@ -106,7 +107,8 @@ class BasePages:
         return selected_rows_data, selected_rows
 
     def click_check_box(self, source):
-        check_box = self.base_selenium.find_element_in_element(destination_element='general:checkbox', source=source)
+        check_box = self.base_selenium.find_element_in_element(
+            destination_element='general:checkbox', source=source)
         check_box.click()
 
     def get_random_x(self, row):
@@ -118,4 +120,43 @@ class BasePages:
                 break
         self.sleep_medium()
 
+    def get_archived_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:archived')
+        self.sleep_small()
+
+    def get_active_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:active')
+        self.sleep_small()
+
+    def restore_selected_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:restore')
+        self.confirm_popup()
+
+    def delete_selected_item(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:delete')
+        self.confirm_popup()
+
+    def archive_selected_items(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:archive')
+        self.confirm_popup()
+
+    def open_random_table_row_page(self, table_element):
+        row = self.get_random_table_row(table_element)
+        self.get_random_x(row=row)
+
+    def get_random_table_row(self, table_element):
+        rows = self.base_selenium.get_table_rows(element=table_element)
+        row_id = randint(0, len(rows) - 2)
+        row = rows[row_id]
+        return row
 

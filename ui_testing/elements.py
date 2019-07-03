@@ -44,14 +44,28 @@ elements = {
                                 'value': 'span',
                                 'order': 0},
                 'checkbox': {'method': 'class_name',
-                             'value': 'checkbox',
+                             'value': 'm-checkbox',
                              'order': 0},
                 'label': {'method': 'tag_name',
                           'value': 'label',
                           'order': 0},
+                'right_menu': {'method': 'xpath',
+                               'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+                'archive': {'method': 'link_text',
+                            'value': 'Archive'},
+                'alert_confirmation': {'method': 'id',
+                                       'value': 'noty_layout__topCenter'},
                 'table_cells': {'method': 'tag_name',
                                 'value': 'td',
-                                'order': -1}
+                                'order': -1},
+                'archived': {'method': 'link_text',
+                             'value': 'Archived'},
+                'restore': {'method': 'link_text',
+                            'value': 'Restore'},
+                'active': {'method': 'link_text',
+                           'value': 'Active'},
+                'delete': {'method': 'link_text',
+                           'value': 'Delete'},
                 },
     'login': {
         'username': {'method': 'name',
@@ -183,7 +197,21 @@ elements = {
                                'order': 4},
         'new_order': {'method': 'link_text',
                       'value': 'New Order'},
-
+        'right_menu': {'method': 'xpath',
+                       'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+        'archive': {'method': 'link_text',
+                    'value': 'Archive'},
+        'analysis-confirmation': {
+            'method': 'class_name',
+            'value': 'swal2-header'},
+        'duplicate': {'method': 'link_text',
+            'value': 'Duplicate'},
+        'number_of_copies': {'method': 'id' ,
+                            'value': 'numberOfCopies'},
+        'create_copies': {'method': 'id',
+                'value': 'create_copies_id'},
+        'save_order': {'method': 'id',
+                'value': 'button_save_order'}                                  
     },
 
     'order': {
@@ -216,9 +244,6 @@ elements = {
                  'value': 'button_save_order',
                  'order': 1},
 
-        #'cancel': {'method': 'class_name',
-                   #'value': 'btn-secondary',
-                   #'order': 1},
         'no': {'method': 'id',
                 'value': 'orderNoWithYearfield'},
         'cancel': {'method': 'id',
@@ -229,8 +254,13 @@ elements = {
         'ok': {'method': 'class_name',
                    'value': 'swal2-confirm',
                    'order': 0},
-
-
+      
+        #'cancel': {'method': 'class_name',
+                   #'value': 'btn-secondary',
+                   #'order': 1},
+        'order_number': {'method': 'id',
+                        'value': 'orderNoWithYearfield'},
+        'order_number_add_form': {'method': 'id',
+                    'value': 'selectedOrderNofield'},                                                       
     }
-
 }
