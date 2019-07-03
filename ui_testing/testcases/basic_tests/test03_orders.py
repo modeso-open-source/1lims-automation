@@ -18,8 +18,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-4768')
     @parameterized.expand(['save', 'cancel'])
+    @skip('https://modeso.atlassian.net/browse/LIMS-4768')
     def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
@@ -43,12 +43,10 @@ class OrdersTestCases(BaseTest):
 
         order_no = self.order_page.get_no()
         if 'save' == save:
-            self.base_selenium.LOGGER.info(
-                ' + Assert {} (new_no) == {} (order_no)'.format(new_no, order_no))
+            self.base_selenium.LOGGER.info(' + Assert {} (new_no) == {} (order_no)'.format(new_no, order_no))
             self.assertEqual(new_no, order_no)
         else:
-            self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
+            self.base_selenium.LOGGER.info(' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
             self.assertEqual(current_no, order_no)
 
     @parameterized.expand(['save', 'cancel'])
@@ -116,5 +114,6 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(new_departments, order_departments)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_departments) == {} (order_departments)'.format(current_departments, order_departments))
+                ' + Assert {} (current_departments) == {} (order_departments)'.format(current_departments,
+                                                                                      order_departments))
             self.assertEqual(current_departments, order_departments)
