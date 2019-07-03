@@ -126,3 +126,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+// files
+
+ui_testing/1lims-automation/*
