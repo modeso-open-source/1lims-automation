@@ -9,6 +9,7 @@ class Orders(BasePages):
 
     def get_orders_page(self):
         self.base_selenium.get(url=self.orders_url)
+        self.sleep_small()
 
     def get_random_orders(self):
         row = self.base_selenium.get_table_rows(element='orders:orders_table')

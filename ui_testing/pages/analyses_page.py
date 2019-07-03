@@ -8,6 +8,7 @@ class Analyses(BasePages):
 
     def get_analyses_page(self):
         self.base_selenium.get(url=self.analysis_url)
+        self.sleep_small()
 
     def search_by_number_and_archive(self, analysis_numbers_list):
         for analysis_number in analysis_numbers_list:

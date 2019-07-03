@@ -44,7 +44,7 @@ elements = {
                                 'value': 'span',
                                 'order': 0},
                 'checkbox': {'method': 'class_name',
-                             'value': 'checkbox',
+                             'value': 'm-checkbox',
                              'order': 0},
                 'label': {'method': 'tag_name',
                           'value': 'label',

@@ -29,56 +29,33 @@ class OrdersTestCases(BaseTest):
             New: Orders: Archive
             The user cannot archive an order unless all corresponding analysis are archived
             LIMS-3425
-        :return:
-        """
-        self.order_page.sleep_medium()
-        order_row = self.order_page.get_random_order_row()
-        self.order_page.click_check_box(source=order_row)
-        analysis_number_value = self.base_selenium.get_row_cell_text_related_to_header(
-            order_row, 'Analysis No.')
-        order_number = self.base_selenium.get_row_cell_text_related_to_header(order_row, 'Order No.')
-        analysis_numbers_list = analysis_number_value.split(',')
-        self.base_selenium.LOGGER.info(' + try to archive order with number : {}'.format(order_number))
-        order_deleted = self.order_page.archive_selected_orders(
-            check_pop_up=True)
 
-        if order_deleted:
-            self.base_selenium.LOGGER.info(' + order number : {} deleted successfully'.format(order_number))
-            self.analyses_page.get_analyses_page()
-            self.order_page.sleep_medium()
-            self.base_selenium.LOGGER.info(' +search if analysis numbers : {} is active'.format(analysis_numbers_list))
-            has_active_analysis = self.analyses_page.search_if_analysis_exist(
-                analysis_numbers_list)
-            self.assertEqual(has_active_analysis, False)
-
-    def test02_archiveOrder_has_active_analysis(self):
-        """
             New: Archive order has active analysis
             The user cannot archive an order unless all corresponding analysis are archived
             LIMS-4329
         :return:
         """
-        self.order_page.sleep_medium()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
-        analysis_number_value = self.base_selenium.get_row_cell_text_related_to_header(
-            order_row, 'Analysis No.')
-        analysis_numbers_list = analysis_number_value.split(',')
-        self.base_selenium.LOGGER.info(
-            ' + try to archive order with number : {}'.format(self.base_selenium.get_row_cell_text_related_to_header(
-                order_row, 'Order No.')))
-        order_deleted = self.order_page.archive_selected_orders(
-            check_pop_up=True)
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        analysis_numbers_list = order_data['Analysis No.'].split(',')
+        self.base_selenium.LOGGER.info(' + Try to archive order with number : {}'.format(order_data['Order No.']))
+        order_deleted = self.order_page.archive_selected_orders(check_pop_up=True)
+        self.base_selenium.LOGGER.info(' + {} '.format(order_deleted))
 
-        if not order_deleted:
+        if order_deleted:
+            self.base_selenium.LOGGER.info(' + Order number : {} deleted successfully'.format(order_data['Order No.']))
             self.analyses_page.get_analyses_page()
-            self.order_page.sleep_medium()
             self.base_selenium.LOGGER.info(
-                ' + Archive Analysis with numbers : {}'.format(analysis_numbers_list))
-            self.analyses_page.search_by_number_and_archive(
-                analysis_numbers_list)
+                ' + Assert analysis numbers : {} is not active'.format(analysis_numbers_list))
+            has_active_analysis = self.analyses_page.search_if_analysis_exist(analysis_numbers_list)
+            self.base_selenium.LOGGER.info(' + Has activated analysis? : {}.'.format(has_active_analysis))
+            self.assertFalse(has_active_analysis)
+        else:
+            self.analyses_page.get_analyses_page()
+            self.base_selenium.LOGGER.info(' + Archive Analysis with numbers : {}'.format(analysis_numbers_list))
+            self.analyses_page.search_by_number_and_archive(analysis_numbers_list)
             self.order_page.get_orders_page()
-            self.order_page.sleep_medium()
             rows = self.order_page.search(analysis_numbers_list[0])
             self.order_page.click_check_box(source=rows[0])
             self.base_selenium.LOGGER.info(
@@ -87,32 +64,25 @@ class OrdersTestCases(BaseTest):
             rows = self.order_page.result_table()
             self.assertEqual(len(rows), 1)
 
-    def test03_restore(self):
+    def test03_restore_archived_orders(self):
         """
         Restore Order
         I can restore any order successfully
         LIMS-4374
         """
-        analysis_numbers = []
-        self.order_page.sleep_medium()
         self.base_selenium.LOGGER.info(' + Get Archived orders ')
         self.order_page.get_archived_items()
-        self.order_page.sleep_medium()
         self.base_selenium.LOGGER.info(' + Select Rows ')
-        selected_orders, selected_rows = self.order_page.select_random_multiple_table_rows()
-        for order in selected_rows:
-            analysis_numbers.extend(self.base_selenium.get_row_cell_text_related_to_header(row=order,
-                                                                                           column_value='Analysis No.').split(
-                ','))
+        selected_orders_data, _ = self.order_page.select_random_multiple_table_rows()
+
         self.base_selenium.LOGGER.info(' + Restore Selected Rows ')
         self.order_page.restore_selected_items()
         self.base_selenium.LOGGER.info(' + Get Active orders')
         self.order_page.get_active_items()
-        for analysis_number in analysis_numbers:
+        for selected_order_data in selected_orders_data:
             self.base_selenium.LOGGER.info(
-                ' + check that order with analysis number =  {} restored successfully'.format(analysis_number))
-            self.assertTrue(self.order_page.is_order_exist(
-                value=analysis_number))
+                ' + Order with analysis number =  {} restored successfully?'.format(selected_order_data['Analysis No.']))
+            self.assertTrue(self.order_page.is_order_exist(value=selected_order_data['Analysis No.']))
 
     def test04_deleted_archived_order(self):
         """
@@ -120,7 +90,6 @@ class OrdersTestCases(BaseTest):
         The user can hard delete any archived order
         LIMS-3257
         """
-        self.order_page.sleep_medium()
         self.order_page.get_archived_items()
         order_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=order_row)
@@ -148,7 +117,6 @@ class OrdersTestCases(BaseTest):
         LIMS-3061
         :return:
         """
-        self.order_page.sleep_medium()
         row = self.order_page.get_last_order_row()
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=row)
@@ -188,7 +156,6 @@ class OrdersTestCases(BaseTest):
         """
         order_row_from_table_list = []
         order_row_from_form_list = []
-        self.order_page.sleep_medium()
         selected_row = self.order_page.get_random_order_row()
         self.order_page.click_check_box(source=selected_row)
 
