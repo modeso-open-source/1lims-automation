@@ -241,9 +241,8 @@ elements = {
                           'value': 'span',
                           'order': 1},
         'save': {'method': 'id',
-                 'value': 'button_save_order',
-                 'order': 1},
-
+                 'value': 'button_save_order'},
+                 
         'no': {'method': 'id',
                 'value': 'orderNoWithYearfield'},
         'cancel': {'method': 'id',
@@ -269,9 +268,7 @@ elements = {
         'save': {'method': 'class_name',
                  'value': 'btn-primary',
                  'order': 1},
-        'save': {'method': 'class_name',
-                 'value': 'btn-primary',
-                 'order': 1},
+        
         
     }
 }
