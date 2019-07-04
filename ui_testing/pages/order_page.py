@@ -122,3 +122,10 @@ class Order(Orders):
         if departments == 'Search':
             return ''
         return departments
+    
+    def set_departments(self, departments=''):
+        if departments:
+            self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
+        else:
+            self.base_selenium.select_item_from_drop_down(element='order:departments')
+            return self.get_departments()
