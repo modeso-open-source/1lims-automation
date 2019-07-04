@@ -146,4 +146,19 @@ class Order(Orders):
 
     def get_test_date(self):
         return self.base_selenium.get_value(element='order:test_date')
+      
+    def get_departments(self):
+        departments = self.base_selenium.get_text(
+            element='order:departments').split('\n')[0]
+        print(departments)
+        if departments == 'Search':
+            return ''
+        return departments
+    
+    def set_departments(self, departments=''):
+        if departments:
+            self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
+        else:
+            self.base_selenium.select_item_from_drop_down(element='order:departments')
+            return self.get_departments()
 

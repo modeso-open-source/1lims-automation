@@ -89,7 +89,7 @@ class BasePages:
         selected_rows_data = []
         selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
-        no_of_rows = randint(1, 5)
+        no_of_rows = randint(min(1, len(rows)), min(5, len(rows)))
         count = 0
         self.base_selenium.LOGGER.info(' * No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:
