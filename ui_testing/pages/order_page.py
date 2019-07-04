@@ -106,16 +106,6 @@ class Order(Orders):
             self.set_test_unit(test_unit=test_unit)
         self.save(save_btn='order:save')
         
-    def set_departments(self, departments=''):
-        if departments:
-            self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
-        else:
-            self.base_selenium.select_item_from_drop_down(element='order:departments')
-            return self.get_departments()
-
-    def get_departments(self):
-        return self.base_selenium.get_text(element='order:departments').split('\n')[0]
-
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
 
