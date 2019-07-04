@@ -1,5 +1,4 @@
 from ui_testing.pages.orders_page import Orders
-from random import randint
 
 
 class Order(Orders):
@@ -59,9 +58,6 @@ class Order(Orders):
 
 
     def set_test_plan(self, test_plan=''):
-        # test_plan_btn = self.base_selenium.find_element_in_element(destination_element='order:test_plan_btn',
-        #                                                            source_element='order:tests')
-        # test_plan_btn.click()
         if test_plan:
             self.base_selenium.select_item_from_drop_down(
                 element='order:test_plan', item_text=test_plan)
@@ -81,9 +77,6 @@ class Order(Orders):
             return ','.join(test_plans)
 
     def set_test_unit(self, test_unit):
-        # test_unit_btn = self.base_selenium.find_element_in_element(destination_element='order:test_unit_btn',
-        #                                                            source_element='order:tests')
-        # test_unit_btn.click()
         if test_unit:
             self.base_selenium.select_item_from_drop_down(
                 element='order:test_unit', item_text=test_unit)
@@ -154,5 +147,26 @@ class Order(Orders):
         else:
             self.base_selenium.select_item_from_drop_down(element='order:departments')
             return self.get_departments()
+
+    def get_suborder_table(self):
+        self.base_selenium.LOGGER.info(' + Get suborder table list.')
+        self.base_selenium.click(element='order:suborder_list')
+
+    def create_new_suborder(self, **kwargs):
+        self.get_suborder_table()
+        rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
+
+        self.base_selenium.LOGGER.info(' + Add new suborder.')
+        self.base_selenium.click(element='order:add_new_item')
+
+        rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = rows_after[len(rows_before)]
+
+        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row)
+
+        # to b fixed
+        for key in kwargs:
+            # implement method here to do that for drop down and text
+            suborder_elements_dict[key] = kwargs[key]
 
 

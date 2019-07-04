@@ -302,7 +302,7 @@ class OrdersTestCases(BaseTest):
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
 
-    def test07_export_order_sheet(self):
+    def test007_export_order_sheet(self):
         """
         New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
         LIMS-3274
@@ -319,3 +319,18 @@ class OrdersTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
+
+    def test008_user_can_add_suborder(self):
+        """
+        New: Orders: Table view: Suborder Approach: User can add suborder from the main order
+
+        LIMS-3817
+        :return:
+        """
+
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + Order url : {}'.format(order_url))
+
+        self.order_page.create_new_suborder()
+

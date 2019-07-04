@@ -446,11 +446,8 @@ class BaseSelenium:
         :param column_value: table column value
         :return:
         """
-        headers = self.get_table_head_elements(element='general:table')
-        headers_text = [header.text for header in headers]
-        row_cells = self.get_row_cells(row=row)
-        row_text = [cell.text for cell in row_cells]
-        return row_text[headers_text.index(column_value)]
+        row_dict = self.get_row_cells_dict_related_to_header(row=row)
+        return row_dict[column_value]
 
     def get_row_cells_dict_related_to_header(self, row):
         cells_dict = {}
@@ -463,6 +460,17 @@ class BaseSelenium:
             cells_dict[column_value] = row_text[headers_text.index(column_value)]
 
         return cells_dict
+
+    def get_row_cells_elements_related_to_header(self, row):
+        cells_elements = {}
+        headers = self.get_table_head_elements(element='general:table')
+        headers_text = [header.text for header in headers]
+        row_cells = self.get_row_cells(row=row)
+
+        for column_value in headers_text:
+            cells_elements[column_value] = row_cells[headers_text.index(column_value)]
+
+        return cells_elements
 
     def maximize_window(self):
         time.sleep(1)

@@ -59,8 +59,10 @@ class Orders(BasePages):
         self.sleep_medium()
 
     def get_random_order(self):
+        self.base_selenium.LOGGER.info(' * Get random order.')
         row = self.get_random_order_row()
         self.get_random_x(row=row)
+
 
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')

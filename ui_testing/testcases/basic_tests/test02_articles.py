@@ -276,7 +276,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.sleep_small()
 
         self.article_page.filter_by_test_plan(filter_text=self.test_plan.test_plan_name)
-        article = self.article_page.filter_result()[0]
+        article = self.article_page.result_table()[0]
         self.base_selenium.LOGGER.info(' + Assert user could filter with test plan.')
         self.assertIn(self.test_plan.test_plan_name, article.text)
 
