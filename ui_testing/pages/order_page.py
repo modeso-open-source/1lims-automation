@@ -131,12 +131,13 @@ class Order(Orders):
         rows = self.result_table()
         return rows[0]
 
-    def get_shimpment_date(self):
+    def get_shipment_date(self):
         return self.base_selenium.get_value(element='order:shipment_date')
 
     def get_test_date(self):
         return self.base_selenium.get_value(element='order:test_date')
-      
+
+
     def get_departments(self):
         departments = self.base_selenium.get_text(
             element='order:departments').split('\n')[0]
@@ -144,11 +145,15 @@ class Order(Orders):
         if departments == 'Search':
             return ''
         return departments
-    
+
+    def get_department(self):
+        return self.base_selenium.get_text(element='order:departments').split('\n')[0]
+
     def set_departments(self, departments=''):
         if departments:
             self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
         else:
             self.base_selenium.select_item_from_drop_down(element='order:departments')
             return self.get_departments()
+
 
