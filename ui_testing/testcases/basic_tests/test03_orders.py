@@ -55,7 +55,7 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.LOGGER.info(' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
             self.assertEqual(current_no, order_no)
 
-    @parameterized.expand(['save_btn', 'cancel'])
+    @parameterized.expand(['save_btn','cancel'])
     def test002_cancel_button_edit_contact(self, save):
         """
         Orders: In case I update the contact then press on cancel button, a pop up should display with ( ok & cancel )
