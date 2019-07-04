@@ -1,3 +1,4 @@
+
 import re
 from unittest import skip
 
@@ -15,13 +16,113 @@ class OrdersTestCases(BaseTest):
     def setUp(self):
         super().setUp()
         self.login_page = Login()
-        self.article_page = Article()
-        self.test_plan = TstPlan()
         self.order_page = Order()
+        self.test_plan = TstPlan()
+        self.article_page = Article()
         self.analyses_page = Analyses()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
+
+    @parameterized.expand(['save_btn', 'cancel'])
+    @skip('https://modeso.atlassian.net/browse/LIMS-4768')
+    def test001_cancel_button_edit_no(self, save):
+        """
+        New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
+        a pop up will appear that the data will be
+
+        LIMS-5241
+        :return:
+        """
+        self.order_page.get_random_orders()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        current_no = self.order_page.get_no()
+        new_no = self.generate_random_string()
+        self.order_page.set_no(new_no)
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True)
+
+        self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
+
+        order_no = self.order_page.get_no()
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(' + Assert {} (new_no) == {} (order_no)'.format(new_no, order_no))
+            self.assertEqual(new_no, order_no)
+        else:
+            self.base_selenium.LOGGER.info(' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
+            self.assertEqual(current_no, order_no)
+
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test002_cancel_button_edit_contact(self, save):
+        """
+        Orders: In case I update the contact then press on cancel button, a pop up should display with ( ok & cancel )
+        buttons and when I press on cancel button, this update shouldn't submit
+
+        LIMS-4764
+        LIMS-4764
+        :return:
+        """
+        self.order_page.get_random_orders()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        self.order_page.sleep_tiny()
+        current_contact = self.order_page.get_contact()
+        self.order_page.set_contact()
+        new_contact = self.order_page.get_contact()
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True)
+
+        self.base_selenium.get(url=order_url, sleep=5)
+
+        order_contact = self.order_page.get_contact()
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (new_contact) == {} (order_contact)'.format(new_contact, order_contact))
+            self.assertEqual(new_contact, order_contact)
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_contact) == {} (order_contact)'.format(current_contact, order_contact))
+            self.assertEqual(current_contact, order_contact)
+
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test003_cancel_button_edit_departments(self, save):
+        """
+        Orders: department Approach: In case I update the department then press on save button ( the department updated successfully) &
+        when I press on cancel button ( this department not updated )
+
+        LIMS-4765
+        LIMS-4765
+        :return:
+        """
+        self.order_page.get_random_orders()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        self.order_page.sleep_tiny()
+        current_departments = self.order_page.get_department()
+        self.order_page.set_departments()
+        new_departments = self.order_page.get_department()
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True)
+
+        self.base_selenium.get(url=order_url, sleep=5)
+
+        order_departments = self.order_page.get_department()
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (new_departments) == {} (order_departments)'.format(new_departments, order_departments))
+            self.assertEqual(new_departments, order_departments)
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_departments) == {} (order_departments)'.format(current_departments,
+                                                                                      order_departments))
+            self.assertEqual(current_departments, order_departments)
 
     def test01_archive_order(self):
         """
@@ -202,3 +303,4 @@ class OrdersTestCases(BaseTest):
                                                                                   order_row_from_form_list))
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
+

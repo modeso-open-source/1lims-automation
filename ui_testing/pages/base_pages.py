@@ -159,3 +159,4 @@ class BasePages:
         row_id = randint(0, len(rows) - 2)
         row = rows[row_id]
         return row
+

@@ -211,7 +211,7 @@ elements = {
         'create_copies': {'method': 'id',
                 'value': 'create_copies_id'},
         'save_order': {'method': 'id',
-                'value': 'button_save_order'}                                  
+                'value': 'button_save_order'}
     },
 
     'order': {
@@ -221,6 +221,9 @@ elements = {
                           'value': '//*[@id="materialTypefield"]'},
         'article': {'method': 'css_selector',
                     'value': '#articlefield > div'},
+        'departments': {'method': 'id',
+                    'value': 'departments'},
+
         'contact': {'method': 'id',
                     'value': 'contactfield'},
         'tests': {'method': 'id',
@@ -233,21 +236,37 @@ elements = {
         'test_unit_btn': {'method': 'tag_name',
                           'value': 'span',
                           'order': 1},
-        'save': {'method': 'class_name',
-                 'value': 'btn-primary',
-                 'order': 1},
+
+        'save_btn': {'method': 'id',
+                 'value': 'button_save_order'},
+
+        'no': {'method': 'id',
+                'value': 'orderNoWithYearfield'},
+        'cancel': {'method': 'id',
+                'value': 'button_cancel_order'},
+
+        'cancel_button': {'method': 'class_name',
+                   'value': 'swal2-cancel',
+                   'order': 0},
+        'ok': {'method': 'class_name',
+                   'value': 'swal2-confirm',
+                   'order': 0},
+
         'cancel': {'method': 'class_name',
                    'value': 'btn-secondary',
                    'order': 1},
+
         'order_number': {'method': 'id',
                         'value': 'orderNoWithYearfield'},
         'order_number_add_form': {'method': 'id',
-                    'value': 'selectedOrderNofield'},
+                    'value': 'selectedOrderNofield'},  
         'shipment_date': {'method': 'id',
                     'value': 'date_shipmentDate'},
         'test_date': {'method': 'id',
                     'value': 'date_testDate'},
-        'departments': {'method': 'id',
-                    'value': 'departments'}                                                           
+        'save': {'method': 'class_name',
+                 'value': 'btn-primary',
+                 'order': 1},
+
     }
 }

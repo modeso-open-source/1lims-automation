@@ -57,6 +57,7 @@ class Order(Orders):
     def get_contact(self):
         return self.base_selenium.get_text(element='order:contact').split('\n')[0]
 
+
     def set_test_plan(self, test_plan=''):
         # test_plan_btn = self.base_selenium.find_element_in_element(destination_element='order:test_plan_btn',
         #                                                            source_element='order:tests')
@@ -104,16 +105,38 @@ class Order(Orders):
         elif test_unit:
             self.set_test_unit(test_unit=test_unit)
         self.save(save_btn='order:save')
+        
+    def get_no(self):
+        return self.base_selenium.get_value(element="order:no")
+
+    def set_no(self, no):
+        self.base_selenium.set_text(element="order:no", value=no)
+
+    def edit_random_order(self, edit_method, edit_value, save=True):
+        if 'contact' in edit_method:
+            self.set_contact(edit_value)
+        elif 'departments' in edit_method:
+            self.set_departments(edit_value)
+        # elif 'contact' in edit_method:
+        # self.set_contact(edit_value)
+        # elif '' in edit_method:
+        # self.set_contact(edit_value)
+
+        if save:
+            self.save()
+        else:
+            self.cancel()
 
     def get_last_order_row(self):
         rows = self.result_table()
         return rows[0]
 
-    def get_shimpment_date(self):
+    def get_shipment_date(self):
         return self.base_selenium.get_value(element='order:shipment_date')
 
     def get_test_date(self):
         return self.base_selenium.get_value(element='order:test_date')
+
 
     def get_departments(self):
         departments = self.base_selenium.get_text(
@@ -122,10 +145,15 @@ class Order(Orders):
         if departments == 'Search':
             return ''
         return departments
-    
+
+    def get_department(self):
+        return self.base_selenium.get_text(element='order:departments').split('\n')[0]
+
     def set_departments(self, departments=''):
         if departments:
             self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
         else:
             self.base_selenium.select_item_from_drop_down(element='order:departments')
             return self.get_departments()
+
+
