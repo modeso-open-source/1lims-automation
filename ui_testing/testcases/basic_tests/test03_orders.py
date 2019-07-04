@@ -24,7 +24,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
 
-    @parameterized.expand(['save_btn', 'cancel'])
+    @parameterized.expand(['save_btn','cancel'])
     @skip('https://modeso.atlassian.net/browse/LIMS-4768')
     def test001_cancel_button_edit_no(self, save):
         """
@@ -89,7 +89,7 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_contact) == {} (order_contact)'.format(current_contact, order_contact))
             self.assertEqual(current_contact, order_contact)
 
-    @parameterized.expand(['save_btn', 'cancel'])
+    @parameterized.expand(['save_btn','cancel'])
     def test003_cancel_button_edit_departments(self, save):
         """
         Orders: department Approach: In case I update the department then press on save button ( the department updated successfully) &
