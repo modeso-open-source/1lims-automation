@@ -255,12 +255,23 @@ elements = {
                    'value': 'swal2-confirm',
                    'order': 0},
       
-        #'cancel': {'method': 'class_name',
-                   #'value': 'btn-secondary',
-                   #'order': 1},
+        'cancel': {'method': 'class_name',
+                   'value': 'btn-secondary',
+                   'order': 1},
         'order_number': {'method': 'id',
                         'value': 'orderNoWithYearfield'},
         'order_number_add_form': {'method': 'id',
-                    'value': 'selectedOrderNofield'},                                                       
+                    'value': 'selectedOrderNofield'},  
+        'shipment_date': {'method': 'id',
+                    'value': 'date_shipmentDate'},
+        'test_date': {'method': 'id',
+                    'value': 'date_testDate'},
+        'save': {'method': 'class_name',
+                 'value': 'btn-primary',
+                 'order': 1},
+        'save': {'method': 'class_name',
+                 'value': 'btn-primary',
+                 'order': 1},
+        
     }
 }
