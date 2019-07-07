@@ -8,6 +8,7 @@ from ui_testing.pages.analyses_page import Analyses
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.order_page import Order
+from  ui_testing.pages.orders_page import Orders
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.testcases.base_test import BaseTest
 
@@ -20,6 +21,7 @@ class OrdersTestCases(BaseTest):
         self.test_plan = TstPlan()
         self.article_page = Article()
         self.analyses_page = Analyses()
+        self.orders_page = Orders()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
@@ -303,4 +305,30 @@ class OrdersTestCases(BaseTest):
                                                                                   order_row_from_form_list))
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
+
+    @parameterized.expand(['True', 'False'])
+    def test07_update_order_number(self):
+        """
+        New: Orders: Table: Update order number Approach:
+        When I update order number all suborders inside it updated it's order number, 
+        and also in the analysis section.
+
+        LIMS-4270
+        """
+
+        self.order_page.create_new_order()
+        self.order_page.sleep_medium()
+        self.orders_page.get_specific_order_by_index(index=0)
+        self.order_page.sleep_medium()
+        order_no = self.order_page.get_order_number()
+        self.order_page.change_view()
+        self.order_page.sleep_medium()
+        self.order_page.duplicate_from_table_view(number_of_duplicates=5)
+        self.order_page.save(save_btn='order:save_btn')
+        self.order_page.get_orders_page()
+        
+
+
+
+
 

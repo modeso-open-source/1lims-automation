@@ -64,3 +64,12 @@ class Orders(BasePages):
 
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')
+
+    def get_specific_order_by_index(self, index):
+        return self.get_random_x(row=index)
+
+    def filter_by_order_no(self, filter_text):
+        self.base_selenium.LOGGER.info(' + Filter by order no. : {}'.format(filter_text))
+        self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
+        self.filter_apply()
+

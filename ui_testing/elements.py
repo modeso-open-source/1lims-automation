@@ -37,6 +37,12 @@ elements = {
                 'filter': {'method': 'tag_name',
                            'value': 'span',
                            'order': 0},
+                'filter_apply_btn': {'method': 'class_name',
+                             'value': 'btn-primary',
+                             'order': 0},
+                'filter_reset_btn': {'method': 'class_name',
+                             'value': 'btn-secondary',
+                             'order': 1},
                 'ng_values': {'method': 'class_name',
                               'value': 'ng-value',
                               'order': -1},
@@ -211,7 +217,9 @@ elements = {
         'create_copies': {'method': 'id',
                 'value': 'create_copies_id'},
         'save_order': {'method': 'id',
-                'value': 'button_save_order'}
+                'value': 'button_save_order'},
+        'filter_order_no': {'method': 'id',
+                            'value': 'orderNofield'}
     },
 
     'order': {
@@ -267,6 +275,14 @@ elements = {
         'save': {'method': 'class_name',
                  'value': 'btn-primary',
                  'order': 1},
+        'duplicate_table_view': {'method': 'id',
+                                 'value':'duplicate_table_view'},
+        'delete_table_view': {'method': 'id',
+                              'value': 'delete_table_view'},
+        'change_view': {'method': 'class_name',
+                'value': 'icon-views',
+                'order': 0
+                }
 
     }
 }

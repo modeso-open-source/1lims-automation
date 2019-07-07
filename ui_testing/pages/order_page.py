@@ -156,4 +156,10 @@ class Order(Orders):
             self.base_selenium.select_item_from_drop_down(element='order:departments')
             return self.get_departments()
 
+    def change_view(self):
+        self.base_selenium.click(element='order:change_view')
 
+    def duplicate_from_table_view(self, number_of_duplicates):
+        for duplicate in range(number_of_duplicates):
+            self.base_selenium.click(element='order:duplicate_table_view')    
+        
