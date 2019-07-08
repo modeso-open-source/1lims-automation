@@ -1,23 +1,12 @@
-
 import re
 from unittest import skip
 from parameterized import parameterized
-from ui_testing.pages.analyses_page import Analyses
-from ui_testing.pages.article_page import Article
-from ui_testing.pages.login_page import Login
-from ui_testing.pages.order_page import Order
-from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.testcases.base_test import BaseTest
 
 
 class OrdersTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-        self.login_page = Login()
-        self.order_page = Order()
-        self.test_plan = TstPlan()
-        self.article_page = Article()
-        self.analyses_page = Analyses()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
@@ -327,7 +316,9 @@ class OrdersTestCases(BaseTest):
         LIMS-3817
         :return:
         """
+        test_plan_dict = self.get_active_article_with_test_plane(test_plan_status='complete')
 
+        self.order_page.get_orders_page()
         order_row = self.order_page.get_random_order_row()
         order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
         orders_duplicate_data_before, orders = self.order_page.get_orders_duplicate_data(order_no=order_data['Order No.'])
@@ -338,7 +329,9 @@ class OrdersTestCases(BaseTest):
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + Order url : {}'.format(order_url))
 
-        self.order_page.create_new_suborder()
+        self.order_page.create_new_suborder(material_type=test_plan_dict['Material Type'],
+                                            article_name=test_plan_dict['Article Name'],
+                                            test_plan=test_plan_dict['Test Plan Name'])
         self.order_page.save(save_btn='order:save_btn')
 
         self.order_page.get_orders_page()
@@ -347,8 +340,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(' + Assert there is a new suborder with the same order no.')
         self.assertEqual(len(orders_duplicate_data_before), len(orders_duplicate_data_after)-1)
 
-        self.base_selenium.LOGGER.info(' + Assert There is an analysis for this new suborder.')
         self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info(' + Assert There is an analysis for this new suborder.')
         orders_analyess = self.analyses_page.search(order_data['Order No.'])
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyess[0])
         self.assertEqual(orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])

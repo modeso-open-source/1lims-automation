@@ -10,13 +10,9 @@ import re
 class ArticlesTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-        self.login_page = Login()
-        self.article_page = Article()
-        self.test_plan = TstPlan()
-        self.order = Order()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
-        self.article_page.get_article_page()
+        self.article_page.get_articles_page()
 
     @parameterized.expand(['save', 'cancel'])
     def test001_cancel_button_edit_unit(self, save):
@@ -246,7 +242,7 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name)
-        self.article_page.get_article_page()
+        self.article_page.get_articles_page()
         self.article_page.sleep_small()
         article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
         self.assertIn(self.test_plan.test_plan_name, article.text)
@@ -257,7 +253,7 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.clear_article()
         self.test_plan.set_article(article='All')
         self.test_plan.save()
-        self.article_page.get_article_page()
+        self.article_page.get_articles_page()
         article = self.article_page.search(self.article_page.article_name)[0]
         self.assertNotIn(self.test_plan.test_plan_name, article.text)
 
@@ -272,7 +268,7 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name)
-        self.article_page.get_article_page()
+        self.article_page.get_articles_page()
         self.article_page.sleep_small()
 
         self.article_page.filter_by_test_plan(filter_text=self.test_plan.test_plan_name)
@@ -293,7 +289,7 @@ class ArticlesTestCases(BaseTest):
         for article in selected_articles_data:
             article_name = article['Article Name']
             self.base_selenium.LOGGER.info(' + {} article should be activated.'.format(article_name))
-            self.assertTrue(self.article_page.is_article_archived(value=article_name))
+            self.assertTrue(self.article_page.is_article_in_table(value=article_name))
 
     def test012_restore_articles(self):
         """
@@ -311,7 +307,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.restore_selected_articles()
         self.article_page.get_active_articles()
         for article_name in article_names:
-            self.assertTrue(self.article_page.is_article_archived(value=article_name))
+            self.assertTrue(self.article_page.is_article_in_table(value=article_name))
 
     def test013_create_new_material_type(self):
         """
@@ -383,7 +379,7 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name)
-        self.article_page.get_article_page()
+        self.article_page.get_articles_page()
         self.article_page.sleep_small()
         article = self.article_page.search(value=self.test_plan.test_plan_name)[0]
 
@@ -418,7 +414,7 @@ class ArticlesTestCases(BaseTest):
                                     material_type=self.article_page.article_material_type,
                                     test_plan=self.test_plan.test_plan_name)
 
-        self.article_page.get_article_page()
+        self.article_page.get_articles_page()
         self.article_page.sleep_small()
         self.base_selenium.LOGGER.info(
             ' + Search for active article with {} test plan.'.format(self.test_plan.test_plan_name))

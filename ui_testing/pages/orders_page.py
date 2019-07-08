@@ -65,7 +65,7 @@ class Orders(BasePages):
 
     def get_orders_duplicate_data(self, order_no):
         self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
-        orders = self.search(order_no)
-        orders_data = [self.base_selenium.get_row_cells_dict_related_to_header(order) for order in orders[:-1]]
+        orders = self.search(order_no)[:-1]
+        orders_data = [self.base_selenium.get_row_cells_dict_related_to_header(order) for order in orders]
         self.base_selenium.LOGGER.info(' + {} duplicate orders.'.format(len(orders)))
         return orders_data, orders

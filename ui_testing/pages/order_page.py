@@ -150,7 +150,7 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' + Get suborder table list.')
         self.base_selenium.click(element='order:suborder_list')
 
-    def create_new_suborder(self, **kwargs):
+    def create_new_suborder(self, material_type='', article_name='', test_plan='', **kwargs):
         self.get_suborder_table()
         rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
 
@@ -162,25 +162,17 @@ class Order(Orders):
 
         suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
                                                                                              table_element='order:suborder_table')
+        self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'], item_text=material_type)
+        self.base_selenium.LOGGER.info(' + Set article name : {}'.format(article_name))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=article_name)
+        self.base_selenium.LOGGER.info(' + Set test plan : {}'.format(test_plan))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=test_plan)
 
         for key in kwargs:
             if key in suborder_elements_dict.keys():
                 self.base_selenium.update_item_value(item=suborder_elements_dict[key], item_text=kwargs[key])
             else:
-                self.base_selenium.LOGGER.info(' {} is not a header element!'.format(key))
-                self.base_selenium.LOGGER.info(' Header keys : {}'.format(suborder_elements_dict.keys()))
-
-        # Make sure all major elements have an element
-        self.base_selenium.LOGGER.info(' + Get main suborder data.')
-        main_suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows_before[0],
-                                                                                     table_element='order:suborder_table')
-        for key in main_suborder_data:
-            main_suborder_data[key] = main_suborder_data[key].replace('× ', '').replace('\n', '').replace('×', '')
-
-        for key in suborder_elements_dict:
-            if '*' in key and key not in kwargs.keys():  # Have to choose random option
-                tmp_dat = main_suborder_data[key][:10]
-                self.base_selenium.LOGGER.info(' + set {} : {}... '.format(key, tmp_dat))
-                self.base_selenium.update_item_value(item=suborder_elements_dict[key], item_text=tmp_dat)
-
+                self.base_selenium.LOGGER.info(' + {} is not a header element!'.format(key))
+                self.base_selenium.LOGGER.info(' + Header keys : {}'.format(suborder_elements_dict.keys()))
 
