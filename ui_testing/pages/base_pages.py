@@ -23,11 +23,7 @@ class BasePages:
         return self.result_table()
 
     def result_table(self):
-        rows = self.base_selenium.get_table_rows(element='general:table')
-        if len(rows) > 0:
-            return rows
-        else:
-            return []
+        return self.base_selenium.get_table_rows(element='general:table')
 
     def clear_search(self):
         self.base_selenium.clear_element_text(element='general:search')
@@ -45,6 +41,7 @@ class BasePages:
         time.sleep(self.base_selenium.TIME_LARGE)
 
     def save(self, sleep=True, save_btn='general:save'):
+        self.base_selenium.LOGGER.info(' + Save the changes.')
         self.base_selenium.click(element=save_btn)
         if sleep:
             time.sleep(self.base_selenium.TIME_MEDIUM)
@@ -82,9 +79,6 @@ class BasePages:
         self.base_selenium.find_element_in_element(destination_element='article:filter_reset_btn',
                                                    source_element='article:filter_actions').click()
         time.sleep(self.base_selenium.TIME_SMALL)
-
-    def filter_result(self):
-        return self.result_table()
 
     def select_random_multiple_table_rows(self, element='general:table'):
         _selected_rows_text = []

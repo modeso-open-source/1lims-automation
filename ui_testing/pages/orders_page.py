@@ -11,10 +11,6 @@ class Orders(BasePages):
         self.base_selenium.get(url=self.orders_url)
         self.sleep_small()
 
-    def get_random_orders(self):
-        row = self.base_selenium.get_table_rows(element='orders:orders_table')
-        self.get_random_x(row=row)
-
     def click_create_order_button(self):
         self.base_selenium.click(element='orders:new_order')
         self.sleep_small()
@@ -59,8 +55,10 @@ class Orders(BasePages):
         self.sleep_medium()
 
     def get_random_order(self):
+        self.base_selenium.LOGGER.info(' + Get random order.')
         row = self.get_random_order_row()
         self.get_random_x(row=row)
+        return self.base_selenium.get_row_cells_dict_related_to_header(row=row)
 
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')
@@ -70,3 +68,10 @@ class Orders(BasePages):
         self.base_selenium.LOGGER.info(' + Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, type='text')
         self.filter_apply()
+        
+    def get_orders_duplicate_data(self, order_no):
+        self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
+        orders = self.search(order_no)[:-1]
+        orders_data = [self.base_selenium.get_row_cells_dict_related_to_header(order) for order in orders]
+        self.base_selenium.LOGGER.info(' + {} duplicate orders.'.format(len(orders)))
+        return orders_data, orders
