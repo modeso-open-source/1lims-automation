@@ -150,6 +150,17 @@ class BasePages:
         self.base_selenium.click(element='general:archive')
         self.confirm_popup()
 
+    def download_xslx_sheet(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.sheet = self.base_selenium.download_excel_file(element='general:xslx')
+
+    def select_all_records(self):
+        header_row = self.base_selenium.get_table_head_elements(element='general:table')
+        self.click_check_box(source=header_row[0])
+
+    def get_table_rows_data(self):
+        return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]                      
     def open_random_table_row_page(self, table_element):
         row = self.get_random_table_row(table_element)
         self.get_random_x(row=row)

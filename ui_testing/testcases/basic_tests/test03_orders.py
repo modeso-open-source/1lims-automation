@@ -1,9 +1,7 @@
 
 import re
 from unittest import skip
-
 from parameterized import parameterized
-
 from ui_testing.pages.analyses_page import Analyses
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
@@ -27,7 +25,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
 
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
+    # @skip('https://modeso.atlassian.net/browse//LIMS-4768')
     def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
@@ -305,27 +303,44 @@ class OrdersTestCases(BaseTest):
                                                                                   order_row_from_form_list))
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
+        
+    def test07_export_order_sheet(self):
+        """
+        New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
+        LIMS-3274
+        :return:
+        """
+        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
+        self.order_page.select_all_records()
+        self.order_page.download_xslx_sheet()
+        rows_data = self.order_page.get_table_rows_data()
+        for index in range(len(rows_data)-1):
+            self.base_selenium.LOGGER.info(' * Comparing the order no. {} '.format(index+1))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.order_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                self.assertIn(item, fixed_sheet_row_data)
 
     def test07_update_order_number(self):
-        """
-        New: Orders: Table: Update order number Approach:
-        When I update order number all suborders inside it updated it's order number, 
-        and also in the analysis section.
+            """
+            New: Orders: Table: Update order number Approach:
+            When I update order number all suborders inside it updated it's order number, 
+            and also in the analysis section.
 
-        LIMS-4270
-        """
+            LIMS-4270
+            """
 
-        # self.order_page.create_new_order()
-        self.order_page.get_random_orders()
-        # self.order_page.sleep_medium()
-        order_no = self.order_page.get_order_number()
-        # self.order_page.change_view()
-        # new_no = self.generate_random_string()
-        # self.order_page.set_new_order()
-        self.order_page.change_view()
-        self.order_page.sleep_medium()
-        self.order_page.duplicate_from_table_view(number_of_duplicates=5)
-        self.order_page.save(save_btn='order:save_btn')
-        self.order_page.get_orders_page()
-        self.orders_page.filter_by_order_no(filter_text=order_no)
-        
+            # self.order_page.create_new_order()
+            self.order_page.get_random_orders()
+            # self.order_page.sleep_medium()
+            order_no = self.order_page.get_order_number()
+            # self.order_page.change_view()
+            # new_no = self.generate_random_string()
+            # self.order_page.set_new_order()
+            self.order_page.change_view()
+            self.order_page.sleep_medium()
+            self.order_page.duplicate_from_table_view(number_of_duplicates=5)
+            self.order_page.save(save_btn='order:save_btn')
+            self.order_page.get_orders_page()
+            self.orders_page.filter_by_order_no(filter_text=order_no)
