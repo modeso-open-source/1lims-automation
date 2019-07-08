@@ -1,5 +1,4 @@
 from ui_testing.pages.orders_page import Orders
-from random import randint
 
 
 class Order(Orders):
@@ -57,11 +56,7 @@ class Order(Orders):
     def get_contact(self):
         return self.base_selenium.get_text(element='order:contact').split('\n')[0]
 
-
     def set_test_plan(self, test_plan=''):
-        # test_plan_btn = self.base_selenium.find_element_in_element(destination_element='order:test_plan_btn',
-        #                                                            source_element='order:tests')
-        # test_plan_btn.click()
         if test_plan:
             self.base_selenium.select_item_from_drop_down(
                 element='order:test_plan', item_text=test_plan)
@@ -81,9 +76,6 @@ class Order(Orders):
             return ','.join(test_plans)
 
     def set_test_unit(self, test_unit):
-        # test_unit_btn = self.base_selenium.find_element_in_element(destination_element='order:test_unit_btn',
-        #                                                            source_element='order:tests')
-        # test_unit_btn.click()
         if test_unit:
             self.base_selenium.select_item_from_drop_down(
                 element='order:test_unit', item_text=test_unit)
@@ -105,7 +97,7 @@ class Order(Orders):
         elif test_unit:
             self.set_test_unit(test_unit=test_unit)
         self.save(save_btn='order:save')
-        
+
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
 
@@ -137,7 +129,6 @@ class Order(Orders):
     def get_test_date(self):
         return self.base_selenium.get_value(element='order:test_date')
 
-
     def get_departments(self):
         departments = self.base_selenium.get_text(
             element='order:departments').split('\n')[0]
@@ -155,4 +146,33 @@ class Order(Orders):
             self.base_selenium.select_item_from_drop_down(element='order:departments')
             return self.get_departments()
 
+    def get_suborder_table(self):
+        self.base_selenium.LOGGER.info(' + Get suborder table list.')
+        self.base_selenium.click(element='order:suborder_list')
+
+    def create_new_suborder(self, material_type='', article_name='', test_plan='', **kwargs):
+        self.get_suborder_table()
+        rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
+
+        self.base_selenium.LOGGER.info(' + Add new suborder.')
+        self.base_selenium.click(element='order:add_new_item')
+
+        rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = rows_after[len(rows_before)]
+
+        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
+                                                                                             table_element='order:suborder_table')
+        self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'], item_text=material_type)
+        self.base_selenium.LOGGER.info(' + Set article name : {}'.format(article_name))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=article_name)
+        self.base_selenium.LOGGER.info(' + Set test plan : {}'.format(test_plan))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=test_plan)
+
+        for key in kwargs:
+            if key in suborder_elements_dict.keys():
+                self.base_selenium.update_item_value(item=suborder_elements_dict[key], item_text=kwargs[key])
+            else:
+                self.base_selenium.LOGGER.info(' + {} is not a header element!'.format(key))
+                self.base_selenium.LOGGER.info(' + Header keys : {}'.format(suborder_elements_dict.keys()))
 

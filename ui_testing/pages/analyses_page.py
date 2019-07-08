@@ -7,6 +7,7 @@ class Analyses(BasePages):
         self.analysis_url = "{}analysis".format(self.base_selenium.url)
 
     def get_analyses_page(self):
+        self.base_selenium.LOGGER.info(' + Get analyses page.')
         self.base_selenium.get(url=self.analysis_url)
         self.sleep_small()
 

@@ -1,23 +1,12 @@
-
 import re
 from unittest import skip
 from parameterized import parameterized
-from ui_testing.pages.analyses_page import Analyses
-from ui_testing.pages.article_page import Article
-from ui_testing.pages.login_page import Login
-from ui_testing.pages.order_page import Order
-from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.testcases.base_test import BaseTest
 
 
 class OrdersTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-        self.login_page = Login()
-        self.order_page = Order()
-        self.test_plan = TstPlan()
-        self.article_page = Article()
-        self.analyses_page = Analyses()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
@@ -32,7 +21,7 @@ class OrdersTestCases(BaseTest):
         LIMS-5241
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         current_no = self.order_page.get_no()
@@ -63,7 +52,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4764
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
@@ -97,7 +86,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4765
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
@@ -302,7 +291,7 @@ class OrdersTestCases(BaseTest):
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
 
-    def test07_export_order_sheet(self):
+    def test007_export_order_sheet(self):
         """
         New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
         LIMS-3274
@@ -319,3 +308,41 @@ class OrdersTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
+
+    def test008_user_can_add_suborder(self):
+        """
+        New: Orders: Table view: Suborder Approach: User can add suborder from the main order
+
+        LIMS-3817
+        :return:
+        """
+        test_plan_dict = self.get_active_article_with_test_plane(test_plan_status='complete')
+
+        self.order_page.get_orders_page()
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        orders_duplicate_data_before, orders = self.order_page.get_orders_duplicate_data(order_no=order_data['Order No.'])
+
+        self.base_selenium.LOGGER.info(' + Select random order with {} no.'.format(order_data['Order No.']))
+        self.order_page.get_random_x(orders[0])
+
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + Order url : {}'.format(order_url))
+
+        self.order_page.create_new_suborder(material_type=test_plan_dict['Material Type'],
+                                            article_name=test_plan_dict['Article Name'],
+                                            test_plan=test_plan_dict['Test Plan Name'])
+        self.order_page.save(save_btn='order:save_btn')
+
+        self.order_page.get_orders_page()
+        orders_duplicate_data_after, _ = self.order_page.get_orders_duplicate_data(order_no=order_data['Order No.'])
+
+        self.base_selenium.LOGGER.info(' + Assert there is a new suborder with the same order no.')
+        self.assertEqual(len(orders_duplicate_data_before), len(orders_duplicate_data_after)-1)
+
+        self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info(' + Assert There is an analysis for this new suborder.')
+        orders_analyess = self.analyses_page.search(order_data['Order No.'])
+        latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyess[0])
+        self.assertEqual(orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
+
