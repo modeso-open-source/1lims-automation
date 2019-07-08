@@ -317,14 +317,26 @@ class BaseSelenium:
 
     def select_item_from_drop_down(self, element='', element_source='', item_text='', avoid_duplicate=False,
                                    options_element='general:drop_down_options'):
-        #element should refer to ng-select tag
+        """
+
+        :param element: element refer to ng-select dom item.
+        :param element_source:  dom item.
+        :param item_text:
+        :param avoid_duplicate:
+        :param options_element:
+        :return:
+        """
         if element:
             if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
                 self.LOGGER.info(' * Drop-down is disabled')
                 return
 
         if item_text:
-            input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
+            if element:
+                input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
+            else: # if element_source
+                input_element = self.find_element_in_element(destination_element='general:input',
+                                                             source=element_source)
             input_element.send_keys(item_text)
         else:
             if element_source:
@@ -365,6 +377,30 @@ class BaseSelenium:
             if count == 1:
                 result.append(index)
         return result
+
+    def _is_item_a_drop_down(self, item):
+        """
+        item: dom element
+        :return: True if the item is a drop down, False if it is not.
+        """
+        if item.find_element_by_tag_name('input').get_attribute('role') == 'combobox':
+            return True
+        else:
+            return False
+
+    def update_item_value(self, item, item_text=''):
+        """
+        If the item is drop down, it Will try to select item text to be it's value.
+        If not and it has an input field, then it will update this input field.
+        :param item:
+        :param item_text:
+        :return:
+        """
+        if self._is_item_a_drop_down(item):
+            self.select_item_from_drop_down(element_source=item, item_text=item_text)
+        else:
+            input_item = self.find_element_in_element(source=item, destination_element='general:input')
+            input_item.send_keys(item_text)
 
     def set_text_in_drop_down(self, ng_select_element, text, input_element='general:input', confirm_button='general:drop_down_options'):
         input_field = self.find_element_in_element(destination_element=input_element, source_element=ng_select_element)
@@ -424,19 +460,17 @@ class BaseSelenium:
             return cells
         except:
             self.LOGGER.exception(" Can't get the row cells")
-            return False
+            return []
 
     def get_table_head_elements(self, element):
-        # This method return a table head elements.
-        for _ in range(10):
-            try:
-                table = self.find_element(element)
-                thead = table.find_elements_by_tag_name('thead')
-                thead_row = thead[0].find_elements_by_tag_name('tr')
-                return thead_row[0].find_elements_by_tag_name('th')
-            except:
-                time.sleep(0.5)
-        else:
+        try:
+            table = self.find_element(element)
+            thead = table.find_elements_by_tag_name('thead')
+            #thead_row = thead[0].find_elements_by_tag_name('tr')
+            #return thead_row[0].find_elements_by_tag_name('th')
+            return thead[0].find_elements_by_tag_name('th')
+        except:
+            self.LOGGER.exception(" Can't get table head.")
             return []
 
     def get_row_cell_text_related_to_header(self, row, column_value):
@@ -449,9 +483,9 @@ class BaseSelenium:
         row_dict = self.get_row_cells_dict_related_to_header(row=row)
         return row_dict[column_value]
 
-    def get_row_cells_dict_related_to_header(self, row):
+    def get_row_cells_dict_related_to_header(self, row, table_element='general:table'):
         cells_dict = {}
-        headers = self.get_table_head_elements(element='general:table')
+        headers = self.get_table_head_elements(element=table_element)
         headers_text = [header.text for header in headers]
         row_cells = self.get_row_cells(row=row)
         row_text = [cell.text for cell in row_cells]
@@ -461,9 +495,9 @@ class BaseSelenium:
 
         return cells_dict
 
-    def get_row_cells_elements_related_to_header(self, row):
+    def get_row_cells_elements_related_to_header(self, row, table_element='general:table'):
         cells_elements = {}
-        headers = self.get_table_head_elements(element='general:table')
+        headers = self.get_table_head_elements(element=table_element)
         headers_text = [header.text for header in headers]
         row_cells = self.get_row_cells(row=row)
 

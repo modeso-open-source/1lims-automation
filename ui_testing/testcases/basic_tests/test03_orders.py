@@ -32,7 +32,7 @@ class OrdersTestCases(BaseTest):
         LIMS-5241
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         current_no = self.order_page.get_no()
@@ -63,7 +63,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4764
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
@@ -97,7 +97,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4765
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
@@ -260,7 +260,7 @@ class OrdersTestCases(BaseTest):
         # contact
         order_row_from_table_list.append(
             self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
-        # material type
+        # material typegood morning, please check the group
         order_row_from_table_list.append(
             self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
         # article name
@@ -328,9 +328,28 @@ class OrdersTestCases(BaseTest):
         :return:
         """
 
-        self.order_page.get_random_order()
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        orders_duplicate_data_before, orders = self.order_page.get_orders_duplicate_data(order_no=order_data['Order No.'])
+
+        self.base_selenium.LOGGER.info(' + Select random order with {} no.'.format(order_data['Order No.']))
+        self.order_page.get_random_x(orders[0])
+
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + Order url : {}'.format(order_url))
 
         self.order_page.create_new_suborder()
+        self.order_page.save(save_btn='order:save_btn')
+
+        self.order_page.get_orders_page()
+        orders_duplicate_data_after, _ = self.order_page.get_orders_duplicate_data(order_no=order_data['Order No.'])
+
+        self.base_selenium.LOGGER.info(' + Assert there is a new suborder with the same order no.')
+        self.assertEqual(len(orders_duplicate_data_before), len(orders_duplicate_data_after)-1)
+
+        self.base_selenium.LOGGER.info(' + Assert There is an analysis for this new suborder.')
+        self.analyses_page.get_analyses_page()
+        orders_analyess = self.analyses_page.search(order_data['Order No.'])
+        latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyess[0])
+        self.assertEqual(orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 

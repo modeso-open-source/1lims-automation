@@ -56,7 +56,6 @@ class Order(Orders):
     def get_contact(self):
         return self.base_selenium.get_text(element='order:contact').split('\n')[0]
 
-
     def set_test_plan(self, test_plan=''):
         if test_plan:
             self.base_selenium.select_item_from_drop_down(
@@ -98,7 +97,7 @@ class Order(Orders):
         elif test_unit:
             self.set_test_unit(test_unit=test_unit)
         self.save(save_btn='order:save')
-        
+
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
 
@@ -129,7 +128,6 @@ class Order(Orders):
 
     def get_test_date(self):
         return self.base_selenium.get_value(element='order:test_date')
-
 
     def get_departments(self):
         departments = self.base_selenium.get_text(
@@ -162,11 +160,27 @@ class Order(Orders):
         rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = rows_after[len(rows_before)]
 
-        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row)
+        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
+                                                                                             table_element='order:suborder_table')
 
-        # to b fixed
         for key in kwargs:
-            # implement method here to do that for drop down and text
-            suborder_elements_dict[key] = kwargs[key]
+            if key in suborder_elements_dict.keys():
+                self.base_selenium.update_item_value(item=suborder_elements_dict[key], item_text=kwargs[key])
+            else:
+                self.base_selenium.LOGGER.info(' {} is not a header element!'.format(key))
+                self.base_selenium.LOGGER.info(' Header keys : {}'.format(suborder_elements_dict.keys()))
+
+        # Make sure all major elements have an element
+        self.base_selenium.LOGGER.info(' + Get main suborder data.')
+        main_suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows_before[0],
+                                                                                     table_element='order:suborder_table')
+        for key in main_suborder_data:
+            main_suborder_data[key] = main_suborder_data[key].replace('× ', '').replace('\n', '').replace('×', '')
+
+        for key in suborder_elements_dict:
+            if '*' in key and key not in kwargs.keys():  # Have to choose random option
+                tmp_dat = main_suborder_data[key][:10]
+                self.base_selenium.LOGGER.info(' + set {} : {}... '.format(key, tmp_dat))
+                self.base_selenium.update_item_value(item=suborder_elements_dict[key], item_text=tmp_dat)
 
 

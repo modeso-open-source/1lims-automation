@@ -7,6 +7,7 @@ class Login:
         self.base_selenium = BaseSelenium()
 
     def login(self, username, password):
+        self.base_selenium.LOGGER.info(' + Login {} : {}.'.format(username, password))
         self.base_selenium.get(url=self.base_selenium.url)
         self.base_selenium.set_text(element='login:username', value=username)
         self.base_selenium.set_text(element='login:password', value=password)

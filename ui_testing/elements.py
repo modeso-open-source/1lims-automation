@@ -242,8 +242,8 @@ elements = {
 
         'no': {'method': 'id',
                'value': 'orderNoWithYearfield'},
-        'cancel': {'method': 'id',
-                   'value': 'button_cancel_order'},
+        # 'cancel': {'method': 'id',
+        #            'value': 'button_cancel_order'},
 
         'cancel_button': {'method': 'class_name',
                           'value': 'swal2-cancel',
@@ -264,8 +264,6 @@ elements = {
                           'value': 'date_shipmentDate'},
         'test_date': {'method': 'id',
                       'value': 'date_testDate'},
-        'departments': {'method': 'id',
-                        'value': 'departments'},
         'suborder_list': {'method': 'class_name',
                           'value': 'flaticon-signs',
                           'order': 0},
