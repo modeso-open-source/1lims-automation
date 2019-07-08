@@ -326,9 +326,5 @@ class OrdersTestCases(BaseTest):
         self.order_page.duplicate_from_table_view(number_of_duplicates=5)
         self.order_page.save(save_btn='order:save_btn')
         self.order_page.get_orders_page()
+        self.orders_page.filter_by_order_no(filter_text=order_no)
         
-
-
-
-
-
