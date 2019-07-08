@@ -24,7 +24,7 @@ class BaseSelenium:
     EXPLICITLY_WAIT = 120
 
     LOGGER = logger
-    LOGGER.add('log_{time}.log')
+    LOGGER.add('log_{time}.log', backtrace=False)
 
     _instance = None
 

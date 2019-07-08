@@ -89,7 +89,7 @@ class BasePages:
         selected_rows_data = []
         selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
-        no_of_rows = randint(1, 5)
+        no_of_rows = randint(min(1, len(rows)-1), min(5, len(rows)-1))
         count = 0
         self.base_selenium.LOGGER.info(' * No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:
@@ -161,3 +161,13 @@ class BasePages:
 
     def get_table_rows_data(self):
         return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]                      
+    def open_random_table_row_page(self, table_element):
+        row = self.get_random_table_row(table_element)
+        self.get_random_x(row=row)
+
+    def get_random_table_row(self, table_element):
+        rows = self.base_selenium.get_table_rows(element=table_element)
+        row_id = randint(0, len(rows) - 2)
+        row = rows[row_id]
+        return row
+

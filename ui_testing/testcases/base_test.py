@@ -32,6 +32,5 @@ class BaseTest(TestCase):
                 elif ' ' == str(item)[-1]:
                     tmp.append(item[:-1])
                 else:
-                    str(item).replace(',', '&').replace("'", "")
-                    tmp.append(item)
+                    tmp.append(str(item).replace(',', '&').replace("'", ""))
         return tmp
