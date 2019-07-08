@@ -249,7 +249,7 @@ class OrdersTestCases(BaseTest):
         # contact
         order_row_from_table_list.append(
             self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
-        # material typegood morning, please check the group
+        # material type
         order_row_from_table_list.append(
             self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
         # article name
