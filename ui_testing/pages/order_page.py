@@ -159,7 +159,7 @@ class Order(Orders):
     def change_view(self):
         self.base_selenium.click(element='order:change_view')
 
-    def duplicate_from_table_view(self, number_of_duplicates):
+    def duplicate_from_table_view(self, number_of_duplicates=1):
         for duplicate in range(number_of_duplicates):
             self.base_selenium.click(element='order:duplicate_table_view')    
         

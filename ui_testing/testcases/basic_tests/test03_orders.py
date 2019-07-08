@@ -27,7 +27,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
 
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip('https://modeso.atlassian.net/browse/LIMS-4768')
+    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
     def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
@@ -295,7 +295,7 @@ class OrdersTestCases(BaseTest):
             self.order_page.get_article().split(' No')[0][0:30])
         order_row_from_form_list.append(self.order_page.get_article().split('No:')[
                                             1].replace("'", '')[0:30])
-        order_row_from_form_list.append(self.order_page.get_shimpment_date())
+        order_row_from_form_list.append(self.order_page.get_shipment_date())
         order_row_from_form_list.append(self.order_page.get_test_date())
         order_row_from_form_list.append(
             self.order_page.get_test_plan(first_only=False))
@@ -306,7 +306,6 @@ class OrdersTestCases(BaseTest):
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
 
-    @parameterized.expand(['True', 'False'])
     def test07_update_order_number(self):
         """
         New: Orders: Table: Update order number Approach:
@@ -316,11 +315,13 @@ class OrdersTestCases(BaseTest):
         LIMS-4270
         """
 
-        self.order_page.create_new_order()
-        self.order_page.sleep_medium()
-        self.orders_page.get_specific_order_by_index(index=0)
-        self.order_page.sleep_medium()
+        # self.order_page.create_new_order()
+        self.order_page.get_random_orders()
+        # self.order_page.sleep_medium()
         order_no = self.order_page.get_order_number()
+        # self.order_page.change_view()
+        # new_no = self.generate_random_string()
+        # self.order_page.set_new_order()
         self.order_page.change_view()
         self.order_page.sleep_medium()
         self.order_page.duplicate_from_table_view(number_of_duplicates=5)

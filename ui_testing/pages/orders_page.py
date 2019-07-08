@@ -1,5 +1,6 @@
 from ui_testing.pages.base_pages import BasePages
 from random import randint
+import time
 
 
 class Orders(BasePages):
@@ -18,6 +19,8 @@ class Orders(BasePages):
     def click_create_order_button(self):
         self.base_selenium.click(element='orders:new_order')
         self.sleep_small()
+    
+
 
     def archive_selected_orders(self, check_pop_up=False):
         self.base_selenium.scroll()
@@ -65,11 +68,18 @@ class Orders(BasePages):
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')
 
-    def get_specific_order_by_index(self, index):
-        return self.get_random_x(row=index)
-
     def filter_by_order_no(self, filter_text):
+        self.open_filter_menu()
         self.base_selenium.LOGGER.info(' + Filter by order no. : {}'.format(filter_text))
         self.filter_by(filter_element='orders:filter_order_no', filter_text=filter_text)
         self.filter_apply()
 
+    def filter_apply(self):
+        self.base_selenium.find_element_in_element(destination_element='general:filter_apply_btn',
+                                                   source_element='general:filter_actions').click()
+        time.sleep(self.base_selenium.TIME_SMALL)
+
+    def open_filter_menu(self):
+        filter = self.base_selenium.find_element_in_element(source_element='general:menu_filter_view',
+                                                            destination_element='general:filter')
+        filter.click()
