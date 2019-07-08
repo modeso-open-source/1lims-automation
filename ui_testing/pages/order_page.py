@@ -163,11 +163,11 @@ class Order(Orders):
         suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
                                                                                              table_element='order:suborder_table')
         self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'], item_text=material_type)
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'], item_text=material_type.replace("'", ''))
         self.base_selenium.LOGGER.info(' + Set article name : {}'.format(article_name))
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=article_name)
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=article_name.replace("'", ''))
         self.base_selenium.LOGGER.info(' + Set test plan : {}'.format(test_plan))
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=test_plan)
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=test_plan.replace("'", ''))
 
         for key in kwargs:
             if key in suborder_elements_dict.keys():
