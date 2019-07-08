@@ -293,7 +293,7 @@ class OrdersTestCases(BaseTest):
             self.order_page.get_article().split(' No')[0][0:30])
         order_row_from_form_list.append(self.order_page.get_article().split('No:')[
                                             1].replace("'", '')[0:30])
-        order_row_from_form_list.append(self.order_page.get_shimpment_date())
+        order_row_from_form_list.append(self.order_page.get_shipment_date())
         order_row_from_form_list.append(self.order_page.get_test_date())
         order_row_from_form_list.append(
             self.order_page.get_test_plan(first_only=False))
