@@ -461,11 +461,11 @@ class ArticlesTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info(' * Download XSLX sheet')
         self.article_page.download_xslx_sheet()
-        rows_data = self.article_page.get_articles_rows_data()
+        rows_data = self.article_page.get_table_rows_data()
         for index in range(len(rows_data)):
             self.base_selenium.LOGGER.info(' * Comparing the article no. {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
-            values = self.article_page.article_sheet.iloc[index].values
+            values = self.article_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)

@@ -141,7 +141,6 @@ class Order(Orders):
     def get_departments(self):
         departments = self.base_selenium.get_text(
             element='order:departments').split('\n')[0]
-        print(departments)
         if departments == 'Search':
             return ''
         return departments
