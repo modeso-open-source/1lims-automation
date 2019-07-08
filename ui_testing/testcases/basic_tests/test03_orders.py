@@ -204,3 +204,22 @@ class OrdersTestCases(BaseTest):
                                                                                   order_row_from_form_list))
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
+
+    def test07_export_order_sheet(self):
+        """
+        New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
+        LIMS-3274
+        :return:
+        """
+        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
+        self.order_page.select_all_records()
+        self.order_page.download_xslx_sheet()
+        rows_data = self.order_page.get_table_rows_data()
+        for index in range(len(rows_data)-1):
+            self.base_selenium.LOGGER.info(' * Comparing the order no. {} '.format(index+1))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.order_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                self.assertIn(item, fixed_sheet_row_data)
+    
