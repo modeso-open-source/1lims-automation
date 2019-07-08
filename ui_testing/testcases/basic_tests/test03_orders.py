@@ -319,3 +319,27 @@ class OrdersTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
+
+
+    def test08_analysis_number(self):
+        """
+        New: Orders: Analysis number should appear in the table view column
+        LIMS-2622
+        :return:
+        """
+        self.base_selenium.LOGGER.info(' Select Random Order')
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        analysis_number = order_data['Analysis No.'].split(',')[0]
+        self.order_page.filter_by_analysis_number(analysis_number)
+        last_rows = self.order_page.get_last_order_row()
+        order_data_after_filter = self.base_selenium.get_row_cells_dict_related_to_header(row=last_rows)
+        analysis_number_filter = order_data_after_filter['Analysis No.'].split(',')[0]
+        self.base_selenium.LOGGER.info(' * Compare search result if last row has  analysis number = {}  '.format(analysis_number))
+        self.assertEqual(analysis_number_filter, analysis_number)
+        self.order_page.click_check_box(source=last_rows)
+        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
+        self.order_page.download_xslx_sheet()
+        sheet_values = self.order_page.sheet.iloc[0].values
+        self.base_selenium.LOGGER.info('Check if export of order has analyis number = {}  '.format(analysis_number))
+        self.assertIn(analysis_number,sheet_values)
