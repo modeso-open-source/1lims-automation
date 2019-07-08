@@ -211,7 +211,9 @@ elements = {
         'create_copies': {'method': 'id',
                           'value': 'create_copies_id'},
         'save_order': {'method': 'id',
-                       'value': 'button_save_order'}
+                'value': 'button_save_order'},
+        'analysis_filter': {'method': 'id',
+                'value': 'analysisfield'}        
     },
 
     'order': {

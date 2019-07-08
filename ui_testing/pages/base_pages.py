@@ -63,10 +63,12 @@ class BasePages:
                                                             destination_element='general:filter')
         filter.click()
 
-    def filter_by(self, filter_element, filter_text):
+    def filter_by(self, filter_element, filter_text, type = 'drop_down'):
         self.open_filter_menu()
-        self.base_selenium.select_item_from_drop_down(
-            element=filter_element, item_text=filter_text)
+        if type == 'drop_down' :
+            self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
+        else:
+            self.base_selenium.set_text(element=filter_element, value = filter_text )
 
     def filter_apply(self):
         self.base_selenium.find_element_in_element(destination_element='article:filter_apply_btn',
