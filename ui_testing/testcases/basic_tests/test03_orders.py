@@ -112,7 +112,7 @@ class OrdersTestCases(BaseTest):
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
 
-    def test01_archive_order(self):
+    def test04_archive_order(self):
         """
             New: Orders: Archive
             The user cannot archive an order unless all corresponding analysis are archived
@@ -152,7 +152,7 @@ class OrdersTestCases(BaseTest):
             rows = self.order_page.result_table()
             self.assertEqual(len(rows), 1)
 
-    def test03_restore_archived_orders(self):
+    def test005_restore_archived_orders(self):
         """
         Restore Order
         I can restore any order successfully
@@ -172,7 +172,7 @@ class OrdersTestCases(BaseTest):
                 selected_order_data['Analysis No.']))
             self.assertTrue(self.order_page.is_order_exist(value=selected_order_data['Analysis No.']))
 
-    def test04_deleted_archived_order(self):
+    def test006_deleted_archived_order(self):
         """
         New: Order without/with article: Deleting of orders
         The user can hard delete any archived order
@@ -197,7 +197,7 @@ class OrdersTestCases(BaseTest):
         self.assertFalse(has_active_analysis)
 
     @parameterized.expand(['True', 'False'])
-    def test05_order_search(self, small_letters):
+    def test007_order_search(self, small_letters):
         """
         New: Orders: Search Approach: User can search by any field & each field should display with yellow color
 
@@ -232,7 +232,7 @@ class OrdersTestCases(BaseTest):
                              search_data[column].replace("'", '').split(',')[0])
 
     @skip('https://modeso.atlassian.net/browse/LIMS-4766')
-    def test06_duplicate_order_one_copy(self):
+    def test008_duplicate_order_one_copy(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
 
@@ -292,7 +292,7 @@ class OrdersTestCases(BaseTest):
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
 
-    def test007_export_order_sheet(self):
+    def test009_export_order_sheet(self):
         """
         New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
         LIMS-3274
@@ -310,7 +310,7 @@ class OrdersTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test008_user_can_add_suborder(self):
+    def test010_user_can_add_suborder(self):
         """
         New: Orders: Table view: Suborder Approach: User can add suborder from the main order
 
@@ -348,7 +348,7 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyess[0])
         self.assertEqual(orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    def test009_analysis_number_filter_and_export(self):
+    def test011_analysis_number_filter_and_export(self):
         """
         New: Orders: Analysis number should appear in the table view column
         LIMS-2622
@@ -372,7 +372,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Check if export of order has analyis number = {}  '.format(analysis_number))
         self.assertIn(analysis_number, sheet_values)
 
-    def test010_duplicate_many_orders(self):
+    def test012_duplicate_many_orders(self):
         """
         New: Orders: Duplication from active table Approach: When I duplicate order 5 times, it will create 5 analysis records with the same order number
         LIMS-4285
