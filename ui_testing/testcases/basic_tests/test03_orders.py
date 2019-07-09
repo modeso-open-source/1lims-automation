@@ -315,6 +315,8 @@ class OrdersTestCases(BaseTest):
         New: Orders: Table view: Suborder Approach: User can add suborder from the main order
 
         LIMS-3817
+        LIMS-4279
+        Only "Apply this from add new item in the order table view"
         :return:
         """
         test_plan_dict = self.get_active_article_with_tst_plan(test_plan_status='complete')
