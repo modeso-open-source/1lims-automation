@@ -29,15 +29,19 @@ class BasePages:
         self.base_selenium.clear_element_text(element='general:search')
 
     def sleep_tiny(self):
+        self.base_selenium.LOGGER.info(' + Tiny sleep.')
         time.sleep(self.base_selenium.TIME_TINY)
 
     def sleep_small(self):
+        self.base_selenium.LOGGER.info(' + Small sleep.')
         time.sleep(self.base_selenium.TIME_SMALL)
 
     def sleep_medium(self):
+        self.base_selenium.LOGGER.info(' + Medium sleep.')
         time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def sleep_large(self):
+        self.base_selenium.LOGGER.info(' + Large sleep.')
         time.sleep(self.base_selenium.TIME_LARGE)
 
     def save(self, sleep=True, save_btn='general:save'):

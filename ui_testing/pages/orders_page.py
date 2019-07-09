@@ -57,8 +57,9 @@ class Orders(BasePages):
     def get_random_order(self):
         self.base_selenium.LOGGER.info(' + Get random order.')
         row = self.get_random_order_row()
+        order_dict = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         self.get_random_x(row=row)
-        return self.base_selenium.get_row_cells_dict_related_to_header(row=row)
+        return order_dict
 
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')
