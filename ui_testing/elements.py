@@ -211,15 +211,17 @@ elements = {
             'method': 'class_name',
             'value': 'swal2-header'},
         'duplicate': {'method': 'link_text',
-            'value': 'Duplicate'},
-        'number_of_copies': {'method': 'id' ,
-                            'value': 'numberOfCopies'},
+                      'value': 'Duplicate'},
+        'number_of_copies': {'method': 'id',
+                             'value': 'numberOfCopies'},
         'create_copies': {'method': 'id',
-                'value': 'create_copies_id'},
+                          'value': 'create_copies_id'},
         'save_order': {'method': 'id',
                 'value': 'button_save_order'},
         'filter_order_no': {'method': 'id',
-                            'value': 'orderNofield'}
+                            'value': 'orderNofield'},
+        'analysis_filter': {'method': 'id',
+                'value': 'analysisfield'}        
     },
 
     'order': {
@@ -230,7 +232,7 @@ elements = {
         'article': {'method': 'css_selector',
                     'value': '#articlefield > div'},
         'departments': {'method': 'id',
-                    'value': 'departments'},
+                        'value': 'departments'},
 
         'contact': {'method': 'id',
                     'value': 'contactfield'},
@@ -246,30 +248,30 @@ elements = {
                           'order': 1},
 
         'save_btn': {'method': 'id',
-                 'value': 'button_save_order'},
+                     'value': 'button_save_order'},
 
         'no': {'method': 'id',
-                'value': 'orderNoWithYearfield'},
-        'cancel': {'method': 'id',
-                'value': 'button_cancel_order'},
+               'value': 'orderNoWithYearfield'},
+        # 'cancel': {'method': 'id',
+        #            'value': 'button_cancel_order'},
 
         'cancel_button': {'method': 'class_name',
-                   'value': 'swal2-cancel',
-                   'order': 0},
+                          'value': 'swal2-cancel',
+                          'order': 0},
         'ok': {'method': 'class_name',
-                   'value': 'swal2-confirm',
-                   'order': 0},
+               'value': 'swal2-confirm',
+               'order': 0},
 
         'cancel': {'method': 'class_name',
                    'value': 'btn-secondary',
                    'order': 1},
 
         'order_number': {'method': 'id',
-                        'value': 'orderNoWithYearfield'},
+                         'value': 'orderNoWithYearfield'},
         'order_number_add_form': {'method': 'id',
-                    'value': 'selectedOrderNofield'},  
+                                  'value': 'selectedOrderNofield'},
         'shipment_date': {'method': 'id',
-                    'value': 'date_shipmentDate'},
+                          'value': 'date_shipmentDate'},
         'test_date': {'method': 'id',
                     'value': 'date_testDate'},
         'save': {'method': 'class_name',
@@ -282,7 +284,15 @@ elements = {
         'change_view': {'method': 'class_name',
                 'value': 'icon-views',
                 'order': 0
-                }
+                },
 
+        'suborder_list': {'method': 'class_name',
+                          'value': 'flaticon-signs',
+                          'order': 0},
+        'suborder_table': {'method': 'id',
+                           'value': 'table-with-add'},
+        'add_new_item': {'method': 'class_name',
+                         'value': 'addNewItem',
+                         'order': 0}
     }
 }

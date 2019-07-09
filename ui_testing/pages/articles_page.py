@@ -7,7 +7,7 @@ class Articles(BasePages):
         super().__init__()
         self.article_url = "{}articles".format(self.base_selenium.url)
 
-    def get_article_page(self):
+    def get_articles_page(self):
         self.base_selenium.get(url=self.article_url)
         self.sleep_small()
 
@@ -44,7 +44,13 @@ class Articles(BasePages):
         self.base_selenium.click(element='articles:restore')
         self.confirm_popup()
 
-    def is_article_archived(self, value):
+    def is_article_in_table(self, value):
+        """
+            - get_archived_articles then call me to check if the article has been archived.
+            - get_active_articles then call me to check if the article is active.
+        :param value: search value
+        :return:
+        """
         results = self.search(value=value)
         if len(results) == 0:
             return False

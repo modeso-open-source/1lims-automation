@@ -1,4 +1,3 @@
-
 import re
 from unittest import skip
 from parameterized import parameterized
@@ -6,7 +5,7 @@ from ui_testing.pages.analyses_page import Analyses
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.order_page import Order
-from  ui_testing.pages.orders_page import Orders
+from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.testcases.base_test import BaseTest
 
@@ -34,7 +33,7 @@ class OrdersTestCases(BaseTest):
         LIMS-5241
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         current_no = self.order_page.get_no()
@@ -65,7 +64,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4764
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
@@ -99,7 +98,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4765
         :return:
         """
-        self.order_page.get_random_orders()
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
@@ -314,46 +313,118 @@ class OrdersTestCases(BaseTest):
         self.order_page.select_all_records()
         self.order_page.download_xslx_sheet()
         rows_data = self.order_page.get_table_rows_data()
-        for index in range(len(rows_data)-1):
-            self.base_selenium.LOGGER.info(' * Comparing the order no. {} '.format(index+1))
+        for index in range(len(rows_data) - 1):
+            self.base_selenium.LOGGER.info(' * Comparing the order no. {} '.format(index + 1))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.order_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
+    def test008_user_can_add_suborder(self):
+        """
+        New: Orders: Table view: Suborder Approach: User can add suborder from the main order
+
+        LIMS-3817
+        :return:
+        """
+        test_plan_dict = self.get_active_article_with_tst_plan(test_plan_status='complete')
+
+        self.order_page.get_orders_page()
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        orders_duplicate_data_before, orders = self.order_page.get_orders_duplicate_data(
+            order_no=order_data['Order No.'])
+
+        self.base_selenium.LOGGER.info(' + Select random order with {} no.'.format(order_data['Order No.']))
+        self.order_page.get_random_x(orders[0])
+
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + Order url : {}'.format(order_url))
+
+        self.order_page.create_new_suborder(material_type=test_plan_dict['Material Type'],
+                                            article_name=test_plan_dict['Article Name'],
+                                            test_plan=test_plan_dict['Test Plan Name'])
+        self.order_page.save(save_btn='order:save_btn')
+
+        self.order_page.get_orders_page()
+        orders_duplicate_data_after, _ = self.order_page.get_orders_duplicate_data(order_no=order_data['Order No.'])
+
+        self.base_selenium.LOGGER.info(' + Assert there is a new suborder with the same order no.')
+        self.assertEqual(len(orders_duplicate_data_before), len(orders_duplicate_data_after) - 1)
+
+        self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info(' + Assert There is an analysis for this new suborder.')
+        orders_analyess = self.analyses_page.search(order_data['Order No.'])
+        latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyess[0])
+        self.assertEqual(orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
+
+    def test009_analysis_number_filter_and_export(self):
+        """
+        New: Orders: Analysis number should appear in the table view column
+        LIMS-2622
+        :return:
+        """
+        self.base_selenium.LOGGER.info(' Select Random Order')
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        analysis_number = order_data['Analysis No.'].split(',')[0]
+        self.order_page.filter_by_analysis_number(analysis_number)
+        last_rows = self.order_page.get_last_order_row()
+        order_data_after_filter = self.base_selenium.get_row_cells_dict_related_to_header(row=last_rows)
+        analysis_number_filter = order_data_after_filter['Analysis No.'].split(',')[0]
+        self.base_selenium.LOGGER.info(
+            ' * Compare search result if last row has  analysis number = {}  '.format(analysis_number))
+        self.assertEqual(analysis_number_filter, analysis_number)
+        self.order_page.click_check_box(source=last_rows)
+        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
+        self.order_page.download_xslx_sheet()
+        sheet_values = self.order_page.sheet.iloc[0].values
+        self.base_selenium.LOGGER.info('Check if export of order has analyis number = {}  '.format(analysis_number))
+        self.assertIn(analysis_number, sheet_values)
+
     def test07_update_order_number(self):
-            """
-            New: Orders: Table: Update order number Approach:
-            When I update order number all suborders inside it updated it's order number, 
-            and also in the analysis section.
+        """
+        New: Orders: Table: Update order number Approach:
+        When I update order number all suborders inside it updated it's order number, 
+        and also in the analysis section.
 
-            LIMS-4270
-            """
+        LIMS-4270
+        """
 
-            self.orders_page.click_create_order_button()
-            self.order_page.sleep_tiny()
-            order_no_created = self.order_page.create_new_order(multiple_suborders=5)
-            print(order_no_created)
-            
-            self.orders_page.filter_by_order_no(filter_text=order_no_created)
-            rows_data = self.order_page.get_table_rows_data()
-            orders_count = len(rows_data)
+        # create order with multiple suborders
+        self.orders_page.click_create_order_button()
+        self.order_page.sleep_tiny()
+        order_no_created = self.order_page.create_new_order(multiple_suborders=5)
+        self.base_selenium.LOGGER.info(' + orders_created_with_number : {}'.format(order_no_created))
+        order_no_created = order_no_created.replace("'", '')
+        
+        # filter by the created order number and get the count
+        self.orders_page.filter_by_order_no(filter_text=order_no_created)
+        self.base_selenium.LOGGER.info(' + filter_by_order_no : {}'.format(order_no_created))
+        rows_data = self.order_page.get_table_rows_data()
+        orders_count = len(rows_data)
+        self.base_selenium.LOGGER.info(' + count_of_the_created_orders : {}'.format(orders_count-1))
 
-            print(orders_count)
-            last_created_order = self.order_page.get_last_order_row()
-            self.order_page.click_check_box(source=last_created_order)
-            random_generated_order_no = self.order_page.generate_random_text()
-            self.order_page.set_no(no=random_generated_order_no)
-            self.order_page.save(save_btn='order:save_btn')
-            self.order_page.sleep_medium()
-            new_order_no = self.order_page.get_order_number()
-            self.orders_page.get_orders_page()
-            self.orders_page.filter_by_order_no(filter_text=new_order_no)
-            rows_data = self.order_page.get_table_rows_data()
-            new_orders_count = len(rows_data)
-            print(new_orders_count)
+        # open the last created order to update its number and checking whether it will affect the rest of the orders or not
+        last_created_order = self.order_page.get_last_order_row()
+        self.order_page.get_random_x(row=last_created_order)
+        random_generated_order_no = self.order_page.generate_random_text()
+        self.order_page.set_no(no=random_generated_order_no)
+        self.order_page.save(save_btn='order:save_btn')
+        self.base_selenium.LOGGER.info(' + order_updated_with_number : {}'.format(random_generated_order_no))
+        self.order_page.sleep_medium()
+        new_order_no = self.order_page.get_no()
+        new_order_no = new_order_no.replace("'", '')
 
-            self.base_selenium.LOGGER.info(' + Assert {} (new_no) == {} (order_no)'.format(new_orders_count, orders_count))
-            self.assertEqual(orders_count, new_orders_count)
-
+        # filtering by the new order no to get the count and making sure it is a match
+        self.orders_page.get_orders_page()
+        self.orders_page.filter_by_order_no(filter_text=new_order_no)
+        self.base_selenium.LOGGER.info(' + filter_by_new_order_no : {}'.format(new_order_no))
+        rows_data = self.order_page.get_table_rows_data()
+        new_orders_count = len(rows_data)
+        self.base_selenium.LOGGER.info(' + count_of_the_updated_orders : {}'.format(new_orders_count-1))
+        
+        # by filtering with the new random generated order number, if the count of the orders remained the same, that's mean that all orders with the same number have been successfully updated.
+        self.base_selenium.LOGGER.info(' + Assert {} (count_new_no) == {} (count_order_no)'.format(new_orders_count, orders_count))
+        self.assertEqual(orders_count, new_orders_count)

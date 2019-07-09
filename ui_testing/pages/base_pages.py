@@ -23,28 +23,29 @@ class BasePages:
         return self.result_table()
 
     def result_table(self):
-        rows = self.base_selenium.get_table_rows(element='general:table')
-        if len(rows) > 0:
-            return rows
-        else:
-            return []
+        return self.base_selenium.get_table_rows(element='general:table')
 
     def clear_search(self):
         self.base_selenium.clear_element_text(element='general:search')
 
     def sleep_tiny(self):
+        self.base_selenium.LOGGER.info(' + Tiny sleep.')
         time.sleep(self.base_selenium.TIME_TINY)
 
     def sleep_small(self):
+        self.base_selenium.LOGGER.info(' + Small sleep.')
         time.sleep(self.base_selenium.TIME_SMALL)
 
     def sleep_medium(self):
+        self.base_selenium.LOGGER.info(' + Medium sleep.')
         time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def sleep_large(self):
+        self.base_selenium.LOGGER.info(' + Large sleep.')
         time.sleep(self.base_selenium.TIME_LARGE)
 
     def save(self, sleep=True, save_btn='general:save'):
+        self.base_selenium.LOGGER.info(' + Save the changes.')
         self.base_selenium.click(element=save_btn)
         if sleep:
             time.sleep(self.base_selenium.TIME_MEDIUM)
@@ -66,10 +67,12 @@ class BasePages:
                                                             destination_element='general:filter')
         filter.click()
 
-    def filter_by(self, filter_element, filter_text):
+    def filter_by(self, filter_element, filter_text, type = 'drop_down'):
         self.open_filter_menu()
-        self.base_selenium.select_item_from_drop_down(
-            element=filter_element, item_text=filter_text)
+        if type == 'drop_down' :
+            self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
+        else:
+            self.base_selenium.set_text(element=filter_element, value = filter_text )
 
     def filter_apply(self):
         self.base_selenium.find_element_in_element(destination_element='article:filter_apply_btn',
@@ -80,9 +83,6 @@ class BasePages:
         self.base_selenium.find_element_in_element(destination_element='article:filter_reset_btn',
                                                    source_element='article:filter_actions').click()
         time.sleep(self.base_selenium.TIME_SMALL)
-
-    def filter_result(self):
-        return self.result_table()
 
     def select_random_multiple_table_rows(self, element='general:table'):
         _selected_rows_text = []
@@ -161,6 +161,7 @@ class BasePages:
 
     def get_table_rows_data(self):
         return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]                      
+
     def open_random_table_row_page(self, table_element):
         row = self.get_random_table_row(table_element)
         self.get_random_x(row=row)
