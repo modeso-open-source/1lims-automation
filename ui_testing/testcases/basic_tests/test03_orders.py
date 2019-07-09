@@ -1,9 +1,8 @@
 import re
 from unittest import skip
-
 from parameterized import parameterized
-
 from ui_testing.testcases.base_test import BaseTest
+from random import randint
 
 
 class OrdersTestCases(BaseTest):
@@ -379,7 +378,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4285
         :return:
         """
-        number_of_copies = 5
+        number_of_copies = randint(2,5)
         self.base_selenium.LOGGER.info(' Select Random Order')
         selected_row = self.order_page.get_random_order_row()
         selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=selected_row)
