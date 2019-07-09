@@ -86,3 +86,21 @@ class Orders(BasePages):
         orders_data = [self.base_selenium.get_row_cells_dict_related_to_header(order) for order in orders]
         self.base_selenium.LOGGER.info(' + {} duplicate orders.'.format(len(orders)))
         return orders_data, orders
+
+    # Return all filter fields used in order
+    def order_filters_element(self, key = 'all'):
+        filter_fields_list = []
+        filter_fields_list.append({'field_name': 'Order No.', 'element': 'orders:order_filter', 'type': 'text'})
+        filter_fields_list.append({'field_name': 'Analysis No.', 'element': 'orders:analysis_filter', 'type': 'text'})
+        filter_fields_list.append({'field_name': 'Contact Name', 'element': 'orders:contact_filter', 'type': 'drop_down'})
+        filter_fields_list.append({'field_name': 'Changed By', 'element': 'orders:changed_by', 'type': 'drop_down'})
+        filter_fields_list.append({'field_name': 'Material Type', 'element': 'orders:material_type_filter', 'type': 'drop_down'})
+        filter_fields_list.append({'field_name': 'Article Name', 'element': 'orders:article_filter', 'type': 'drop_down'}) 
+        filter_fields_list.append({'field_name': 'Changed On', 'element': 'orders:chnaged_on_filter', 'type': 'text'})
+        filter_fields_list.append({'field_name': 'Shipment Date', 'element': 'orders:shipment_date_filter', 'type': 'text'})
+        if key == 'all':
+            return filter_fields_list
+        else:
+            for field in filter_fields_list:
+                if (field['field_name']== key):
+                    return field                  
