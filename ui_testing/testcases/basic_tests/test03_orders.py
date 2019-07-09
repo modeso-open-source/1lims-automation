@@ -2,6 +2,7 @@ import re
 from unittest import skip
 from parameterized import parameterized
 from ui_testing.testcases.base_test import BaseTest
+from random import randint
 
 
 class OrdersTestCases(BaseTest):
@@ -370,3 +371,55 @@ class OrdersTestCases(BaseTest):
         sheet_values = self.order_page.sheet.iloc[0].values
         self.base_selenium.LOGGER.info('Check if export of order has analyis number = {}  '.format(analysis_number))
         self.assertIn(analysis_number, sheet_values)
+
+    def test010_duplicate_many_orders(self):
+        """
+        New: Orders: Duplication from active table Approach: When I duplicate order 5 times, it will create 5 analysis records with the same order number
+        LIMS-4285
+        :return:
+        """
+        number_of_copies = randint(2,5)
+        self.base_selenium.LOGGER.info(' Select Random Order')
+        selected_row = self.order_page.get_random_order_row()
+        selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=selected_row)
+        self.order_page.click_check_box(source=selected_row)
+        self.base_selenium.LOGGER.info('Duplicate selected order  {} times  '.format(number_of_copies))
+        self.order_page.duplicate_order_from_table_overview(number_of_copies)
+        table_rows = self.order_page.result_table()
+        self.base_selenium.LOGGER.info('Make sure that created orders has same data of the oringal order')
+        for index in range(number_of_copies):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_rows[index])
+            self.base_selenium.LOGGER.info('Check if order created number:  {} with analyis  '.format(index + 1, ))
+            self.assertTrue(row_data['Analysis No.'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has order number = {}   '.format(index + 1,
+                                                                                     selected_order_data['Order No.']))
+            self.assertEqual(selected_order_data['Order No.'], row_data['Order No.'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Contact Name = {}   '.format(index + 1, selected_order_data[
+                    'Contact Name']))
+            self.assertEqual(selected_order_data['Contact Name'], row_data['Contact Name'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Material Type = {}   '.format(index + 1, selected_order_data[
+                    'Material Type']))
+            self.assertEqual(selected_order_data['Material Type'], row_data['Material Type'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Article Name = {}   '.format(index + 1, selected_order_data[
+                    'Article Name']))
+            self.assertEqual(selected_order_data['Article Name'], row_data['Article Name'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Article Number = {}   '.format(index + 1, selected_order_data[
+                    'Article No.']))
+            self.assertEqual(selected_order_data['Article No.'], row_data['Article No.'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Shipment Date = {}   '.format(index + 1, selected_order_data[
+                    'Shipment Date']))
+            self.assertEqual(selected_order_data['Shipment Date'], row_data['Shipment Date'])
+            self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Date = {}   '.format(index + 1,
+                                                                                                             selected_order_data[
+                                                                                                                 'Test Date']))
+            self.assertEqual(selected_order_data['Test Date'], row_data['Test Date'])
+            self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Plan = {}   '.format(index + 1,
+                                                                                                             selected_order_data[
+                                                                                                                 'Test Plans']))
+            self.assertEqual(selected_order_data['Test Plans'], row_data['Test Plans'])
