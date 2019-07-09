@@ -181,3 +181,9 @@ class BasePages:
 
     def get_random_date(self):
         return '{:02d}.{:02d}.{}'.format(randint(1, 30), randint(1, 12), 2019)
+
+    def filter(self,field_name, element, filter_text, type):
+        self.base_selenium.LOGGER.info(' + Filter by {} : {}'.format(field_name,filter_text))
+        self.filter_by(filter_element= element, filter_text=filter_text, type = type)
+        self.filter_apply()
+
