@@ -294,5 +294,11 @@ elements = {
         'add_new_item': {'method': 'class_name',
                          'value': 'addNewItem',
                          'order': 0}
+    },
+    'analysis_table': {
+        'filter_order_no': {
+            'method': 'id',
+            'value': 'orderNofield'
+        }
     }
 }

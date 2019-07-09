@@ -424,7 +424,27 @@ class OrdersTestCases(BaseTest):
         rows_data = self.order_page.get_table_rows_data()
         new_orders_count = len(rows_data)
         self.base_selenium.LOGGER.info(' + count_of_the_updated_orders : {}'.format(new_orders_count-1))
+
+        # filtering by the old order no to make sure that the orders no has been replaced not added to the system
+        self.orders_page.get_orders_page()
+        self.orders_page.filter_by_order_no(filter_text=new_order_no)
+        self.base_selenium.LOGGER.info(' + filter_by_old_order_no_after_update : {}'.format(order_no_created))
+        rows_data = self.order_page.get_table_rows_data()
+        orders_before_update_count = len(rows_data)
+        self.base_selenium.LOGGER.info(' + count_of_the_old_order_no_suborders : {}'.format(orders_before_update_count-1))
         
+        # transfering to analysis page
+        self.analyses_page.get_analyses_page()
+        self.analyses_page.sleep_small()
+
+        # filter in analysis using new order number, count should be equal to the records count in order
+        self.analyses_page.filter_by(filter_element='analysis_table:filter_order_no', filter_text=new_order_no)
+        self.base_selenium.LOGGER.info(' + filter_by_order_no_after_update_in_analysis : {}'.format(new_order_no))
+        rows_data = self.analyses_page.get_table_rows_data()
+        records_in_analysis_after_update_count = len(rows_data)
+        
+
         # by filtering with the new random generated order number, if the count of the orders remained the same, that's mean that all orders with the same number have been successfully updated.
-        self.base_selenium.LOGGER.info(' + Assert {} (count_new_no) == {} (count_order_no)'.format(new_orders_count, orders_count))
+        self.base_selenium.LOGGER.info(' + Assert {} (count_new_no) == {} (count_order_no) AND {} (analysis_records_new_no)'.format(new_orders_count, orders_count, records_in_analysis_after_update_count))
         self.assertEqual(orders_count, new_orders_count)
+        self.assertEqual(new_orders_count, records_in_analysis_after_update_count)
