@@ -8,6 +8,7 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.testcases.base_test import BaseTest
+from random import randint
 
 
 class OrdersTestCases(BaseTest):
@@ -24,7 +25,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
 
     @parameterized.expand(['save_btn', 'cancel'])
-    # @skip('https://modeso.atlassian.net/browse//LIMS-4768')
+    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
     def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
@@ -123,7 +124,7 @@ class OrdersTestCases(BaseTest):
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
 
-    def test01_archive_order(self):
+    def test004_archive_order(self):
         """
             New: Orders: Archive
             The user cannot archive an order unless all corresponding analysis are archived
@@ -163,7 +164,7 @@ class OrdersTestCases(BaseTest):
             rows = self.order_page.result_table()
             self.assertEqual(len(rows), 1)
 
-    def test03_restore_archived_orders(self):
+    def test005_restore_archived_orders(self):
         """
         Restore Order
         I can restore any order successfully
@@ -183,7 +184,7 @@ class OrdersTestCases(BaseTest):
                 selected_order_data['Analysis No.']))
             self.assertTrue(self.order_page.is_order_exist(value=selected_order_data['Analysis No.']))
 
-    def test04_deleted_archived_order(self):
+    def test006_deleted_archived_order(self):
         """
         New: Order without/with article: Deleting of orders
         The user can hard delete any archived order
@@ -208,7 +209,7 @@ class OrdersTestCases(BaseTest):
         self.assertFalse(has_active_analysis)
 
     @parameterized.expand(['True', 'False'])
-    def test05_order_search(self, small_letters):
+    def test007_order_search(self, small_letters):
         """
         New: Orders: Search Approach: User can search by any field & each field should display with yellow color
 
@@ -243,7 +244,7 @@ class OrdersTestCases(BaseTest):
                              search_data[column].replace("'", '').split(',')[0])
 
     @skip('https://modeso.atlassian.net/browse/LIMS-4766')
-    def test06_duplicate_order_one_copy(self):
+    def test008_duplicate_order_one_copy(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
 
@@ -302,8 +303,8 @@ class OrdersTestCases(BaseTest):
                                                                                   order_row_from_form_list))
         self.assertListEqual(order_row_from_form_list,
                              order_row_from_table_list)
-        
-    def test07_export_order_sheet(self):
+
+    def test009_export_order_sheet(self):
         """
         New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
         LIMS-3274
@@ -321,7 +322,7 @@ class OrdersTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test008_user_can_add_suborder(self):
+    def test010_user_can_add_suborder(self):
         """
         New: Orders: Table view: Suborder Approach: User can add suborder from the main order
 
@@ -359,7 +360,7 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyess[0])
         self.assertEqual(orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    def test009_analysis_number_filter_and_export(self):
+    def test011_analysis_number_filter_and_export(self):
         """
         New: Orders: Analysis number should appear in the table view column
         LIMS-2622
@@ -383,68 +384,120 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Check if export of order has analyis number = {}  '.format(analysis_number))
         self.assertIn(analysis_number, sheet_values)
 
-    def test07_update_order_number(self):
+    def test012_duplicate_many_orders(self):
         """
-        New: Orders: Table: Update order number Approach:
-        When I update order number all suborders inside it updated it's order number, 
-        and also in the analysis section.
-
-        LIMS-4270
+        New: Orders: Duplication from active table Approach: When I duplicate order 5 times, it will create 5 analysis records with the same order number
+        LIMS-4285
+        :return:
         """
+        number_of_copies = randint(2,5)
+        self.base_selenium.LOGGER.info(' Select Random Order')
+        selected_row = self.order_page.get_random_order_row()
+        selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=selected_row)
+        self.order_page.click_check_box(source=selected_row)
+        self.base_selenium.LOGGER.info('Duplicate selected order  {} times  '.format(number_of_copies))
+        self.order_page.duplicate_order_from_table_overview(number_of_copies)
+        table_rows = self.order_page.result_table()
+        self.base_selenium.LOGGER.info('Make sure that created orders has same data of the oringal order')
+        for index in range(number_of_copies):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_rows[index])
+            self.base_selenium.LOGGER.info('Check if order created number:  {} with analyis  '.format(index + 1, ))
+            self.assertTrue(row_data['Analysis No.'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has order number = {}   '.format(index + 1,
+                                                                                     selected_order_data['Order No.']))
+            self.assertEqual(selected_order_data['Order No.'], row_data['Order No.'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Contact Name = {}   '.format(index + 1, selected_order_data[
+                    'Contact Name']))
+            self.assertEqual(selected_order_data['Contact Name'], row_data['Contact Name'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Material Type = {}   '.format(index + 1, selected_order_data[
+                    'Material Type']))
+            self.assertEqual(selected_order_data['Material Type'], row_data['Material Type'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Article Name = {}   '.format(index + 1, selected_order_data[
+                    'Article Name']))
+            self.assertEqual(selected_order_data['Article Name'], row_data['Article Name'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Article Number = {}   '.format(index + 1, selected_order_data[
+                    'Article No.']))
+            self.assertEqual(selected_order_data['Article No.'], row_data['Article No.'])
+            self.base_selenium.LOGGER.info(
+                'Check if order created number:  {} has Shipment Date = {}   '.format(index + 1, selected_order_data[
+                    'Shipment Date']))
+            self.assertEqual(selected_order_data['Shipment Date'], row_data['Shipment Date'])
+            self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Date = {}   '.format(index + 1,
+                                                                                                             selected_order_data[
+                                                                                                                 'Test Date']))
+            self.assertEqual(selected_order_data['Test Date'], row_data['Test Date'])
+            self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Plan = {}   '.format(index + 1,
+                                                                                                             selected_order_data[
+                                                                                                                 'Test Plans']))
+            self.assertEqual(selected_order_data['Test Plans'], row_data['Test Plans'])
 
-        # create order with multiple suborders
-        self.orders_page.click_create_order_button()
-        self.order_page.sleep_tiny()
-        order_no_created = self.order_page.create_new_order(multiple_suborders=5)
-        self.base_selenium.LOGGER.info(' + orders_created_with_number : {}'.format(order_no_created))
-        order_no_created = order_no_created.replace("'", '')
-        
-        # filter by the created order number and get the count
-        self.orders_page.filter_by_order_no(filter_text=order_no_created)
-        self.base_selenium.LOGGER.info(' + filter_by_order_no : {}'.format(order_no_created))
-        rows_data = self.order_page.get_table_rows_data()
-        orders_count = len(rows_data)
-        self.base_selenium.LOGGER.info(' + count_of_the_created_orders : {}'.format(orders_count-1))
+        def test013_update_order_number(self):
+            """
+            New: Orders: Table: Update order number Approach:
+            When I update order number all suborders inside it updated it's order number, 
+            and also in the analysis section.
 
-        # open the last created order to update its number and checking whether it will affect the rest of the orders or not
-        last_created_order = self.order_page.get_last_order_row()
-        self.order_page.get_random_x(row=last_created_order)
-        random_generated_order_no = self.order_page.generate_random_text()
-        self.order_page.set_no(no=random_generated_order_no)
-        self.order_page.save(save_btn='order:save_btn')
-        self.base_selenium.LOGGER.info(' + order_updated_with_number : {}'.format(random_generated_order_no))
-        self.order_page.sleep_medium()
-        new_order_no = self.order_page.get_no()
-        new_order_no = new_order_no.replace("'", '')
+            LIMS-4270
+            """
 
-        # filtering by the new order no to get the count and making sure it is a match
-        self.orders_page.get_orders_page()
-        self.orders_page.filter_by_order_no(filter_text=new_order_no)
-        self.base_selenium.LOGGER.info(' + filter_by_new_order_no : {}'.format(new_order_no))
-        rows_data = self.order_page.get_table_rows_data()
-        new_orders_count = len(rows_data)
-        self.base_selenium.LOGGER.info(' + count_of_the_updated_orders : {}'.format(new_orders_count-1))
+            # create order with multiple suborders
+            self.orders_page.click_create_order_button()
+            self.order_page.sleep_tiny()
+            order_no_created = self.order_page.create_new_order(multiple_suborders=5)
+            self.base_selenium.LOGGER.info(' + orders_created_with_number : {}'.format(order_no_created))
+            order_no_created = order_no_created.replace("'", '')
+            
+            # filter by the created order number and get the count
+            self.orders_page.filter_by_order_no(filter_text=order_no_created)
+            self.base_selenium.LOGGER.info(' + filter_by_order_no : {}'.format(order_no_created))
+            rows_data = self.order_page.get_table_rows_data()
+            orders_count = len(rows_data)
+            self.base_selenium.LOGGER.info(' + count_of_the_created_orders : {}'.format(orders_count-1))
 
-        # filtering by the old order no to make sure that the orders no has been replaced not added to the system
-        self.orders_page.get_orders_page()
-        self.orders_page.filter_by_order_no(filter_text=new_order_no)
-        self.base_selenium.LOGGER.info(' + filter_by_old_order_no_after_update : {}'.format(order_no_created))
-        rows_data = self.order_page.get_table_rows_data()
-        orders_before_update_count = len(rows_data)
-        self.base_selenium.LOGGER.info(' + count_of_the_old_order_no_suborders : {}'.format(orders_before_update_count-1))
-        
-        # transfering to analysis page
-        self.analyses_page.get_analyses_page()
-        self.analyses_page.sleep_small()
+            # open the last created order to update its number and checking whether it will affect the rest of the orders or not
+            last_created_order = self.order_page.get_last_order_row()
+            self.order_page.get_random_x(row=last_created_order)
+            random_generated_order_no = self.order_page.generate_random_text()
+            self.order_page.set_no(no=random_generated_order_no)
+            self.order_page.save(save_btn='order:save_btn')
+            self.base_selenium.LOGGER.info(' + order_updated_with_number : {}'.format(random_generated_order_no))
+            self.order_page.sleep_medium()
+            new_order_no = self.order_page.get_no()
+            new_order_no = new_order_no.replace("'", '')
 
-        # filter in analysis using new order number, count should be equal to the records count in order
-        self.analyses_page.filter_by(filter_element='analysis_table:filter_order_no', filter_text=new_order_no)
-        self.base_selenium.LOGGER.info(' + filter_by_order_no_after_update_in_analysis : {}'.format(new_order_no))
-        rows_data = self.analyses_page.get_table_rows_data()
-        records_in_analysis_after_update_count = len(rows_data)
-        
+            # filtering by the new order no to get the count and making sure it is a match
+            self.orders_page.get_orders_page()
+            self.orders_page.filter_by_order_no(filter_text=new_order_no)
+            self.base_selenium.LOGGER.info(' + filter_by_new_order_no : {}'.format(new_order_no))
+            rows_data = self.order_page.get_table_rows_data()
+            new_orders_count = len(rows_data)
+            self.base_selenium.LOGGER.info(' + count_of_the_updated_orders : {}'.format(new_orders_count-1))
 
-        # by filtering with the new random generated order number, if the count of the orders remained the same, that's mean that all orders with the same number have been successfully updated.
-        self.base_selenium.LOGGER.info(' + Assert {} (count_new_no) == {} (count_order_no) AND {} (analysis_records_new_no)'.format(new_orders_count, orders_count, records_in_analysis_after_update_count))
-        self.assertEqual(orders_count, new_orders_count)
-        self.assertEqual(new_orders_count, records_in_analysis_after_update_count)
+            # filtering by the old order no to make sure that the orders no has been replaced not added to the system
+            self.orders_page.get_orders_page()
+            self.orders_page.filter_by_order_no(filter_text=new_order_no)
+            self.base_selenium.LOGGER.info(' + filter_by_old_order_no_after_update : {}'.format(order_no_created))
+            rows_data = self.order_page.get_table_rows_data()
+            orders_before_update_count = len(rows_data)
+            self.base_selenium.LOGGER.info(' + count_of_the_old_order_no_suborders : {}'.format(orders_before_update_count-1))
+            
+            # transfering to analysis page
+            self.analyses_page.get_analyses_page()
+            self.analyses_page.sleep_small()
+
+            # filter in analysis using new order number, count should be equal to the records count in order
+            self.analyses_page.filter_by(filter_element='analysis_table:filter_order_no', filter_text=new_order_no)
+            self.base_selenium.LOGGER.info(' + filter_by_order_no_after_update_in_analysis : {}'.format(new_order_no))
+            rows_data = self.analyses_page.get_table_rows_data()
+            records_in_analysis_after_update_count = len(rows_data)
+            
+
+            # by filtering with the new random generated order number, if the count of the orders remained the same, that's mean that all orders with the same number have been successfully updated.
+            self.base_selenium.LOGGER.info(' + Assert {} (count_new_no) == {} (count_order_no) AND {} (analysis_records_new_no)'.format(new_orders_count, orders_count, records_in_analysis_after_update_count))
+            self.assertEqual(orders_count, new_orders_count)
+            self.assertEqual(new_orders_count, records_in_analysis_after_update_count)
