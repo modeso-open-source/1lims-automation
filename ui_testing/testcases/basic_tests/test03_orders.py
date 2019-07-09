@@ -112,7 +112,7 @@ class OrdersTestCases(BaseTest):
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
 
-    def test04_archive_order(self):
+    def test004_archive_order(self):
         """
             New: Orders: Archive
             The user cannot archive an order unless all corresponding analysis are archived
