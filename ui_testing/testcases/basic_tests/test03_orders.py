@@ -331,16 +331,29 @@ class OrdersTestCases(BaseTest):
             LIMS-4270
             """
 
-            # self.order_page.create_new_order()
-            self.order_page.get_random_orders()
-            # self.order_page.sleep_medium()
-            order_no = self.order_page.get_order_number()
-            # self.order_page.change_view()
-            # new_no = self.generate_random_string()
-            # self.order_page.set_new_order()
-            self.order_page.change_view()
-            self.order_page.sleep_medium()
-            self.order_page.duplicate_from_table_view(number_of_duplicates=5)
+            self.orders_page.click_create_order_button()
+            self.order_page.sleep_tiny()
+            order_no_created = self.order_page.create_new_order(multiple_suborders=5)
+            print(order_no_created)
+            
+            self.orders_page.filter_by_order_no(filter_text=order_no_created)
+            rows_data = self.order_page.get_table_rows_data()
+            orders_count = len(rows_data)
+
+            print(orders_count)
+            last_created_order = self.order_page.get_last_order_row()
+            self.order_page.click_check_box(source=last_created_order)
+            random_generated_order_no = self.order_page.generate_random_text()
+            self.order_page.set_no(no=random_generated_order_no)
             self.order_page.save(save_btn='order:save_btn')
-            self.order_page.get_orders_page()
-            self.orders_page.filter_by_order_no(filter_text=order_no)
+            self.order_page.sleep_medium()
+            new_order_no = self.order_page.get_order_number()
+            self.orders_page.get_orders_page()
+            self.orders_page.filter_by_order_no(filter_text=new_order_no)
+            rows_data = self.order_page.get_table_rows_data()
+            new_orders_count = len(rows_data)
+            print(new_orders_count)
+
+            self.base_selenium.LOGGER.info(' + Assert {} (new_no) == {} (order_no)'.format(new_orders_count, orders_count))
+            self.assertEqual(orders_count, new_orders_count)
+

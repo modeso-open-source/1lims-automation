@@ -9,6 +9,9 @@ class Order(Orders):
     def get_order_number(self):
         return self.base_selenium.get_text(element='order:order_number_add_form').split('\n')[0]
 
+    def get_order_number_from_form(self):
+        return self.base_selenium.get_text(element='order:order_number').split('\n')[0]
+
     def set_new_order(self):
         self.base_selenium.select_item_from_drop_down(
             element='order:order', item_text='New Order')
@@ -95,16 +98,22 @@ class Order(Orders):
     def get_test_unit(self):
         return self.base_selenium.get_text(element='order:test_unit').split('\n')[0]
 
-    def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit=''):
+    def create_new_order(self, material_type='r', article='r', contact='', test_plan='a', test_unit='a', multiple_suborders=0):
         self.set_new_order()
         self.set_material_type(material_type=material_type)
         self.set_article(article=article)
         self.set_contact(contact=contact)
+        order_no = self.get_order_number_from_form()
         if test_plan:
             self.set_test_plan(test_plan=test_plan)
         elif test_unit:
             self.set_test_unit(test_unit=test_unit)
-        self.save(save_btn='order:save')
+        if multiple_suborders > 0:
+            self.change_view()
+            self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
+
+        self.save(save_btn='order:save_btn')
+        return order_no
         
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")

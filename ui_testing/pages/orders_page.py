@@ -78,6 +78,11 @@ class Orders(BasePages):
         self.base_selenium.find_element_in_element(destination_element='general:filter_apply_btn',
                                                    source_element='general:filter_actions').click()
         time.sleep(self.base_selenium.TIME_SMALL)
+    
+    def filter_reset(self):
+        self.base_selenium.find_element_in_element(destination_element='general:filter_reset_btn',
+                                                   source_element='general:filter_actions').click()
+        time.sleep(self.base_selenium.TIME_SMALL)
 
     def open_filter_menu(self):
         filter = self.base_selenium.find_element_in_element(source_element='general:menu_filter_view',
