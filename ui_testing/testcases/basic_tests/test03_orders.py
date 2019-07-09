@@ -316,7 +316,7 @@ class OrdersTestCases(BaseTest):
         LIMS-3817
         :return:
         """
-        test_plan_dict = self.get_active_article_with_test_plane(test_plan_status='complete')
+        test_plan_dict = self.get_active_article_with_tst_plan(test_plan_status='complete')
 
         self.order_page.get_orders_page()
         order_row = self.order_page.get_random_order_row()

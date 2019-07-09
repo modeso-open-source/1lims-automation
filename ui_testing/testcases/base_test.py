@@ -46,7 +46,7 @@ class BaseTest(TestCase):
                     tmp.append(str(item).replace(',', '&').replace("'", ""))
         return tmp
 
-    def get_active_article_with_test_plane(self, test_plan_status='complete'):
+    def get_active_article_with_tst_plan(self, test_plan_status='complete'):
         self.base_selenium.LOGGER.info(' + Get Active article with {} test plan.'.format(test_plan_status))
         self.test_plan.get_test_plans_page()
         complete_test_plans = self.test_plan.search(test_plan_status)

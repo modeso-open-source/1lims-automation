@@ -161,6 +161,7 @@ class BasePages:
 
     def get_table_rows_data(self):
         return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]                      
+
     def open_random_table_row_page(self, table_element):
         row = self.get_random_table_row(table_element)
         self.get_random_x(row=row)
