@@ -390,7 +390,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Make sure that created orders has same data of the oringal order')
         for index in range(number_of_copies):
             row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_rows[index])
-            self.base_selenium.LOGGER.info('Check if order created number: with analyis  {} '.format(index + 1, ))
+            self.base_selenium.LOGGER.info('Check if order created number:  {} with analyis  '.format(index + 1, ))
             self.assertTrue(row_data['Analysis No.'])
             self.base_selenium.LOGGER.info(
                 'Check if order created number:  {} has order number = {}   '.format(index + 1,
