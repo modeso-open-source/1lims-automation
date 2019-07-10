@@ -134,6 +134,9 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_test_plan()
         self.order_page.set_test_plan()
         self.order_page.get_suborder_table()
+        self.order_page.get_article()
+        self.order_page.get_test_plan()
+
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -173,6 +176,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.set_test_plan()
         self.order_page.get_test_plan()
         self.order_page.get_suborder_table()
+
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
