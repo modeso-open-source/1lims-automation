@@ -273,6 +273,10 @@ elements = {
                            'value': 'table-with-add'},
         'add_new_item': {'method': 'class_name',
                          'value': 'addNewItem',
+                         'order': 0},
+        'overview_button': {'method': 'class_name',
+                         'value': 'm-nav__link-text',
                          'order': 0}
+
     }
 }

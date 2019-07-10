@@ -112,6 +112,86 @@ class OrdersTestCases(BaseTest):
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
 
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test006_update_material_type(self, save):
+        """
+        New: Orders: Edit material type: Make sure that user able to change material type and related test plan &
+        article.
+
+        LIMS-4281
+        LIMS-4281
+        :return:
+        """
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        current_material_type = self.order_page.get_material_type()
+        self.order_page.set_material_type()
+        new_material_type = self.order_page.get_material_type()
+        self.order_page.confirm_popup(force=True)
+        self.order_page.get_article()
+        self.order_page.set_article()
+        self.order_page.get_test_plan()
+        self.order_page.set_test_plan()
+        self.order_page.get_suborder_table()
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True)
+
+        self.base_selenium.get(url=order_url, sleep=5)
+
+        order_material = self.order_page.get_material_type()
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (new_material_type) == {} (order_material_type)'.format(new_material_type,
+                                                                                      order_material))
+            self.assertEqual(new_material_type, self.order_page.get_material_type())
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_material_type) == {} (order_material_type)'.format(current_material_type,
+                                                                                          order_material))
+            self.assertEqual(current_material_type, self.order_page.get_material_type())
+
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test007_update_article(self, save):
+        """
+        New: Orders: Edit Approach: I can update the article successfully and press on ok button
+        ( case we have In-Progress test plan )
+
+        LIMS-4297
+        LIMS-4297
+        :return:
+        """
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        current_article = self.order_page.get_article()
+        self.order_page.set_article()
+        new_article = self.order_page.get_article()
+        self.order_page.confirm_popup(force=True)
+        self.order_page.set_test_plan()
+        self.order_page.get_test_plan()
+        self.order_page.get_suborder_table()
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True)
+
+        self.base_selenium.get(url=order_url, sleep=5)
+
+        order_article = self.order_page.get_article()
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (new_article) == {} (order_article)'.format(new_article,
+                                                                          order_article))
+            self.assertEqual(new_article, self.order_page.get_article())
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_article) == {} (order_article)'.format(current_article,
+                                                                              order_article))
+            self.assertEqual(current_article, self.order_page.get_material_type())
+
     def test004_archive_order(self):
         """
             New: Orders: Archive
