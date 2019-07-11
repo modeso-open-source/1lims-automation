@@ -67,7 +67,9 @@ elements = {
                 'delete': {'method': 'link_text',
                            'value': 'Delete'},
                 'xslx': {'method': 'link_text',
-                            'value': 'XSLX'},           
+                            'value': 'XSLX'},
+                'table_info': {'method': 'id',
+                               'value': 'table_info'}
                 },
     'login': {
         'username': {'method': 'name',

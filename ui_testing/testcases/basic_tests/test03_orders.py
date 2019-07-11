@@ -326,6 +326,7 @@ class OrdersTestCases(BaseTest):
         order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
         orders_duplicate_data_before, orders = self.order_page.get_orders_duplicate_data(
             order_no=order_data['Order No.'])
+        orders_records_before = self.order_page.get_table_records()
 
         self.base_selenium.LOGGER.info(' + Select random order with {} no.'.format(order_data['Order No.']))
         self.order_page.get_random_x(orders[0])
@@ -340,9 +341,10 @@ class OrdersTestCases(BaseTest):
 
         self.order_page.get_orders_page()
         orders_duplicate_data_after, _ = self.order_page.get_orders_duplicate_data(order_no=order_data['Order No.'])
+        orders_records_after = self.order_page.get_table_records()
 
         self.base_selenium.LOGGER.info(' + Assert there is a new suborder with the same order no.')
-        self.assertEqual(len(orders_duplicate_data_before), len(orders_duplicate_data_after) - 1)
+        self.assertEqual(orders_records_after, orders_records_before + 1)
 
         self.analyses_page.get_analyses_page()
         self.base_selenium.LOGGER.info(' + Assert There is an analysis for this new suborder.')

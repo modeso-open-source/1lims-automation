@@ -172,3 +172,9 @@ class BasePages:
         row = rows[row_id]
         return row
 
+    def get_table_info(self):
+        return self.base_selenium.get_text(element='general:table_info')
+
+    def get_table_records(self):
+        self.base_selenium.LOGGER.info(' + Get table records.')
+        return int(self.get_table_info().split(' ')[5])
