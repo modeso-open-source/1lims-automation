@@ -13,7 +13,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
 
     @parameterized.expand(['save_btn', 'cancel'])
-    # @skip('https://modeso.atlassian.net/browse//LIMS-4768')
+    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
     def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
