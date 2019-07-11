@@ -73,7 +73,7 @@ elements = {
                 'delete': {'method': 'link_text',
                            'value': 'Delete'},
                 'xslx': {'method': 'link_text',
-                            'value': 'XSLX'},
+                         'value': 'XSLX'},
                 'table_info': {'method': 'id',
                                'value': 'table_info'}
                 },
@@ -223,7 +223,7 @@ elements = {
         'filter_order_no': {'method': 'id',
                             'value': 'orderNofield'},
         'analysis_filter': {'method': 'id',
-                'value': 'analysisfield'}        
+                            'value': 'analysisfield'}
     },
 
     'order': {
@@ -295,8 +295,13 @@ elements = {
                            'value': 'table-with-add'},
         'add_new_item': {'method': 'class_name',
                          'value': 'addNewItem',
-                         'order': 0}
-    },
+                         'order': 0},
+        'duplicate_table_view': {'method': 'id',
+                                 'value': 'duplicate_table_view'},
+        'delete_table_view': {'method': 'id',
+                              'value': 'delete_table_view'}
+                         
+        },
     'analysis': {
         'filter_order_no': {
             'method': 'id',
