@@ -1,12 +1,6 @@
 import re
 from unittest import skip
 from parameterized import parameterized
-from ui_testing.pages.analyses_page import Analyses
-from ui_testing.pages.article_page import Article
-from ui_testing.pages.login_page import Login
-from ui_testing.pages.order_page import Order
-from ui_testing.pages.orders_page import Orders
-from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.testcases.base_test import BaseTest
 from random import randint
 
