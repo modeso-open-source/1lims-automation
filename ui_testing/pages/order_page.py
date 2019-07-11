@@ -151,6 +151,7 @@ class Order(Orders):
         self.base_selenium.click(element='order:suborder_list')
 
     def create_new_suborder(self, material_type='', article_name='', test_plan='', **kwargs):
+        import ipdb; ipdb.set_trace()
         self.get_suborder_table()
         rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
 
@@ -176,3 +177,12 @@ class Order(Orders):
                 self.base_selenium.LOGGER.info(' + {} is not a header element!'.format(key))
                 self.base_selenium.LOGGER.info(' + Header keys : {}'.format(suborder_elements_dict.keys()))
 
+    def duplicate_suborder(self):
+        self.get_suborder_table()
+        self.base_selenium.LOGGER.info(' + Duplicate order')
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[0],
+                                                                                         table_element='order:suborder_table')
+        duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
+                                                                       destination_element='order:duplicate_table_view')
+        duplicate_element.click()
