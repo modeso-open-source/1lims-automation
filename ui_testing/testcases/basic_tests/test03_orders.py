@@ -443,7 +443,7 @@ class OrdersTestCases(BaseTest):
         # create order with multiple suborders
         self.orders_page.click_create_order_button()
         self.order_page.sleep_tiny()
-        order_no_created = self.order_page.create_new_order(multiple_suborders=5)
+        order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='a', test_unit='a', multiple_suborders=5)
         self.base_selenium.LOGGER.info(' + orders_created_with_number : {}'.format(order_no_created))
         order_no_created = order_no_created.replace("'", '')
         
