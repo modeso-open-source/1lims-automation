@@ -13,7 +13,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
 
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
+    # @skip('https://modeso.atlassian.net/browse//LIMS-4768')
     def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
@@ -428,7 +428,7 @@ class OrdersTestCases(BaseTest):
                                                                                                                  'Test Plans']))
             self.assertEqual(selected_order_data['Test Plans'], row_data['Test Plans'])
             
-    @skip("https://modeso.atlassian.net/browse/LIMS-4782")
+    # @skip("https://modeso.atlassian.net/browse/LIMS-4782")
     def test013_update_order_number(self):
         """
         New: Orders: Table: Update order number Approach:
@@ -448,9 +448,9 @@ class OrdersTestCases(BaseTest):
         # filter by the created order number and get the count
         self.orders_page.filter_by_order_no(filter_text=order_no_created)
         self.base_selenium.LOGGER.info(' + filter_by_order_no : {}'.format(order_no_created))
-        rows_data = self.order_page.get_table_rows_data()
-        orders_count = len(rows_data)
-        self.base_selenium.LOGGER.info(' + count_of_the_created_orders : {}'.format(orders_count-1))
+        rows_data = self.order_page.get_table_records()
+        orders_count = rows_data
+        self.base_selenium.LOGGER.info(' + count_of_the_created_orders : {}'.format(orders_count))
 
         # open the last created order to update its number and checking whether it will affect the rest of the orders or not
         last_created_order = self.order_page.get_last_order_row()
@@ -467,16 +467,16 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_orders_page()
         self.orders_page.filter_by_order_no(filter_text=new_order_no)
         self.base_selenium.LOGGER.info(' + filter_by_new_order_no : {}'.format(new_order_no))
-        rows_data = self.order_page.get_table_rows_data()
-        new_orders_count = len(rows_data)
-        self.base_selenium.LOGGER.info(' + count_of_the_updated_orders : {}'.format(new_orders_count-1))
+        rows_data = self.order_page.get_table_records()
+        new_orders_count = rows_data
+        self.base_selenium.LOGGER.info(' + count_of_the_updated_orders : {}'.format(new_orders_count))
 
         # filtering by the old order no to make sure that the orders no has been replaced not added to the system
         self.orders_page.get_orders_page()
         self.orders_page.filter_by_order_no(filter_text=new_order_no)
         self.base_selenium.LOGGER.info(' + filter_by_old_order_no_after_update : {}'.format(order_no_created))
-        rows_data = self.order_page.get_table_rows_data()
-        orders_before_update_count = len(rows_data)
+        rows_data = self.order_page.get_table_records()
+        orders_before_update_count = rows_data
         self.base_selenium.LOGGER.info(' + count_of_the_old_order_no_suborders : {}'.format(orders_before_update_count-1))
         
         # transfering to analysis page
@@ -486,8 +486,8 @@ class OrdersTestCases(BaseTest):
         # filter in analysis using new order number, count should be equal to the records count in order
         self.analyses_page.filter_by(filter_element='analysis:filter_order_no', filter_text=new_order_no)
         self.base_selenium.LOGGER.info(' + filter_by_order_no_after_update_in_analysis : {}'.format(new_order_no))
-        rows_data = self.analyses_page.get_table_rows_data()
-        records_in_analysis_after_update_count = len(rows_data)
+        rows_data = self.analyses_page.get_table_records()
+        records_in_analysis_after_update_count = rows_data
         
 
         # by filtering with the new random generated order number, if the count of the orders remained the same, that's mean that all orders with the same number have been successfully updated.
