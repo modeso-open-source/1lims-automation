@@ -295,7 +295,7 @@ elements = {
                          'value': 'addNewItem',
                          'order': 0}
     },
-    'analysis_table': {
+    'analysis': {
         'filter_order_no': {
             'method': 'id',
             'value': 'orderNofield'

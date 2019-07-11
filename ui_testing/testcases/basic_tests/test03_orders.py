@@ -486,7 +486,7 @@ class OrdersTestCases(BaseTest):
         self.analyses_page.sleep_small()
 
         # filter in analysis using new order number, count should be equal to the records count in order
-        self.analyses_page.filter_by(filter_element='analysis_table:filter_order_no', filter_text=new_order_no)
+        self.analyses_page.filter_by(filter_element='analysis:filter_order_no', filter_text=new_order_no)
         self.base_selenium.LOGGER.info(' + filter_by_order_no_after_update_in_analysis : {}'.format(new_order_no))
         rows_data = self.analyses_page.get_table_rows_data()
         records_in_analysis_after_update_count = len(rows_data)
