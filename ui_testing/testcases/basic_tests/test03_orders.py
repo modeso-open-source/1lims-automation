@@ -424,7 +424,7 @@ class OrdersTestCases(BaseTest):
                                                                                                                  'Test Plans']))
             self.assertEqual(selected_order_data['Test Plans'], row_data['Test Plans'])
             
-    # @skip("https://modeso.atlassian.net/browse/LIMS-4782")
+    @skip("https://modeso.atlassian.net/browse/LIMS-4782")
     def test013_update_order_number(self):
         """
         New: Orders: Table: Update order number Approach:
