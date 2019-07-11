@@ -428,7 +428,7 @@ class OrdersTestCases(BaseTest):
                                                                                                                  'Test Plans']))
             self.assertEqual(selected_order_data['Test Plans'], row_data['Test Plans'])
             
-    # @skip("https://modeso.atlassian.net/browse/LIMS-4782")
+    @skip("https://modeso.atlassian.net/browse/LIMS-4782")
     def test013_update_order_number(self):
         """
         New: Orders: Table: Update order number Approach:
@@ -437,8 +437,11 @@ class OrdersTestCases(BaseTest):
 
         LIMS-4270
         """
+        self.base_selenium.LOGGER.info(' Running test case to check that when order no is updated, all suborders are updated')    
+
 
         # create order with multiple suborders
+        self.base_selenium.LOGGER.info(' Create order with 6 sub orders to make sure of the count of the created/ updated orders')
         self.orders_page.click_create_order_button()
         self.order_page.sleep_tiny()
         order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='a', test_unit='a', multiple_suborders=5)
