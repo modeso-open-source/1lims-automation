@@ -14,12 +14,6 @@ from random import randint
 class OrdersTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-        self.login_page = Login()
-        self.order_page = Order()
-        self.test_plan = TstPlan()
-        self.article_page = Article()
-        self.analyses_page = Analyses()
-        self.orders_page = Orders()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.order_page.get_orders_page()
@@ -436,7 +430,7 @@ class OrdersTestCases(BaseTest):
                                                                                                                  'Test Plans']))
             self.assertEqual(selected_order_data['Test Plans'], row_data['Test Plans'])
             
-    @skip("https://modeso.atlassian.net/browse/LIMS-4782")
+    # @skip("https://modeso.atlassian.net/browse/LIMS-4782")
     def test013_update_order_number(self):
         """
         New: Orders: Table: Update order number Approach:

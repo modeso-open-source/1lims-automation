@@ -5,6 +5,7 @@ from ui_testing.pages.analyses_page import Analyses
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.order_page import Order
+from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.testplan_page import TstPlan
 import datetime
 
@@ -23,6 +24,7 @@ class BaseTest(TestCase):
         self.test_plan = TstPlan()
         self.article_page = Article()
         self.analyses_page = Analyses()
+        self.orders_page = Orders()
 
 
     def tearDown(self):
