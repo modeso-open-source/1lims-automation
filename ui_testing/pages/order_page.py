@@ -88,6 +88,7 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:test_unit').split('\n')[0]
 
     def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
+        self.click_create_order_button()
         self.set_new_order()
         self.set_material_type(material_type=material_type)
         self.set_article(article=article)
