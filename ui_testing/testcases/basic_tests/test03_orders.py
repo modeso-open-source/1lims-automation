@@ -427,7 +427,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(selected_order_data['Test Plans'], row_data['Test Plans'])
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test013_update_material_type(self, save):
+    def test014_update_material_type(self, save):
         """
         New: Orders: Edit material type: Make sure that user able to change material type and related test plan &
         article.
@@ -461,7 +461,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.get(url=order_url, sleep=5)
 
 
-    def test014_update_article(self):
+    def test015_update_article(self):
         """
         New: Orders: Edit Approach: I can update the article successfully and press on ok button
         then press on cancel button, Nothing updated
