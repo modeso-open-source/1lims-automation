@@ -37,6 +37,12 @@ elements = {
                 'filter': {'method': 'tag_name',
                            'value': 'span',
                            'order': 0},
+                'filter_apply_btn': {'method': 'class_name',
+                             'value': 'btn-primary',
+                             'order': 0},
+                'filter_reset_btn': {'method': 'class_name',
+                             'value': 'btn-secondary',
+                             'order': 1},
                 'ng_values': {'method': 'class_name',
                               'value': 'ng-value',
                               'order': -1},
@@ -213,7 +219,9 @@ elements = {
         'create_copies': {'method': 'id',
                           'value': 'create_copies_id'},
         'save_order': {'method': 'id',
-                       'value': 'button_save_order'},
+                'value': 'button_save_order'},
+        'filter_order_no': {'method': 'id',
+                            'value': 'orderNofield'},
         'analysis_filter': {'method': 'id',
                             'value': 'analysisfield'}
     },
@@ -267,7 +275,19 @@ elements = {
         'shipment_date': {'method': 'id',
                           'value': 'date_shipmentDate'},
         'test_date': {'method': 'id',
-                      'value': 'date_testDate'},
+                    'value': 'date_testDate'},
+        'save': {'method': 'class_name',
+                 'value': 'btn-primary',
+                 'order': 1},
+        'duplicate_table_view': {'method': 'id',
+                                 'value':'duplicate_table_view'},
+        'delete_table_view': {'method': 'id',
+                              'value': 'delete_table_view'},
+        'change_view': {'method': 'class_name',
+                'value': 'icon-views',
+                'order': 0
+                },
+
         'suborder_list': {'method': 'class_name',
                           'value': 'flaticon-signs',
                           'order': 0},
@@ -280,5 +300,12 @@ elements = {
                                  'value': 'duplicate_table_view'},
         'delete_table_view': {'method': 'id',
                               'value': 'delete_table_view'}
+                         
+        },
+    'analysis': {
+        'filter_order_no': {
+            'method': 'id',
+            'value': 'orderNofield'
+        }
     }
 }

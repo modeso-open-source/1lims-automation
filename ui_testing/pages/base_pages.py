@@ -113,7 +113,7 @@ class BasePages:
 
     def get_random_x(self, row):
         x_cells = self.base_selenium.get_row_cells(row=row)
-
+        
         for x_cell in x_cells:
             if x_cell.text:
                 x_cell.click()
