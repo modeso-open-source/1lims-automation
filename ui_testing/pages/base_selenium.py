@@ -545,5 +545,3 @@ class BaseSelenium:
         else:
             self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 
-    def refresh_page(self):
-        self.driver.refresh()

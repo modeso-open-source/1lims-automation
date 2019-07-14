@@ -243,9 +243,10 @@ elements = {
                      'value': 'button_save_order'},
 
         'no': {'method': 'id',
-               'value': 'orderNoWithYearfield'},
-        # 'cancel': {'method': 'id',
-        #            'value': 'button_cancel_order'},
+                      'value': 'orderNoWithYearfield'},
+
+         'cancel_btn': {'method': 'id',
+                         'value': 'button_cancel_order'},
 
         'cancel_button': {'method': 'class_name',
                           'value': 'swal2-cancel',
