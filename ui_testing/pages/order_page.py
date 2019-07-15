@@ -1,6 +1,5 @@
 from ui_testing.pages.orders_page import Orders
 
-
 class Order(Orders):
     def get_order(self):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]
@@ -135,6 +134,11 @@ class Order(Orders):
 
     def get_test_date(self):
         return self.base_selenium.get_value(element='order:test_date')
+
+    def set_test_date(self, date=''):
+        if not date:
+            date = self.get_random_date()
+        self.base_selenium.set_text(element='order:test_date', value=date)
 
     def get_departments(self):
         departments = self.base_selenium.get_text(

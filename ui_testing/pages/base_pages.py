@@ -178,3 +178,6 @@ class BasePages:
     def get_table_records(self):
         self.base_selenium.LOGGER.info(' + Get table records.')
         return int(self.get_table_info().split(' ')[5])
+
+    def get_random_date(self):
+        return '{:02d}.{:02d}.{}'.format(randint(1, 30), randint(1, 12), 2019)
