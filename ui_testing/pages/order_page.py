@@ -30,34 +30,12 @@ class Order(Orders):
     def get_article(self):
         return self.base_selenium.get_text(element='order:article').split('\n')[0]
 
-
-    #def set_article(self, article=''):
-        #if article:
-            #self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
-        #else:
-            #self.base_selenium.select_item_from_drop_down(element='order:article')
-            #return self.get_article()
-
-    def set_article(self, article_name='', article=''):
-        if article_name:
-            self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article_name)
-        elif article:
+    def set_article(self, article=''):
+        if article:
             self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
-
         else:
             self.base_selenium.select_item_from_drop_down(element='order:article')
             return self.get_article()
-
-    #def set_test_plan_with_mt_article(self, material_type='', article='', test_plan_status=''):
-        #if material_type:
-            #self.base_selenium.select_item_from_drop_down(element='order:article', item_text=material_type)
-        #elif article:
-            #self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
-        #elif test_plan_status:
-            #self.base_selenium.select_item_from_drop_down(element='order:article', item_text=test_plan_status)
-        #else:
-            #self.base_selenium.select_item_from_drop_down(element='order:test_plan')
-            #return self.get_test_plan()
 
     def is_article_existing(self, article):
          self.set_article(article=article)
