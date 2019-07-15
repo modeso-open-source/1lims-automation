@@ -107,17 +107,24 @@ class Order(Orders):
     def get_test_unit(self):
         return self.base_selenium.get_text(element='order:test_unit').split('\n')[0]
 
-    def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit=''):
+    def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
+        self.click_create_order_button()
         self.set_new_order()
         self.set_material_type(material_type=material_type)
         self.set_article(article=article)
         self.set_contact(contact=contact)
+        order_no = self.get_no()
         if test_plan:
             self.set_test_plan(test_plan=test_plan)
         elif test_unit:
             self.set_test_unit(test_unit=test_unit)
-        self.save(save_btn='order:save')
+        if multiple_suborders > 0:
+            self.get_suborder_table()
+            self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
 
+        self.save(save_btn='order:save_btn')
+        return order_no
+        
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
 
@@ -165,12 +172,13 @@ class Order(Orders):
         else:
             self.base_selenium.select_item_from_drop_down(element='order:departments')
             return self.get_departments()
-
+        
     def get_suborder_table(self):
         self.base_selenium.LOGGER.info(' + Get suborder table list.')
         self.base_selenium.click(element='order:suborder_list')
 
     def create_new_suborder(self, material_type='', article_name='', test_plan='', **kwargs):
+        import ipdb; ipdb.set_trace()
         self.get_suborder_table()
         rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
 
@@ -196,3 +204,16 @@ class Order(Orders):
                 self.base_selenium.LOGGER.info(' + {} is not a header element!'.format(key))
                 self.base_selenium.LOGGER.info(' + Header keys : {}'.format(suborder_elements_dict.keys()))
 
+    def duplicate_from_table_view(self, number_of_duplicates=1):
+        for duplicate in range(number_of_duplicates):
+            self.base_selenium.click(element='order:duplicate_table_view')    
+        
+    def duplicate_suborder(self):
+        self.get_suborder_table()
+        self.base_selenium.LOGGER.info(' + Duplicate order')
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[0],
+                                                                                         table_element='order:suborder_table')
+        duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
+                                                                       destination_element='order:duplicate_table_view')
+        duplicate_element.click()
