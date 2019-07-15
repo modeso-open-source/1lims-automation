@@ -1,6 +1,5 @@
 from ui_testing.pages.orders_page import Orders
 
-
 class Order(Orders):
     def get_order(self):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]
@@ -156,6 +155,12 @@ class Order(Orders):
     def get_test_date(self):
         return self.base_selenium.get_value(element='order:test_date')
 
+    def set_test_date(self, date=''):
+        if not date:
+            date = self.get_random_date()
+        self.base_selenium.set_text(element='order:test_date', value=date)
+        return date
+        
     def get_departments(self):
         departments = self.base_selenium.get_text(
             element='order:departments').split('\n')[0]
@@ -178,7 +183,6 @@ class Order(Orders):
         self.base_selenium.click(element='order:suborder_list')
 
     def create_new_suborder(self, material_type='', article_name='', test_plan='', **kwargs):
-        import ipdb; ipdb.set_trace()
         self.get_suborder_table()
         rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
 

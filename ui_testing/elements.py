@@ -296,15 +296,14 @@ elements = {
                            'value': 'table-with-add'},
         'add_new_item': {'method': 'class_name',
                          'value': 'addNewItem',
+
                          'order': 0},
 
         'duplicate_table_view': {'method': 'id',
                                  'value': 'duplicate_table_view'},
         'delete_table_view': {'method': 'id',
                               'value': 'delete_table_view'}
-                         
-        },
-  
+                         'order': 0},
     'analysis': {
         'filter_order_no': {
             'method': 'id',
