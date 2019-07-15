@@ -555,4 +555,3 @@ class OrdersTestCases(BaseTest):
                                                                                   order_shipment_date))
             self.assertEqual(current_shipment_date, order_shipment_date)
 
-
