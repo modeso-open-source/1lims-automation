@@ -445,13 +445,12 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        self.order_page.get_material_type()
+        current_material_type = self.order_page.get_material_type()
         self.order_page.set_material_type(material_type=test_plan_dict['Material Type'])
+        new_material_type = self.order_page.get_material_type()
         self.order_page.confirm_popup(force=True)
         self.order_page.set_article(article_name=test_plan_dict['Article Name'])
-        self.order_page.get_article()
         self.order_page.set_test_plan(test_plan=test_plan_dict['Test Plan Name'])
-        self.order_page.get_test_plan()
         self.order_page.get_suborder_table()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
@@ -460,8 +459,20 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.get(url=order_url, sleep=5)
 
+        order_material_type = self.order_page.get_material_type()
 
-    def test015_update_article(self):
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (new_material_type) == {} (order_material_type)'.format(new_material_type, order_material_type))
+            self.assertEqual(new_material_type, order_material_type)
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_material_type) == {} (order_material_type)'.format(current_material_type,
+                                                                                      order_material_type))
+            self.assertEqual(current_material_type, order_material_type)
+
+
+    def test015_update_article_with_cancel_button(self):
         """
         New: Orders: Edit Approach: I can update the article successfully and press on ok button
         then press on cancel button, Nothing updated
@@ -471,22 +482,23 @@ class OrdersTestCases(BaseTest):
         LIMS-4297
         :return:
         """
-        test_plan_dict = self.get_active_article_with_tst_plan(test_plan_status='complete')
-
         self.order_page.get_orders_page()
         self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        self.order_page.get_material_type()
-        self.order_page.set_material_type(material_type='')
-        self.order_page.set_article(article_name=test_plan_dict['Article Name'])
-        self.order_page.get_article()
+        current_article=self.order_page.get_article()
+        self.order_page.set_article(article_name='')
         self.order_page.confirm_popup(force=True)
-        self.order_page.set_test_plan(test_plan=test_plan_dict['Test Plan Name'])
-        self.order_page.get_test_plan()
         self.order_page.get_suborder_table()
         self.order_page.cancel(force=True)
 
         self.base_selenium.get(url=order_url, sleep=5)
+
+        order_article = self.order_page.get_article()
+
+        self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_article) == {} (order_article)'.format(current_article,
+                                                                                      order_article))
+        self.assertEqual(current_article, order_article)
 
 
