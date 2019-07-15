@@ -534,31 +534,4 @@ class OrdersTestCases(BaseTest):
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
 
-    def test015_update_order_article_with_cancel_button(self):
-        """
-        New: Orders: Edit Approach: I can update the article successfully and press on ok button
-        then press on cancel button, Nothing updated
-
-
-        LIMS-4297
-        LIMS-4297
-        :return:
-        """
-        self.order_page.get_orders_page()
-        self.order_page.get_random_order()
-        order_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        current_article = self.order_page.get_article()
-        self.order_page.set_article(article_name='')
-        self.order_page.confirm_popup(force=True)
-        self.order_page.get_suborder_table()
-        self.order_page.cancel(force=True)
-
-        self.base_selenium.get(url=order_url, sleep=5)
-
-        order_article = self.order_page.get_article()
-
-        self.base_selenium.LOGGER.info(
-            ' + Assert {} (current_article) == {} (order_article)'.format(current_article,
-                                                                          order_article))
-        self.assertEqual(current_article, order_article)
+    
