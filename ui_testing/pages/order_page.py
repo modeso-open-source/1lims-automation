@@ -158,7 +158,6 @@ class Order(Orders):
         self.base_selenium.click(element='order:suborder_list')
 
     def create_new_suborder(self, material_type='', article_name='', test_plan='', **kwargs):
-        import ipdb; ipdb.set_trace()
         self.get_suborder_table()
         rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
 
