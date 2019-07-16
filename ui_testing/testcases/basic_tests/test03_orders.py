@@ -364,7 +364,8 @@ class OrdersTestCases(BaseTest):
         analysis_number = order_data['Analysis No.'].split(',')[0]
         analysis_filter_field = self.order_page.order_filters_element('Analysis No.')
         self.order_page.open_filter_menu()
-        self.order_page.filter('Analysis No.', analysis_filter_field['element'], analysis_number, analysis_filter_field['type'])
+        self.order_page.filter('Analysis No.', analysis_filter_field['element'], analysis_number,
+                               analysis_filter_field['type'])
         last_rows = self.order_page.get_last_order_row()
         order_data_after_filter = self.base_selenium.get_row_cells_dict_related_to_header(row=last_rows)
         analysis_number_filter = order_data_after_filter['Analysis No.'].split(',')[0]
@@ -489,9 +490,8 @@ class OrdersTestCases(BaseTest):
         # by filtering with the new random generated order number, if the count of the orders remained the same,
         # that's mean that all orders with the same number have been successfully updated.
         self.assertEqual(new_orders_count, records_in_analysis_after_update_count)
-        
-        
-      def test014_update_order_material_type(self, save):
+
+    def test014_update_order_material_type(self, save):
         """
         New: Orders: Edit material type: Make sure that user able to change material type and related test plan &
         article.
@@ -535,8 +535,8 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_material_type) == {} (order_material_type)'.format(current_material_type,
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
-            
-     def test011_filter_by_any_fields(self):
+
+    def test011_filter_by_any_fields(self):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
         LIMS-3495
@@ -556,9 +556,6 @@ class OrdersTestCases(BaseTest):
                 self.assertEqual(order_data[key].replace("'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
 
-
-   
- 
     @parameterized.expand(['save_btn', 'cancel'])
     def test016_update_test_date(self, save):
         """
@@ -571,7 +568,7 @@ class OrdersTestCases(BaseTest):
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         order_test_date = self.order_page.get_test_date()
-        test_date=self.order_page.set_test_date(date='')
+        test_date = self.order_page.set_test_date()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -579,19 +576,15 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
         current_test_date = self.order_page.get_test_date()
-
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date,test_date))
+                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date, test_date))
 
-
-
-            self.assertEqual(test_date,current_test_date)
-
+            self.assertEqual(test_date, current_test_date)
         else:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date,
-                                                                                          order_test_date))
+                                                                                  order_test_date))
             self.assertEqual(current_test_date, order_test_date)
 
     @parameterized.expand(['save_btn', 'cancel'])
@@ -606,7 +599,7 @@ class OrdersTestCases(BaseTest):
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         order_shipment_date = self.order_page.get_shipment_date()
-        shipment_date=self.order_page.set_shipment_date(date='')
+        shipment_date = self.order_page.set_shipment_date()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -615,12 +608,10 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
         current_shipment_date = self.order_page.get_shipment_date()
 
-
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(current_shipment_date, shipment_date))
-
-
+                ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(current_shipment_date,
+                                                                                        shipment_date))
             self.assertEqual(shipment_date, current_shipment_date)
 
         else:
@@ -628,6 +619,3 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
                                                                                           order_shipment_date))
             self.assertEqual(current_shipment_date, order_shipment_date)
-    
-   
-
