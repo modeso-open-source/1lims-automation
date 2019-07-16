@@ -570,7 +570,6 @@ class OrdersTestCases(BaseTest):
         # check both test plans and test units fields have error
         test_plan_class_name = self.base_selenium.get_attribute(element="order:test_plan", attribute='class')
         test_unit_class_name = self.base_selenium.get_attribute(element="order:test_unit", attribute='class')
-        self.base_selenium.LOGGER.info(test_plan_class_name)
         self.assertIn('has-error', test_plan_class_name)
         self.assertIn('has-error', test_unit_class_name)
         
@@ -583,6 +582,28 @@ class OrdersTestCases(BaseTest):
                                                             test_unit='', multiple_suborders=0)
         self.order_page.set_test_unit(test_unit='r')
         self.order_page.save(save_btn='order:save_btn')
+        
+        # validate in edit mode
+        self.order_page.get_orders_page()
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        
+        # delete test plan and test unit
+        if self.order_page.get_test_plan():
+            self.order_page.clear_test_plan()
+            self.order_page.confirm_popup(force=True)
+        # if self.order_page.get_test_unit():
+        # self.order_page.clear_test_unit()
+        # self.order_page.confirm_popup(force=True)
+        
+        self.order_page.save(save_btn='order:save_btn')
+        # check both test plans and test units fields have error
+        test_plan_class_name = self.base_selenium.get_attribute(element="order:test_plan", attribute='class')
+        test_unit_class_name = self.base_selenium.get_attribute(element="order:test_unit", attribute='class')
+        self.assertIn('has-error', test_plan_class_name)
+        self.assertIn('has-error', test_unit_class_name)
+        
         
 
         

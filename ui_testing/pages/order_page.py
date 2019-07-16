@@ -72,6 +72,12 @@ class Order(Orders):
                 test_plans.append(test_plan.split('× ')[1])
             return ','.join(test_plans)
 
+    def clear_test_plan(self):
+        return self.base_selenium.clear_items_in_drop_down(element='order:test_plan')
+    
+    def clear_test_unit(self):
+        return self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
+    
     def set_test_unit(self, test_unit):
         if test_unit:
             self.base_selenium.select_item_from_drop_down(
