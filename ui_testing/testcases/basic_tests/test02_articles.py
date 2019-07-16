@@ -1,8 +1,4 @@
 from ui_testing.testcases.base_test import BaseTest
-from ui_testing.pages.login_page import Login
-from ui_testing.pages.article_page import Article
-from ui_testing.pages.testplan_page import TstPlan
-from ui_testing.pages.order_page import Order
 from parameterized import parameterized
 import re
 
@@ -210,12 +206,12 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.create_new_article(material_type='Raw Material')
         self.article_page.archive_article(name=self.article_page.article_name)
-        self.order.get_orders_page()
-        self.order.click_create_order_button()
-        self.order.set_new_order()
-        self.order.set_material_type(material_type=self.article_page.article_material_type)
+        self.order_page.get_orders_page()
+        self.order_page.click_create_order_button()
+        self.order_page.set_new_order()
+        self.order_page.set_material_type(material_type=self.article_page.article_material_type)
         self.article_page.sleep_tiny()
-        self.assertFalse(self.order.is_article_existing(article=self.article_page.article_name))
+        self.assertFalse(self.order_page.is_article_existing(article=self.article_page.article_name))
 
     def test008_created_article_appear_in_test_plan(self):
         """
@@ -406,11 +402,11 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.create_new_test_plan(material_type=self.article_page.article_material_type,
                                             article=self.article_page.article_name,
                                             test_unit='Qualitative')
-        self.order.get_orders_page()
-        self.order.click_create_order_button()
+        self.order_page.get_orders_page()
+        self.order_page.click_create_order_button()
         self.base_selenium.LOGGER.info(
             ' + Create new order with {} article.'.format(self.article_page.article_name))
-        self.order.create_new_order(article=self.article_page.article_name,
+        self.order_page.create_new_order(article=self.article_page.article_name,
                                     material_type=self.article_page.article_material_type,
                                     test_plan=self.test_plan.test_plan_name)
 
