@@ -32,16 +32,14 @@ class Order(Orders):
 
     def set_article(self, article=''):
         if article:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:article', item_text=article)
+            self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
         else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:article')
+            self.base_selenium.select_item_from_drop_down(element='order:article')
             return self.get_article()
 
     def is_article_existing(self, article):
-        self.set_article(article=article)
-        return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
+         self.set_article(article=article)
+         return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
 
     def set_contact(self, contact=''):
         if contact:
@@ -115,8 +113,8 @@ class Order(Orders):
             self.set_contact(edit_value)
         elif 'departments' in edit_method:
             self.set_departments(edit_value)
-        # elif 'contact' in edit_method:
-        # self.set_contact(edit_value)
+         #elif 'material_type' in edit_method:
+            #self.set_material_type(edit_value)
         # elif '' in edit_method:
         # self.set_contact(edit_value)
 
