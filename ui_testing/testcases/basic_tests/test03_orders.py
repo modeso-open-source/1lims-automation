@@ -556,3 +556,23 @@ class OrdersTestCases(BaseTest):
                 self.assertEqual(order_data[key].replace("'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
 
+    def test015_validate_order_test_unit_test_plan(self):
+        """
+        New: orders Test plan /test unit validation
+
+        LIMS-4349
+        """
+        self.base_selenium.LOGGER.info(
+            ' Running test case to check that at least test unit or test plan is mandatory in order')
+		
+        order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='',
+                                                            test_unit='', multiple_suborders=0)
+        test_plan_class_name = self.base_selenium.get_attribute(element="order:test_plan", attribute='class')
+        test_unit_class_name = self.base_selenium.get_attribute(element="order:test_unit", attribute='class')
+        self.base_selenium.LOGGER.info(test_plan_class_name)
+        self.assertIn('has-error', test_plan_class_name)
+        self.assertIn('has-error', test_unit_class_name)														
+
+
+        
+

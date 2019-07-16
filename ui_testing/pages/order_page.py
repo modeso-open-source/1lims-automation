@@ -94,7 +94,7 @@ class Order(Orders):
         if test_plan:
             self.set_test_plan(test_plan=test_plan)
         elif test_unit:
-            self.set_test_unit(test_unit=test_unit)
+            self.set_test_unit(test_unit=test_unit)    
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
