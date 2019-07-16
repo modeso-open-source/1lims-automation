@@ -364,7 +364,7 @@ class OrdersTestCases(BaseTest):
         analysis_number = order_data['Analysis No.'].split(',')[0]
         analysis_filter_field = self.order_page.order_filters_element('Analysis No.')
         self.order_page.open_filter_menu()
-        self.order_page.filter(analysis_filter_field['field_name'], analysis_filter_field['element'], analysis_number, analysis_filter_field['type'])
+        self.order_page.filter('Analysis No.', analysis_filter_field['element'], analysis_number, analysis_filter_field['type'])
         last_rows = self.order_page.get_last_order_row()
         order_data_after_filter = self.base_selenium.get_row_cells_dict_related_to_header(row=last_rows)
         analysis_number_filter = order_data_after_filter['Analysis No.'].split(',')[0]
@@ -543,16 +543,16 @@ class OrdersTestCases(BaseTest):
         """
         order_row = self.order_page.get_random_order_row()
         order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
-        filter_fields_list = self.order_page.order_filters_element()
+        filter_fields_dict = self.order_page.order_filters_element()
         self.order_page.open_filter_menu()
-        for field in filter_fields_list:
-            self.order_page.filter(field['field_name'], field['element'], order_data[field['field_name']],
-                                   field['type'])
+        for key in filter_fields_dict:
+            field = filter_fields_dict[key]
+            self.order_page.filter(key, field['element'], order_data[key], field['type'])
             filtered_rows = self.order_page.result_table()
             for index in range(len(filtered_rows) - 1):
                 row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=filtered_rows[index])
                 self.base_selenium.LOGGER.info(
-                    ' Assert {} in  (table row: {}) == {} '.format(field['field_name'], index + 1, order_data[field['field_name']]))
-                self.assertEqual(order_data[field['field_name']], row_data[field['field_name']])
+                    ' Assert {} in  (table row: {}) == {} '.format(key, index + 1, order_data[key]))
+                self.assertEqual(order_data[key].replace("'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
 

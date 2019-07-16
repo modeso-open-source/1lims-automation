@@ -79,7 +79,7 @@ class Orders(BasePages):
         self.base_selenium.LOGGER.info(' + Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, type='text')
         self.filter_apply()
-        
+
     def get_orders_duplicate_data(self, order_no):
         self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
         orders = self.search(order_no)[:-1]
@@ -88,19 +88,18 @@ class Orders(BasePages):
         return orders_data, orders
 
     # Return all filter fields used in order
-    def order_filters_element(self, key = 'all'):
-        filter_fields_list = []
-        filter_fields_list.append({'field_name': 'Order No.', 'element': 'orders:order_filter', 'type': 'text'})
-        filter_fields_list.append({'field_name': 'Analysis No.', 'element': 'orders:analysis_filter', 'type': 'text'})
-        filter_fields_list.append({'field_name': 'Contact Name', 'element': 'orders:contact_filter', 'type': 'drop_down'})
-        filter_fields_list.append({'field_name': 'Changed By', 'element': 'orders:changed_by', 'type': 'drop_down'})
-        filter_fields_list.append({'field_name': 'Material Type', 'element': 'orders:material_type_filter', 'type': 'drop_down'})
-        filter_fields_list.append({'field_name': 'Article Name', 'element': 'orders:article_filter', 'type': 'drop_down'}) 
-        filter_fields_list.append({'field_name': 'Changed On', 'element': 'orders:chnaged_on_filter', 'type': 'text'})
-        filter_fields_list.append({'field_name': 'Shipment Date', 'element': 'orders:shipment_date_filter', 'type': 'text'})
+    def order_filters_element(self, key='all'):
+        filter_fileds = {'Order No.': {'element': 'orders:order_filter', 'type': 'text'},
+                         'Analysis No.': {'element': 'orders:analysis_filter', 'type': 'text'},
+                         'Contact Name': {'element': 'orders:contact_filter', 'type': 'drop_down'},
+                         'Changed By': {'element': 'orders:changed_by', 'type': 'drop_down'},
+                         'Material Type': {'element': 'orders:material_type_filter', 'type': 'drop_down'},
+                         'Article Name': {'element': 'orders:article_filter', 'type': 'drop_down'},
+                         'Changed On': {'element': 'orders:chnaged_on_filter', 'type': 'text'},
+                         'Shipment Date': {'element': 'orders:shipment_date_filter', 'type': 'text'}
+                         }
+
         if key == 'all':
-            return filter_fields_list
+            return filter_fileds
         else:
-            for field in filter_fields_list:
-                if (field['field_name']== key):
-                    return field                  
+            return filter_fileds[key]
