@@ -79,10 +79,27 @@ class Orders(BasePages):
         self.base_selenium.LOGGER.info(' + Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, type='text')
         self.filter_apply()
-        
+
     def get_orders_duplicate_data(self, order_no):
         self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
         orders = self.search(order_no)[:-1]
         orders_data = [self.base_selenium.get_row_cells_dict_related_to_header(order) for order in orders]
         self.base_selenium.LOGGER.info(' + {} duplicate orders.'.format(len(orders)))
         return orders_data, orders
+
+    # Return all filter fields used in order
+    def order_filters_element(self, key='all'):
+        filter_fileds = {'Order No.': {'element': 'orders:order_filter', 'type': 'text'},
+                         'Analysis No.': {'element': 'orders:analysis_filter', 'type': 'text'},
+                         'Contact Name': {'element': 'orders:contact_filter', 'type': 'drop_down'},
+                         'Changed By': {'element': 'orders:changed_by', 'type': 'drop_down'},
+                         'Material Type': {'element': 'orders:material_type_filter', 'type': 'drop_down'},
+                         'Article Name': {'element': 'orders:article_filter', 'type': 'drop_down'},
+                         'Changed On': {'element': 'orders:chnaged_on_filter', 'type': 'text'},
+                         'Shipment Date': {'element': 'orders:shipment_date_filter', 'type': 'text'}
+                         }
+
+        if key == 'all':
+            return filter_fileds
+        else:
+            return filter_fileds[key]

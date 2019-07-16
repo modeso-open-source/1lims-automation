@@ -25,8 +25,8 @@ class BasePages:
     def result_table(self):
         return self.base_selenium.get_table_rows(element='general:table')
 
-    def clear_search(self):
-        self.base_selenium.clear_element_text(element='general:search')
+    def clear_text(self, element):
+        self.base_selenium.clear_element_text(element= element)
 
     def sleep_tiny(self):
         self.base_selenium.LOGGER.info(' + Tiny sleep.')
@@ -63,25 +63,24 @@ class BasePages:
         time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def open_filter_menu(self):
+        self.base_selenium.LOGGER.info(' Open Filter')
         filter = self.base_selenium.find_element_in_element(source_element='general:menu_filter_view',
                                                             destination_element='general:filter')
         filter.click()
 
     def filter_by(self, filter_element, filter_text, type = 'drop_down'):
-        self.open_filter_menu()
-        if type == 'drop_down' :
+        if type == 'drop_down':
             self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
         else:
             self.base_selenium.set_text(element=filter_element, value = filter_text )
 
     def filter_apply(self):
-        self.base_selenium.find_element_in_element(destination_element='article:filter_apply_btn',
-                                                   source_element='article:filter_actions').click()
+        self.base_selenium.click(element='general:filter_btn')
         time.sleep(self.base_selenium.TIME_SMALL)
 
     def filter_reset(self):
-        self.base_selenium.find_element_in_element(destination_element='article:filter_reset_btn',
-                                                   source_element='article:filter_actions').click()
+        self.base_selenium.LOGGER.info(' Reset Filter')
+        self.base_selenium.click(element='general:filter_reset_btn')
         time.sleep(self.base_selenium.TIME_SMALL)
 
     def select_random_multiple_table_rows(self, element='general:table'):
@@ -181,3 +180,9 @@ class BasePages:
 
     def get_random_date(self):
         return '{:02d}.{:02d}.{}'.format(randint(1, 30), randint(1, 12), 2019)
+
+    def filter(self,field_name, element, filter_text, type):
+        self.base_selenium.LOGGER.info(' + Filter by {} : {}'.format(field_name,filter_text))
+        self.filter_by(filter_element= element, filter_text=filter_text, type = type)
+        self.filter_apply()
+

@@ -78,6 +78,7 @@ class Article(Articles):
 
     def filter_by_test_plan(self, filter_text):
         self.base_selenium.LOGGER.info(' + Filter by test plan : {}'.format(filter_text))
+        self.open_filter_menu()
         self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
         self.filter_apply()
 

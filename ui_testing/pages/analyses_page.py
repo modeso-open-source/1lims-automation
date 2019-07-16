@@ -17,7 +17,7 @@ class Analyses(BasePages):
             if len(rows) > 0:
                 self.click_check_box(source=rows[0])
                 self.archive_selected_items()
-                self.clear_search()
+                self.clear_text('general:search')
 
     def search_if_analysis_exist(self, analysis_numbers_list):
         for analysis_number in analysis_numbers_list:

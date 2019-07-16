@@ -1,5 +1,6 @@
 elements = {
-    'general': {'search': {'method': 'id',
+    'general': {
+        'search': {'method': 'id',
                            'value': 'generalSearch'},
                 'table': {'method': 'id',
                           'value': 'table'},
@@ -40,9 +41,9 @@ elements = {
                 'filter_apply_btn': {'method': 'class_name',
                              'value': 'btn-primary',
                              'order': 0},
-                'filter_reset_btn': {'method': 'class_name',
-                             'value': 'btn-secondary',
-                             'order': 1},
+                # 'filter_reset_btn': {'method': 'class_name',
+                #              'value': 'btn-secondary',
+                #              'order': 1},
                 'ng_values': {'method': 'class_name',
                               'value': 'ng-value',
                               'order': -1},
@@ -75,7 +76,11 @@ elements = {
                 'xslx': {'method': 'link_text',
                          'value': 'XSLX'},
                 'table_info': {'method': 'id',
-                               'value': 'table_info'}
+                               'value': 'table_info'},
+                'filter_btn': {'method': 'id',
+                            'value': 'filter_btn'},
+                'filter_reset_btn': {'method': 'id',
+                            'value': 'reset_btn'}
                 },
     'login': {
         'username': {'method': 'name',
@@ -144,12 +149,6 @@ elements = {
         'filter_actions': {'method': 'class_name',
                            'value': 'actions',
                            'order': 0},
-        'filter_apply_btn': {'method': 'class_name',
-                             'value': 'btn-primary',
-                             'order': 0},
-        'filter_reset_btn': {'method': 'class_name',
-                             'value': 'btn-secondary',
-                             'order': 1},
         'related_article': {'method': 'id',
                             'value': 'selectedArticles'},
         'field': {'method': 'id',
@@ -223,7 +222,23 @@ elements = {
         'filter_order_no': {'method': 'id',
                             'value': 'orderNofield'},
         'analysis_filter': {'method': 'id',
-                            'value': 'analysisfield'}
+                'value': 'analysisfield'}      ,
+        'order_filter': {'method': 'id',
+                'value': 'orderNofield'},
+        'contact_filter': {'method': 'id',
+                'value': 'companyfield' },
+        'changed_by': {'method': 'id',
+                'value': 'lastModifiedUserfield'},
+        'material_type_filter': {'method': 'id',
+                'value': 'materialTypefield'},
+        'article_filter': {'method': 'id',
+                'value': 'articlefield'},
+        'chnaged_on_filter': {'method': 'id',
+                'value': 'start_createdAt'},
+        'test_date_filter': {'method': 'id',
+                'value': 'start_testDate'},
+        'shipment_date_filter': {'method': 'id',
+                'value': 'start_shipmentDate'}
     },
 
     'order': {
@@ -296,19 +311,12 @@ elements = {
                            'value': 'table-with-add'},
         'add_new_item': {'method': 'class_name',
                          'value': 'addNewItem',
-
-                         'order': 0},
-
-        'duplicate_table_view': {'method': 'id',
-                                 'value': 'duplicate_table_view'},
-        'delete_table_view': {'method': 'id',
-                              'value': 'delete_table_view'}
                          'order': 0},
     'analysis': {
         'filter_order_no': {
             'method': 'id',
-            'value': 'orderNofield'
-        }
+            'value': 'orderNofield'}
         
+        }
     }
 }
