@@ -567,12 +567,23 @@ class OrdersTestCases(BaseTest):
 		
         order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='',
                                                             test_unit='', multiple_suborders=0)
+        # check both test plans and test units fields have error
         test_plan_class_name = self.base_selenium.get_attribute(element="order:test_plan", attribute='class')
         test_unit_class_name = self.base_selenium.get_attribute(element="order:test_unit", attribute='class')
         self.base_selenium.LOGGER.info(test_plan_class_name)
         self.assertIn('has-error', test_plan_class_name)
-        self.assertIn('has-error', test_unit_class_name)														
-
+        self.assertIn('has-error', test_unit_class_name)
+        
+        # choose test plan and save
+        self.order_page.set_test_plan(test_plan='r')
+        self.order_page.save(save_btn='order:save_btn')	
+        
+        # try one more time but choosen test unit and save													
+        order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='',
+                                                            test_unit='', multiple_suborders=0)
+        self.order_page.set_test_unit(test_unit='r')
+        self.order_page.save(save_btn='order:save_btn')
+        
 
         
 
