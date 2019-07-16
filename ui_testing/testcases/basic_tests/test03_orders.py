@@ -487,3 +487,51 @@ class OrdersTestCases(BaseTest):
         # by filtering with the new random generated order number, if the count of the orders remained the same,
         # that's mean that all orders with the same number have been successfully updated.
         self.assertEqual(new_orders_count, records_in_analysis_after_update_count)
+
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test014_update_order_material_type(self, save):
+        """
+        New: Orders: Edit material type: Make sure that user able to change material type and related test plan &
+        article.
+
+        New: Orders: Materiel type Approach: In case then material type updated then press on cancel button,
+        Nothing update when I enter one more time
+
+        LIMS-4281
+        LIMS-4282
+        :return:
+        """
+        test_plan_dict = self.get_active_article_with_tst_plan(test_plan_status='complete')
+
+        self.order_page.get_orders_page()
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        order_material_type = self.order_page.get_material_type()
+        self.order_page.set_material_type(material_type=test_plan_dict['Material Type'])
+        self.order_page.confirm_popup(force=True)
+        self.order_page.set_article(article_name=test_plan_dict['Article Name'])
+        self.order_page.set_test_plan(test_plan=test_plan_dict['Test Plan Name'])
+        self.order_page.get_suborder_table()
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True, cancel_btn='order:cancel_btn')
+
+        self.base_selenium.get(url=order_url, sleep=5)
+        current_material_type = self.order_page.get_material_type()
+
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_material_type) == {} (new_material_type)'.format(current_material_type,
+                                                                                        test_plan_dict[
+                                                                                            'Material Type']))
+            self.assertEqual(test_plan_dict['Material Type'],
+                             current_material_type)
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_material_type) == {} (order_material_type)'.format(current_material_type,
+                                                                                          order_material_type))
+            self.assertEqual(current_material_type, order_material_type)
+
+    

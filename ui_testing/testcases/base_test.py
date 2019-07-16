@@ -65,3 +65,6 @@ class BaseTest(TestCase):
                 self.base_selenium.LOGGER.info(' + Archived.')
         else:
             return {}
+
+
+

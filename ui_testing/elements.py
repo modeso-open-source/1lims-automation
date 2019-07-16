@@ -253,9 +253,10 @@ elements = {
                      'value': 'button_save_order'},
 
         'no': {'method': 'id',
-               'value': 'orderNoWithYearfield'},
-        # 'cancel': {'method': 'id',
-        #            'value': 'button_cancel_order'},
+                      'value': 'orderNoWithYearfield'},
+
+         'cancel_btn': {'method': 'id',
+                         'value': 'button_cancel_order'},
 
         'cancel_button': {'method': 'class_name',
                           'value': 'swal2-cancel',
@@ -295,13 +296,19 @@ elements = {
                            'value': 'table-with-add'},
         'add_new_item': {'method': 'class_name',
                          'value': 'addNewItem',
-                         'order': 0}
-                         
-        },
+
+                         'order': 0},
+
+        'duplicate_table_view': {'method': 'id',
+                                 'value': 'duplicate_table_view'},
+        'delete_table_view': {'method': 'id',
+                              'value': 'delete_table_view'}
+                         'order': 0},
     'analysis': {
         'filter_order_no': {
             'method': 'id',
             'value': 'orderNofield'
         }
+        
     }
 }
