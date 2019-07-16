@@ -362,7 +362,9 @@ class OrdersTestCases(BaseTest):
         order_row = self.order_page.get_random_order_row()
         order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
         analysis_number = order_data['Analysis No.'].split(',')[0]
-        self.order_page.filter_by_analysis_number(analysis_number)
+        analysis_filter_field = self.order_page.order_filters_element('Analysis No.')
+        self.order_page.open_filter_menu()
+        self.order_page.filter('Analysis No.', analysis_filter_field['element'], analysis_number, analysis_filter_field['type'])
         last_rows = self.order_page.get_last_order_row()
         order_data_after_filter = self.base_selenium.get_row_cells_dict_related_to_header(row=last_rows)
         analysis_number_filter = order_data_after_filter['Analysis No.'].split(',')[0]
@@ -533,7 +535,29 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_material_type) == {} (order_material_type)'.format(current_material_type,
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
+            
+     def test011_filter_by_any_fields(self):
+        """
+        New: Orders: Filter Approach: I can filter by any field in the table view
+        LIMS-3495
+        """
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        filter_fields_dict = self.order_page.order_filters_element()
+        self.order_page.open_filter_menu()
+        for key in filter_fields_dict:
+            field = filter_fields_dict[key]
+            self.order_page.filter(key, field['element'], order_data[key], field['type'])
+            filtered_rows = self.order_page.result_table()
+            for index in range(len(filtered_rows) - 1):
+                row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=filtered_rows[index])
+                self.base_selenium.LOGGER.info(
+                    ' Assert {} in  (table row: {}) == {} '.format(key, index + 1, order_data[key]))
+                self.assertEqual(order_data[key].replace("'", ""), row_data[key].replace("'", ""))
+            self.order_page.filter_reset()
 
+
+   
  
     @parameterized.expand(['save_btn', 'cancel'])
     def test016_update_test_date(self, save):
@@ -604,8 +628,25 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
                                                                                           order_shipment_date))
             self.assertEqual(current_shipment_date, order_shipment_date)
-
-
     
+    def test011_filter_by_any_fields(self):
+        """
+        New: Orders: Filter Approach: I can filter by any field in the table view
+        LIMS-3495
+        """
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=order_row)
+        filter_fields_dict = self.order_page.order_filters_element()
+        self.order_page.open_filter_menu()
+        for key in filter_fields_dict:
+            field = filter_fields_dict[key]
+            self.order_page.filter(key, field['element'], order_data[key], field['type'])
+            filtered_rows = self.order_page.result_table()
+            for index in range(len(filtered_rows) - 1):
+                row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=filtered_rows[index])
+                self.base_selenium.LOGGER.info(
+                    ' Assert {} in  (table row: {}) == {} '.format(key, index + 1, order_data[key]))
+                self.assertEqual(order_data[key].replace("'", ""), row_data[key].replace("'", ""))
+            self.order_page.filter_reset()
 
-    
+
