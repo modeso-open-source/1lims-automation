@@ -500,26 +500,28 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        current_test_date = self.order_page.get_test_date()
-        self.order_page.set_test_date(date='')
-        new_test_date = self.order_page.get_test_date()
+        order_test_date = self.order_page.get_test_date()
+        test_date=self.order_page.set_test_date(date='')
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
             self.order_page.cancel(force=True)
 
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
+        current_test_date = self.order_page.get_test_date()
 
-        order_test_date = self.order_page.get_test_date()
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (new_test_date) == {} (order_test_date)'.format(new_test_date,
-                                                                              order_test_date))
-            self.assertEqual(new_test_date, order_test_date)
+                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date,test_date))
+
+
+
+            self.assertEqual(test_date,current_test_date)
+
         else:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date,
-                                                                                  order_test_date))
+                                                                                          order_test_date))
             self.assertEqual(current_test_date, order_test_date)
 
     @parameterized.expand(['save_btn', 'cancel'])
@@ -533,26 +535,27 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        current_shipment_date = self.order_page.get_shipment_date()
-        self.order_page.set_shipment_date(date='')
-        new_shipment_date = self.order_page.get_shipment_date()
+        order_shipment_date = self.order_page.get_shipment_date()
+        shipment_date=self.order_page.set_shipment_date(date='')
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
             self.order_page.cancel(force=True)
 
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
+        current_shipment_date = self.order_page.get_shipment_date()
 
-        order_shipment_date = self.order_page.get_shipment_date()
+
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (new_shipment_date) == {} (order_shipment_date)'.format(new_shipment_date,
-                                                                                    order_shipment_date))
-            self.assertEqual(new_shipment_date, order_shipment_date)
+                ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(current_shipment_date, shipment_date))
+
+
+            self.assertEqual(shipment_date, current_shipment_date)
+
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_shipment_date) == {} (order_shipment_date)'.format(current_shipment_date,
-                                                                                  order_shipment_date))
+                ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
+                                                                                          order_shipment_date))
             self.assertEqual(current_shipment_date, order_shipment_date)
-
 
