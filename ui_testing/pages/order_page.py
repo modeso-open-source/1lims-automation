@@ -77,7 +77,7 @@ class Order(Orders):
             return self.get_test_unit()
 
     def get_test_unit(self):
-        test_units = self.base_selenium.get_text(element='order:test_unit').split('\n')
+        test_units = self.base_selenium.get_text(element='order:test_unit')
         if "×" in test_units:
             return test_units.replace("× ", "").split('\n')
         else:
