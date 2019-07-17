@@ -106,7 +106,7 @@ class Order(Orders):
 
         self.save(save_btn='order:save_btn')
         return order_no
-        
+               
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
 
