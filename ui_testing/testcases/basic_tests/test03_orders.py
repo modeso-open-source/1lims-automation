@@ -283,8 +283,7 @@ class OrdersTestCases(BaseTest):
                                             1].replace("'", '')[0:30])
         order_row_from_form_list.append(self.order_page.get_shipment_date())
         order_row_from_form_list.append(self.order_page.get_test_date())
-        order_row_from_form_list.append(
-            self.order_page.get_test_plan(first_only=False))
+        order_row_from_form_list.append(self.order_page.get_test_plan())
         order_row_from_form_list.append(self.order_page.get_departments())
         self.base_selenium.LOGGER.info(
             ' + compare if data from table : {} is equal data in form {} '.format(order_row_from_table_list,

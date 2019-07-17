@@ -55,22 +55,17 @@ class Order(Orders):
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:test_plan', item_text=test_plan)
+            self.base_selenium.select_item_from_drop_down(element='order:test_plan', item_text=test_plan)
         else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:test_plan')
+            self.base_selenium.select_item_from_drop_down(element='order:test_plan')
             return self.get_test_plan()
 
-    def get_test_plan(self, first_only=True):
-        if first_only:
-            return self.base_selenium.get_text(element='order:test_plan').split('\n')[0]
+    def get_test_plan(self):
+        test_plans = self.base_selenium.get_text(element='order:test_plan')
+        if "×" in test_plans:
+            return test_plans.replace("× ", "").split('\n')
         else:
-            test_plans = []
-            test_plans_list = self.base_selenium.get_text(element='order:test_plan').split('\n')
-            for test_plan in test_plans_list:
-                test_plans.append(test_plan.split('× ')[1])
-            return ','.join(test_plans)
+            return []
 
     def set_test_unit(self, test_unit):
         if test_unit:
@@ -82,7 +77,11 @@ class Order(Orders):
             return self.get_test_unit()
 
     def get_test_unit(self):
-        return self.base_selenium.get_text(element='order:test_unit').split('\n')[0]
+        test_units = self.base_selenium.get_text(element='order:test_unit').split('\n')
+        if "×" in test_units:
+            return test_units.replace("× ", "").split('\n')
+        else:
+            return []
 
     def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
         self.click_create_order_button()
