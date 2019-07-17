@@ -396,8 +396,8 @@ class OrdersTestCases(BaseTest):
         analysis_filter_field = self.order_page.order_filters_element(
             'Analysis No.')
         self.order_page.open_filter_menu()
-        self.order_page.filter(
-            'Analysis No.', analysis_filter_field['element'], analysis_number, analysis_filter_field['type'])
+        self.order_page.filter('Analysis No.', analysis_filter_field['element'], analysis_number,
+                               analysis_filter_field['type'])
         last_rows = self.order_page.get_last_order_row()
         order_data_after_filter = self.base_selenium.get_row_cells_dict_related_to_header(
             row=last_rows)
@@ -549,7 +549,6 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(new_orders_count,
                          records_in_analysis_after_update_count)
 
-    @parameterized.expand(['save_btn', 'cancel'])
     def test014_update_order_material_type(self, save):
         """
         New: Orders: Edit material type: Make sure that user able to change material type and related test plan &
@@ -689,3 +688,66 @@ class OrdersTestCases(BaseTest):
                 element="order:test_unit", attribute='class')
             self.assertIn('has-error', test_plan_class_name)
             self.assertIn('has-error', test_unit_class_name)
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test016_update_test_date(self, save):
+        """
+        New: Orders: Test Date: I can update test date successfully with cancel/save buttons
+        LIMS-4780
+        LIMS-4780
+        :return:
+        """
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        order_test_date = self.order_page.get_test_date()
+        test_date = self.order_page.set_test_date()
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True)
+
+        self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
+        current_test_date = self.order_page.get_test_date()
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date, test_date))
+
+            self.assertEqual(test_date, current_test_date)
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date,
+                                                                                  order_test_date))
+            self.assertEqual(current_test_date, order_test_date)
+
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test017_update_shipment_date(self, save):
+        """
+        New: Orders: Shipment date Approach: I can update shipment date successfully with save/cancel button
+        LIMS-4779
+        LIMS-4779
+        :return:
+        """
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        order_shipment_date = self.order_page.get_shipment_date()
+        shipment_date = self.order_page.set_shipment_date()
+        if 'save_btn' == save:
+            self.order_page.save(save_btn='order:save_btn')
+        else:
+            self.order_page.cancel(force=True)
+
+        self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
+        current_shipment_date = self.order_page.get_shipment_date()
+
+        if 'save_btn' == save:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(current_shipment_date,
+                                                                                        shipment_date))
+            self.assertEqual(shipment_date, current_shipment_date)
+
+        else:
+            self.base_selenium.LOGGER.info(
+                ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
+                                                                                          order_shipment_date))
+            self.assertEqual(current_shipment_date, order_shipment_date)

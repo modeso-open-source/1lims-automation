@@ -144,6 +144,12 @@ class Order(Orders):
             date = self.get_random_date()
         self.base_selenium.set_text(element='order:test_date', value=date)
         return date
+
+    def set_shipment_date(self, date=''):
+        if not date:
+            date = self.get_random_date()
+        self.base_selenium.set_text(element='order:shipment_date', value=date)
+        return date
         
     def get_departments(self):
         departments = self.base_selenium.get_text(
