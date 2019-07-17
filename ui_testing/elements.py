@@ -257,6 +257,8 @@ elements = {
                   'value': 'tests'},
         'test_plan': {'method': 'id',
                       'value': 'testPlans'},
+        'test_unit': {'method': 'id',
+                      'value': 'testUnits'},
         'test_plan_btn': {'method': 'tag_name',
                           'value': 'span',
                           'order': 0},

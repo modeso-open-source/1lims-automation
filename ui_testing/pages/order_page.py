@@ -67,6 +67,12 @@ class Order(Orders):
         else:
             return []
 
+    def clear_test_plan(self):
+        return self.base_selenium.clear_items_in_drop_down(element='order:test_plan')
+    
+    def clear_test_unit(self):
+        return self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
+    
     def set_test_unit(self, test_unit):
         if test_unit:
             self.base_selenium.select_item_from_drop_down(
@@ -93,7 +99,7 @@ class Order(Orders):
         if test_plan:
             self.set_test_plan(test_plan=test_plan)
         elif test_unit:
-            self.set_test_unit(test_unit=test_unit)
+            self.set_test_unit(test_unit=test_unit)    
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
