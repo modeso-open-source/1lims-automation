@@ -68,18 +68,18 @@ class Order(Orders):
             return []
 
     def clear_test_plan(self):
-        return self.base_selenium.clear_items_in_drop_down(element='order:test_plan')
+        if self.get_test_plan():
+            self.base_selenium.clear_items_in_drop_down(element='order:test_plan')
     
     def clear_test_unit(self):
-        return self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
+        if self.get_test_unit():
+            self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
     
     def set_test_unit(self, test_unit):
         if test_unit:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:test_unit', item_text=test_unit)
+            self.base_selenium.select_item_from_drop_down(element='order:test_unit', item_text=test_unit)
         else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:test_unit')
+            self.base_selenium.select_item_from_drop_down(element='order:test_unit')
             return self.get_test_unit()
 
     def get_test_unit(self):
