@@ -1,6 +1,6 @@
 from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
-import time
+import time, pyperclip
 from random import randint
 
 
@@ -186,3 +186,13 @@ class BasePages:
         self.filter_by(filter_element= element, filter_text=filter_text, type = type)
         self.filter_apply()
 
+    def _copy(self, value):
+        pyperclip.copy(value)
+
+    def _paste(self, element):
+        self.base_selenium.LOGGER.info(' + past. {}'.format(pyperclip.paste()))
+        self.base_selenium.paste(element=element)
+
+    def copy_paste(self, element, value):
+        self._copy(value=value)
+        self._paste(element=element)
