@@ -754,6 +754,7 @@ class OrdersTestCases(BaseTest):
     def test018_archive_sub_order(self):
         """
         New: Orders: Table:  Suborder /Archive Approach: : User can archive any suborder successfully 
+        LIMS-3739
         """
 
         # create order with multiple suborders to keep track of which order to be archived
