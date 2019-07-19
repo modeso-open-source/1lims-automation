@@ -840,7 +840,7 @@ class OrdersTestCases(BaseTest):
         rows_count = self.order_page.result_table()
         self.base_selenium.LOGGER.info('+ Assert count archived orders with a specific analysis number: {}'.format(len(rows_count)))
 
-        self.assertEqual(len(rows_count),1)
+        self.assertEqual(len(rows_count)-1,1)
 
 
 
