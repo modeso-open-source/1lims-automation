@@ -752,6 +752,10 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(current_shipment_date, order_shipment_date)
 
     def test018_archive_sub_order(self):
+        """
+        New: Orders: Table:  Suborder /Archive Approach: : User can archive any suborder successfully 
+        """
+
         # create order with multiple suborders to keep track of which order to be archived
         self.base_selenium.LOGGER.info(' Create order with 3 suborders')
         order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='a',
