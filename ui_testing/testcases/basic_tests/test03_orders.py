@@ -750,3 +750,96 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
                                                                                           order_shipment_date))
             self.assertEqual(current_shipment_date, order_shipment_date)
+
+    def test018_archive_sub_order(self):
+        # create order with multiple suborders to keep track of which order to be archived
+        self.base_selenium.LOGGER.info(' Create order with 3 suborders')
+        order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='a',
+                                                            test_unit='a', multiple_suborders=2)
+        
+        # filter by order no to get the orders data 
+        self.base_selenium.LOGGER.info(' Filter by order No: {}'.format(order_no_created))
+        self.orders_page.filter_by_order_no(filter_text=order_no_created)
+
+        rows = self.orders_page.result_table()
+        self.base_selenium.LOGGER.info('number of the filtered rows by this order no = {}'.format(len(rows)))
+
+        # get the 3rd suborder data
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[1])
+        analysis_no = order_data['Analysis No.'].split(',')
+
+        self.base_selenium.LOGGER.info(' 3rd suborder analysis no is:: {}'.format(analysis_no))
+
+        # open first suborder to keep the orders in the same sequence (3rd suborder in active table is the 3rd suborder in the table with add)
+        self.order_page.get_random_x(row=rows[0])
+        self.order_page.sleep_tiny()
+
+        # getting order's table view to check archiving the 3rd suborder (subbopse to get a message that it can't be archived)
+        self.order_page.archive_suborder(index=1, check_pop_up=True)
+
+        # get count of suborders after trying to delete order to make it is not deleted before archiving the analysis.
+        rows_count = self.base_selenium.get_table_rows(element='order:suborder_table')
+
+        self.base_selenium.LOGGER.info('+ Number of suborders = {}'.format(len(rows_count)))
+        self.base_selenium.LOGGER.info('+ Assert  before clicking archive suborders count {}, after clicking archive suborders count {}'.format(3, len(rows_count)))
+        self.assertEqual(len(rows_count), 3)
+
+        # get the analysis page to filter the analysis corresponding to the required order
+        self.analyses_page.get_analyses_page()
+        self.order_page.sleep_tiny()
+
+        # archive the required analysis
+        self.base_selenium.LOGGER.info('archiving the analysis that belongs to the required order to be archived')
+        self.analyses_page.search_by_number_and_archive(analysis_numbers_list=analysis_no)
+
+        self.order_page.get_orders_page()
+        self.order_page.sleep_tiny()
+
+        # filtering by order no again to get the order that will have the archiving operation be performed on.
+        self.orders_page.filter_by_order_no(filter_text=order_no_created)
+        rows = self.orders_page.result_table()
+        self.order_page.get_random_x(row=rows[0])
+
+        # open table with add and archive the suborder with specific index
+        self.order_page.archive_suborder(index=2, check_pop_up=False)
+        rows_count = self.base_selenium.get_table_rows(element='order:suborder_table')
+
+        self.base_selenium.LOGGER.info('+ Number of suborders = {}'.format(len(rows_count)))
+        self.base_selenium.LOGGER.info('+ Assert  before clicking archive suborders count {}, after clicking archive suborders count {}'.format(3, len(rows_count)))
+        self.assertEqual(len(rows_count), 3)
+
+        # self.base_selenium.refresh()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.get(
+            url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
+
+        self.order_page.archive_suborder(index=2, check_pop_up=True)
+
+        self.base_selenium.get(
+            url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
+        self.order_page.get_suborder_table()
+        rows_count = self.base_selenium.get_table_rows(element='order:suborder_table')
+
+        self.base_selenium.LOGGER.info('+ Number of suborders = {}'.format(len(rows_count)))
+        self.base_selenium.LOGGER.info('+ Assert  before archiving suborders count {}, after archiving suborders count {}'.format(3, len(rows_count)))
+        self.assertEqual(len(rows_count), 2)
+
+        self.order_page.get_orders_page()
+
+        # going to archived orders page to make sure that the order is archived
+        self.order_page.get_archived_items()
+
+        self.order_page.open_filter_menu()
+        self.orders_page.filter_by_analysis_number(filter_text=analysis_no)
+        
+        rows_count = self.order_page.result_table()
+        self.base_selenium.LOGGER.info('+ Assert count archived orders with a specific analysis number: {}'.format(len(rows_count)))
+
+        self.assertEqual(len(rows_count),1)
+
+
+
+
+
+
+

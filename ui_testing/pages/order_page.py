@@ -210,3 +210,23 @@ class Order(Orders):
         duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
                                                                        destination_element='order:duplicate_table_view')
         duplicate_element.click()
+
+    def archive_suborder(self, index, check_pop_up=False):
+        self.get_suborder_table()
+        self.sleep_tiny()
+        self.base_selenium.LOGGER.info('archive suborder with index {}'.format(index+1))
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        self.base_selenium.LOGGER.info(' + Archive order no #{}'.format(index+1))
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[index],
+                                                                                         table_element='order:suborder_table')
+        archive_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
+                                                                       destination_element='order:delete_table_view')
+
+        archive_element.click()
+        self.sleep_tiny()
+        if check_pop_up:
+            self.base_selenium.LOGGER.info('confirm archiving')
+            self.base_selenium.click(element='articles:confirm_archive')
+        else:
+            self.base_selenium.LOGGER.info('cancel archiving')
+            self.base_selenium.click(element='articles:cancel_archive')

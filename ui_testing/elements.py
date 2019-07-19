@@ -274,7 +274,6 @@ elements = {
 
          'cancel_btn': {'method': 'id',
                     'value': 'button_cancel_order'},
-                      'value': 'orderNoWithYearfield',
         'cancel_button': {'method': 'class_name',
                           'value': 'swal2-cancel',
                           'order': 0},
@@ -316,9 +315,12 @@ elements = {
                          'order': 0},
     'analysis': {
         'filter_order_no': {
-            'method': 'id',
-            'value': 'orderNofield'}
-        
+                        'method': 'id',
+                        'value': 'orderNofield'}
+                        },
+        'filter_analysis_no': {
+                        'method': 'id',
+                        'value': 'nofield'
         }
     }
 }
