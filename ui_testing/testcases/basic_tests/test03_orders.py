@@ -819,7 +819,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.set_new_order()
         self.order_page.get_no()
         time.sleep(self.base_selenium.TIME_MEDIUM)
-        self.order_page.set_no(no=order_data['Order No.'])
+        self.order_page.copy_paste(element='order:no', value=order_data['Order No.'])
         time.sleep(self.base_selenium.TIME_MEDIUM)
         order_no_class_name = self.base_selenium.get_attribute(
                 element="order:no", attribute='class')
