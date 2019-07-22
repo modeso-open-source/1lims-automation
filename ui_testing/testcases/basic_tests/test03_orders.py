@@ -655,39 +655,39 @@ class OrdersTestCases(BaseTest):
         self.order_page.set_test_unit(test_unit='r')
         self.order_page.save(save_btn='order:save_btn')
 
-        def test016_validate_order_test_unit_test_plan_edit_mode(self):
-            """
-            New: orders Test plan /test unit validation in edit mode
+    def test016_validate_order_test_unit_test_plan_edit_mode(self):
+        """
+        New: orders Test plan /test unit validation in edit mode
 
-            LIMS-4826
-            """
-            self.base_selenium.LOGGER.info(
-                ' Running test case to check that at least test unit or test plan is mandatory in order')
+        LIMS-4826
+        """
+        self.base_selenium.LOGGER.info(
+            ' Running test case to check that at least test unit or test plan is mandatory in order')
 
-            # validate in edit mode, go to order over view
-            self.order_page.get_orders_page()
-            self.order_page.get_random_order()
-            order_url = self.base_selenium.get_url()
-            self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        # validate in edit mode, go to order over view
+        self.order_page.get_orders_page()
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
 
-            self.base_selenium.LOGGER.info(
-                ' Remove all selected test plans and test units')
-            # delete test plan and test unit
-            if self.order_page.get_test_plan():
-                self.order_page.clear_test_plan()
-                self.order_page.confirm_popup(force=True)
-            # if self.order_page.get_test_unit():
-            # self.order_page.clear_test_unit()
-            # self.order_page.confirm_popup(force=True)
+        self.base_selenium.LOGGER.info(
+            ' Remove all selected test plans and test units')
+        # delete test plan and test unit
+        if self.order_page.get_test_plan():
+            self.order_page.clear_test_plan()
+            self.order_page.confirm_popup(force=True)
+        if self.order_page.get_test_unit():
+            self.order_page.clear_test_unit()
+            self.order_page.confirm_popup(force=True)
 
-            self.order_page.save(save_btn='order:save_btn')
-            # check both test plans and test units fields have error
-            test_plan_class_name = self.base_selenium.get_attribute(
-                element="order:test_plan", attribute='class')
-            test_unit_class_name = self.base_selenium.get_attribute(
-                element="order:test_unit", attribute='class')
-            self.assertIn('has-error', test_plan_class_name)
-            self.assertIn('has-error', test_unit_class_name)
+        self.order_page.save(save_btn='order:save_btn')
+        # check both test plans and test units fields have error
+        test_plan_class_name = self.base_selenium.get_attribute(
+            element="order:test_plan", attribute='class')
+        test_unit_class_name = self.base_selenium.get_attribute(
+            element="order:test_unit", attribute='class')
+        self.assertIn('has-error', test_plan_class_name)
+        self.assertIn('has-error', test_unit_class_name)
     @parameterized.expand(['save_btn', 'cancel'])
     def test016_update_test_date(self, save):
         """
@@ -826,6 +826,44 @@ class OrdersTestCases(BaseTest):
         self.assertIn('has-error', order_no_class_name)
         order_error_message = self.base_selenium.get_text(
                 element="order:order_no_error_message")
-        self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)    
+        self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)  
+     
+    
+    def test020_create_new_order_with_test_units(self):
+        """
+        New: Orders: Create a new order with test units
+
+        LIMS-3267
+        """
+        self.base_selenium.LOGGER.info('Running test case to create a new order with test units')
+        test_units_list = []
+        test_unit_dict = self.get_active_test_unit(search='Qualitative', material_type='All')
+        qualt_test_unit = test_unit_dict
+        if qualt_test_unit:
+            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
+            test_units_list.append(qualt_test_unit)
+        test_unit_dict = self.get_active_test_unit(search='Quantitative')
+        quan_test_unit = test_unit_dict
+        if quan_test_unit:
+            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
+            test_units_list.append(quan_test_unit)
+        test_unit_dict = self.get_active_test_unit(search='Quantitative Mibi')
+        quan_mibi_test_unit = test_unit_dict
+        if quan_mibi_test_unit:
+            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
+            test_units_list.append(quan_mibi_test_unit)
+        
+        self.order_page.get_orders_page()    
+        created_order = self.order_page.create_new_order_with_multiple_test_units(material_type='r', article='a', contact='a',
+                                         test_unit=test_units_list)
+        
+        self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info(
+            ' + Assert There is an analysis for this new order.')
+        orders_analyess = self.analyses_page.search(created_order)
+        latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=orders_analyess[0])
+        self.assertEqual(
+           created_order, latest_order_data['Order No.'])
         
 

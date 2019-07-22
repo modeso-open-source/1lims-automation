@@ -7,6 +7,7 @@ from ui_testing.pages.login_page import Login
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.testplan_page import TstPlan
+from ui_testing.pages.testunit_page import TestUnit
 import datetime
 
 
@@ -25,6 +26,7 @@ class BaseTest(TestCase):
         self.article_page = Article()
         self.analyses_page = Analyses()
         self.orders_page = Orders()
+        self.test_unit = TestUnit()
 
 
     def tearDown(self):
@@ -65,6 +67,18 @@ class BaseTest(TestCase):
                 self.base_selenium.LOGGER.info(' + Archived.')
         else:
             return {}
+        
+    
+    def get_active_test_unit(self, search, material_type='Raw Material'):
+        self.base_selenium.LOGGER.info(' + Get Test Unit with  type {} .'.format(search))
+        self.test_unit.get_test_units_page()
+        test_units = self.test_unit.search(search)
+        test_units_dict = [self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit) for
+                                    test_unit in test_units[:-1]]
+        for test_unit_dict in test_units_dict:
+            if test_unit_dict['Type'] == search and test_unit_dict['Material Type'].find(material_type) != -1:
+                return test_unit_dict
+        return {}
 
 
 

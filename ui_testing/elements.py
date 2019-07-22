@@ -167,6 +167,11 @@ elements = {
         'new_test_plan': {'method': 'link_text',
                           'value': 'New Test Plan'}
     },
+    
+        'test_units': {
+        'test_units_table': {'method': 'id',
+                             'value': 'table'},
+    },
 
     'test_plan': {
         'no': {'method': 'id',
@@ -196,6 +201,14 @@ elements = {
                            'value': 'first-col'}
     },
 
+    'test_unit': {
+        'no': {'method': 'id',
+               'value': 'numberfield'},
+        'material_type': {'method': 'xpath',
+                          'value': '//*[@id="materialTypefield"]'},
+        'material_type_options': {'method': 'class_name',
+                                  'value': 'ng-option'},
+    },
     'orders': {
         'orders_table': {'method': 'id',
                          'value': 'table'},
