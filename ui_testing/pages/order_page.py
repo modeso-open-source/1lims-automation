@@ -152,6 +152,7 @@ class Order(Orders):
         self.click_create_order_button()
         self.set_existing_order()
         order_no = self.set_existing_number(no)
+        self.sleep_tiny()
         self.click_auto_fill()
         self.base_selenium.LOGGER.info(' + Order Auto filled with data from order no : {} '.format(order_no))
         return order_no        
