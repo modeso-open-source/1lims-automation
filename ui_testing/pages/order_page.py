@@ -127,7 +127,7 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
         return order_no
     
-    def create_existing_order(self, no='', material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
+    def create_existing_order_with_multiple_test_units(self, no='', material_type='', article='', contact='', test_units='', multiple_suborders=0):
         self.base_selenium.LOGGER.info(' + Create new order.')
         self.click_create_order_button()
         self.set_existing_order()
@@ -136,10 +136,8 @@ class Order(Orders):
         self.set_article(article=article)
         self.set_contact(contact=contact)
         
-        if test_plan:
-            self.set_test_plan(test_plan=test_plan)
-        elif test_unit:
-            self.set_test_unit(test_unit=test_unit)    
+        for test_unit in test_units:
+            self.set_test_unit(test_unit)    
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)

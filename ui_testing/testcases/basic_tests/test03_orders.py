@@ -872,4 +872,55 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(
            'true', success)
         
+    
+    def test021_create_existing_order_with_test_units(self):
+        """
+        New: Orders: Create an existing order with test units
+
+        LIMS-3268
+        """
+        self.base_selenium.LOGGER.info('Running test case to create an existing order with test units')
+        test_units_list = []
+        test_unit_dict = self.get_active_test_unit(search='Qualitative', material_type='All')
+        qualt_test_unit = test_unit_dict
+        if qualt_test_unit:
+            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
+            test_units_list.append(qualt_test_unit['Test Unit Name'])
+        test_unit_dict = self.get_active_test_unit(search='Quantitative')
+        quan_test_unit = test_unit_dict
+        if quan_test_unit:
+            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
+            test_units_list.append(quan_test_unit['Test Unit Name'])
+        test_unit_dict = self.get_active_test_unit(search='Quantitative Mibi')
+        quan_mibi_test_unit = test_unit_dict
+        if quan_mibi_test_unit:
+            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
+            test_units_list.append(quan_mibi_test_unit['Test Unit Name'])
+        
+        self.order_page.get_orders_page()    
+        created_order = self.order_page.create_existing_order_with_multiple_test_units(no='' , material_type='r', article='a', contact='a',
+                                         test_units=test_units_list)
+        
+        self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info(
+            'Assert There is an analysis for this new order.')
+        orders_analyess = self.analyses_page.search(created_order)
+        latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=orders_analyess[0])
+        self.assertEqual(
+           created_order.replace("'", ""), latest_order_data['Order No.'].replace("'", ""))
+        
+        self.analyses_page.open_child_table(source=orders_analyess[0])
+        rows_with_childtable = self.analyses_page.result_table(element='general:table_child')
+        success = 'true'
+        for row in rows_with_childtable[:-1]:
+            
+            rows_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=row, table_element='general:table_child')
+            testunit_name = rows_with_headers['Test Unit']
+            self.base_selenium.LOGGER.info(testunit_name)
+            if testunit_name not in test_units_list:
+                success = 'false'
+        self.assertEqual(
+           'true', success)    
+        
 
