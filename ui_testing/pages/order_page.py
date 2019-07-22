@@ -127,14 +127,15 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
         return order_no
     
-    def create_existing_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
+    def create_existing_order(self, no='', material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
         self.base_selenium.LOGGER.info(' + Create new order.')
         self.click_create_order_button()
         self.set_existing_order()
+        order_no = self.set_existing_number(no)
         self.set_material_type(material_type=material_type)
         self.set_article(article=article)
         self.set_contact(contact=contact)
-        order_no = self.get_no()
+        
         if test_plan:
             self.set_test_plan(test_plan=test_plan)
         elif test_unit:
