@@ -126,7 +126,26 @@ class Order(Orders):
         self.save(save_btn='order:save_btn')
         self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
         return order_no
-            
+    
+    def create_existing_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
+        self.base_selenium.LOGGER.info(' + Create new order.')
+        self.click_create_order_button()
+        self.set_existing_order()
+        self.set_material_type(material_type=material_type)
+        self.set_article(article=article)
+        self.set_contact(contact=contact)
+        order_no = self.get_no()
+        if test_plan:
+            self.set_test_plan(test_plan=test_plan)
+        elif test_unit:
+            self.set_test_unit(test_unit=test_unit)    
+        if multiple_suborders > 0:
+            self.get_suborder_table()
+            self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
+
+        self.save(save_btn='order:save_btn')
+        self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
+        return order_no        
                
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
@@ -134,6 +153,15 @@ class Order(Orders):
     def set_no(self, no):
         self.base_selenium.LOGGER.info(' + set no. {}'.format(no))
         self.base_selenium.set_text(element="order:no", value=no)
+        
+    def set_existing_number(self, no=''):
+        if no:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:order_number_add_form', item_text=no)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:order_number_add_form')
+            return self.get_order_number()    
 
     def edit_random_order(self, edit_method, edit_value, save=True):
         if 'contact' in edit_method:
