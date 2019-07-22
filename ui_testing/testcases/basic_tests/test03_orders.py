@@ -576,7 +576,6 @@ class OrdersTestCases(BaseTest):
             article_name=test_plan_dict['Article Name'])
         self.order_page.set_test_plan(
             test_plan=test_plan_dict['Test Plan Name'])
-        self.order_page.get_suborder_table()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
