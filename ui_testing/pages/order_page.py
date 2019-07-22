@@ -144,6 +144,16 @@ class Order(Orders):
 
         self.save(save_btn='order:save_btn')
         self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
+        return order_no
+    
+    
+    def create_existing_order_with_auto_fill(self, no=''):
+        self.base_selenium.LOGGER.info(' + Create new order.')
+        self.click_create_order_button()
+        self.set_existing_order()
+        order_no = self.set_existing_number(no)
+        self.click_auto_fill()
+        self.base_selenium.LOGGER.info(' + Order Auto filled with data from order no : {} '.format(order_no))
         return order_no        
                
     def get_no(self):
@@ -259,3 +269,9 @@ class Order(Orders):
         duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
                                                                        destination_element='order:duplicate_table_view')
         duplicate_element.click()
+        
+     
+    def click_auto_fill(self):
+        button = self.base_selenium.find_element_in_element(source_element='order:auto_fill_container',
+                                                            destination_element='order:auto_fill')
+        button.click()    

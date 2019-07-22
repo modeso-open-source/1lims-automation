@@ -268,6 +268,9 @@ elements = {
                     'value': '#articlefield > div'},
         'departments': {'method': 'id',
                         'value': 'departments'},
+        
+        'auto_fill': {'method': 'xpath', 'value': '//*[@id="field"]/div[2]/div/span'},
+        'auto_fill_container': {'method': 'xpath', 'value': '//*[@id="field"]/div[2]'},
 
         'contact': {'method': 'id',
                     'value': 'contactfield'},
