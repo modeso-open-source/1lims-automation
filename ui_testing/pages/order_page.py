@@ -1,4 +1,6 @@
 from ui_testing.pages.orders_page import Orders
+import pyperclip
+
 
 class Order(Orders):
     def get_order(self):
@@ -8,6 +10,7 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:order_number_add_form').split('\n')[0]
 
     def set_new_order(self):
+        self.base_selenium.LOGGER.info(' + Set new order.')
         self.base_selenium.select_item_from_drop_down(
             element='order:order', item_text='New Order')
 
@@ -90,6 +93,7 @@ class Order(Orders):
             return []
 
     def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
+        self.base_selenium.LOGGER.info(' + Create new order.')
         self.click_create_order_button()
         self.set_new_order()
         self.set_material_type(material_type=material_type)
@@ -105,12 +109,14 @@ class Order(Orders):
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
 
         self.save(save_btn='order:save_btn')
+        self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
         return order_no
-        
+               
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
 
     def set_no(self, no):
+        self.base_selenium.LOGGER.info(' + set no. {}'.format(no))
         self.base_selenium.set_text(element="order:no", value=no)
 
     def edit_random_order(self, edit_method, edit_value, save=True):
