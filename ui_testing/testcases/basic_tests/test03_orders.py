@@ -576,7 +576,6 @@ class OrdersTestCases(BaseTest):
             article_name=test_plan_dict['Article Name'])
         self.order_page.set_test_plan(
             test_plan=test_plan_dict['Test Plan Name'])
-        self.order_page.get_suborder_table()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -598,7 +597,7 @@ class OrdersTestCases(BaseTest):
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
 
-    def test011_filter_by_any_fields(self):
+    def test015_filter_by_any_fields(self):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
         LIMS-3495
@@ -622,7 +621,7 @@ class OrdersTestCases(BaseTest):
                     "'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
 
-    def test015_validate_order_test_unit_test_plan(self):
+    def test016_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
 
@@ -655,7 +654,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.set_test_unit(test_unit='r')
         self.order_page.save(save_btn='order:save_btn')
 
-    def test016_validate_order_test_unit_test_plan_edit_mode(self):
+    def test017_validate_order_test_unit_test_plan_edit_mode(self):
         """
         New: orders Test plan /test unit validation in edit mode
 
@@ -676,20 +675,20 @@ class OrdersTestCases(BaseTest):
         if self.order_page.get_test_plan():
             self.order_page.clear_test_plan()
             self.order_page.confirm_popup(force=True)
+
         if self.order_page.get_test_unit():
             self.order_page.clear_test_unit()
             self.order_page.confirm_popup(force=True)
 
         self.order_page.save(save_btn='order:save_btn')
         # check both test plans and test units fields have error
-        test_plan_class_name = self.base_selenium.get_attribute(
-            element="order:test_plan", attribute='class')
-        test_unit_class_name = self.base_selenium.get_attribute(
-            element="order:test_unit", attribute='class')
+        test_plan_class_name = self.base_selenium.get_attribute(element="order:test_plan", attribute='class')
+        test_unit_class_name = self.base_selenium.get_attribute(element="order:test_unit", attribute='class')
         self.assertIn('has-error', test_plan_class_name)
         self.assertIn('has-error', test_unit_class_name)
+
     @parameterized.expand(['save_btn', 'cancel'])
-    def test016_update_test_date(self, save):
+    def test018_update_test_date(self, save):
         """
         New: Orders: Test Date: I can update test date successfully with cancel/save buttons
         LIMS-4780
@@ -711,12 +710,10 @@ class OrdersTestCases(BaseTest):
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date, test_date))
-
             self.assertEqual(test_date, current_test_date)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date,
-                                                                                  order_test_date))
+                ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date, order_test_date))
             self.assertEqual(current_test_date, order_test_date)
 
     @parameterized.expand(['save_btn', 'cancel'])
@@ -745,7 +742,6 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(current_shipment_date,
                                                                                         shipment_date))
             self.assertEqual(shipment_date, current_shipment_date)
-
         else:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
@@ -794,8 +790,6 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.LOGGER.info(
                 ' + Order number : {} deleted successfully'.format(order_data['Order No.']))
             self.analyses_page.get_analyses_page()
-            self.base_selenium.LOGGER.info(
-                ' + Assert analysis numbers : {} is not active'.format(analysis_numbers_list))
             has_active_analysis = self.analyses_page.search_if_analysis_exist(
                 analysis_numbers_list)
             self.base_selenium.LOGGER.info(
@@ -817,10 +811,9 @@ class OrdersTestCases(BaseTest):
             ' Creating new order with number ' + order_data['Order No.'])
         self.order_page.click_create_order_button()
         self.order_page.set_new_order()
-        self.order_page.get_no()
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.order_page.sleep_tiny()
         self.order_page.copy_paste(element='order:no', value=order_data['Order No.'])
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.order_page.sleep_tiny()
         order_no_class_name = self.base_selenium.get_attribute(
                 element="order:no", attribute='class')
         self.assertIn('has-error', order_no_class_name)

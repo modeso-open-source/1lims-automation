@@ -290,6 +290,7 @@ class BaseSelenium:
 
     def clear_items_in_drop_down(self, element, values='general:ng_values'):
         # element is ng-select element
+        # make sure that there are elements to b deleted
         self.wait_until_element_located(element)
         ng_values = self.find_element_in_element(destination_element=values, source_element=element)
         for ng_value in ng_values:
