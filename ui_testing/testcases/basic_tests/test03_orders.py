@@ -794,8 +794,6 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.LOGGER.info(
                 ' + Order number : {} deleted successfully'.format(order_data['Order No.']))
             self.analyses_page.get_analyses_page()
-            self.base_selenium.LOGGER.info(
-                ' + Assert analysis numbers : {} is not active'.format(analysis_numbers_list))
             has_active_analysis = self.analyses_page.search_if_analysis_exist(
                 analysis_numbers_list)
             self.base_selenium.LOGGER.info(
@@ -817,10 +815,9 @@ class OrdersTestCases(BaseTest):
             ' Creating new order with number ' + order_data['Order No.'])
         self.order_page.click_create_order_button()
         self.order_page.set_new_order()
-        self.order_page.get_no()
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.order_page.sleep_tiny()
         self.order_page.copy_paste(element='order:no', value=order_data['Order No.'])
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.order_page.sleep_tiny()
         order_no_class_name = self.base_selenium.get_attribute(
                 element="order:no", attribute='class')
         self.assertIn('has-error', order_no_class_name)
