@@ -860,7 +860,7 @@ class OrdersTestCases(BaseTest):
         self.analyses_page.get_analyses_page()
         self.base_selenium.LOGGER.info(
             'Assert There is an analysis for this new order.')
-        orders_analyess = self.analyses_page.search('5624913-19')
+        orders_analyess = self.analyses_page.search(created_order)
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=orders_analyess[0])
         self.assertEqual(
