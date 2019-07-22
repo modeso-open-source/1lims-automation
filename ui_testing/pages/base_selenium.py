@@ -546,3 +546,9 @@ class BaseSelenium:
         else:
             self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 
+    def paste(self, element):
+        self.LOGGER.info('paste value from clipboard.')
+        self.wait_until_element_located(element)
+        dom_element = self.find_element(element)
+        dom_element.clear()
+        dom_element.send_keys(Keys.CONTROL, 'v')
