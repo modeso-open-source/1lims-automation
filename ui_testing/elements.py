@@ -1,5 +1,10 @@
 elements = {
     'general': {
+        'child_table_arrow': {'method': 'class_name',
+                               'value': 'm-datatable__toggle-subtable',
+                               'order': 0},
+        'table_child': {'method': 'class_name', 'value': 'dataTable', 'order': 1},
+    
         'search': {'method': 'id',
                            'value': 'generalSearch'},
                 'table': {'method': 'id',

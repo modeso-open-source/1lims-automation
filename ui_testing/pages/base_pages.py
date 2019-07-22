@@ -22,8 +22,8 @@ class BasePages:
         time.sleep(self.base_selenium.TIME_MEDIUM)
         return self.result_table()
 
-    def result_table(self):
-        return self.base_selenium.get_table_rows(element='general:table')
+    def result_table(self, element='general:table'):
+       return self.base_selenium.get_table_rows(element=element)
 
     def clear_text(self, element):
         self.base_selenium.clear_element_text(element= element)
@@ -196,3 +196,9 @@ class BasePages:
     def copy_paste(self, element, value):
         self._copy(value=value)
         self._paste(element=element)
+    
+    def open_child_table(self, source):
+       childtable_arrow = self.base_selenium.find_element_in_element(destination_element='general:child_table_arrow', source=source)
+       childtable_arrow.click()
+
+    
