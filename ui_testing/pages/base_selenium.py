@@ -290,6 +290,7 @@ class BaseSelenium:
 
     def clear_items_in_drop_down(self, element, values='general:ng_values'):
         # element is ng-select element
+        # make sure that there are elements to b deleted
         self.wait_until_element_located(element)
         ng_values = self.find_element_in_element(destination_element=values, source_element=element)
         for ng_value in ng_values:
@@ -545,3 +546,9 @@ class BaseSelenium:
         else:
             self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 
+    def paste(self, element):
+        self.LOGGER.info('paste value from clipboard.')
+        self.wait_until_element_located(element)
+        dom_element = self.find_element(element)
+        dom_element.clear()
+        dom_element.send_keys(Keys.CONTROL, 'v')

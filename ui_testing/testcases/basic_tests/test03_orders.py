@@ -3,6 +3,7 @@ from unittest import skip
 from parameterized import parameterized
 from ui_testing.testcases.base_test import BaseTest
 from random import randint
+import time
 
 
 class OrdersTestCases(BaseTest):
@@ -575,7 +576,6 @@ class OrdersTestCases(BaseTest):
             article_name=test_plan_dict['Article Name'])
         self.order_page.set_test_plan(
             test_plan=test_plan_dict['Test Plan Name'])
-        self.order_page.get_suborder_table()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -597,7 +597,7 @@ class OrdersTestCases(BaseTest):
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
 
-    def test011_filter_by_any_fields(self):
+    def test015_filter_by_any_fields(self):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
         LIMS-3495
@@ -621,7 +621,7 @@ class OrdersTestCases(BaseTest):
                     "'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
 
-    def test015_validate_order_test_unit_test_plan(self):
+    def test016_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
 
@@ -654,41 +654,41 @@ class OrdersTestCases(BaseTest):
         self.order_page.set_test_unit(test_unit='r')
         self.order_page.save(save_btn='order:save_btn')
 
-        def test016_validate_order_test_unit_test_plan_edit_mode(self):
-            """
-            New: orders Test plan /test unit validation in edit mode
+    def test017_validate_order_test_unit_test_plan_edit_mode(self):
+        """
+        New: orders Test plan /test unit validation in edit mode
 
-            LIMS-4826
-            """
-            self.base_selenium.LOGGER.info(
-                ' Running test case to check that at least test unit or test plan is mandatory in order')
+        LIMS-4826
+        """
+        self.base_selenium.LOGGER.info(
+            ' Running test case to check that at least test unit or test plan is mandatory in order')
 
-            # validate in edit mode, go to order over view
-            self.order_page.get_orders_page()
-            self.order_page.get_random_order()
-            order_url = self.base_selenium.get_url()
-            self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
+        # validate in edit mode, go to order over view
+        self.order_page.get_orders_page()
+        self.order_page.get_random_order()
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
 
-            self.base_selenium.LOGGER.info(
-                ' Remove all selected test plans and test units')
-            # delete test plan and test unit
-            if self.order_page.get_test_plan():
-                self.order_page.clear_test_plan()
-                self.order_page.confirm_popup(force=True)
-            # if self.order_page.get_test_unit():
-            # self.order_page.clear_test_unit()
-            # self.order_page.confirm_popup(force=True)
+        self.base_selenium.LOGGER.info(
+            ' Remove all selected test plans and test units')
+        # delete test plan and test unit
+        if self.order_page.get_test_plan():
+            self.order_page.clear_test_plan()
+            self.order_page.confirm_popup(force=True)
 
-            self.order_page.save(save_btn='order:save_btn')
-            # check both test plans and test units fields have error
-            test_plan_class_name = self.base_selenium.get_attribute(
-                element="order:test_plan", attribute='class')
-            test_unit_class_name = self.base_selenium.get_attribute(
-                element="order:test_unit", attribute='class')
-            self.assertIn('has-error', test_plan_class_name)
-            self.assertIn('has-error', test_unit_class_name)
+        if self.order_page.get_test_unit():
+            self.order_page.clear_test_unit()
+            self.order_page.confirm_popup(force=True)
+
+        self.order_page.save(save_btn='order:save_btn')
+        # check both test plans and test units fields have error
+        test_plan_class_name = self.base_selenium.get_attribute(element="order:test_plan", attribute='class')
+        test_unit_class_name = self.base_selenium.get_attribute(element="order:test_unit", attribute='class')
+        self.assertIn('has-error', test_plan_class_name)
+        self.assertIn('has-error', test_unit_class_name)
+
     @parameterized.expand(['save_btn', 'cancel'])
-    def test016_update_test_date(self, save):
+    def test018_update_test_date(self, save):
         """
         New: Orders: Test Date: I can update test date successfully with cancel/save buttons
         LIMS-4780
@@ -710,12 +710,10 @@ class OrdersTestCases(BaseTest):
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date, test_date))
-
             self.assertEqual(test_date, current_test_date)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date,
-                                                                                  order_test_date))
+                ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date, order_test_date))
             self.assertEqual(current_test_date, order_test_date)
 
     @parameterized.expand(['save_btn', 'cancel'])
@@ -744,14 +742,86 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(current_shipment_date,
                                                                                         shipment_date))
             self.assertEqual(shipment_date, current_shipment_date)
-
         else:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
                                                                                           order_shipment_date))
             self.assertEqual(current_shipment_date, order_shipment_date)
 
-    def test018_archive_sub_order(self):
+    def test018_validate_order_no_exists(self):
+        """
+        New: Orders: Create new order and change the autogenerated number
+
+        LIMS-3406
+        """
+        self.base_selenium.LOGGER.info('Running test case to check that order number should be unique')
+        order_row = self.base_selenium.get_row_cells_dict_related_to_header(self.order_page.get_random_order_row())
+
+        self.order_page.click_create_order_button()
+        self.order_page.set_new_order()
+        self.order_page.copy_paste(element='order:no', value=order_row['Order No.'])
+        self.order_page.sleep_small()
+        order_no_class_name = self.base_selenium.get_attribute(element="order:no", attribute='class')
+        self.assertIn('has-error', order_no_class_name)
+        order_error_message = self.base_selenium.get_text(element="order:order_no_error_message")
+        self.assertIn('No. already exist', order_error_message)
+        
+    def test019_validate_order_no_archived_exists(self):
+        """
+        New: Orders: Create new order and change the autogenerated number
+
+        LIMS-3406
+        """
+        self.base_selenium.LOGGER.info(
+            ' Running test case to check that order number should be unique with archived one')
+        
+        order_row = self.order_page.get_random_order_row()
+        self.order_page.click_check_box(source=order_row)
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=order_row)
+        analysis_numbers_list = order_data['Analysis No.'].split(',')
+        self.base_selenium.LOGGER.info(
+            ' + Try to archive order with number : {}'.format(order_data['Order No.']))
+        order_deleted = self.order_page.archive_selected_orders(
+            check_pop_up=True)
+        self.base_selenium.LOGGER.info(' + {} '.format(order_deleted))
+
+        if order_deleted:
+            self.base_selenium.LOGGER.info(
+                ' + Order number : {} deleted successfully'.format(order_data['Order No.']))
+            self.analyses_page.get_analyses_page()
+            has_active_analysis = self.analyses_page.search_if_analysis_exist(
+                analysis_numbers_list)
+            self.base_selenium.LOGGER.info(
+                ' + Has activated analysis? : {}.'.format(has_active_analysis))
+        else:
+            self.analyses_page.get_analyses_page()
+            self.base_selenium.LOGGER.info(
+                ' + Archive Analysis with numbers : {}'.format(analysis_numbers_list))
+            self.analyses_page.search_by_number_and_archive(
+                analysis_numbers_list)
+            self.order_page.get_orders_page()
+            rows = self.order_page.search(analysis_numbers_list[0])
+            self.order_page.click_check_box(source=rows[0])
+            self.base_selenium.LOGGER.info(
+                ' + archive order has analysis number =  {}'.format(analysis_numbers_list[0]))
+            self.order_page.archive_selected_orders()
+
+        self.base_selenium.LOGGER.info(
+            ' Creating new order with number ' + order_data['Order No.'])
+        self.order_page.click_create_order_button()
+        self.order_page.set_new_order()
+        self.order_page.sleep_tiny()
+        self.order_page.copy_paste(element='order:no', value=order_data['Order No.'])
+        self.order_page.sleep_tiny()
+        order_no_class_name = self.base_selenium.get_attribute(
+                element="order:no", attribute='class')
+        self.assertIn('has-error', order_no_class_name)
+        order_error_message = self.base_selenium.get_text(
+                element="order:order_no_error_message")
+        self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)    
+        
+    def test020_archive_sub_order(self):
         """
         New: Orders: Table:  Suborder /Archive Approach: : User can archive any suborder successfully 
         LIMS-3739
@@ -845,10 +915,3 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('+ Assert count archived orders with a specific analysis number: {}'.format(len(rows_count)))
 
         self.assertEqual(len(rows_count)-1,1)
-
-
-
-
-
-
-

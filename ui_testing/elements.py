@@ -313,6 +313,8 @@ elements = {
         'add_new_item': {'method': 'class_name',
                          'value': 'addNewItem',
                          'order': 0},
+        'order_no_error_message' : {'method': 'xpath',
+                                'value': '//*[@id="field"]/div[3]/div/span'},
     'analysis': {
         'filter_order_no': {
                         'method': 'id',

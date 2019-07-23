@@ -9,7 +9,11 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text(element="test_plan:no", value=no)
 
     def get_article(self):
-        return self.base_selenium.get_value(element="test_plans:article")
+        articles = self.base_selenium.get_value(element="test_plan:article")
+        if "×" in articles:
+            return articles.replace("× ", "").split('\n')
+        else:
+            return []
 
     def set_article(self, article='', random=False):
         if random:
@@ -19,7 +23,8 @@ class TstPlan(TestPlans):
             self.base_selenium.select_item_from_drop_down(element='test_plan:article', item_text=article)
 
     def clear_article(self):
-        self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
+        if self.get_article():
+            self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
     def get_material_type(self):
         return self.base_selenium.get_text(element='test_plans:material_type')

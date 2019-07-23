@@ -9,3 +9,4 @@ flaky
 pandas
 xlrd
 loguru
+pyperclip
