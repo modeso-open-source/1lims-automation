@@ -775,11 +775,15 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info(' 3rd suborder analysis no is:: {}'.format(analysis_no))
 
-        # open first suborder to keep the orders in the same sequence (3rd suborder in active table is the 3rd suborder in the table with add)
+        # open first suborder to keep the orders in the same sequence (first order in the list is the last created order)
         self.order_page.get_random_x(row=rows[0])
+        self.base_selenium.LOGGER.info('Open first order in the filtered list of orders (first order in the list is the last created order)')
+
+        # set suborder index to be archived
+        suborder_index_to_archive = 2
 
         # getting order's table view to check archiving the 3rd suborder (subbopse to get a message that it can't be archived)
-        self.order_page.archive_suborder(index=1, check_pop_up=True)
+        self.order_page.archive_suborder(index=suborder_index_to_archive, check_pop_up=True)
 
         # get count of suborders after trying to delete order to make it is not deleted before archiving the analysis.
         rows_count = self.base_selenium.get_table_rows(element='order:suborder_table')
@@ -787,6 +791,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('+ Number of suborders = {}'.format(len(rows_count)))
         self.base_selenium.LOGGER.info('+ Assert  before clicking archive suborders count {}, after clicking archive suborders count {}'.format(3, len(rows_count)))
         self.assertEqual(len(rows_count), 3)
+
+        
 
         # get the analysis page to filter the analysis corresponding to the required order
         self.analyses_page.get_analyses_page()
@@ -803,7 +809,8 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_random_x(row=rows[0])
 
         # open table with add and archive the suborder with specific index
-        self.order_page.archive_suborder(index=2, check_pop_up=False)
+        self.base_selenium.LOGGER.info('Press archive on suborder no #{}'.format(suborder_index_to_archive))
+        self.order_page.archive_suborder(index=suborder_index_to_archive, check_pop_up=False)
         rows_count = self.base_selenium.get_table_rows(element='order:suborder_table')
 
         self.base_selenium.LOGGER.info('+ Number of suborders = {}'.format(len(rows_count)))
@@ -815,7 +822,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.get(
             url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
 
-        self.order_page.archive_suborder(index=2, check_pop_up=True)
+        self.order_page.archive_suborder(index=suborder_index_to_archive, check_pop_up=True)
 
         self.base_selenium.get(
             url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
