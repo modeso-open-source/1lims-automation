@@ -493,8 +493,8 @@ class OrdersTestCases(BaseTest):
         # create order with multiple suborders
         self.base_selenium.LOGGER.info(
             ' Create order with 5 sub orders to make sure of the count of the created/ updated orders')
-        order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='a',
-                                                            test_unit='a', multiple_suborders=5)
+        order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plans=['a'],
+                                                            test_units=['a'], multiple_suborders=5)
         self.base_selenium.LOGGER.info(
             ' + orders_created_with_number : {}'.format(order_no_created))
         order_no_created = order_no_created.replace("'", '')
@@ -630,8 +630,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             ' Running test case to check that at least test unit or test plan is mandatory in order')
 
-        self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='',
-                                         test_unit='', multiple_suborders=0)
+        self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plans=[''],
+                                         test_units=[''], multiple_suborders=0)
         # check both test plans and test units fields have error
         test_plan_class_name = self.base_selenium.get_attribute(
             element="order:test_plan", attribute='class')
@@ -649,8 +649,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             ' Retry the test case but choose test unit and save')
         # try one more time but choose test unit and save
-        self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='',
-                                         test_unit='', multiple_suborders=0)
+        self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plans=[''],
+                                         test_units=[''], multiple_suborders=0)
         self.order_page.set_test_unit(test_unit='r')
         self.order_page.save(save_btn='order:save_btn')
 
@@ -830,24 +830,24 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create a new order with test units')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
         qualt_test_unit = test_unit_dict
         if qualt_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(qualt_test_unit['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit(search='Quantitative')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative')
         quan_test_unit = test_unit_dict
         if quan_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(quan_test_unit['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit(search='Quantitative Mibi')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative Mibi')
         quan_mibi_test_unit = test_unit_dict
         if quan_mibi_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(quan_mibi_test_unit['Test Unit Name'])
         
         self.order_page.get_orders_page()    
-        created_order = self.order_page.create_new_order_with_multiple_test_units(material_type='r', article='a', contact='a',
+        created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
                                          test_units=test_units_list)
         
         self.analyses_page.get_analyses_page()
@@ -881,24 +881,24 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
         qualt_test_unit = test_unit_dict
         if qualt_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(qualt_test_unit['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit(search='Quantitative')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative')
         quan_test_unit = test_unit_dict
         if quan_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(quan_test_unit['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit(search='Quantitative Mibi')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative Mibi')
         quan_mibi_test_unit = test_unit_dict
         if quan_mibi_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(quan_mibi_test_unit['Test Unit Name'])
         
         self.order_page.get_orders_page()    
-        created_order = self.order_page.create_existing_order_with_multiple_test_units(no='' , material_type='r', article='a', contact='a',
+        created_order = self.order_page.create_existing_order(no='' , material_type='r', article='a', contact='a',
                                          test_units=test_units_list)
         
         self.analyses_page.get_analyses_page()
@@ -932,14 +932,14 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units and change material type')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
         qualt_test_unit = test_unit_dict
         if qualt_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(qualt_test_unit['Test Unit Name'])
         
         self.order_page.get_orders_page()    
-        created_order = self.order_page.create_new_order_with_multiple_test_units(material_type='r', article='a', contact='a',
+        created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
                                          test_units=test_units_list)
            
         created_existing_order = self.order_page.create_existing_order_with_auto_fill(no=created_order.replace("'", ""))
@@ -979,14 +979,14 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units and change article')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
         qualt_test_unit = test_unit_dict
         if qualt_test_unit:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(qualt_test_unit['Test Unit Name'])
         
         self.order_page.get_orders_page()    
-        created_order = self.order_page.create_new_order_with_multiple_test_units(material_type='r', article='a', contact='a',
+        created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
                                          test_units=test_units_list)
            
         created_existing_order = self.order_page.create_existing_order_with_auto_fill(no=created_order.replace("'", ""))

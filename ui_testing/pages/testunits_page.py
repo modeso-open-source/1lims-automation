@@ -2,7 +2,7 @@ from ui_testing.pages.base_pages import BasePages
 from random import randint
 
 
-class TestUnits(BasePages):
+class TstUnits(BasePages):
     def __init__(self):
         super().__init__()
         self.test_units_url = "{}testUnits".format(self.base_selenium.url)
