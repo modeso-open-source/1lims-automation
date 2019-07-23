@@ -777,7 +777,6 @@ class OrdersTestCases(BaseTest):
 
         # open first suborder to keep the orders in the same sequence (3rd suborder in active table is the 3rd suborder in the table with add)
         self.order_page.get_random_x(row=rows[0])
-        self.order_page.sleep_tiny()
 
         # getting order's table view to check archiving the 3rd suborder (subbopse to get a message that it can't be archived)
         self.order_page.archive_suborder(index=1, check_pop_up=True)
