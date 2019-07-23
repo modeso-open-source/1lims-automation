@@ -76,7 +76,7 @@ class BaseTest(TestCase):
         test_units_dict = [self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit) for
                                     test_unit in test_units[:-1]]
         for test_unit_dict in test_units_dict:
-            if test_unit_dict['Type'] == search and test_unit_dict['Material Type'].find(material_type) != -1:
+            if test_unit_dict['Type'] == search and material_type in test_unit_dict['Material Type']:
                 return test_unit_dict
         return {}
 

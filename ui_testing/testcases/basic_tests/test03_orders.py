@@ -831,20 +831,17 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Running test case to create a new order with test units')
         test_units_list = []
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
-        qualt_test_unit = test_unit_dict
-        if qualt_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(qualt_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative')
-        quan_test_unit = test_unit_dict
-        if quan_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(quan_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative Mibi')
-        quan_mibi_test_unit = test_unit_dict
-        if quan_mibi_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(quan_mibi_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         
         self.order_page.get_orders_page()    
         created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
@@ -861,16 +858,11 @@ class OrdersTestCases(BaseTest):
         
         self.analyses_page.open_child_table(source=orders_analyess[0])
         rows_with_childtable = self.analyses_page.result_table(element='general:table_child')
-        success = 'true'
-        for row in rows_with_childtable[:-1]:
-            
-            rows_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=row, table_element='general:table_child')
-            testunit_name = rows_with_headers['Test Unit']
-            self.base_selenium.LOGGER.info(testunit_name)
-            if testunit_name not in test_units_list:
-                success = 'false'
-        self.assertEqual(
-           'true', success)
+        for row in rows_with_childtable[:-1]:            
+            row_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=row, table_element='general:table_child')
+            testunit_name = row_with_headers['Test Unit']
+            self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
+            self.assertIn(testunit_name, test_units_list)
         
     
     def test021_create_existing_order_with_test_units(self):
@@ -882,20 +874,17 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units')
         test_units_list = []
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
-        qualt_test_unit = test_unit_dict
-        if qualt_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(qualt_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative')
-        quan_test_unit = test_unit_dict
-        if quan_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(quan_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative Mibi')
-        quan_mibi_test_unit = test_unit_dict
-        if quan_mibi_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(quan_mibi_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         
         self.order_page.get_orders_page()    
         created_order = self.order_page.create_existing_order(no='' , material_type='r', article='a', contact='a',
@@ -912,16 +901,11 @@ class OrdersTestCases(BaseTest):
         
         self.analyses_page.open_child_table(source=orders_analyess[0])
         rows_with_childtable = self.analyses_page.result_table(element='general:table_child')
-        success = 'true'
-        for row in rows_with_childtable[:-1]:
-            
-            rows_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=row, table_element='general:table_child')
-            testunit_name = rows_with_headers['Test Unit']
-            self.base_selenium.LOGGER.info(testunit_name)
-            if testunit_name not in test_units_list:
-                success = 'false'
-        self.assertEqual(
-           'true', success) 
+        for row in rows_with_childtable[:-1]:          
+            row_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=row, table_element='general:table_child')
+            testunit_name = row_with_headers['Test Unit']
+            self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
+            self.assertIn(testunit_name, test_units_list)
         
     
     def test022_create_existing_order_with_test_units_and_change_material_type(self):
@@ -933,10 +917,9 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units and change material type')
         test_units_list = []
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
-        qualt_test_unit = test_unit_dict
-        if qualt_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(qualt_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         
         self.order_page.get_orders_page()    
         created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
@@ -952,7 +935,7 @@ class OrdersTestCases(BaseTest):
         test_unit = self.order_page.get_test_unit()
         self.assertEqual('Search', article)
         self.order_page.set_article(article='a')
-        self.order_page.set_test_unit(test_unit=qualt_test_unit['Test Unit Name'])
+        self.order_page.set_test_unit(test_unit=test_unit_dict['Test Unit Name'])
         
         article = self.order_page.get_article()
         self.order_page.save(save_btn='order:save_btn')
@@ -980,10 +963,9 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units and change article')
         test_units_list = []
         test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
-        qualt_test_unit = test_unit_dict
-        if qualt_test_unit:
+        if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(qualt_test_unit['Test Unit Name'])
+            test_units_list.append(test_unit_dict['Test Unit Name'])
         
         self.order_page.get_orders_page()    
         created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
@@ -995,7 +977,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.sleep_medium()
         self.base_selenium.LOGGER.info('Check test units are still the same')
         test_unit = self.order_page.get_test_unit()
-        self.assertEqual(test_unit[0].split(' No:')[0], qualt_test_unit['Test Unit Name'])
+        self.assertEqual(test_unit[0].split(' No:')[0], test_unit_dict['Test Unit Name'])
         self.order_page.set_article(article='r')
         
         article = self.order_page.get_article()
@@ -1014,15 +996,11 @@ class OrdersTestCases(BaseTest):
         
         self.analyses_page.open_child_table(source=orders_analyess[0])
         rows_with_childtable = self.analyses_page.result_table(element='general:table_child')
-        success = 'true'
-        for row in rows_with_childtable[:-1]:
-            
-            rows_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=row, table_element='general:table_child')
-            testunit_name = rows_with_headers['Test Unit']
-            self.base_selenium.LOGGER.info(testunit_name)
-            if testunit_name not in test_units_list:
-                success = 'false'
-        self.assertEqual(
-           'true', success)       
+        for row in rows_with_childtable[:-1]:          
+            row_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=row, table_element='general:table_child')
+            testunit_name = row_with_headers['Test Unit']
+            self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
+            self.assertIn(testunit_name, test_units_list)
+     
         
 
