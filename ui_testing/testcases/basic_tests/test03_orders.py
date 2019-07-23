@@ -798,7 +798,6 @@ class OrdersTestCases(BaseTest):
         self.analyses_page.search_by_number_and_archive(analysis_numbers_list=analysis_no)
 
         self.order_page.get_orders_page()
-        self.order_page.sleep_tiny()
 
         # filtering by order no again to get the order that will have the archiving operation be performed on.
         self.orders_page.filter_by_order_no(filter_text=order_no_created)
