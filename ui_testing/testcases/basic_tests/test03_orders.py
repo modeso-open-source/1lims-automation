@@ -809,7 +809,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_random_x(row=rows[0])
 
         # open table with add and archive the suborder with specific index
-        self.base_selenium.LOGGER.info('Press archive on suborder no #{}'.format(suborder_index_to_archive))
+        self.base_selenium.LOGGER.info('Press archive on suborder no #{}'.format(suborder_index_to_archive+1))
         self.order_page.archive_suborder(index=suborder_index_to_archive, check_pop_up=False)
         rows_count = self.base_selenium.get_table_rows(element='order:suborder_table')
 
