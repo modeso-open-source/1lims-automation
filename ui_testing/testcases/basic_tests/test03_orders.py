@@ -821,49 +821,108 @@ class OrdersTestCases(BaseTest):
                 element="order:order_no_error_message")
         self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)
 
-    def test020_update_suborder_testunits(self):
+    def test021_update_suborder_testunits(self):
 
-        # # create order with 2 suborders to make sure that update in the suborder is working
-        # self.base_selenium.LOGGER.info('Creating new order with 2 suborders')
-        # self.order_page.create_new_order(multiple_suborders=1, test_plan_count=0, test_unit_count=2)
+        # create order with 2 suborders to make sure that update in the suborder is working
+        self.base_selenium.LOGGER.info('Creating new order with 2 suborders')
+        self.order_page.create_new_order(multiple_suborders=1, test_plan_count=0, test_unit_count=1)
 
-        # rows = self.order_page.result_table()
-        # selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[1])
-        # analysis_no = selected_order_data['Analysis No.']
-        # order_no = selected_order_data['Order No.']
-        
-        # self.order_page.get_random_x(row=rows[0])
-        # self.order_page.get_suborder_table()
-        # sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, Test_unit=True)
-        # suborder_testunits = sub_order_data['test_unit']
-        # suborder_testunits = suborder_testunits.split('|')
-        # self.base_selenium.LOGGER.info('{}'.format(suborder_testunits))
-        # # getting the length of the table, should be 2
-        # self.analyses_page.get_analyses_page()
-        # self.analyses_page.open_filter_menu()
-        # self.analyses_page.filter_by(filter_element='orders:filter_order_no', filter_text=order_no.replace("'",''), field_type='drop_down')
-        # self.analyses_page.filter_apply()
-        # analysis_records=self.analyses_page.result_table()
-        # analysis_count = len(analysis_records) -1
-        # self.assertEqual(2, analysis_count)
-
-        # # get child table data of first analysis, which is the test units of the last created suborder (2nd suborder in our  case)
-        # child_table = self.analyses_page.get_child_table_data(index=0)
-        # for record in child_table:
-        #     if suborder_testunits.index(record['Test Unit']) == -1:
-        #         self.assertEqual(0, -1)
-        
-        # self.base_selenium.LOGGER.info('count of test units = :{}'.format(len(child_table)))
         rows = self.order_page.result_table()
-        self.order_page.get_random_x(row=rows[0])
-        self.order_page.sleep_tiny()
+        selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+        analysis_no = selected_order_data['Analysis No.']
+        order_no = selected_order_data['Order No.']
+        
+        # checking that when adding new test unit, the newly added test unit is added to the order's analysis instead of creating new analysis
+        self.order_page.get_random_x(row=rows[1])
+        self.order_page.update_suborder(sub_order_index=1, test_units=True)
+        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_unit=True)
+        suborder_testunits = sub_order_data['test_unit']
+        suborder_testunits = suborder_testunits.split('|')
+        self.base_selenium.LOGGER.info('{}'.format(suborder_testunits))
+
+        # getting the length of the table, should be 2
+        self.analyses_page.get_analyses_page()
+        self.analyses_page.open_filter_menu()
+        self.analyses_page.filter_by(filter_element='orders:filter_order_no', filter_text=order_no.replace("'",''), field_type='drop_down')
+        self.analyses_page.filter_apply()
+        analysis_records=self.analyses_page.result_table()
+        analysis_count = len(analysis_records) -1
+        self.assertEqual(2, analysis_count)
+
+        # get child table data of first analysis, which is the test units of the last created suborder (2nd suborder in our  case)
+        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
+        # making sure that the new test unit is added to the order's analysis no with the same analysis no not new number
+        analysis_no_from_analysis_table = selected_analysis_data['Analysis No.']
+        
+        # making sure that the status remained open after adding new test unit
+        analysis_status = selected_analysis_data['Status']
+
+        child_table = self.analyses_page.get_child_table_data(index=0)
+        for record in child_table:
+            if suborder_testunits.index(record['Test Unit']) == -1:
+                self.assertEqual(0, -1)
+        
+        self.base_selenium.LOGGER.info('count of test units = :{}'.format(len(child_table)))
+        self.order_page.get_orders_page()
+        rows = self.order_page.result_table()
+        self.order_page.get_random_x(row=rows[1])
+
         self.order_page.get_suborder_table()
-        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, Test_unit=True)
+        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_unit=True)
         suborder_testunits = sub_order_data['test_unit']
         suborder_testunits = suborder_testunits.split('|')
         self.order_page.remove_testunit_by_name(index=1, testunit_name=suborder_testunits[0])
 
-
-
+    def test022_update_suborder_testplan(self):
+        # create order with 2 suborders to make sure that update in the suborder is working
+        self.base_selenium.LOGGER.info('Creating new order with 2 suborders')
+        self.order_page.create_new_order(multiple_suborders=1, test_plan_count=1, test_unit_count=0, test_plan='tp1', material_type='r')
         
+        # getting data of the created orders to make sure that everything created correctly
+        rows = self.order_page.result_table()
+        selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+        analysis_no = selected_order_data['Analysis No.']
+        order_no = selected_order_data['Order No.']
 
+        # checking that when adding new test unit, the newly added test unit is added to the order's analysis instead of creating new analysis
+        self.order_page.get_random_x(row=rows[1])
+        self.order_page.update_suborder(sub_order_index=1, test_plans=True, tp_value='tp2')
+        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
+        suborder_testplans = sub_order_data['test_plan']
+        suborder_testplans = suborder_testplans.split('|')
+        self.base_selenium.LOGGER.info('{}'.format(suborder_testplans))
+
+        # getting the length of the table, should be 2
+        self.analyses_page.get_analyses_page()
+        self.analyses_page.open_filter_menu()
+        self.analyses_page.filter_by(filter_element='orders:filter_order_no', filter_text=order_no.replace("'",''), field_type='drop_down')
+        self.analyses_page.filter_apply()
+        analysis_records=self.analyses_page.result_table()
+        analysis_count = len(analysis_records) -1
+        self.assertEqual(2, analysis_count)
+
+        # get child table data of first analysis, which is the test units of the last created suborder (2nd suborder in our  case)
+        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
+        # making sure that the new test unit is added to the order's analysis no with the same analysis no not new number
+        analysis_no_from_analysis_table = selected_analysis_data['Analysis No.']
+        
+        # making sure that the status remained open after adding new test unit
+        analysis_status = selected_analysis_data['Status']
+
+        # getting test plan value in test plan column, should the value of the 2 test plans separated by ', '
+        # analysis_testplans = selected_analysis_data['Test Plan Name']
+        # child_table = self.analyses_page.get_child_table_data(index=0)
+        # for record in child_table:
+        #     if suborder_testplans.index(record['Test Plan']) == -1:
+        #         self.assertEqual(0, -1)
+        
+        # self.base_selenium.LOGGER.info('count of test units = :{}'.format(len(child_table)))
+        self.order_page.get_orders_page()
+        rows = self.order_page.result_table()
+        self.order_page.get_random_x(row=rows[1])
+
+        self.order_page.get_suborder_table()
+        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_unit=True)
+        suborder_testplans = sub_order_data['test_plan']
+        suborder_testplans = suborder_testplans.split('|')
+        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0])
