@@ -791,7 +791,6 @@ class OrdersTestCases(BaseTest):
 
         # get the analysis page to filter the analysis corresponding to the required order
         self.analyses_page.get_analyses_page()
-        self.order_page.sleep_tiny()
 
         # archive the required analysis
         self.base_selenium.LOGGER.info('archiving the analysis that belongs to the required order to be archived')
