@@ -92,24 +92,23 @@ class Order(Orders):
         else:
             return []
 
-    def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
-        self.base_selenium.LOGGER.info(' + Create new order.')
+    def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0, test_unit_count=1, test_plan_count=1):
         self.click_create_order_button()
         self.set_new_order()
         self.set_material_type(material_type=material_type)
         self.set_article(article=article)
         self.set_contact(contact=contact)
         order_no = self.get_no()
-        if test_plan:
+        for tp_index in range(0, test_plan_count):
             self.set_test_plan(test_plan=test_plan)
-        elif test_unit:
-            self.set_test_unit(test_unit=test_unit)    
+        for tu_index in range(0, test_unit_count):
+            self.set_test_unit(test_unit=test_unit)
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
+                
 
         self.save(save_btn='order:save_btn')
-        self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
         return order_no
                
     def get_no(self):
@@ -204,7 +203,7 @@ class Order(Orders):
                 self.base_selenium.LOGGER.info(' + Header keys : {}'.format(suborder_elements_dict.keys()))
 
     def duplicate_from_table_view(self, number_of_duplicates=1):
-        for duplicate in range(number_of_duplicates):
+        for duplicate in range(0, number_of_duplicates):
             self.base_selenium.click(element='order:duplicate_table_view')    
         
     def duplicate_suborder(self):
@@ -216,3 +215,42 @@ class Order(Orders):
         duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
                                                                        destination_element='order:duplicate_table_view')
         duplicate_element.click()
+
+    # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
+    def get_suborder_data(self, sub_order_index=0, departments=False, material_type=False, articles=False, test_plan=False, Test_unit=False, test_date=False, shipment_date=False):
+        table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        required_suborder = self.base_selenium.get_row_cells_elements_related_to_header(row=table_suborders[sub_order_index],
+                                                                                             table_element='order:suborder_table')
+        response = {
+            "departments": "",
+            "material_types": "",
+            "article": "",
+            "test_plan": "",
+            "test_unit": "",
+            "test_date": "",
+            "shipment_date": ""
+        }
+        if departments :
+            response["departments"]="|".join(list(map(lambda s: str(s)[2:], required_suborder["Departments:"].text.split("\n")) ))
+        if test_plan :
+            response["test_plan"]="|".join(list(map(lambda s: str(s)[2:], required_suborder["Test Plan: *"].text.split("\n")) ))
+        if Test_unit :
+            response["test_unit"]="|".join(list(map(lambda s: str(s)[2:], required_suborder["Test Unit: *"].text.split("\n")) ))
+        if articles :
+            response["article"]=required_suborder["Article: *"].text.split("\n")[0]
+        if material_type :
+            response["material_types"]=required_suborder["Material Type: *"].text.split("\n")[0]
+        if shipment_date :
+            pass
+        if test_date :
+            pass
+        return response
+
+    def remove_testunit_by_name(self, index, testunit_name):
+        self.base_selenium.LOGGER.info(testunit_name)
+        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = suborder_table_rows[index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
+                                                                                            table_element='order:suborder_table')
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'], item_text=testunit_name.replace("'", ''))
+        self.sleep_medium()

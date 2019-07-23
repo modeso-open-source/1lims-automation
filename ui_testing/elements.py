@@ -4,6 +4,10 @@ elements = {
                            'value': 'generalSearch'},
                 'table': {'method': 'id',
                           'value': 'table'},
+                'table_child': {"method": "class_name",
+                                "value": "dataTable",
+                                "order":1
+                                },
                 'save': {'method': 'class_name',
                          'value': 'btn-primary',
                          'order': 0},
@@ -53,6 +57,9 @@ elements = {
                 'checkbox': {'method': 'class_name',
                              'value': 'm-checkbox',
                              'order': 0},
+                'child_table_arrow': {'method': 'class_name',
+                                'value': 'm-datatable__toggle-subtable',
+                                'order': 0},
                 'label': {'method': 'tag_name',
                           'value': 'label',
                           'order': 0},
@@ -320,7 +327,7 @@ elements = {
         'filter_order_no': {
             'method': 'id',
             'value': 'orderNofield'}
+        },
         
-        }
     }
 }

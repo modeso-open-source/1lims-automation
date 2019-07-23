@@ -25,3 +25,12 @@ class Analyses(BasePages):
             if len(rows) > 1:
                 return True
         return False
+
+    def filter_by_analysis_number(self, filter_text):
+        self.base_selenium.LOGGER.info(' + Filter by analysis number : {}'.format(filter_text))
+        self.filter_by(filter_element='analysis:analysis_no_filter', filter_text=filter_text, field_type='text')
+        self.filter_apply()
+        
+    def analysis_filter(self, field_name, value=''):
+        if field_name == 'analysis_no':
+            self.filter_by_analysis_number(filter_text=value)

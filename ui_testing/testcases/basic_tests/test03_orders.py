@@ -819,6 +819,51 @@ class OrdersTestCases(BaseTest):
         self.assertIn('has-error', order_no_class_name)
         order_error_message = self.base_selenium.get_text(
                 element="order:order_no_error_message")
-        self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)    
+        self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)
+
+    def test020_update_suborder_testunits(self):
+
+        # # create order with 2 suborders to make sure that update in the suborder is working
+        # self.base_selenium.LOGGER.info('Creating new order with 2 suborders')
+        # self.order_page.create_new_order(multiple_suborders=1, test_plan_count=0, test_unit_count=2)
+
+        # rows = self.order_page.result_table()
+        # selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[1])
+        # analysis_no = selected_order_data['Analysis No.']
+        # order_no = selected_order_data['Order No.']
+        
+        # self.order_page.get_random_x(row=rows[0])
+        # self.order_page.get_suborder_table()
+        # sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, Test_unit=True)
+        # suborder_testunits = sub_order_data['test_unit']
+        # suborder_testunits = suborder_testunits.split('|')
+        # self.base_selenium.LOGGER.info('{}'.format(suborder_testunits))
+        # # getting the length of the table, should be 2
+        # self.analyses_page.get_analyses_page()
+        # self.analyses_page.open_filter_menu()
+        # self.analyses_page.filter_by(filter_element='orders:filter_order_no', filter_text=order_no.replace("'",''), field_type='drop_down')
+        # self.analyses_page.filter_apply()
+        # analysis_records=self.analyses_page.result_table()
+        # analysis_count = len(analysis_records) -1
+        # self.assertEqual(2, analysis_count)
+
+        # # get child table data of first analysis, which is the test units of the last created suborder (2nd suborder in our  case)
+        # child_table = self.analyses_page.get_child_table_data(index=0)
+        # for record in child_table:
+        #     if suborder_testunits.index(record['Test Unit']) == -1:
+        #         self.assertEqual(0, -1)
+        
+        # self.base_selenium.LOGGER.info('count of test units = :{}'.format(len(child_table)))
+        rows = self.order_page.result_table()
+        self.order_page.get_random_x(row=rows[0])
+        self.order_page.sleep_tiny()
+        self.order_page.get_suborder_table()
+        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, Test_unit=True)
+        suborder_testunits = sub_order_data['test_unit']
+        suborder_testunits = suborder_testunits.split('|')
+        self.order_page.remove_testunit_by_name(index=1, testunit_name=suborder_testunits[0])
+
+
+
         
 
