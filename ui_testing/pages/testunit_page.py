@@ -1,6 +1,6 @@
-from ui_testing.pages.testunits_page import TstUnit
+from ui_testing.pages.testunits_page import TstUnits
 
 
-class TstUnit(TstUnit):
+class TstUnit(TstUnits):
     def get_no(self):
         return self.base_selenium.get_value(element="test_plan:no")
