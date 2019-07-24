@@ -1071,19 +1071,21 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Get order with order no #{}, and analysis no #{}'.format(order_data['Order No.'], order_data['Analysis No.']))
 
         self.order_page.get_suborder_table()
-        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
-        suborder_testplans = sub_order_data['test_plan']
+        sub_order_data_before_refresh = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
+        suborder_testplans = sub_order_data_before_refresh['test_plan']
         suborder_testplans = suborder_testplans.split('|')
         # making sure that test plan is not removed by pressing cancel
         self.base_selenium.LOGGER.info('Remove Test Plan with name: {} from the order'.format(suborder_testplans[0]))
-        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0], confirm_removing=False)
+        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0])
+        self.base_selenium.click(element='order:confirm_cancel')
         self.base_selenium.LOGGER.info('Pressing cancel to the pop up')
-        self.order_page.sleep_tiny()
+        self.order_page.save(save_btn="order:save_btn")
         
         self.base_selenium.LOGGER.info('Refresh to make sure that the test plan is not removed after pressing cancel')
         self.base_selenium.refresh()
 
         self.base_selenium.LOGGER.info('Getting suborders data to check the test plan is not removed')
+        self.order_page.sleep_tiny()
         self.order_page.get_suborder_table()
         sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
         suborder_testplans = sub_order_data['test_plan']
@@ -1095,7 +1097,9 @@ class OrdersTestCases(BaseTest):
         self.assertEquals(2, count_of_testplans)
 
         self.base_selenium.LOGGER.info('Remove test plan from the order and press confirm to the pop up')
-        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0], confirm_removing=True)
+        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0])
+        self.base_selenium.click(element='order:confirm_pop')
+        self.order_page.save(save_btn="order:save_btn")
         
         self.base_selenium.LOGGER.info('Get orders page to make sure that test plan has been removed')
         self.order_page.get_orders_page()

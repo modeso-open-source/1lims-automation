@@ -344,6 +344,12 @@ elements = {
                          'order': 0},
         'order_no_error_message' : {'method': 'xpath',
                                 'value': '//*[@id="field"]/div[3]/div/span'},
+        'confirm_pop': {'method': 'class_name',
+                                'value': 'btn-success',
+                                'order': 0},
+        'confirm_cancel': {'method': 'class_name',
+                                'value': 'btn-secondary',
+                                'order': 2},
     'analysis': {
         'filter_order_no': {
             'method': 'id',

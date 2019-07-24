@@ -282,31 +282,20 @@ class Order(Orders):
             pass
         return response
 
-    def remove_testunit_by_name(self, index, testunit_name, confirm_removing=True):
+    def remove_testunit_by_name(self, index, testunit_name):
         self.base_selenium.LOGGER.info(testunit_name)
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[index]
         suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
                                                                                             table_element='order:suborder_table')
         self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'], item_text=testunit_name.replace("'", ''))
-        self.sleep_tiny()
-        if confirm_removing:
-            self.base_selenium.click(element='general:confirm_pop')
-        else:
-            self.base_selenium.click(element='general:confirm_pop')
 
-    def remove_testplan_by_name(self, index, testplan_name, confirm_removing=True):
-        self.base_selenium.LOGGER.info(testplan_name)
+    def remove_testplan_by_name(self, index, testplan_name):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[index]
         suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
                                                                                             table_element='order:suborder_table')
         self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=testplan_name.replace("'", ''))
-        self.sleep_tiny()
-        if confirm_removing:
-            self.base_selenium.click(element='general:confirm_pop')
-        else:
-            self.base_selenium.click(element='general:confirm_pop')        
 
     def update_suborder(self, sub_order_index=0, contacts=False, departments=False, material_type=False, articles=False, test_plans=False, test_units=False, shipment_date=False, test_date=False, save_state=True, test_plans_count=1, test_units_count=1, departments_count=1, tp_value='', tu_value=''):
         self.get_suborder_table()
