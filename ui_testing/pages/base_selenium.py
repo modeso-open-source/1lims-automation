@@ -552,3 +552,6 @@ class BaseSelenium:
         dom_element = self.find_element(element)
         dom_element.clear()
         dom_element.send_keys(Keys.CONTROL, 'v')
+
+    def refresh(self):
+        self.driver.refresh()

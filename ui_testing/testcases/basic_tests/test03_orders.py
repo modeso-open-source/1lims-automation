@@ -922,7 +922,56 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_random_x(row=rows[1])
 
         self.order_page.get_suborder_table()
-        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_unit=True)
+        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
         suborder_testplans = sub_order_data['test_plan']
         suborder_testplans = suborder_testplans.split('|')
-        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0])
+        
+        # making sure that test plan is not removed by pressing cancel
+        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0], confirm_removing=False)
+
+        self.base_selenium.refresh()
+
+        self.order_page.get_suborder_table()
+        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
+        suborder_testplans = sub_order_data['test_plan']
+        suborder_testplans = suborder_testplans.split('|')
+
+        # count of test plans should be 2
+        count_of_testplans = len(suborder_testplans)
+        self.assertEquals(2, count_of_testplans)
+
+        self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0], confirm_removing=True)
+
+        self.order_page.get_orders_page()
+
+        rows = self.order_page.result_table()
+        selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+
+        analysis_no_after_removing_tp = selected_order_data['Analysis No.']
+
+        testplan_after_update = selected_order_data['Test Plans']
+
+        # making sure that test plans updated successfully and affected the table.
+        self.assertEquals(suborder_testplans[1], testplan_after_update)
+
+        # after update checking for analysis data
+        # getting the length of the table, should be 2
+        self.analyses_page.get_analyses_page()
+        self.analyses_page.open_filter_menu()
+        self.analyses_page.filter_by(filter_element='orders:filter_order_no', filter_text=order_no.replace("'",''), field_type='drop_down')
+        self.analyses_page.filter_apply()
+        analysis_records=self.analyses_page.result_table()
+        analysis_count = len(analysis_records) -1
+        self.assertEqual(2, analysis_count)
+
+        # get child table data of first analysis, which is the test units of the last created suborder (2nd suborder in our  case)
+        selected_analysis_data_after_update = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
+        # making sure that the new test unit is added to the order's analysis no with the same analysis no not new number
+        analysis_no_from_analysis_table_after_update = selected_analysis_data['Analysis No.']
+        
+        # making sure that the status remained open after adding new test unit
+        analysis_status_after_update = selected_analysis_data['Status']
+
+        # getting tezt plan value to make sure that it is equal to the one form order's
+        analysis_test_plan_after_update = selected_analysis_data['Test Plans']
+
