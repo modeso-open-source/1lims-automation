@@ -408,7 +408,7 @@ class ArticlesTestCases(BaseTest):
             ' + Create new order with {} article.'.format(self.article_page.article_name))
         self.order_page.create_new_order(article=self.article_page.article_name,
                                     material_type=self.article_page.article_material_type,
-                                    test_plan=self.test_plan.test_plan_name)
+                                    test_plans=[self.test_plan.test_plan_name])
 
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
