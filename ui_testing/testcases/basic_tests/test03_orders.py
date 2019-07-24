@@ -952,8 +952,7 @@ class OrdersTestCases(BaseTest):
            article.split(' No:')[0], latest_order_data['Article Name'])
         self.assertEqual(
            'Subassembely', latest_order_data['Material Type'])
-        
-    
+
     def test023_create_existing_order_with_test_units_and_change_article(self):
         """
         New: Orders with test units: Create a new order from an existing order with test units but change the article
@@ -1001,9 +1000,8 @@ class OrdersTestCases(BaseTest):
             testunit_name = row_with_headers['Test Unit']
             self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, test_units_list)
-     
-        
-    def test020_archive_sub_order(self):
+
+    def test024_archive_sub_order(self):
         """
         New: Orders: Table:  Suborder /Archive Approach: : User can archive any suborder successfully 
         LIMS-3739
@@ -1011,9 +1009,8 @@ class OrdersTestCases(BaseTest):
 
         # create order with multiple suborders to keep track of which order to be archived
         self.base_selenium.LOGGER.info(' Create order with 3 suborders')
-        order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plan='a',
-                                                            test_unit='a', multiple_suborders=2)
-        
+        order_no_created = self.order_page.create_new_order(multiple_suborders=2)
+
         # filter by order no to get the orders data 
         self.base_selenium.LOGGER.info(' Filter by order No: {}'.format(order_no_created))
         self.orders_page.filter_by_order_no(filter_text=order_no_created)
