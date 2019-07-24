@@ -65,8 +65,10 @@ class Orders(BasePages):
 
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')
+        
 
     def filter_by_order_no(self, filter_text):
+        self.open_filter_menu()
         self.base_selenium.LOGGER.info(' + Filter by order no. : {}'.format(filter_text))
         self.filter_by(filter_element='orders:filter_order_no', filter_text=filter_text, type='text')
         self.filter_apply()
