@@ -1002,7 +1002,7 @@ class OrdersTestCases(BaseTest):
             self.assertIn(testunit_name, test_units_list)
 
 
-    def test024_update_suborder_testplan(self):
+    def test025_update_suborder_testplan(self):
         """
         New: Orders: Test plans/Merge Approach: 
         In case I have order record with multiple test plans and I updated them,
@@ -1027,46 +1027,63 @@ class OrdersTestCases(BaseTest):
         rows = self.order_page.result_table()
         selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
         analysis_no = selected_order_data['Analysis No.']
-        testplan_from_table = selected_order_data['Analysis No.']
 
         # checking that when adding new test unit, the newly added test unit is added to the order's analysis instead of creating new analysis
         self.order_page.get_random_x(row=rows[1])
         self.order_page.update_suborder(sub_order_index=1, test_plans=True, tp_value='tp2')
+        self.base_selenium.LOGGER.info('Update order with test plans: {}'.format('tp2'))
         sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
         suborder_testplans = sub_order_data['test_plan']
         suborder_testplans = suborder_testplans.split('|')
-        self.base_selenium.LOGGER.info('{}'.format(suborder_testplans))
+        self.base_selenium.LOGGER.info('order update and has test plans: {}'.format(suborder_testplans))
 
         # getting the length of the table, should be 2
+        self.base_selenium.LOGGER.info('Get analysis page to filter with order no to make sure that new test plan did not trigger new analysis')
         self.analyses_page.get_analyses_page()
         self.analyses_page.open_filter_menu()
         self.analyses_page.filter_by(filter_element='orders:filter_order_no', filter_text=order_no.replace("'",''), field_type='drop_down')
         self.analyses_page.filter_apply()
+        self.base_selenium.LOGGER.info('Filter analysis page with order no: #{}'.format(order_no))
+
         analysis_records=self.analyses_page.result_table()
         analysis_count = len(analysis_records) -1
+        self.base_selenium.LOGGER.info('comparing count of analysis triggered with this order after adding new test plan')
+        self.base_selenium.LOGGER.info('analysis triggered count: {}, and it should be 2'.format(analysis_count))
         self.assertEqual(2, analysis_count)
 
-        # get child table data of first analysis, which is the test units of the last created suborder (2nd suborder in our  case)
-        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
-        # making sure that the new test unit is added to the order's analysis no with the same analysis no not new number
-        analysis_no_from_analysis_table = selected_analysis_data['Analysis No.']
-        
-        # making sure that the status remained open after adding new test unit
-        analysis_status = selected_analysis_data['Status']
+        self.base_selenium.LOGGER.info('Get analysis data to comapre it\'s status')
+        rows = self.order_page.result_table()
+        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
 
+        # making sure that the status remained open after adding new test plan
+        analysis_status = selected_analysis_data['Status']
+        analysis_no_from_analysis_table = selected_analysis_data['Analysis No.']
+        self.base_selenium.LOGGER.info('Analysis with no #{}, has status: {}'.format(analysis_no_from_analysis_table, analysis_status))
+        self.base_selenium.LOGGER.info('+ Assert analysis has status: {}, and it should be: {}'.format(analysis_status, 'Open'))
+        self.assertEqual(analysis_status, 'Open')
+
+        # get order data to be updated
+        self.base_selenium.LOGGER.info('Get order data to remove a test plan from the order')
         self.order_page.get_orders_page()
         rows = self.order_page.result_table()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[1])
         self.order_page.get_random_x(row=rows[1])
+        self.base_selenium.LOGGER.info('Get order with order no #{}, and analysis no #{}'.format(order_data['Order No.'], order_data['Analysis No.']))
 
         self.order_page.get_suborder_table()
         sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
         suborder_testplans = sub_order_data['test_plan']
         suborder_testplans = suborder_testplans.split('|')
         # making sure that test plan is not removed by pressing cancel
+        self.base_selenium.LOGGER.info('Remove Test Plan with name: {} from the order'.format(suborder_testplans[0]))
         self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0], confirm_removing=False)
-
+        self.base_selenium.LOGGER.info('Pressing cancel to the pop up')
+        self.order_page.sleep_tiny()
+        
+        self.base_selenium.LOGGER.info('Refresh to make sure that the test plan is not removed after pressing cancel')
         self.base_selenium.refresh()
 
+        self.base_selenium.LOGGER.info('Getting suborders data to check the test plan is not removed')
         self.order_page.get_suborder_table()
         sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
         suborder_testplans = sub_order_data['test_plan']
@@ -1074,16 +1091,16 @@ class OrdersTestCases(BaseTest):
 
         # count of test plans should be 2
         count_of_testplans = len(suborder_testplans)
+        self.base_selenium.LOGGER.info('+ Assert count of test plan is: {}, and it should be {}'.format(2, count_of_testplans) )
         self.assertEquals(2, count_of_testplans)
 
+        self.base_selenium.LOGGER.info('Remove test plan from the order and press confirm to the pop up')
         self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0], confirm_removing=True)
-
+        
+        self.base_selenium.LOGGER.info('Get orders page to make sure that test plan has been removed')
         self.order_page.get_orders_page()
-
         rows = self.order_page.result_table()
         selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
-
-        analysis_no_after_removing_tp = selected_order_data['Analysis No.']
 
         testplan_after_update = selected_order_data['Test Plans']
 
@@ -1092,24 +1109,37 @@ class OrdersTestCases(BaseTest):
 
         # after update checking for analysis data
         # getting the length of the table, should be 2
+        self.base_selenium.LOGGER.info('Get analysis page to make sure that removing test plan did not delete the triggered analysis')
         self.analyses_page.get_analyses_page()
         self.analyses_page.open_filter_menu()
         self.analyses_page.filter_by(filter_element='orders:filter_order_no', filter_text=order_no.replace("'",''), field_type='drop_down')
         self.analyses_page.filter_apply()
+        self.base_selenium.LOGGER.info('Filter by order no to make sure that the analysis was not deleted')
+        
         analysis_records=self.analyses_page.result_table()
         analysis_count = len(analysis_records) -1
+
+        self.base_selenium.LOGGER.info('+ Assert count of analysis is: {}, and it should be {}'.format(analysis_count, 2))
         self.assertEqual(2, analysis_count)
 
-        # get child table data of first analysis, which is the test units of the last created suborder (2nd suborder in our  case)
-        selected_analysis_data_after_update = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
 
         # making sure that the new test unit is added to the order's analysis no with the same analysis no not new number
         analysis_no_from_analysis_table_after_update = selected_analysis_data['Analysis No.']
+        self.base_selenium.LOGGER.info('Making sure that when test plan is deleted, analysis number did not change')
+        self.base_selenium.LOGGER.info('+ Assert analysis no before update is: {}, and analysis number after update is: {}'.format(analysis_no_from_analysis_table_after_update, analysis_no))
+        self.assertEqual(analysis_no_from_analysis_table_after_update, analysis_no)
+
         
         # making sure that the status remained open after adding new test unit
+        self.base_selenium.LOGGER.info('Getting analysis status after removing test plan to make sure that it is Open')
         analysis_status_after_update = selected_analysis_data['Status']
+
+        self.base_selenium.LOGGER.info('+ Assert analysis status is {}, and it should be {}'.format(analysis_status_after_update, 'Open'))
+        self.assertEqual(analysis_status_after_update, 'Open')
 
         # getting tezt plan value to make sure that it is equal to the one form order's
         analysis_test_plan_after_update = selected_analysis_data['Test Plans']
+        self.base_selenium.LOGGER.info('Getting test plan from analysis to make sure test plans have been removed')
+        self.base_selenium.LOGGER.info('+ Assert test plan is: {}, and it should be {}'.format(analysis_test_plan_after_update, suborder_testplans[1]))
      
         
