@@ -1009,7 +1009,7 @@ class OrdersTestCases(BaseTest):
 
         # create order with multiple suborders to keep track of which order to be archived
         self.base_selenium.LOGGER.info(' Create order with 3 suborders')
-        order_no_created = self.order_page.create_new_order(multiple_suborders=2)
+        order_no_created = self.order_page.create_new_order(multiple_suborders=2, material_type='Raw Material', test_plans=[''], test_units=[''])
 
         # filter by order no to get the orders data 
         self.base_selenium.LOGGER.info(' Filter by order No: {}'.format(order_no_created))
