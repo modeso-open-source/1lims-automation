@@ -1262,8 +1262,10 @@ class OrdersTestCases(BaseTest):
         when you press on cancel button nothing updated
         """
 
-        testplan_list = self.get_multiple_active_article_with_tst_plan()
-        self.base_selenium.LOGGER.info(testplan_list)
+        # testplan_list = self.get_multiple_active_article_with_tst_plan()
+        # self.base_selenium.LOGGER.info(testplan_list)
+        testunits_table=self.test_unit_api.report_sheet_get_list_table()
+        self.base_selenium.LOGGER.info('{}'.format(testunits_table))
 
 
 
