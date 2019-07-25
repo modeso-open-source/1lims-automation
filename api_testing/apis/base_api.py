@@ -1,10 +1,15 @@
 from testconfig import config
+from api_testing.end_points import end_points
 import requests
 
 
 class BaseAPI:
+    END_POINTS = end_points
+
     def __init__(self):
         self.url = config['site']['url']
+        if self.url[-1] == '/':
+            self.url = self.url[:-1]
         self.username = config['site']['username']
         self.password = config['site']['password']
 
@@ -17,14 +22,15 @@ class BaseAPI:
         header = {'Content-Type': "application/json", 'Authorization': "Bearer", 'Connection': "keep-alive",
                   'cache-control': "no-cache"}
         data = {'username': self.username, 'password': self.password}
-        response = self.session.post(api, json=data, header=header, verify=False)
+        response = self.session.post(api, json=data, headers=header, verify=False)
+        import ipdb; ipdb.set_trace()
         self.header['Authorization'] = 'Bearer {}'.format(response.json()['data']['sessionId'])
 
     @staticmethod
-    def update_data(data, **kwargs):
+    def update_payload(payload, **kwargs):
         for key in kwargs:
-            if key in data.keys():
-                data[key] = kwargs[key]
+            if key in payload.keys():
+                payload[key] = kwargs[key]
             else:
-                data[key] = kwargs[key]
-        return data
+                payload[key] = kwargs[key]
+        return payload
