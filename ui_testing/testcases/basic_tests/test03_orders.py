@@ -1041,8 +1041,6 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('+ Assert  before clicking archive suborders count {}, after clicking archive suborders count {}'.format(3, len(rows_count)))
         self.assertEqual(len(rows_count), 3)
 
-        
-
         # get the analysis page to filter the analysis corresponding to the required order
         self.analyses_page.get_analyses_page()
 
@@ -1255,3 +1253,16 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Getting test plan from analysis to make sure test plans have been removed')
         self.base_selenium.LOGGER.info('+ Assert test plan is: {}, and it should be {}'.format(analysis_test_plan_after_update, suborder_testplans[1]))
         self.assertEqual(analysis_test_plan_after_update, suborder_testplans[1])
+
+    def update_suborder_article(self):
+        """
+        In case you update the article then press on ok button ( In pop-up) test plans should be removed
+        &
+        when you press on cancel button nothing updated
+        """
+
+        testplan_list = self.get_multiple_active_article_with_tst_plan()
+        self.base_selenium.LOGGER.info(testplan_list)
+
+
+

@@ -68,6 +68,26 @@ class BaseTest(TestCase):
         else:
             return {}
         
+    def get_multiple_active_article_with_tst_plan(self, test_plan_status='complete'):
+        self.base_selenium.LOGGER.info(' + Get Active articles with {} test plans.'.format(test_plan_status))
+        self.test_plan.get_test_plans_page()
+        complete_test_plans = self.test_plan.search(test_plan_status)
+        complete_test_plans_dict = [self.base_selenium.get_row_cells_dict_related_to_header(row=complete_test_plan) for
+                                    complete_test_plan in complete_test_plans[:-1]]
+
+        self.article_page.get_articles_page()
+        test_plans_list = []
+        for complete_test_plan_dict in complete_test_plans_dict:
+            self.base_selenium.LOGGER.info(' + Is {} article in active status?'.format(complete_test_plan_dict['Article Name']))
+            if self.article_page.is_article_in_table(value=complete_test_plan_dict['Article Name']):
+                self.base_selenium.LOGGER.info(' + Active.')
+                test_plans_list.append(complete_test_plan_dict)
+            else:
+                self.base_selenium.LOGGER.info(' + Archived.')
+        else:
+            return {}
+        
+        return test_plans_list
     
     def get_active_test_unit_with_material_type(self, search, material_type='Raw Material'):
         self.base_selenium.LOGGER.info(' + Get Test Unit with  type {} .'.format(search))
