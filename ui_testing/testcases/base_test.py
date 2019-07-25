@@ -8,6 +8,7 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
+from api_testing.apis.test_unit_api import TestUnitAPI
 import datetime
 
 
@@ -28,6 +29,7 @@ class BaseTest(TestCase):
         self.orders_page = Orders()
         self.test_unit_page = TstUnit()
 
+        self.test_unit_api = TestUnitAPI()
 
     def tearDown(self):
         self.base_selenium.quit_driver()

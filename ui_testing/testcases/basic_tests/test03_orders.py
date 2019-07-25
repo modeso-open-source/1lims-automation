@@ -820,7 +820,8 @@ class OrdersTestCases(BaseTest):
         order_error_message = self.base_selenium.get_text(
                 element="order:order_no_error_message")
         self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)
-          
+     
+    
     def test020_create_new_order_with_test_units(self):
         """
         New: Orders: Create a new order with test units
