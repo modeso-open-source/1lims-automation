@@ -282,14 +282,6 @@ class Order(Orders):
             pass
         return response
 
-    def remove_testunit_by_name(self, index, testunit_name):
-        self.base_selenium.LOGGER.info(testunit_name)
-        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = suborder_table_rows[index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
-                                                                                            table_element='order:suborder_table')
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'], item_text=testunit_name.replace("'", ''))
-
     def remove_testplan_by_name(self, index, testplan_name):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[index]
@@ -362,6 +354,27 @@ class Order(Orders):
             self.save(save_btn="order:save_btn")
         else:
             self.cancel()
+
+
+    def archive_suborder(self, index, check_pop_up=False):
+        self.get_suborder_table()
+        self.sleep_tiny()
+        self.base_selenium.LOGGER.info('archive suborder with index {}'.format(index+1))
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        self.base_selenium.LOGGER.info(' + Archive order no #{}'.format(index+1))
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[index],
+                                                                                         table_element='order:suborder_table')
+        archive_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
+                                                                       destination_element='order:delete_table_view')
+
+        archive_element.click()
+        self.sleep_tiny()
+        if check_pop_up:
+            self.base_selenium.LOGGER.info('confirm archiving')
+            self.base_selenium.click(element='articles:confirm_archive')
+        else:
+            self.base_selenium.LOGGER.info('cancel archiving')
+            self.base_selenium.click(element='articles:cancel_archive')
         
      
     def click_auto_fill(self):
