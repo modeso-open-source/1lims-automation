@@ -92,7 +92,7 @@ class Order(Orders):
         else:
             return []
 
-    def create_new_order(self, material_type='', article='', contact='', test_plan='', test_unit='', multiple_suborders=0):
+    def create_new_order(self, material_type='', article='', contact='', test_plans=[], test_units=[], multiple_suborders=0):
         self.base_selenium.LOGGER.info(' + Create new order.')
         self.click_create_order_button()
         self.set_new_order()
@@ -100,10 +100,11 @@ class Order(Orders):
         self.set_article(article=article)
         self.set_contact(contact=contact)
         order_no = self.get_no()
-        if test_plan:
-            self.set_test_plan(test_plan=test_plan)
-        elif test_unit:
-            self.set_test_unit(test_unit=test_unit)    
+
+        for test_plan in test_plans:
+            self.set_test_plan(test_plan=test_plan)     
+        for test_unit in test_units:
+            self.set_test_unit(test_unit)      
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
@@ -111,6 +112,37 @@ class Order(Orders):
         self.save(save_btn='order:save_btn')
         self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
         return order_no
+    
+    
+    def create_existing_order(self, no='', material_type='', article='', contact='', test_units=[], multiple_suborders=0):
+        self.base_selenium.LOGGER.info(' + Create new order.')
+        self.click_create_order_button()
+        self.set_existing_order()
+        order_no = self.set_existing_number(no)
+        self.set_material_type(material_type=material_type)
+        self.set_article(article=article)
+        self.set_contact(contact=contact)
+        
+        for test_unit in test_units:
+            self.set_test_unit(test_unit)    
+        if multiple_suborders > 0:
+            self.get_suborder_table()
+            self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
+
+        self.save(save_btn='order:save_btn')
+        self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(order_no))
+        return order_no
+    
+    
+    def create_existing_order_with_auto_fill(self, no=''):
+        self.base_selenium.LOGGER.info(' + Create new order.')
+        self.click_create_order_button()
+        self.set_existing_order()
+        order_no = self.set_existing_number(no)
+        self.sleep_tiny()
+        self.click_auto_fill()
+        self.base_selenium.LOGGER.info(' + Order Auto filled with data from order no : {} '.format(order_no))
+        return order_no        
                
     def get_no(self):
         return self.base_selenium.get_value(element="order:no")
@@ -118,6 +150,15 @@ class Order(Orders):
     def set_no(self, no):
         self.base_selenium.LOGGER.info(' + set no. {}'.format(no))
         self.base_selenium.set_text(element="order:no", value=no)
+        
+    def set_existing_number(self, no=''):
+        if no:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:order_number_add_form', item_text=no)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:order_number_add_form')
+            return self.get_order_number()    
 
     def edit_random_order(self, edit_method, edit_value, save=True):
         if 'contact' in edit_method:
@@ -216,3 +257,29 @@ class Order(Orders):
         duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
                                                                        destination_element='order:duplicate_table_view')
         duplicate_element.click()
+
+    def archive_suborder(self, index, check_pop_up=False):
+        self.get_suborder_table()
+        self.sleep_tiny()
+        self.base_selenium.LOGGER.info('archive suborder with index {}'.format(index+1))
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        self.base_selenium.LOGGER.info(' + Archive order no #{}'.format(index+1))
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[index],
+                                                                                         table_element='order:suborder_table')
+        archive_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
+                                                                       destination_element='order:delete_table_view')
+
+        archive_element.click()
+        self.sleep_tiny()
+        if check_pop_up:
+            self.base_selenium.LOGGER.info('confirm archiving')
+            self.base_selenium.click(element='articles:confirm_archive')
+        else:
+            self.base_selenium.LOGGER.info('cancel archiving')
+            self.base_selenium.click(element='articles:cancel_archive')
+        
+     
+    def click_auto_fill(self):
+        button = self.base_selenium.find_element_in_element(source_element='order:auto_fill_container',
+                                                            destination_element='order:auto_fill')
+        button.click()    
