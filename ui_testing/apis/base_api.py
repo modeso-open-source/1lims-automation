@@ -25,4 +25,6 @@ class BaseAPI:
         for key in kwargs:
             if key in data.keys():
                 data[key] = kwargs[key]
+            else:
+                data[key] = kwargs[key]
         return data
