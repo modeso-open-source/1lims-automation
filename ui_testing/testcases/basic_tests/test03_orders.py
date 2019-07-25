@@ -820,5 +820,6 @@ class OrdersTestCases(BaseTest):
         order_error_message = self.base_selenium.get_text(
                 element="order:order_no_error_message")
         self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)    
-        
 
+    def test_test(self):
+        import ipdb; ipdb.set_trace()
