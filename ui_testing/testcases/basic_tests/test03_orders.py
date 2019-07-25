@@ -1095,7 +1095,7 @@ class OrdersTestCases(BaseTest):
 
         self.assertEqual(len(rows_count)-1,1)
 
-def test025_update_suborder_testplan(self):
+    def test025_update_suborder_testplan(self):
         """
         New: Orders: Test plans/Merge Approach: 
         In case I have order record with multiple test plans and I updated them,
