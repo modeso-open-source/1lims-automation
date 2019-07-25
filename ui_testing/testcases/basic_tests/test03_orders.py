@@ -1028,7 +1028,6 @@ class OrdersTestCases(BaseTest):
         selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
         analysis_no = selected_order_data['Analysis No.']
 
-        # checking that when adding new test unit, the newly added test unit is added to the order's analysis instead of creating new analysis
         self.order_page.get_random_x(row=rows[1])
         self.order_page.update_suborder(sub_order_index=1, test_plans=True, tp_value='tp2')
         self.base_selenium.LOGGER.info('Update order with test plans: {}'.format('tp2'))
@@ -1051,10 +1050,16 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('analysis triggered count: {}, and it should be 2'.format(analysis_count))
         self.assertEqual(2, analysis_count)
 
-        self.base_selenium.LOGGER.info('Get analysis data to comapre it\'s status')
-        rows = self.order_page.result_table()
-        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+        # get analysis data to make sure that the newly added test plan is added to analysis
+        self.base_selenium.LOGGER.info('Check the test plans in analysis from active table compared with selected test plans in order')
+        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
+        analysis_test_plans = selected_analysis_data['Test Plans'].split(',')
 
+        self.base_selenium.LOGGER.info('+ Comapring test plans in analysis and order')
+        self.base_selenium.LOGGER.info('+ Assert order\'s testplans are: {}, analysis test plans are: {}'.format(suborder_testplans, analysis_test_plans))
+        self.assertEqual(set(analysis_test_plans) == set(suborder_testplans), True)
+
+        self.base_selenium.LOGGER.info('C omparing analysis status')
         # making sure that the status remained open after adding new test plan
         analysis_status = selected_analysis_data['Status']
         analysis_no_from_analysis_table = selected_analysis_data['Analysis No.']
@@ -1066,19 +1071,27 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Get order data to remove a test plan from the order')
         self.order_page.get_orders_page()
         rows = self.order_page.result_table()
-        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[1])
-        self.order_page.get_random_x(row=rows[1])
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+        order_testplans = order_data['Test Plans'].split(',')
         self.base_selenium.LOGGER.info('Get order with order no #{}, and analysis no #{}'.format(order_data['Order No.'], order_data['Analysis No.']))
-
+        
+        self.base_selenium.LOGGER.info('+ Comapring test plans in order active table')
+        self.base_selenium.LOGGER.info('+ Assert order\'s testplans are: {}, added test plans are: {}'.format(suborder_testplans, order_testplans))
+        self.assertEqual(set(order_testplans) == set(suborder_testplans), True)
+        
+        self.base_selenium.LOGGER.info('Openning order data to remove test plan and check its effect')
+        self.order_page.get_random_x(row=rows[1])
         self.order_page.get_suborder_table()
         sub_order_data_before_refresh = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
         suborder_testplans = sub_order_data_before_refresh['test_plan']
         suborder_testplans = suborder_testplans.split('|')
+
         # making sure that test plan is not removed by pressing cancel
         self.base_selenium.LOGGER.info('Remove Test Plan with name: {} from the order'.format(suborder_testplans[0]))
         self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0])
         self.base_selenium.click(element='order:confirm_cancel')
         self.base_selenium.LOGGER.info('Pressing cancel to the pop up')
+        self.order_page.sleep_tiny()
         self.order_page.save(save_btn="order:save_btn")
         
         self.base_selenium.LOGGER.info('Refresh to make sure that the test plan is not removed after pressing cancel')
@@ -1099,6 +1112,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Remove test plan from the order and press confirm to the pop up')
         self.order_page.remove_testplan_by_name(index=1, testplan_name=suborder_testplans[0])
         self.base_selenium.click(element='order:confirm_pop')
+        self.order_page.sleep_tiny()
         self.order_page.save(save_btn="order:save_btn")
         
         self.base_selenium.LOGGER.info('Get orders page to make sure that test plan has been removed')
@@ -1109,6 +1123,7 @@ class OrdersTestCases(BaseTest):
         testplan_after_update = selected_order_data['Test Plans']
 
         # making sure that test plans updated successfully and affected the table.
+        self.base_selenium.LOGGER.info('+ Assert order test plans are: {}, and it should be: {}'.format(testplan_after_update, suborder_testplans[1]))
         self.assertEquals(suborder_testplans[1], testplan_after_update)
 
         # after update checking for analysis data
@@ -1128,6 +1143,7 @@ class OrdersTestCases(BaseTest):
 
 
         # making sure that the new test unit is added to the order's analysis no with the same analysis no not new number
+        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
         analysis_no_from_analysis_table_after_update = selected_analysis_data['Analysis No.']
         self.base_selenium.LOGGER.info('Making sure that when test plan is deleted, analysis number did not change')
         self.base_selenium.LOGGER.info('+ Assert analysis no before update is: {}, and analysis number after update is: {}'.format(analysis_no_from_analysis_table_after_update, analysis_no))
@@ -1145,5 +1161,6 @@ class OrdersTestCases(BaseTest):
         analysis_test_plan_after_update = selected_analysis_data['Test Plans']
         self.base_selenium.LOGGER.info('Getting test plan from analysis to make sure test plans have been removed')
         self.base_selenium.LOGGER.info('+ Assert test plan is: {}, and it should be {}'.format(analysis_test_plan_after_update, suborder_testplans[1]))
+        self.assertEqual(analysis_test_plan_after_update, suborder_testplans[1])
      
         
