@@ -5,6 +5,7 @@ import requests
 
 class BaseAPI:
     END_POINTS = end_points
+    requests.packages.urllib3.disable_warnings()
 
     def __init__(self):
         self.url = config['site']['url']
@@ -23,7 +24,6 @@ class BaseAPI:
                   'cache-control': "no-cache"}
         data = {'username': self.username, 'password': self.password}
         response = self.session.post(api, json=data, headers=header, verify=False)
-        import ipdb; ipdb.set_trace()
         self.header['Authorization'] = 'Bearer {}'.format(response.json()['data']['sessionId'])
 
     @staticmethod
