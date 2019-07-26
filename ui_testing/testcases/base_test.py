@@ -69,9 +69,8 @@ class BaseTest(TestCase):
                 self.base_selenium.LOGGER.info(' + Archived.')
         else:
             return {}
-        
-    
-    def get_active_test_unit_with_material_type(self, search, material_type='Raw Material'):
+
+    def get_active_tst_unit_with_material_type(self, search, material_type='Raw Material'):
         self.base_selenium.LOGGER.info(' + Get Test Unit with  type {} .'.format(search))
         self.test_unit_page.get_test_units_page()
         test_units = self.test_unit_page.search(search)
