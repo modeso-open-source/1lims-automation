@@ -5,11 +5,10 @@ git clone https://github.com/Modeso/1lims-automation.git
 cd 1lims-automation
 pip3 install -r requirements.txt
 export PYTHONPATH='./'
-cd ui_testing
 # run in head mode
-nosetests-3.4 -vs --logging-level=WARNING --with-flaky --force-flaky --max-runs=3 --no-flaky-report testcases/basic_tests --tc-file=../config.ini --tc=site.password:admin
+nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests --tc-file=config.ini --tc=site.password:admin
 # run in headless mode
- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING  --with-flaky --force-flaky --max-runs=3 --no-flaky-report testcases/basic_tests --tc-file=../config.ini --tc=site.password:admin
+ xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING  --with-flaky --force-flaky --max-runs=3 --no-flaky-report ui_testing/testcases/basic_tests --tc-file=config.ini --tc=site.password:admin
 ```
 
 ### Hints:

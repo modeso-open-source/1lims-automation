@@ -830,15 +830,15 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create a new order with test units')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Qualitative', material_type='All')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative Mibi')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative Mibi')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
@@ -873,15 +873,15 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Qualitative', material_type='All')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Quantitative Mibi')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative Mibi')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
@@ -916,7 +916,7 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units and change material type')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Qualitative', material_type='All')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
@@ -961,7 +961,7 @@ class OrdersTestCases(BaseTest):
         """
         self.base_selenium.LOGGER.info('Running test case to create an existing order with test units and change article')
         test_units_list = []
-        test_unit_dict = self.get_active_test_unit_with_material_type(search='Qualitative', material_type='All')
+        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Qualitative', material_type='All')
         if test_unit_dict:
             self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
             test_units_list.append(test_unit_dict['Test Unit Name'])
