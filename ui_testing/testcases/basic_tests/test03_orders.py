@@ -1270,16 +1270,18 @@ class OrdersTestCases(BaseTest):
 
         # initial_testplan = testplans_with_articles[0]['Test Plan Name']
         # new_testplan = (article for article in testplans_with_articles if article['Article Name'] == new_article)['Test Plan Name']
+        # material_type=testplans_with_articles[0]['Material Type']
 
-        initial_article='186c54240d'
-        new_article='7589684c98'
+        material_type='Raw Material'
+        initial_article='86a3a8e347'
+        new_article='8501b440c'
 
-        initial_testplan='ecaead365b'
-        new_testplan='a038005804'
+        initial_testplan='1f1ddf7f0a'
+        new_testplan='ce25005b3d'
 
         self.test_plan.get_test_plans_page()
         new_testplan_record = self.test_plan.search(value=new_testplan)
-        new_testplan_testunits=self.analyses_page.get_child_table_data(source=new_testplan_record[0])
+        new_testplan_testunits=self.analyses_page.get_child_table_data(index=0)
 
         testplan_testunits = []
         for testunit in new_testplan_testunits:
@@ -1289,7 +1291,7 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Create new order with 4 suborders to test updating article on')
         self.base_selenium.LOGGER.info('Creating new order with 4 suborders')
-        order_no=self.order_page.create_new_order(multiple_suborders=3, article=initial_article, test_plans=[initial_testplan], test_units=[''], material_type='Raw Material')
+        order_no=self.order_page.create_new_order(multiple_suborders=3, article=initial_article, test_plans=[initial_testplan], test_units=[''], material_type=material_type)
 
         self.base_selenium.LOGGER.info('Open the 4th order from the order table, to confirm order\'s data that it was created with')
         rows = self.order_page.result_table()
@@ -1407,7 +1409,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('+Assert Test plans, should be: {}, and it is: {}'.format(suborder_data_after_saving['test_plan'] ,analysis_data['Test Plans']))
         self.assertEqual(suborder_data_after_saving['test_plan'] ,analysis_data['Test Plans'])
 
-        analysis_child_table = self.analyses_page.get_child_table_data(source=rows[0])
+        analysis_child_table = self.analyses_page.get_child_table_data(index=0)
 
         analysis_test_units = []
         

@@ -200,7 +200,7 @@ class BasePages:
     def open_child_table(self, source):
         childtable_arrow = self.base_selenium.find_element_in_element(destination_element='general:child_table_arrow', source=source)
         childtable_arrow.click()
-        self.sleep_small()
+        self.sleep_medium()
 
     def get_child_table_data(self, index=0):
         rows = self.result_table()

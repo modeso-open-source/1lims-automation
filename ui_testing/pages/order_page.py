@@ -238,9 +238,15 @@ class Order(Orders):
                 self.base_selenium.LOGGER.info(' + {} is not a header element!'.format(key))
                 self.base_selenium.LOGGER.info(' + Header keys : {}'.format(suborder_elements_dict.keys()))
 
-    def duplicate_from_table_view(self, number_of_duplicates=1):
+    def duplicate_from_table_view(self, number_of_duplicates=1, index_to_duplicate_from=0):
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[index_to_duplicate_from],
+                                                                                         table_element='order:suborder_table')
+        self.base_selenium.LOGGER.info('{}'.format(suborders_elements))
+        duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
+                                                                       destination_element='order:duplicate_table_view')
         for duplicate in range(0, number_of_duplicates):
-            self.base_selenium.click(element='order:duplicate_table_view')    
+            duplicate_element.click()
         
     def duplicate_suborder(self):
         self.get_suborder_table()
