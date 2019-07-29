@@ -23,9 +23,16 @@ class Article(Articles):
             self.set_unit(self.article_unit)
             self.set_related_article()
             self.article_related_article = self.get_related_article()
+        
+        article_data={
+            "name": self.article_name,
+            "material_type": self.article_material_type
+        }
 
         self.save(sleep)
         self.base_selenium.LOGGER.info(' + Article name : {}'.format(self.article_name))
+
+        return article_data
 
     def edit_random_article(self, edit_method, edit_value, save=True):
         if 'unit' in edit_method:

@@ -73,6 +73,11 @@ class TstPlan(TestPlans):
         else:
             self.save()
 
+        testplan_data={
+            "testplan_name": self.test_plan_name,
+            "testunit_name": 
+        }
+
         self.base_selenium.LOGGER.info(' + Test plan name : {}'.format(self.test_plan_name))
 
     def is_article_existing(self, article):

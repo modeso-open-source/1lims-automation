@@ -386,4 +386,8 @@ class Order(Orders):
     def click_auto_fill(self):
         button = self.base_selenium.find_element_in_element(source_element='order:auto_fill_container',
                                                             destination_element='order:auto_fill')
-        button.click()    
+        button.click()
+
+    def build_random_order_data(self):
+        self.Article.get_articles_page()
+          

@@ -1422,27 +1422,12 @@ class OrdersTestCases(BaseTest):
         -You can update it by choose another one and choose corresponding article & test plan 
         """
 
-        # getting old order data dynamically
-        material_type='Raw Material'
-        initial_article='86a3a8e347'
-        initial_testplan='1f1ddf7f0a'
+        # initian random order data
+        self.article_page.get_articles_page()
+        article_data=self.article_page.create_new_article()
 
-        new_material_type='Subassembely'
-        new_article='art_rm'
-        new_testplan='tp_rm_art2'
-        new_testunit='SAtu'
+        initial_material_type = article_data['material_type']
+        initial_article = article_data['name']
 
-        self.test_plan.get_test_plans_page()
-        analysis_testunits=self.testplans_page.get_testunits_in_testplans(test_plan_name=new_testplan)
-        analysis_testunits.append(new_testunit)
-        self.order_page.get_orders_page()
-
-        self.base_selenium.LOGGER.info('Create new order')
-        self.base_selenium.LOGGER.info('Create new order with 4 suborders to test updating article on')
-        self.base_selenium.LOGGER.info('Creating new order with 4 suborders')
-        order_no=self.order_page.create_new_order(multiple_suborders=3, article=initial_article, test_plans=[initial_testplan], test_units=[''], material_type=material_type)
-
-        self.base_selenium.LOGGER.info('Open the 4th order from the order table, to confirm order\'s data that it was created with')
-        rows = self.order_page.result_table()
-        basic_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
-        self.order_page.get_random_x(row=rows[3])
+        self.test_plan.get_test_plan()
+        self.test_plan.create_new_test_plan(material_type=initial_material_type, article=initial_article)
