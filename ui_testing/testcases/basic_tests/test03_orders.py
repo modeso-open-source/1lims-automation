@@ -1280,13 +1280,7 @@ class OrdersTestCases(BaseTest):
         new_testplan='ce25005b3d'
 
         self.test_plan.get_test_plans_page()
-        new_testplan_record = self.test_plan.search(value=new_testplan)
-        new_testplan_testunits=self.analyses_page.get_child_table_data(index=0)
-
-        testplan_testunits = []
-        for testunit in new_testplan_testunits:
-            testplan_testunits.append(testunit['Test Unit Name'])
-        
+        testplan_testunits = self.testplans_page.get_testunits_in_testplans(test_plan_name=new_testplan)
         self.order_page.get_orders_page()
 
         self.base_selenium.LOGGER.info('Create new order with 4 suborders to test updating article on')
@@ -1429,4 +1423,26 @@ class OrdersTestCases(BaseTest):
         """
 
         # getting old order data dynamically
-        
+        material_type='Raw Material'
+        initial_article='86a3a8e347'
+        initial_testplan='1f1ddf7f0a'
+
+        new_material_type='Subassembely'
+        new_article='art_rm'
+        new_testplan='tp_rm_art2'
+        new_testunit='SAtu'
+
+        self.test_plan.get_test_plans_page()
+        analysis_testunits=self.testplans_page.get_testunits_in_testplans(test_plan_name=new_testplan)
+        analysis_testunits.append(new_testunit)
+        self.order_page.get_orders_page()
+
+        self.base_selenium.LOGGER.info('Create new order')
+        self.base_selenium.LOGGER.info('Create new order with 4 suborders to test updating article on')
+        self.base_selenium.LOGGER.info('Creating new order with 4 suborders')
+        order_no=self.order_page.create_new_order(multiple_suborders=3, article=initial_article, test_plans=[initial_testplan], test_units=[''], material_type=material_type)
+
+        self.base_selenium.LOGGER.info('Open the 4th order from the order table, to confirm order\'s data that it was created with')
+        rows = self.order_page.result_table()
+        basic_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+        self.order_page.get_random_x(row=rows[3])

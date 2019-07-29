@@ -24,4 +24,15 @@ class TestPlans(BasePages):
         test_plan = self.search(value=name)[0]
         self.get_random_x(row=test_plan)
 
+    def get_testunits_in_testplans(self, test_plan_name=''):
+        self.base_selenium.LOGGER.info('Filter by testplan name {}'.format(test_plan_name))
+        new_testplan_record = self.search(value=test_plan_name)
+        new_testplan_testunits=self.get_child_table_data(index=0)
+
+        testplan_testunits = []
+        for testunit in new_testplan_testunits:
+            testplan_testunits.append(testunit['Test Unit Name'])
+    
+        return testplan_testunits
+    
         

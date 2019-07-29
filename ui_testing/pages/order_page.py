@@ -242,7 +242,7 @@ class Order(Orders):
         suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[index_to_duplicate_from],
                                                                                          table_element='order:suborder_table')
-        self.base_selenium.LOGGER.info('{}'.format(suborders_elements))
+                                                                                         
         duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
                                                                        destination_element='order:duplicate_table_view')
         for duplicate in range(0, number_of_duplicates):
