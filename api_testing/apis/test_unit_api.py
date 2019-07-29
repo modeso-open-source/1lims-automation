@@ -9,5 +9,10 @@ class TestUnitAPI(BaseAPI):
                     'start': 0,
                     'sort_order': 'asc',
                     'filter': '{"id":2440}'}
+        import ipdb;
+        ipdb.set_trace()
         payload = self.update_payload(_payload, **kwargs)
-        return self.session.get(api, data=payload)
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, data=payload, headers=self.headers)
+        self.info('Status code: {}'.format(response.status_code))
+        return response
