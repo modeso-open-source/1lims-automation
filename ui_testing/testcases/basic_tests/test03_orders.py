@@ -1284,8 +1284,6 @@ class OrdersTestCases(BaseTest):
         testplan_testunits = []
         for testunit in new_testplan_testunits:
             testplan_testunits.append(testunit['Test Unit Name'])
-
-        self.base_selenium.LOGGER.info('{}'.format(testplans_with_articles))
         
         self.order_page.get_orders_page()
 
