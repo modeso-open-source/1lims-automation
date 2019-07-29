@@ -253,7 +253,7 @@ class Order(Orders):
         duplicate_element.click()
 
     # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
-    def get_suborder_data(self, sub_order_index=0, departments=False, material_type=False, articles=False, test_plan=False, test_unit=False, test_date=False, shipment_date=False):
+    def get_suborder_data(self, sub_order_index=0, departments=True, material_type=True, articles=True, test_plan=True, test_unit=True, test_date=False, shipment_date=False):
         table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
         required_suborder = self.base_selenium.get_row_cells_elements_related_to_header(row=table_suborders[sub_order_index],
                                                                                              table_element='order:suborder_table')
