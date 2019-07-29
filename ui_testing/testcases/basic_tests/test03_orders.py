@@ -1418,4 +1418,15 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('analysis test units are: {}, and it should be: {}'.format(analysis_test_units, testplan_testunits))
         self.assertEqual(set(analysis_test_units) == set(testplan_testunits), True)
+
+    def test027_update_material_type(self):
+        """
+        Apply this on suborder number 5 for example:-
+        -When user update the materiel type from table view once I delete it message will appear
+        (All analysis created with this order and test plan will be deleted )
+        -Once you press on OK button, the material type & article & test pan will delete
+        -You can update it by choose another one and choose corresponding article & test plan 
+        """
+
+        # getting old order data dynamically
         
