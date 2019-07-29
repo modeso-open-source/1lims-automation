@@ -1262,14 +1262,20 @@ class OrdersTestCases(BaseTest):
         when you press on cancel button nothing updated
         """
 
-        self.base_selenium.LOGGER.info('Getting the data needed to create the orders')
-        testplans_with_articles = self.get_multiple_active_article_with_tst_plan()
+        # self.base_selenium.LOGGER.info('Getting the data needed to create the orders')
+        # testplans_with_articles = self.get_multiple_active_article_with_tst_plan()
 
-        initial_article = testplans_with_articles[0]['Article Name']
-        new_article = testplans_with_articles[1]['Article Name']
+        # initial_article = testplans_with_articles[0]['Article Name']
+        # new_article = (article for article in testplans_with_articles if article['Article Name'] != initial_article)['Article Name']
 
-        initial_testplan = testplans_with_articles[0]['Test Plan Name']
-        new_testplan = testplans_with_articles[1]['Test Plan Name']
+        # initial_testplan = testplans_with_articles[0]['Test Plan Name']
+        # new_testplan = (article for article in testplans_with_articles if article['Article Name'] == new_article)['Test Plan Name']
+
+        initial_article='186c54240d'
+        new_article='7589684c98'
+
+        initial_testplan='ecaead365b'
+        new_testplan='a038005804'
 
         self.test_plan.get_test_plans_page()
         new_testplan_record = self.test_plan.search(value=new_testplan)
@@ -1280,6 +1286,8 @@ class OrdersTestCases(BaseTest):
             testplan_testunits.append(testunit['Test Unit Name'])
 
         self.base_selenium.LOGGER.info('{}'.format(testplans_with_articles))
+        
+        self.order_page.get_orders_page()
 
         self.base_selenium.LOGGER.info('Create new order with 4 suborders to test updating article on')
         self.base_selenium.LOGGER.info('Creating new order with 4 suborders')
@@ -1410,5 +1418,4 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('analysis test units are: {}, and it should be: {}'.format(analysis_test_units, testplan_testunits))
         self.assertEqual(set(analysis_test_units) == set(testplan_testunits), True)
-        
         
