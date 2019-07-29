@@ -10,6 +10,7 @@ from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testplans_page import TestPlans
 from ui_testing.pages.testunit_page import TstUnit
 from api_testing.apis.test_unit_api import TestUnitAPI
+from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
 import datetime
 
@@ -32,6 +33,8 @@ class BaseTest(TestCase):
         self.orders_page = Orders()
         self.test_unit_page = TstUnit()
 
+        self.article_api = ArticleAPI()
+        self.test_plan_api = TestPlanAPI()
         self.test_unit_api = TestUnitAPI()
         self.test_plan_api = TestPlanAPI()
 
@@ -105,6 +108,4 @@ class BaseTest(TestCase):
             if test_unit_dict['Type'] == search and material_type in test_unit_dict['Material Type']:
                 return test_unit_dict
         return {}
-
-
 

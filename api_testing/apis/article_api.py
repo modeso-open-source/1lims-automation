@@ -1,9 +1,9 @@
 from api_testing.apis.base_api import BaseAPI
 
 
-class TestPlanAPI(BaseAPI):
-    def get_all_test_plans(self, **kwargs):
-        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
+class ArticleAPI(BaseAPI):
+    def get_all_articles(self, **kwargs):
+        api = '{}{}'.format(self.url, self.END_POINTS['article_api']['list_all_articles'])
         _payload = {"sort_value": "number",
                     "limit": 100,
                     "start": 1,
