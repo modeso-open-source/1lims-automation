@@ -295,52 +295,30 @@ class Order(Orders):
                                                                                             table_element='order:suborder_table')
         self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=testplan_name.replace("'", ''))
 
-    def update_suborder(self, sub_order_index=0, contacts=False, departments=False, material_type=False, articles=False, test_plans=False, test_units=False, shipment_date=False, test_date=False, save_state=True, test_plans_count=1, test_units_count=1, departments_count=1, tp_value='', tu_value=''):
+    def update_suborder(self, sub_order_index=0, contacts=False, departments=[], material_type=False, articles=False, test_plans=[], test_units=[], shipment_date=False, test_date=False, save_state=True):
         self.get_suborder_table()
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[sub_order_index]
 
         suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
                                                                                              table_element='order:suborder_table')
-        
-        material_type_record=''
-        article_record=''
-        test_plan_record= tp_value
-        test_unit_record=tu_value
-        departments_record=''
         contacts_record='contact with many departments'
 
         if material_type :
-
-            self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type_record))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'], item_text=material_type_record.replace("'", ''))
-            
-            if articles :
-                self.base_selenium.LOGGER.info(' + Set article name : {}'.format(article_record))
-                self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=article_record.replace("'", ''))
-            
-            self.base_selenium.LOGGER.info(' + Set test plan : {} for {} time(s)'.format(test_plan_record, test_plans_count))
-            for index in range(0, test_plans_count):
-                self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=test_plan_record.replace("'", ''))
-            self.base_selenium.LOGGER.info(' + Set test unit : {} for {} time(s)'.format(test_unit_record, test_units_count))
-            for index in range(0, test_units_count):
-                self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'], item_text=test_unit_record.replace("'", ''))
+            self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
+            self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'], item_text=material_type.replace("'", ''))
             
         if articles :
-            self.base_selenium.LOGGER.info(' + Set article name : {}'.format(article_record))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=article_record.replace("'", ''))
-            self.base_selenium.LOGGER.info(' + Set test plan : {}'.format(test_plan_record))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=test_plan_record.replace("'", ''))
+            self.base_selenium.LOGGER.info(' + Set article name : {}'.format(articles))
+            self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=articles.replace("'", ''))
+            
+        self.base_selenium.LOGGER.info(' + Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
+        for testplan in test_plans:
+            self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=testplan.replace("'", ''))
         
-        if test_plans :
-            self.base_selenium.LOGGER.info(' + Set test plan : {} for {} time(s)'.format(test_plan_record, test_plans_count))
-            for index in range(0, test_plans_count):
-                self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=test_plan_record.replace("'", ''))
-        
-        if test_units :
-            self.base_selenium.LOGGER.info(' + Set test unit : {} for {} time(s)'.format(test_unit_record, test_units_count))
-            for index in range(0, test_units_count):
-                self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'], item_text=test_unit_record.replace("'", ''))
+        self.base_selenium.LOGGER.info(' + Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
+        for testunit in test_units:
+            self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'], item_text=testunit.replace("'", ''))
 
         if shipment_date :
             pass
@@ -352,9 +330,9 @@ class Order(Orders):
             self.set_contact(contact=contacts_record)
 
         if departments :
-            self.base_selenium.LOGGER.info(' + Set departments : {} for {} time(s)'.format(departments_record, departments_count))
-            for index in range(0, departments_count):
-                self.base_selenium.update_item_value(item=suborder_elements_dict['Departments:'], item_text=departments_record)
+            self.base_selenium.LOGGER.info(' + Set departments : {}'.format(departments))
+            for department in departments:
+                self.base_selenium.update_item_value(item=suborder_elements_dict['Departments:'], item_text=department)
 
         if save_state:
             self.save(save_btn="order:save_btn")
@@ -388,6 +366,4 @@ class Order(Orders):
                                                             destination_element='order:auto_fill')
         button.click()
 
-    def build_random_order_data(self):
-        self.Article.get_articles_page()
           
