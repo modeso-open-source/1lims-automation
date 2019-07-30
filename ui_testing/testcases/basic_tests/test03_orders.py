@@ -1103,13 +1103,13 @@ class OrdersTestCases(BaseTest):
         -You can update it by choose another one and choose corresponding article & test plan 
 
         LIMS-4264
-        
+
         """
 
         # new random order data
         basic_order_data = self.get_random_order_data()
         new_random_material_type=basic_order_data['material_type']
-        new_article=basic_order_data['article']
+        new_article=basic_order_data['article_name']
         new_testplan_name=basic_order_data['testplan']
         testplan_testunits=basic_order_data['testunits_in_testplan']
         
