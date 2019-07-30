@@ -506,6 +506,18 @@ class BaseSelenium:
 
         return cells_dict
 
+    def get_row_cells_id_dict_related_to_header(self, row, table_element='general:table'):
+        cells_dict = {}
+        headers = self.get_table_head_elements(element=table_element)
+        headers_id = [header.find_element_by_tag_name('label').get_attribute('id') for header in headers]
+        row_cells = self.get_row_cells(row=row)
+        row_text = [cell.text for cell in row_cells]
+
+        for column_id in headers_id:
+            cells_dict[column_id] = row_text[headers_id.index(column_id)]
+
+        return cells_dict
+
     def get_row_cells_elements_related_to_header(self, row, table_element='general:table'):
         cells_elements = {}
         headers = self.get_table_head_elements(element=table_element)
