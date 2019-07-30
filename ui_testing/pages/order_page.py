@@ -261,7 +261,7 @@ class Order(Orders):
     # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
     def get_suborder_data(self, sub_order_index=0, departments=True, material_type=True, articles=True, test_plan=True, test_unit=True, test_date=False, shipment_date=False):
         table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        required_suborder = self.base_selenium.get_row_cells_elements_related_to_header(row=table_suborders[sub_order_index],
+        required_suborder = self.base_selenium.get_row_cells_id_dict_related_to_header(row=table_suborders[sub_order_index],
                                                                                              table_element='order:suborder_table')
         response = {
             "departments": "",
@@ -273,15 +273,15 @@ class Order(Orders):
             "shipment_date": ""
         }
         if departments :
-            response["departments"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["Departments:"].text.split("\n")) ))
+            response["departments"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["departments"].text.split("\n")) ))
         if test_plan :
-            response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["Test Plan: *"].text.split("\n")) ))
+            response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["testPlans"].text.split("\n")) ))
         if test_unit :
-            response["test_unit"]="|".join(list(map(lambda s: str(s).split(':')[0][1:], required_suborder["Test Unit:"].text.split("\n")) ))
+            response["test_unit"]="|".join(list(map(lambda s: str(s).split(':')[0][1:], required_suborder["testUnits"].text.split("\n")) ))
         if articles :
-            response["article"]=required_suborder["Article: *"].text.split("\n")[0]
+            response["article"]=required_suborder["article"].text.split("\n")[0]
         if material_type :
-            response["material_types"]=required_suborder["Material Type: *"].text.split("\n")[0]
+            response["material_types"]=required_suborder["materialType"].text.split("\n")[0]
         if shipment_date :
             pass
         if test_date :
@@ -291,9 +291,9 @@ class Order(Orders):
     def remove_testplan_by_name(self, index, testplan_name):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(row=suborder_row,
                                                                                             table_element='order:suborder_table')
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=testplan_name.replace("'", ''))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['testPlans'], item_text=testplan_name.replace("'", ''))
 
     def update_suborder(self, sub_order_index=0, contacts=False, departments=[], material_type=False, articles=False, test_plans=[], test_units=[], shipment_date=False, test_date=False, form_view=True):
         if form_view:
@@ -301,25 +301,25 @@ class Order(Orders):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[sub_order_index]
 
-        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(row=suborder_row,
                                                                                              table_element='order:suborder_table')
         contacts_record='contact with many departments'
 
         if material_type :
             self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'], item_text=material_type.replace("'", ''))
+            self.base_selenium.update_item_value(item=suborder_elements_dict['materialType'], item_text=material_type.replace("'", ''))
             
         if articles :
             self.base_selenium.LOGGER.info(' + Set article name : {}'.format(articles))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'], item_text=articles.replace("'", ''))
+            self.base_selenium.update_item_value(item=suborder_elements_dict['article'], item_text=articles.replace("'", ''))
             
         self.base_selenium.LOGGER.info(' + Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
         for testplan in test_plans:
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=testplan.replace("'", ''))
+            self.base_selenium.update_item_value(item=suborder_elements_dict['testPlans'], item_text=testplan.replace("'", ''))
         
         self.base_selenium.LOGGER.info(' + Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit:'], item_text=testunit.replace("'", ''))
+            self.base_selenium.update_item_value(item=suborder_elements_dict['testUnits'], item_text=testunit.replace("'", ''))
 
         if shipment_date :
             pass
@@ -333,7 +333,7 @@ class Order(Orders):
         if departments :
             self.base_selenium.LOGGER.info(' + Set departments : {}'.format(departments))
             for department in departments:
-                self.base_selenium.update_item_value(item=suborder_elements_dict['Departments:'], item_text=department)
+                self.base_selenium.update_item_value(item=suborder_elements_dict['departments'], item_text=department)
 
 
     def archive_suborder(self, index, check_pop_up=False):
