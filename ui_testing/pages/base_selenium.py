@@ -529,6 +529,17 @@ class BaseSelenium:
 
         return cells_elements
 
+    def get_row_cells_id_elements_related_to_header(self, row, table_element='general:table'):
+        cells_elements = {}
+        headers = self.get_table_head_elements(element=table_element)
+        headers_id = [header.find_element_by_tag_name('label').get_attribute('id') for header in headers]
+        row_cells = self.get_row_cells(row=row)
+
+        for column_id in headers_id:
+            cells_elements[column_id] = row_cells[headers_id.index(column_id)]
+
+        return cells_elements
+
     def maximize_window(self):
         time.sleep(1)
         screen_dimention = self.driver.get_window_size()
