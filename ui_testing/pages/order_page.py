@@ -261,7 +261,7 @@ class Order(Orders):
     # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
     def get_suborder_data(self, sub_order_index=0, departments=True, material_type=True, articles=True, test_plan=True, test_unit=True, test_date=False, shipment_date=False):
         table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        required_suborder = self.base_selenium.get_row_cells_id_dict_related_to_header(row=table_suborders[sub_order_index],
+        required_suborder = self.base_selenium.get_row_cells_id_elements_related_to_header(row=table_suborders[sub_order_index],
                                                                                              table_element='order:suborder_table')
         response = {
             "departments": "",
@@ -273,15 +273,15 @@ class Order(Orders):
             "shipment_date": ""
         }
         if departments :
-            response["departments"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["departments"].split("\n")) ))
+            response["departments"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["departments"].text.split("\n")) ))
         if test_plan :
-            response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["testPlans"].split("\n")) ))
+            response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["testPlans"].text.split("\n")) ))
         if test_unit :
-            response["test_unit"]="|".join(list(map(lambda s: str(s).split(':')[0][1:], required_suborder["testUnits"].split("\n")) ))
+            response["test_unit"]="|".join(list(map(lambda s: str(s).split(' No:')[0][1:], required_suborder["testUnits"].text.split("\n")) ))
         if articles :
-            response["article"]=required_suborder["article"].split("\n")[0]
+            response["article"]=required_suborder["article"].text.split("\n")[0]
         if material_type :
-            response["material_types"]=required_suborder["materialType"].split("\n")[0]
+            response["material_types"]=required_suborder["materialType"].text.split("\n")[0]
         if shipment_date :
             pass
         if test_date :
@@ -291,7 +291,7 @@ class Order(Orders):
     def remove_testplan_by_name(self, index, testplan_name):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(row=suborder_row,
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(row=suborder_row,
                                                                                             table_element='order:suborder_table')
         self.base_selenium.update_item_value(item=suborder_elements_dict['testPlans'], item_text=testplan_name.replace("'", ''))
 
@@ -301,7 +301,7 @@ class Order(Orders):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[sub_order_index]
 
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(row=suborder_row,
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(row=suborder_row,
                                                                                              table_element='order:suborder_table')
         contacts_record='contact with many departments'
 

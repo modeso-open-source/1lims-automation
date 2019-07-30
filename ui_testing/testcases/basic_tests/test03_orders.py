@@ -1128,7 +1128,7 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Create new order with intial data')
         # initial data is static because it won't affect the test case, but the updating data is generated dynamically
-        self.order_page.create_new_order(multiple_suborders=3, test_plans=['tp1'], material_type='Raw Material')
+        self.order_page.create_new_order(multiple_suborders=3, test_plans=['tp1'], material_type='Raw Material', test_units=[''])
 
         self.base_selenium.LOGGER.info(
             'Open the 4th order from the order table, to confirm order\'s data that it was created with')
@@ -1197,22 +1197,22 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(new_material_type,
                                                                                                 suborder_data_after_pressing_confirm[
                                                                                                     'material_types']))
-        self.assertEqual('', suborder_data_after_pressing_confirm['material_types'])
+        self.assertEqual(new_material_type, suborder_data_after_pressing_confirm['material_types'])
 
         self.base_selenium.LOGGER.info('+Assert Compare Article, old: {}, new: {}'.format('Search',
                                                                                           suborder_data_after_pressing_confirm[
                                                                                               'article']))
-        self.assertEqual('', suborder_data_after_pressing_confirm['article'])
+        self.assertEqual('Search', suborder_data_after_pressing_confirm['article'])
 
         self.base_selenium.LOGGER.info('+Assert Compare Test Plans, old: {}, new: {}'.format('Search',
                                                                                              suborder_data_after_pressing_confirm[
                                                                                                  'test_plan']))
-        self.assertEqual('', suborder_data_after_pressing_confirm['test_plan'])
+        self.assertEqual('earch', suborder_data_after_pressing_confirm['test_plan'])
 
         self.base_selenium.LOGGER.info('+Assert Compare Test units, old: {}, new: {}'.format('Search',
                                                                                              suborder_data_after_pressing_confirm[
                                                                                                  'test_unit']))
-        self.assertEqual('', suborder_data_after_pressing_confirm['test_unit'])
+        self.assertEqual('earch', suborder_data_after_pressing_confirm['test_unit'])
 
         self.base_selenium.LOGGER.info('Update data and press save to make sure that it is updated')
 
