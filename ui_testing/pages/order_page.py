@@ -273,11 +273,11 @@ class Order(Orders):
             "shipment_date": ""
         }
         if departments :
-            response["departments"]="|".join(list(map(lambda s: str(s)[2:], required_suborder["Departments:"].text.split("\n")) ))
+            response["departments"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["Departments:"].text.split("\n")) ))
         if test_plan :
-            response["test_plan"]="|".join(list(map(lambda s: str(s)[2:], required_suborder["Test Plan: *"].text.split("\n")) ))
+            response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["Test Plan: *"].text.split("\n")) ))
         if test_unit :
-            response["test_unit"]="|".join(list(map(lambda s: str(s)[2:], required_suborder["Test Unit: *"].text.split("\n")) ))
+            response["test_unit"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["Test Unit:"].text.split("\n")) ))
         if articles :
             response["article"]=required_suborder["Article: *"].text.split("\n")[0]
         if material_type :
@@ -295,8 +295,9 @@ class Order(Orders):
                                                                                             table_element='order:suborder_table')
         self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'], item_text=testplan_name.replace("'", ''))
 
-    def update_suborder(self, sub_order_index=0, contacts=False, departments=[], material_type=False, articles=False, test_plans=[], test_units=[], shipment_date=False, test_date=False, save_state=True):
-        self.get_suborder_table()
+    def update_suborder(self, sub_order_index=0, contacts=False, departments=[], material_type=False, articles=False, test_plans=[], test_units=[], shipment_date=False, test_date=False, form_view=True):
+        if form_view:
+            self.get_suborder_table()
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[sub_order_index]
 
@@ -318,7 +319,7 @@ class Order(Orders):
         
         self.base_selenium.LOGGER.info(' + Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
-            self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'], item_text=testunit.replace("'", ''))
+            self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit:'], item_text=testunit.replace("'", ''))
 
         if shipment_date :
             pass
@@ -333,11 +334,6 @@ class Order(Orders):
             self.base_selenium.LOGGER.info(' + Set departments : {}'.format(departments))
             for department in departments:
                 self.base_selenium.update_item_value(item=suborder_elements_dict['Departments:'], item_text=department)
-
-        if save_state:
-            self.save(save_btn="order:save_btn")
-        else:
-            self.cancel()
 
 
     def archive_suborder(self, index, check_pop_up=False):
