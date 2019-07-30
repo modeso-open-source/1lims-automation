@@ -121,7 +121,7 @@ class BaseTest(TestCase):
         self.base_selenium.LOGGER.info('Generate new article with article name: {}, and material type: {}'.format(new_article, new_material_type))
 
         self.test_plan.get_test_plans_page()
-        new_testplan_name = self.test_plan.create_new_test_plan(material_type=new_material_type, article=new_article, test_unit='ALLtu')
+        new_testplan_name = self.test_plan.create_new_test_plan(material_type=new_material_type, article=new_article, test_unit='tuqual')
         testplan_testunits = self.testplans_page.get_testunits_in_testplans(test_plan_name=new_testplan_name)
         self.base_selenium.LOGGER.info('Generate new test plan with name: {}, and test units {}'.format(new_testplan_name, testplan_testunits))
 

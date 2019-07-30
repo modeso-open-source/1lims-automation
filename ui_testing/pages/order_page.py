@@ -273,15 +273,15 @@ class Order(Orders):
             "shipment_date": ""
         }
         if departments :
-            response["departments"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["departments"].text.split("\n")) ))
+            response["departments"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["departments"].split("\n")) ))
         if test_plan :
-            response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["testPlans"].text.split("\n")) ))
+            response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["testPlans"].split("\n")) ))
         if test_unit :
-            response["test_unit"]="|".join(list(map(lambda s: str(s).split(':')[0][1:], required_suborder["testUnits"].text.split("\n")) ))
+            response["test_unit"]="|".join(list(map(lambda s: str(s).split(':')[0][1:], required_suborder["testUnits"].split("\n")) ))
         if articles :
-            response["article"]=required_suborder["article"].text.split("\n")[0]
+            response["article"]=required_suborder["article"].split("\n")[0]
         if material_type :
-            response["material_types"]=required_suborder["materialType"].text.split("\n")[0]
+            response["material_types"]=required_suborder["materialType"].split("\n")[0]
         if shipment_date :
             pass
         if test_date :
