@@ -277,7 +277,7 @@ class Order(Orders):
         if test_plan :
             response["test_plan"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["Test Plan: *"].text.split("\n")) ))
         if test_unit :
-            response["test_unit"]="|".join(list(map(lambda s: str(s)[1:], required_suborder["Test Unit:"].text.split("\n")) ))
+            response["test_unit"]="|".join(list(map(lambda s: str(s).split(':')[0][1:], required_suborder["Test Unit:"].text.split("\n")) ))
         if articles :
             response["article"]=required_suborder["Article: *"].text.split("\n")[0]
         if material_type :

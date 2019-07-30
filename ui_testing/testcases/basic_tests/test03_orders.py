@@ -1423,18 +1423,15 @@ class OrdersTestCases(BaseTest):
         """
 
         # new random order data
-        self.article_page.get_articles_page()
-        # new_article_data = self.article_page.create_new_article()
+        basic_order_data = self.get_random_order_data()
+        new_random_material_type=basic_order_data['material_type']
+        new_article=basic_order_data['article']
+        new_testplan_name=basic_order_data['testplan']
+        testplan_testunits=basic_order_data['testunits_in_testplan']
         
-        new_material_type = 'Subassembely'#new_article_data['material_type']
-        new_article = 'test_art_rm'#new_article_data['name']
 
-        self.test_plan.get_test_plans_page()
-        new_testplan_name = 'SAtp'#self.test_plan.create_new_test_plan(material_type=new_material_type, article=new_article)
-        testplan_testunits = self.testplans_page.get_testunits_in_testplans(test_plan_name=new_testplan_name)
-
-        self.order_page.get_orders_page()
-
+        self.base_selenium.LOGGER.info('Create new order with intial data')
+        # initial data is static because it won't affect the test case, but the updating data is generated dynamically
         order_no=self.order_page.create_new_order(multiple_suborders=3, article='', test_plans=['tp1'], test_units=[''], material_type='Raw Material')
 
         self.base_selenium.LOGGER.info('Open the 4th order from the order table, to confirm order\'s data that it was created with')
@@ -1483,17 +1480,18 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Comparing order data after pressing confirm')
 
-        # self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(new_material_type, suborder_data_after_pressing_confirm['material_types']))
-        # self.assertEqual('', suborder_data_after_pressing_confirm['material_types'])
+        self.base_selenium.LOGGER.info('Empty fields will have the word "Search" as a placeholder, so the results from the table will carry the value "Search" which denotes that the field is empty')
+        self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(new_material_type, suborder_data_after_pressing_confirm['material_types']))
+        self.assertEqual('', suborder_data_after_pressing_confirm['material_types'])
 
-        # self.base_selenium.LOGGER.info('+Assert Compare Article, old: {}, new: {}'.format('', suborder_data_after_pressing_confirm['article']))
-        # self.assertEqual('', suborder_data_after_pressing_confirm['article'])
+        self.base_selenium.LOGGER.info('+Assert Compare Article, old: {}, new: {}'.format('Search', suborder_data_after_pressing_confirm['article']))
+        self.assertEqual('', suborder_data_after_pressing_confirm['article'])
 
-        # self.base_selenium.LOGGER.info('+Assert Compare Test Plans, old: {}, new: {}'.format('', suborder_data_after_pressing_confirm['test_plan']))
-        # self.assertEqual('', suborder_data_after_pressing_confirm['test_plan'])
+        self.base_selenium.LOGGER.info('+Assert Compare Test Plans, old: {}, new: {}'.format('Search', suborder_data_after_pressing_confirm['test_plan']))
+        self.assertEqual('', suborder_data_after_pressing_confirm['test_plan'])
 
-        # self.base_selenium.LOGGER.info('+Assert Compare Test units, old: {}, new: {}'.format('', suborder_data_after_pressing_confirm['test_unit']))
-        # self.assertEqual('', suborder_data_after_pressing_confirm['test_unit'])
+        self.base_selenium.LOGGER.info('+Assert Compare Test units, old: {}, new: {}'.format('Search', suborder_data_after_pressing_confirm['test_unit']))
+        self.assertEqual('', suborder_data_after_pressing_confirm['test_unit'])
 
         self.base_selenium.LOGGER.info('Update data and press save to make sure that it is updated')
 
@@ -1505,7 +1503,7 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Refreshing the page to make sure that data are saved correctly')
         self.base_selenium.refresh()
-        self.order_page.sleep_medium()
+        self.order_page.sleep_large()
 
         self.base_selenium.LOGGER.info('Get order table with add view to check the data after being saved')
         self.order_page.get_suborder_table()
@@ -1516,8 +1514,8 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Comparing order data after saving')
 
-        self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(suborder_data['material_types'], suborder_data_after_saving['material_types']))
-        self.assertEqual(suborder_data['material_types'], suborder_data_after_saving['material_types'])
+        self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(suborder_data_after_changing_data['material_types'], suborder_data_after_saving['material_types']))
+        self.assertEqual(suborder_data_after_changing_data['material_types'], suborder_data_after_saving['material_types'])
 
         self.base_selenium.LOGGER.info('+Assert Compare Article, old: {}, new: {}'.format(suborder_data_after_changing_data['article'], suborder_data_after_saving['article']))
         self.assertEqual(suborder_data_after_changing_data['article'], suborder_data_after_saving['article'])
@@ -1528,7 +1526,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info('+Assert Compare Test units, old: {}, new: {}'.format(suborder_data_after_changing_data['test_unit'], suborder_data_after_saving['test_unit']))
         self.assertEqual(suborder_data_after_changing_data['test_unit'], suborder_data_after_saving['test_unit'])
 
-        testplan_testunits.append(suborder_data_after_changing_data['test_unit'])
+        testplan_testunits.append(suborder_data_after_saving['test_unit'])
 
         self.base_selenium.LOGGER.info('Get analysis page to make sure that update took place in analysis')
         self.analyses_page.get_analyses_page()
