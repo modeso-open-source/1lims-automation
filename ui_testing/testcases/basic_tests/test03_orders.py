@@ -1101,6 +1101,9 @@ class OrdersTestCases(BaseTest):
         (All analysis created with this order and test plan will be deleted )
         -Once you press on OK button, the material type & article & test pan will delete
         -You can update it by choose another one and choose corresponding article & test plan 
+
+        LIMS-4264
+        
         """
 
         # new random order data
