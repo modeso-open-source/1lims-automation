@@ -1107,6 +1107,7 @@ class OrdersTestCases(BaseTest):
 
         self.assertEqual(len(rows_count) - 1, 1)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-4914')
     def test027_update_material_type(self):
         """
         Apply this on suborder number 5 for example:-
