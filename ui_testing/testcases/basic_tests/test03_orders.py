@@ -1306,3 +1306,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             'analysis test units are: {}, and it should be: {}'.format(analysis_test_units, testplan_testunits))
         self.assertEqual(set(analysis_test_units) == set(testplan_testunits), True)
+
+    def test_test(self):
+        import ipdb; ipdb.set_trace()
+        suborder_data = self.order_page.get_suborder_data(sub_order_index=3)
