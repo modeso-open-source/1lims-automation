@@ -295,41 +295,51 @@ class Order(Orders):
 
         suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(row=suborder_row,
                                                                                                 table_element='order:suborder_table')
-        contacts_record = 'contact with many departments'
 
         if material_type:
-            self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['materialType'],
-                                                 item_text=material_type.replace("'", ''))
+            self.update_material_type_suborder(row=suborder_elements_dict, material_type=material_type)
 
         if articles:
-            self.base_selenium.LOGGER.info(' + Set article name : {}'.format(articles))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['article'],
-                                                 item_text=articles.replace("'", ''))
+            self.update_article_suborder(row=suborder_elements_dict, article=articles)
 
-        self.base_selenium.LOGGER.info(' + Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
-        for testplan in test_plans:
-            self.base_selenium.update_item_value(item=suborder_elements_dict['testPlans'],
-                                                 item_text=testplan.replace("'", ''))
+        if len(test_plans) > 0:
+            self.add_multiple_testplans_suborder(row=suborder_elements_dict, testplans=test_plans)
 
-        self.base_selenium.LOGGER.info(' + Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
-        for testunit in test_units:
-            self.base_selenium.update_item_value(item=suborder_elements_dict['testUnits'],
-                                                 item_text=testunit.replace("'", ''))
-
-        if shipment_date:
-            pass
-
-        if test_date:
-            pass
+        if len(test_units) > 0:
+            self.add_multiple_testunits_suborder(row=suborder_elements_dict, testunits=test_units)
 
         if contacts:
-            self.set_contact(contact=contacts_record)
+            self.set_contact(contact=contacts)
 
         if departments:
-            self.base_selenium.LOGGER.info(' + Set departments : {}'.format(departments))
-            for department in departments:
-                self.base_selenium.update_item_value(item=suborder_elements_dict['departments'], item_text=department)
+            self.update_departments_suborder(row=suborder_elements_dict, departments=departments)
+
+    def update_material_type_suborder(self, row, material_type):
+        self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
+        self.base_selenium.update_item_value(item=row['materialType'],
+                                                 item_text=material_type.replace("'", ''))
+    
+    def update_article_suborder(self, row, article):
+        self.base_selenium.LOGGER.info(' + Set article name : {}'.format(article))
+        self.base_selenium.update_item_value(item=row['article'],
+                                                 item_text=article.replace("'", ''))
+
+    def add_multiple_testplans_suborder(self, row, testplans):
+        self.base_selenium.LOGGER.info(' + Set test plan : {} for {} time(s)'.format(testplans, len(testplans)))
+        for testplan in testplans:
+            self.base_selenium.update_item_value(item=row['testUnits'],
+                                                 item_text=testplan.replace("'", ''))
+    
+    def add_multiple_testunits_suborder(self, row, testunits):
+        self.base_selenium.LOGGER.info(' + Set test unit : {} for {} time(s)'.format(testunits, len(testunits)))
+        for testunit in testunits:
+            self.base_selenium.update_item_value(item=row['testUnits'],
+                                                 item_text=testunit.replace("'", ''))
+
+    def update_departments_suborder(self, row, departments):
+        self.base_selenium.LOGGER.info(' + Set departments : {}'.format(departments))
+        for department in departments:
+            self.base_selenium.update_item_value(item=row['departments'], item_text=department)
 
     def archive_suborder(self, index, check_pop_up=False):
         self.get_suborder_table()
