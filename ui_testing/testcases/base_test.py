@@ -7,7 +7,6 @@ from ui_testing.pages.login_page import Login
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.testplan_page import TstPlan
-from ui_testing.pages.testplans_page import TestPlans
 from ui_testing.pages.testunit_page import TstUnit
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
@@ -27,7 +26,6 @@ class BaseTest(TestCase):
         self.login_page = Login()
         self.order_page = Order()
         self.test_plan = TstPlan()
-        self.testplans_page = TestPlans()
         self.article_page = Article()
         self.analyses_page = Analyses()
         self.orders_page = Orders()
@@ -122,7 +120,7 @@ class BaseTest(TestCase):
 
         self.test_plan.get_test_plans_page()
         new_testplan_name = self.test_plan.create_new_test_plan(material_type=new_material_type, article=new_article, test_unit='tuqual')
-        testplan_testunits = self.testplans_page.get_testunits_in_testplans(test_plan_name=new_testplan_name)
+        testplan_testunits = self.test_plan.get_testunits_in_testplans(test_plan_name=new_testplan_name)
         self.base_selenium.LOGGER.info('Generate new test plan with name: {}, and test units {}'.format(new_testplan_name, testplan_testunits))
 
         basic_order_data = {
