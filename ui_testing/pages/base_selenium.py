@@ -500,9 +500,9 @@ class BaseSelenium:
         headers_text = [header.text for header in headers]
         row_cells = self.get_row_cells(row=row)
         row_text = [cell.text for cell in row_cells]
-
-        for column_value in headers_text:
-            cells_dict[column_value] = row_text[headers_text.index(column_value)]
+        if len(row_text) > 1:
+            for column_value in headers_text:
+                cells_dict[column_value] = row_text[headers_text.index(column_value)]
 
         return cells_dict
 
@@ -585,3 +585,6 @@ class BaseSelenium:
         dom_element = self.find_element(element)
         dom_element.clear()
         dom_element.send_keys(Keys.CONTROL, 'v')
+
+    def refresh(self):
+        self.driver.refresh()

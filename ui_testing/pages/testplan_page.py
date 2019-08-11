@@ -47,7 +47,7 @@ class TstPlan(TestPlans):
     def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
-        self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text='Qualitative')
+        self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
         self.base_selenium.click('test_plan:add')
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
@@ -74,6 +74,8 @@ class TstPlan(TestPlans):
             self.save()
 
         self.base_selenium.LOGGER.info(' + Test plan name : {}'.format(self.test_plan_name))
+
+        return self.test_plan_name
 
     def is_article_existing(self, article):
         self.set_article(article=article)

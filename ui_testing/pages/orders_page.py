@@ -70,7 +70,7 @@ class Orders(BasePages):
     def filter_by_order_no(self, filter_text):
         self.open_filter_menu()
         self.base_selenium.LOGGER.info(' + Filter by order no. : {}'.format(filter_text))
-        self.filter_by(filter_element='orders:filter_order_no', filter_text=filter_text, type='text')
+        self.filter_by(filter_element='orders:filter_order_no', filter_text=filter_text, field_type='text')
         self.filter_apply()
 
     def open_filter_menu(self):
@@ -80,7 +80,7 @@ class Orders(BasePages):
 
     def filter_by_analysis_number(self, filter_text):
         self.base_selenium.LOGGER.info(' + Filter by analysis number : {}'.format(filter_text))
-        self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, type='text')
+        self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
 
     def get_orders_duplicate_data(self, order_no):

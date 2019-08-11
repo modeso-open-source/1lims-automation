@@ -23,7 +23,7 @@ class BasePages:
         return self.result_table()
 
     def result_table(self, element='general:table'):
-       return self.base_selenium.get_table_rows(element=element)
+        return self.base_selenium.get_table_rows(element=element)
 
     def clear_text(self, element):
         self.base_selenium.clear_element_text(element= element)
@@ -68,8 +68,8 @@ class BasePages:
                                                             destination_element='general:filter')
         filter.click()
 
-    def filter_by(self, filter_element, filter_text, type = 'drop_down'):
-        if type == 'drop_down':
+    def filter_by(self, filter_element, filter_text, field_type='drop_down'):
+        if field_type=='drop_down':
             self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
         else:
             self.base_selenium.set_text(element=filter_element, value = filter_text )
@@ -183,7 +183,7 @@ class BasePages:
 
     def filter(self,field_name, element, filter_text, type):
         self.base_selenium.LOGGER.info(' + Filter by {} : {}'.format(field_name,filter_text))
-        self.filter_by(filter_element= element, filter_text=filter_text, type = type)
+        self.filter_by(filter_element= element, filter_text=filter_text, field_type = type)
         self.filter_apply()
 
     def _copy(self, value):
@@ -196,9 +196,23 @@ class BasePages:
     def copy_paste(self, element, value):
         self._copy(value=value)
         self._paste(element=element)
-    
-    def open_child_table(self, source):
-       childtable_arrow = self.base_selenium.find_element_in_element(destination_element='general:child_table_arrow', source=source)
-       childtable_arrow.click()
 
-    
+    def open_child_table(self, source):
+        childtable_arrow = self.base_selenium.find_element_in_element(destination_element='general:child_table_arrow', source=source)
+        childtable_arrow.click()
+        self.sleep_medium()
+
+    def get_child_table_data(self, index=0):
+        rows = self.result_table()
+        self.open_child_table(source=rows[index])
+        rows_with_childtable = self.result_table(element='general:table_child')
+        headers = self.base_selenium.get_table_head_elements(element='general:table_child')
+
+        child_table_data = []
+        for subrecord in range(0,len(rows_with_childtable)):
+            rows_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=rows_with_childtable[subrecord], table_element='general:table_child')
+            if rows_with_headers != {}:
+                child_table_data.append(rows_with_headers)
+
+        return child_table_data
+        
