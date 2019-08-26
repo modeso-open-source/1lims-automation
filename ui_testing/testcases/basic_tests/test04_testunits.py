@@ -48,3 +48,21 @@ class TestUnitsTestCases(BaseTest):
             self.base_selenium.LOGGER.info(' + {} Test Unit should be activated.'.format(test_unit_name))
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
 
+    def test003_restore_test_units(self):
+        """
+         New: Test units: Restore Approach: I can restore any test unit successfully.
+
+        LIMS-5262
+        :return:
+        """
+        test_unit_names = []
+        self.test_unit_page.get_archived_test_units()
+        selected_test_units_data, _ = self.test_unit_page.select_random_multiple_table_rows()
+        for test_unit in selected_test_units_data:
+            test_unit_names.append(test_unit['Test Unit Name'])
+
+        self.test_unit_page.restore_selected_test_units()
+        self.test_unit_page.get_active_test_units()
+        for test_unit_name in test_unit_names:
+            self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
+

@@ -20,7 +20,7 @@ install:
 
 script:
 
-  - export TESTS='test04_testunits'
+  - export TESTS='test04_testunits.py'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'

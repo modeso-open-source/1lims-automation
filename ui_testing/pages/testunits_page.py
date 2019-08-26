@@ -47,3 +47,14 @@ class TstUnits(BasePages):
             else:
                 return False
 
+    def restore_selected_test_units(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='test_units:right_menu')
+        self.base_selenium.click(element='test_units:restore')
+        self.confirm_popup()
+
+    def get_active_test_units(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='test_units:right_menu')
+        self.base_selenium.click(element='test_units:active')
+        self.sleep_small()
