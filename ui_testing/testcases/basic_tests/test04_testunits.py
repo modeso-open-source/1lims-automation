@@ -35,9 +35,9 @@ class TestUnitsTestCases(BaseTest):
 
     def test002_archive_test_units(self):
         """
-        New: Article: Archive Approach: I can archive/restore any article successfully
+        New: Test units: Archive Approach: I can archive any test unit successfully.
 
-        LIMS-3587
+        LIMS-3670
         :return:
         """
         selected_test_units_data, _ = self.test_unit_page.select_random_multiple_table_rows()
