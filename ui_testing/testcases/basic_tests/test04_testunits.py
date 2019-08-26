@@ -32,3 +32,19 @@ class TestUnitsTestCases(BaseTest):
                 if search_data[column] == row_data[column]:
                     break
             self.assertEqual(row_data[column], search_data[column])
+
+    def test002_archive_test_units(self):
+        """
+        New: Article: Archive Approach: I can archive/restore any article successfully
+
+        LIMS-3587
+        :return:
+        """
+        selected_test_units_data, _ = self.test_unit_page.select_random_multiple_table_rows()
+        self.test_unit_page.archive_selected_test_units()
+        self.test_unit_page.get_archived_test_units()
+        for test_unit in selected_test_units_data:
+            test_unit_name = test_unit['Test Unit Name']
+            self.base_selenium.LOGGER.info(' + {} Test Unit should be activated.'.format(test_unit_name))
+            self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
+
