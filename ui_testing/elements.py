@@ -183,6 +183,17 @@ elements = {
     'test_units': {
         'test_units_table': {'method': 'id',
                              'value': 'table'},
+    'right_menu': {'method': 'xpath',
+                       'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+    'archive': {'method': 'link_text',
+                    'value': 'Archive'},
+    'archived': {'method': 'link_text',
+                     'value': 'Archived'},
+    'restore': {'method': 'link_text',
+                    'value': 'Restore'},
+    'active': {'method': 'link_text',
+                   'value': 'Active'},
+
     },
 
     'test_plan': {
