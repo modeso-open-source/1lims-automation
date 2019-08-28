@@ -78,7 +78,7 @@ class Order(Orders):
         if self.get_test_unit():
             self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
 
-    def set_test_unit(self, test_unit):
+    def set_test_unit(self, test_unit=''):
         if test_unit:
             self.base_selenium.select_item_from_drop_down(element='order:test_unit', item_text=test_unit)
         else:
@@ -365,3 +365,32 @@ class Order(Orders):
         button = self.base_selenium.find_element_in_element(source_element='order:auto_fill_container',
                                                             destination_element='order:auto_fill')
         button.click()
+
+    def create_new_suborder_with_test_units(self, material_type='', article_name='', test_unit='', **kwargs):
+        self.get_suborder_table()
+        rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
+
+        self.base_selenium.LOGGER.info(' + Add new suborder.')
+        self.base_selenium.click(element='order:add_new_item')
+
+        rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = rows_after[len(rows_before)]
+
+        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
+                                                                                             table_element='order:suborder_table')
+        self.base_selenium.LOGGER.info(' + Set material type : {}'.format(material_type))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'],
+                                             item_text=material_type.replace("'", ''))
+        self.base_selenium.LOGGER.info(' + Set article name : {}'.format(article_name))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'],
+                                             item_text=article_name.replace("'", ''))
+        self.base_selenium.LOGGER.info(' + Set Test Unit  : {}'.format(test_unit))
+        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Unit: *'],
+                                             item_text=test_unit.replace("'", ''))
+
+        for key in kwargs:
+            if key in suborder_elements_dict.keys():
+                self.base_selenium.update_item_value(item=suborder_elements_dict[key], item_text=kwargs[key])
+            else:
+                self.base_selenium.LOGGER.info(' + {} is not a header element!'.format(key))
+                self.base_selenium.LOGGER.info(' + Header keys : {}'.format(suborder_elements_dict.keys()))

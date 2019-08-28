@@ -1310,3 +1310,53 @@ class OrdersTestCases(BaseTest):
     def test_test(self):
         import ipdb; ipdb.set_trace()
         suborder_data = self.order_page.get_suborder_data(sub_order_index=3)
+
+    @skip('https://modeso.atlassian.net/browse/LIMS-5070')
+    def test031_user_can_add_suborder_with_test_units(self):
+        """
+        New: Orders: Create Approach: I can create suborder with test unit successfully,
+        make sure the record created successfully in the analysis section.
+        ( create with any type of test unit )
+
+        LIMS-4255
+        LIMS-4255
+        :return:
+        """
+
+        # Go to the order page
+        self.order_page.get_orders_page()
+        order_row = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=order_row)
+        orders_duplicate_data_before, orders = self.order_page.get_orders_duplicate_data(
+            order_no=order_data['Order No.'])
+        orders_records_before = self.order_page.get_table_records()
+
+        self.base_selenium.LOGGER.info(
+            ' + Select random order with {} no.'.format(order_data['Order No.']))
+        self.order_page.get_random_x(orders[0])
+        order_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info(' + Order url : {}'.format(order_url))
+        # create order with random data
+        self.order_page.create_new_suborder_with_test_units(material_type='Raw Material', article_name='a', test_unit='')
+        self.order_page.save(save_btn='order:save_btn')
+
+        # filter one more time to make sure new record added to the active table
+        self.order_page.get_orders_page()
+        orders_duplicate_data_after, _ = self.order_page.get_orders_duplicate_data(
+            order_no=order_data['Order No.'])
+        orders_records_after = self.order_page.get_table_records()
+
+        self.base_selenium.LOGGER.info(
+            ' + Assert there is a new suborder with the same order no.')
+        self.assertEqual(orders_records_after, orders_records_before + 1)
+
+        # go to the analysis section to make sure new analysis record created successfully
+        self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info(
+            ' + Assert There is an analysis for this new suborder.')
+        orders_analyess = self.analyses_page.search(order_data['Order No.'])
+        latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=orders_analyess[0])
+        self.assertEqual(
+            orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
