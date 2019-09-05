@@ -92,7 +92,10 @@ elements = {
                 'filter_btn': {'method': 'id',
                             'value': 'filter_btn'},
                 'filter_reset_btn': {'method': 'id',
-                            'value': 'reset_btn'}
+                            'value': 'reset_btn'},
+                'saveAndComplete': { 'method': 'id',
+                            'value': 'submitWithVersion'
+                }
                 },
     'login': {
         'username': {'method': 'name',
@@ -231,6 +234,10 @@ elements = {
                           'value': '//*[@id="materialTypefield"]'},
         'material_type_options': {'method': 'class_name',
                                   'value': 'ng-option'},
+        'method': {
+            'method': 'id',
+            'value': 'methodfield'
+        }
     },
     'orders': {
         'orders_table': {'method': 'id',

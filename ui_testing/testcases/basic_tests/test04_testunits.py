@@ -66,3 +66,24 @@ class TestUnitsTestCases(BaseTest):
         for test_unit_name in test_unit_names:
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
 
+    def test004_check_version_after_update(self):
+        """
+        After I update any field then press on save , new version created in the active table.
+
+        LIMS-3676
+        """
+
+        testunitsRecords = self.test_unit_page.result_table()
+        firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
+        self.base_selenium.LOGGER.info('{}'.format(firstTestunitData))
+        oldVersion = firstTestunitData['Version']
+        self.test_unit_page.get_random_x(row=testunitsRecords[0])
+        newRandomMethod = self.generate_random_string()
+        self.test_unit_page.set_method(method=newRandomMethod)
+        self.test_unit_page.get_test_units_page()
+        testunitsRecords = self.test_unit_page.get_table_records()
+        firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
+        newVersion = firstTestunitData['Version']
+        self.base_selenium.LOGGER.info('old version: {}, new version: {}'.format(oldVersion, newVersion))
+
+
