@@ -237,6 +237,30 @@ elements = {
         'method': {
             'method': 'id',
             'value': 'methodfield'
+        },
+        'materialType': {
+            'method': 'id',
+            'value': 'selectedMaterialTypes'
+        },
+        'testunitName': {
+            'method': 'id',
+            'value': 'namefield'
+        },
+        'testunitNumber': {
+            'method': 'id',
+            'value': 'numberfield'
+        },
+        'category': {
+            'method': 'id',
+            'value': 'category'
+        },
+        'type': {
+            'method': 'id',
+            'value': 'typefield'
+        },
+        'iteration': {
+            'method': 'id',
+            'value': 'iterationsfield'
         }
     },
     'orders': {

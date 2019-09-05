@@ -71,17 +71,69 @@ class TestUnitsTestCases(BaseTest):
         After I update any field then press on save , new version created in the active table.
 
         LIMS-3676
+
+        After the user edit any of the followings fields
+
+        test unit name 
+        test unit number 
+        category
+        method
+        iteration
+        materiel type 
+        specification 
+
+        the should updated successfully when I enter one more time 
+
+        LIMS-5288
         """
 
-        testunitsRecords = self.test_unit_page.result_table()
-        firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
-        self.base_selenium.LOGGER.info('{}'.format(firstTestunitData))
-        oldVersion = firstTestunitData['Version']
-        self.test_unit_page.get_random_x(row=testunitsRecords[0])
+        self.base_selenium.LOGGER.info('Generate random data for update')
+        newRandomNumber = self.generate_random_number(limit=100000)
+        newRandomName = self.generate_random_string()
         newRandomMethod = self.generate_random_string()
+        newRandomCategry = self.generate_random_string()
+        newRandomIterations = self.generate_random_number(limit=4)
+
+        self.base_selenium.LOGGER.info('Getting data of the first testunit')
+        testunitsRecords = self.order_page.result_table()
+        firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
+        
+        oldVersion = firstTestunitData['Version']
+        self.base_selenium.LOGGER.info('old version: {}'.format(oldVersion))
+        self.base_selenium.LOGGER.info('Open the first record to update it')
+        self.test_unit_page.get_random_x(row=testunitsRecords[0])
+        
+        self.base_selenium.LOGGER.info('Set the method to be: {}'.format(newRandomMethod))
         self.test_unit_page.set_method(method=newRandomMethod)
+
+        self.base_selenium.LOGGER.info('Set new material type')        
+        self.test_unit_page.set_material_type()
+
+        self.base_selenium.LOGGER.info('Set the new category to be: {}'.format(newRandomCategry))
+        self.test_unit_page.set_category(category=newRandomCategry)
+
+        self.base_selenium.LOGGER.info('Set the new testunit name to be: {}'.format(newRandomName))
+        self.test_unit_page.set_testunit_name(name=newRandomName)
+
+        self.base_selenium.LOGGER.info('Set the new testunit number to be: {}'.format(newRandomNumber))
+        self.test_unit_page.set_testunit_number(number=newRandomNumber)
+
+        self.base_selenium.LOGGER.info('Set the new testunit iteartions to be: {}'.format(newRandomIterations))
+        self.test_unit_page.set_testunit_iteration(iteration=newRandomIterations)
+
+        self.base_selenium.LOGGER.info('pressing save and create new version')
+        self.test_unit_page.saveAndCreateNewVersion(confirm=True)
+
+        self.base_selenium.LOGGER.info('Refresh to make sure that the new data are saved')
+        self.base_selenium.refresh()
+        self.test_unit_page.sleep_small()
+        
+        self.base_selenium.LOGGER.info('checking that data are saved correctly after refresh')
+        updatedTestunitName = self.test_unit_page.get_testunit_name()
+        updateTestunitNumber = self.test_unit_page.get_testunit_number()
+
         self.test_unit_page.get_test_units_page()
-        testunitsRecords = self.test_unit_page.get_table_records()
+        testunitsRecords = self.order_page.result_table()
         firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
         newVersion = firstTestunitData['Version']
         self.base_selenium.LOGGER.info('old version: {}, new version: {}'.format(oldVersion, newVersion))
