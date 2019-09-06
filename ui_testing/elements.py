@@ -261,7 +261,11 @@ elements = {
         'iteration': {
             'method': 'id',
             'value': 'iterationsfield'
-        }
+        },
+        'useSpecification': {'method': 'id',
+                             'value': 'useSpec'},
+        'useQuantification': {'method': 'id',
+                             'value': 'useQuantification'}
     },
     'orders': {
         'orders_table': {'method': 'id',

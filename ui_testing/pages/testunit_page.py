@@ -54,4 +54,17 @@ class TstUnit(TstUnits):
         self.sleep_small()
         self.confirm_popup(force=confirm)
         self.sleep_small()
-        
+
+    def set_testunit_type (self, testunitType=''):
+        if testunitType:
+            self.base_selenium.select_item_from_drop_down(
+                element='test_unit:type', item_text=testunitType)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='test_unit:type')
+
+    def use_specification_or_quantification(self, typeToUse='spec'):
+        if typeToUse == 'spec':
+            self.base_selenium.click(element='test_unit:useSpecification')
+        else:
+            self.base_selenium.click(element='test_unit:useQuantification')

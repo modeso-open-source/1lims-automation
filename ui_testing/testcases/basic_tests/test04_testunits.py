@@ -65,101 +65,26 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.get_active_test_units()
         for test_unit_name in test_unit_names:
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
-
-    def test004_check_version_after_update(self):
+    @parameterized.expand(['spec', 'quan'])
+    def test007_allow_unit_field_to_be_optional (self, specificationType):
         """
-        After I update any field then press on save , new version created in the active table.
+        Make sure the unit field of the specification or limit of quantification is an optional field.
 
-        LIMS-3676
-
-        After the user edit any of the followings fields
-
-        test unit name 
-        test unit number 
-        category
-        method
-        iteration
-        materiel type 
-        specification 
-
-        the should updated successfully when I enter one more time 
-
-        LIMS-5288
+        LIMS-4161
         """
 
-        self.base_selenium.LOGGER.info('Generate random data for update')
-        newRandomNumber = self.generate_random_number(limit=100000)
-        newRandomName = self.generate_random_string()
-        newRandomMethod = self.generate_random_string()
-        newRandomCategry = self.generate_random_string()
-        newRandomIterations = self.generate_random_number(limit=4)
+        self.base_selenium.LOGGER.info('Open first record in testunits')
+        testunitsRecords = self.test_unit_page.search(value='Quantitative MiBi')
+        self.test_unit_page.get_random_x()
 
-        self.base_selenium.LOGGER.info('Getting data of the first testunit')
-        testunitsRecords = self.test_unit_page.result_table()
-        firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
+        self.base_selenium.LOGGER.info('Set the testunit type to be quantitative so i can choose whether it has limit of quantification or specification or both')
+        self.test_unit_page.set_testunit_type(testunitType='Quantitative')
+
+        self.base_selenium.LOGGER.info('Set testunit to use {}'.format(specificationType))
+        self.test_unit_page.set_testunit_type(testunitType=specificationType)
+
         
-        oldVersion = firstTestunitData['Version']
-        self.base_selenium.LOGGER.info('old version: {}'.format(oldVersion))
-        self.base_selenium.LOGGER.info('Open the first record to update it')
-        self.test_unit_page.get_random_x(row=testunitsRecords[0])
 
-        self.base_selenium.LOGGER.info('Set the new testunit number to be: {}'.format(newRandomNumber))
-        self.test_unit_page.set_testunit_number(number=newRandomNumber)
 
-        self.base_selenium.LOGGER.info('Set the new testunit name to be: {}'.format(newRandomName))
-        self.test_unit_page.set_testunit_name(name=newRandomName)
-
-        self.base_selenium.LOGGER.info('Set new material type')        
-        self.test_unit_page.set_material_type()
-        newMaterialtypes = self.test_unit_page.get_material_type()
-
-        self.base_selenium.LOGGER.info('Set the new category to be: {}'.format(newRandomCategry))
-        self.test_unit_page.set_category(category=newRandomCategry)
-
-        self.base_selenium.LOGGER.info('Set the new testunit iteartions to be: {}'.format(newRandomIterations))
-        self.test_unit_page.set_testunit_iteration(iteration=newRandomIterations)
-        
-        self.base_selenium.LOGGER.info('Set the method to be: {}'.format(newRandomMethod))
-        self.test_unit_page.set_method(method=newRandomMethod)
-
-        self.base_selenium.LOGGER.info('pressing save and create new version')
-        self.test_unit_page.saveAndCreateNewVersion(confirm=True)
-
-        self.base_selenium.LOGGER.info('Refresh to make sure that the new data are saved')
-        self.base_selenium.refresh()
-        self.test_unit_page.sleep_small()
-        
-        self.base_selenium.LOGGER.info('Getting testunit data after referesh')
-        updatedTestunitName = self.test_unit_page.get_testunit_name()
-        updateTestunitNumber = self.test_unit_page.get_testunit_number()
-        updatedMaterialTypes = self.test_unit_page.get_material_type()
-        updatedCategory = self.test_unit_page.get_category()
-        updatedIterations = self.test_unit_page.get_testunit_iteration()
-        updatedMethod = self.test_unit_page.get_method()
-
-        self.base_selenium.LOGGER.info('+ Assert testunit name is: {}, and should be {}'.format(newRandomName, updatedTestunitName))
-        self.assertEqual(newRandomName, updatedTestunitName)
-
-        self.base_selenium.LOGGER.info('+ Assert testunit number is: {}, and should be {}'.format(str(newRandomNumber), updateTestunitNumber))
-        self.assertEqual(str(newRandomNumber), updateTestunitNumber)
-
-        self.base_selenium.LOGGER.info('+ Assert testunit materialTypes are: {}, and should be {}'.format(newMaterialtypes, updatedMaterialTypes))
-        self.assertEqual(newMaterialtypes, updatedMaterialTypes)
-
-        self.base_selenium.LOGGER.info('+ Assert testunit category is: {}, and should be {}'.format(newRandomCategry, updatedCategory))
-        self.assertEqual(newRandomCategry, updatedCategory)
-
-        self.base_selenium.LOGGER.info('+ Assert testunit iterations is: {}, and should be {}'.format(str(newRandomIterations), updatedIterations))
-        self.assertEqual(str(newRandomIterations), updatedIterations)
-
-        self.base_selenium.LOGGER.info('+ Assert testunit Method is: {}, and should be {}'.format(newRandomMethod, updatedMethod))
-        self.assertEqual(newRandomMethod, updatedMethod)
-
-        self.test_unit_page.get_test_units_page()
-        testunitsRecords = self.order_page.result_table()
-        firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
-        newVersion = firstTestunitData['Version']
-        self.base_selenium.LOGGER.info('+ Assert testunit version is: {}, new version: {}'.format(oldVersion, newVersion))
-        self.assertNotEqual(oldVersion, newVersion)
 
 
