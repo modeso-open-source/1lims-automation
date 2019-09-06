@@ -95,7 +95,7 @@ class TestUnitsTestCases(BaseTest):
         newRandomIterations = self.generate_random_number(limit=4)
 
         self.base_selenium.LOGGER.info('Getting data of the first testunit')
-        testunitsRecords = self.order_page.result_table()
+        testunitsRecords = self.test_unit_page.result_table()
         firstTestunitData = self.base_selenium.get_row_cells_dict_related_to_header(row=testunitsRecords[0])
         
         oldVersion = firstTestunitData['Version']
