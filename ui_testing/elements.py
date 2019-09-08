@@ -265,7 +265,19 @@ elements = {
         'useSpecification': {'method': 'id',
                              'value': 'useSpec'},
         'useQuantification': {'method': 'id',
-                             'value': 'useQuantification'}
+                             'value': 'useQuantification'},
+        'specUpperLimit': {'method': 'id',
+                           'value': 'upperLimitfield'},
+        'sepcLowerLimit': {'method': 'id',
+                           'value': 'lowerLimitfield'},
+        'specUnit': {'method': 'id',
+                     'value': 'unitfield'},
+        'quanUpperLimit': {'method': 'id',
+                           'value': 'quantificationUpperLimitfield'},
+        'quanLowerLimit': {'method': 'id',
+                           'value': 'quantificationLowerLimitfield'},
+        'quanUnit': {'method': 'id',
+                     'value': 'quantificationUnitfield'}
     },
     'orders': {
         'orders_table': {'method': 'id',

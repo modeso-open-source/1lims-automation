@@ -68,3 +68,40 @@ class TstUnit(TstUnits):
             self.base_selenium.click(element='test_unit:useSpecification')
         else:
             self.base_selenium.click(element='test_unit:useQuantification')
+        self.sleep_tiny()
+
+    def set_spec_upper_limit(self, value=''):
+        self.base_selenium.set_text(element='test_unit:specUpperLimit', value=value)
+    
+    def set_spec_lower_limit(self, value=''):
+        self.base_selenium.set_text(element='test_unit:sepcLowerLimit', value=value)
+
+    def set_spec_unit(self, value=''):
+        self.base_selenium.set_text(element='test_unit:specUnit', value=value)
+
+    def set_quan_upper_limit(self, value=''):
+        self.base_selenium.set_text(element='test_unit:quanUpperLimit', value=value)
+
+    def set_quan_lower_limit(self, value=''):
+        self.base_selenium.set_text(element='test_unit:quanLowerLimit', value=value)
+
+    def set_quan_unit(self, value=''):
+        self.base_selenium.set_text(element='test_unit:quanUnit', value=value)
+
+    def get_spec_upper_limit(self):
+        return self.base_selenium.get_value(element='test_unit:specUpperLimit').split('\n')[0]
+    
+    def get_spec_lower_limit(self):
+        return self.base_selenium.get_value(element='test_unit:sepcLowerLimit').split('\n')[0]
+
+    def get_spec_unit(self):
+        return self.base_selenium.get_value(element='test_unit:specUnit').split('\n')[0]
+
+    def get_quan_upper_limit(self):
+        return self.base_selenium.get_value(element='test_unit:quanUpperLimit').split('\n')[0]
+
+    def get_quan_lower_limit(self):
+        return self.base_selenium.get_value(element='test_unit:quanLowerLimit').split('\n')[0]
+
+    def get_quan_unit(self):
+        return self.base_selenium.get_value(element='test_unit:quanUnit').split('\n')[0]
