@@ -110,9 +110,13 @@ class TestUnitsTestCases(BaseTest):
         
         self.test_unit_page.save(save_btn='general:saveForm', loggerMsg='Save new testunit')
 
+        self.base_selenium.LOGGER.info('Search by testunit name: {}, to make sure that testunit created successfully'.format(newRandomName))
         self.test_unit_page.search(value=newRandomName)
+
+        self.base_selenium.LOGGER.info('Getting records count')
         testunits_count = self.order_page.get_table_records()
 
+        self.base_selenium.LOGGER.info('+ Assert testunit records count is: {}, and it should be {}'.format(testunits_count, 1))
         self.assertEqual(testunits_count, 1)
 
 
