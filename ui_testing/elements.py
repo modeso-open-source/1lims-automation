@@ -74,6 +74,8 @@ elements = {
                             'value': 'Archive'},
                 'alert_confirmation': {'method': 'id',
                                        'value': 'noty_layout__topCenter'},
+                'oh_snap_msg': {'method': 'id',
+                                'value': 'ohSnapMsg'},
                 'table_cells': {'method': 'tag_name',
                                 'value': 'td',
                                 'order': -1},
@@ -95,7 +97,9 @@ elements = {
                             'value': 'reset_btn'},
                 'saveAndComplete': { 'method': 'id',
                             'value': 'submitWithVersion'
-                }
+                },
+                'saveForm': {'method': 'id',
+                             'value': 'saveButton'}
                 },
     'login': {
         'username': {'method': 'name',
@@ -196,6 +200,8 @@ elements = {
                     'value': 'Restore'},
     'active': {'method': 'link_text',
                    'value': 'Active'},
+    'newTestunit': {'method': 'link_text',
+                    'value': 'New Test Unit'}
 
     },
 

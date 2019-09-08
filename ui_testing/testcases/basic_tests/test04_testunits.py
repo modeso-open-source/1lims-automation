@@ -67,66 +67,56 @@ class TestUnitsTestCases(BaseTest):
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
 
     @parameterized.expand(['spec', 'quan'])
-    def test007_allow_unit_field_to_be_optional (self, specificationType):
+    def test008_force_use_to_choose_specification_or_limit_of_quantification (self, specificationType):
         """
-        Make sure the unit field of the specification or limit of quantification is an optional field.
+        The specification & Limit of quantification one of them should be mandatory.
 
-        LIMS-4161
+        LIMS-4158
         """
-        self.base_selenium.LOGGER.info('Generate random upper limit to be used in filling data')
-        randomUpperLimit = self.generate_random_number(limit=500)
+        self.base_selenium.LOGGER.info('Prepare random data for the new testunit')
+        newRandomName = self.generate_random_string()
+        newRandomMethod = self.generate_random_string()
+        newRandomCategry = self.generate_random_string()
+        newRandomIterations = self.generate_random_number(limit=4)
+        newRandomUpperLimit = self.generate_random_number(limit=1000)
 
-        self.base_selenium.LOGGER.info('Filter by type Qualitative')
-        self.test_unit_page.search(value='Qualitative')
+        self.base_selenium.LOGGER.info('Create new testunit with the randomly generated data')
+        self.test_unit_page.create_new_testunit(name=newRandomName, testunitType='Quantitative', iteration=newRandomIterations, method=newRandomMethod)
 
-        self.base_selenium.LOGGER.info('Open random record')
-        randomTestunitRecord = self.test_unit_page.get_random_table_row(table_element='general:table')
-        self.test_unit_page.get_random_x(row = randomTestunitRecord)
+        self.base_selenium.LOGGER.info('Sleep to make sure that page is loaded')
+        self.test_unit_page.sleep_tiny()
 
-        self.base_selenium.LOGGER.info('Set the testunit type to be quantitative so i can choose whether it has limit of quantification or specification or both')
-        self.test_unit_page.set_testunit_type(testunitType='Quantitative')
+        self.base_selenium.LOGGER.info('Create new testunit with the random data')
+        self.test_unit_page.save(save_btn='general:saveForm', loggerMsg='Save new testunit')
+        
+        self.base_selenium.LOGGER.info('Sleep to make sure that data is written to be ready for validation')
+        self.test_unit_page.sleep_tiny()
 
-        self.base_selenium.LOGGER.info('Set testunit to use {}'.format(specificationType))
+        self.base_selenium.LOGGER.info('Waiting for error message to make sure that validation forbids adding - in the upper limit')
+        validation_result =  self.base_selenium.wait_element(element='general:oh_snap_msg')
+
+        self.base_selenium.LOGGER.info('Checking that a validation message actually appeared which means that user can not create testunit without choosing specification of limit of quantification')
+        self.assertEqual(validation_result, True)
+        
+        self.base_selenium.LOGGER.info('Set the testunit to be: {}'.format(specificationType))
         self.test_unit_page.use_specification_or_quantification(typeToUse=specificationType)
 
         if specificationType == 'spec':
-            self.base_selenium.LOGGER.info('Setting the upper limit value in in upper limit field')
-            self.test_unit_page.set_spec_upper_limit(value=randomUpperLimit)
+            self.test_unit_page.set_spec_upper_limit(value=newRandomUpperLimit)
+        elif specificationType == 'quan':
+            self.test_unit_page.set_quan_upper_limit(value=newRandomUpperLimit)
 
-            self.base_selenium.LOGGER.info('Setting unit value to be empty')
-            self.test_unit_page.set_spec_unit(value='')
-        else:
-            self.base_selenium.LOGGER.info('Setting the upper limit value in in upper limit field')
-            self.test_unit_page.set_quan_upper_limit(value=randomUpperLimit)
-
-            self.base_selenium.LOGGER.info('Setting unit value to be empty')
-            self.test_unit_page.set_quan_unit(value='')
-
-        self.base_selenium.LOGGER.info('Sleeping for a tiny time to make sure that values are set to take place in validation')
         self.test_unit_page.sleep_tiny()
+        
+        self.test_unit_page.save(save_btn='general:saveForm', loggerMsg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('pressing save and create new version')
-        self.test_unit_page.saveAndCreateNewVersion(confirm=True)
+        self.test_unit_page.search(value=newRandomName)
+        testunits_count = self.order_page.get_table_records()
 
-        self.base_selenium.LOGGER.info('Refresh to make sure that the new data are saved')
-        self.base_selenium.refresh()
-        self.test_unit_page.sleep_small()
+        self.assertEqual(testunits_count, 1)
 
-        self.base_selenium.LOGGER.info('Setting random upper limit text in the variable to make sure that the field actually has no value')
-        unitValue = 'test text'
-        upperLimitValue = -445
 
-        self.base_selenium.LOGGER.info('Getting values of the unit field and upper limit to make sure that values saved correctly')
-        if specificationType == 'spec':
-            unitValue = self.test_unit_page.get_spec_unit()
-            upperLimitValue = self.test_unit_page.get_spec_upper_limit()
-        else:
-            unitValue = self.test_unit_page.get_quan_unit()
-            upperLimitValue = self.test_unit_page.get_quan_upper_limit()
-            
-        self.base_selenium.LOGGER.info('+ Assert unit value after save is: {}, and should be empty'.format(unitValue))
-        self.assertEqual(unitValue, '')
 
-        self.base_selenium.LOGGER.info('Checking with upper limit to make sure that data saved normally')
-        self.base_selenium.LOGGER.info('+ Assert upper limit value after save is: {}, and should be: {}'.format(upperLimitValue, randomUpperLimit))
-        self.assertEqual(upperLimitValue, str(randomUpperLimit))
+
+
+        
