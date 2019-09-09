@@ -8,6 +8,8 @@ class BaseAPI:
     END_POINTS = end_points
     requests.packages.urllib3.disable_warnings()
 
+    AUTHORIZATION = None
+
     LOGGER = logger
 
     _instance = None
@@ -25,18 +27,22 @@ class BaseAPI:
         self.password = config['site']['password']
 
         self.session = requests.Session()
-        self.headers = {'Content-Type': "application/json", 'Authorization': "Bearer", 'Connection': "keep-alive", 'cache-control': "no-cache"}
+        self.headers = {'Content-Type': "application/json", 'Authorization': BaseAPI.AUTHORIZATION, 'Connection': "keep-alive",
+                        'cache-control': "no-cache"}
         self._get_authorized_session()
 
     def _get_authorized_session(self):
-        self.info('Get authorized api session.')
-        api = self.url + "/api/auth"
-        header = {'Content-Type': "application/json", 'Authorization': "Bearer", 'Connection': "keep-alive",
-                  'cache-control': "no-cache"}
-        data = {'username': self.username, 'password': self.password}
-        response = self.session.post(api, json=data, headers=header, verify=False)
-        self.headers['Authorization'] = 'Bearer {}'.format(response.json()['data']['sessionId'])
-        self.info('session ID : {}'.format(response.json()['data']['sessionId']))
+        if not BaseAPI.AUTHORIZATION:
+            self.info('Get authorized api session.')
+            api = self.url + "/api/auth"
+            header = {'Content-Type': "application/json", 'Authorization': "Bearer", 'Connection': "keep-alive",
+                      'cache-control': "no-cache"}
+            data = {'username': self.username, 'password': self.password}
+            response = self.session.post(api, json=data, headers=header, verify=False)
+            BaseAPI.AUTHORIZATION = 'Bearer {}'.format(response.json()['data']['sessionId'])
+            self.info('session ID : {} .....'.format(response.json()['data']['sessionId'][:10]))
+
+        self.headers['Authorization'] = BaseAPI.AUTHORIZATION
 
     @staticmethod
     def update_payload(payload, **kwargs):
