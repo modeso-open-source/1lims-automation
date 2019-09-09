@@ -1,6 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
+from unittest import skip
 
 
 class ArticlesTestCases(BaseTest):
@@ -197,6 +198,7 @@ class ArticlesTestCases(BaseTest):
         self.base_selenium.LOGGER.info(' + Assert article is not existing in the list.')
         self.assertFalse(self.test_plan.is_article_existing(article=self.article_page.article_name))
 
+    @skip('refactor ordeer paege')
     def test007_archived_articles_shoudnt_dispaly_in_order(self):
         """
         New: Article: Archived any article this article shouldn't display in the order module
@@ -387,6 +389,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.click_check_box(source=archived_article)
         self.assertFalse(self.article_page.delete_selected_article())
 
+    @skip('Refactoring order page')
     def test018_delete_article_with_order(self):
         """
         New: Articles: Delete Approach; I can't delete any article if this article related to some data
