@@ -95,10 +95,10 @@ elements = {
                             'value': 'filter_btn'},
                 'filter_reset_btn': {'method': 'id',
                             'value': 'reset_btn'},
-                'saveAndComplete': { 'method': 'id',
+                'save_and_complete': { 'method': 'id',
                             'value': 'submitWithVersion'
                 },
-                'saveForm': {'method': 'id',
+                'save_form': {'method': 'id',
                              'value': 'saveButton'}
                 },
     'login': {
@@ -200,7 +200,7 @@ elements = {
                     'value': 'Restore'},
     'active': {'method': 'link_text',
                    'value': 'Active'},
-    'newTestunit': {'method': 'link_text',
+    'new_testunit': {'method': 'link_text',
                     'value': 'New Test Unit'}
 
     },
@@ -244,15 +244,15 @@ elements = {
             'method': 'id',
             'value': 'methodfield'
         },
-        'materialType': {
+        'material_type_by_id': {
             'method': 'id',
             'value': 'selectedMaterialTypes'
         },
-        'testunitName': {
+        'testunit_name': {
             'method': 'id',
             'value': 'namefield'
         },
-        'testunitNumber': {
+        'testunit_number': {
             'method': 'id',
             'value': 'numberfield'
         },
@@ -268,21 +268,21 @@ elements = {
             'method': 'id',
             'value': 'iterationsfield'
         },
-        'useSpecification': {'method': 'id',
+        'use_specification': {'method': 'id',
                              'value': 'useSpec'},
-        'useQuantification': {'method': 'id',
+        'use_quantification': {'method': 'id',
                              'value': 'useQuantification'},
-        'specUpperLimit': {'method': 'id',
+        'spec_upper_limit': {'method': 'id',
                            'value': 'upperLimitfield'},
-        'sepcLowerLimit': {'method': 'id',
+        'sepc_lower_limit': {'method': 'id',
                            'value': 'lowerLimitfield'},
-        'specUnit': {'method': 'id',
+        'spec_unit': {'method': 'id',
                      'value': 'unitfield'},
-        'quanUpperLimit': {'method': 'id',
+        'quan_upper_limit': {'method': 'id',
                            'value': 'quantificationUpperLimitfield'},
-        'quanLowerLimit': {'method': 'id',
+        'quan_lower_limit': {'method': 'id',
                            'value': 'quantificationLowerLimitfield'},
-        'quanUnit': {'method': 'id',
+        'quan_unit': {'method': 'id',
                      'value': 'quantificationUnitfield'}
     },
     'orders': {
