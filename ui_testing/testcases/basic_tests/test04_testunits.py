@@ -19,7 +19,7 @@ class TestUnitsTestCases(BaseTest):
         LIMS-3674
         :return:
         """
-        row= self.test_unit_page.get_random_test_units_row()
+        row = self.test_unit_page.get_random_test_units_row()
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         for column in row_data:
             if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[column] == '':
@@ -67,7 +67,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
 
     @parameterized.expand(['spec', 'quan'])
-    def test008_force_use_to_choose_specification_or_limit_of_quantification (self, specification_type):
+    def test008_force_use_to_choose_specification_or_limit_of_quantification(self, specification_type):
         """
         The specification & Limit of quantification one of them should be mandatory.
 
@@ -76,27 +76,24 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Prepare random data for the new testunit')
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
-        new_random_iteration = self.generate_random_number(limit=4)
-        new_random_upper_limit = self.generate_random_number(limit=1000)
+        new_random_iteration = self.generate_random_number(lower=1, upper=4)
+        new_random_upper_limit = self.generate_random_number(lower=500, upper=1000)
 
         self.base_selenium.LOGGER.info('Create new testunit with the randomly generated data')
-        self.test_unit_page.create_new_testunit(name=new_random_name, testunit_type='Quantitative', iteration=new_random_iteration, method=new_random_method)
-
-        self.base_selenium.LOGGER.info('Sleep to make sure that page is loaded')
+        self.test_unit_page.create_new_testunit(name=new_random_name, testunit_type='Quantitative',
+                                                iteration=new_random_iteration, method=new_random_method)
         self.test_unit_page.sleep_tiny()
-
         self.base_selenium.LOGGER.info('Create new testunit with the random data')
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-        
-        self.base_selenium.LOGGER.info('Sleep to make sure that data is written to be ready for validation')
-        self.test_unit_page.sleep_tiny()
 
-        self.base_selenium.LOGGER.info('Waiting for error message to make sure that validation forbids adding - in the upper limit')
-        validation_result =  self.base_selenium.wait_element(element='general:oh_snap_msg')
+        self.base_selenium.LOGGER.info(
+            'Waiting for error message to make sure that validation forbids adding - in the upper limit')
+        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
 
-        self.base_selenium.LOGGER.info('Checking that a validation message actually appeared which means that user can not create testunit without choosing specification of limit of quantification')
+        self.base_selenium.LOGGER.info(
+            'Checking that a validation message actually appeared which means that user can not create testunit without choosing specification of limit of quantification')
         self.assertEqual(validation_result, True)
-        
+
         self.base_selenium.LOGGER.info('Set the testunit to be: {}'.format(specification_type))
         self.test_unit_page.use_specification_or_quantification(type_to_use=specification_type)
 
@@ -106,20 +103,15 @@ class TestUnitsTestCases(BaseTest):
             self.test_unit_page.set_quan_upper_limit(value=new_random_upper_limit)
 
         self.test_unit_page.sleep_tiny()
-        
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('Search by testunit name: {}, to make sure that testunit created successfully'.format(new_random_name))
+        self.base_selenium.LOGGER.info(
+            'Search by testunit name: {}, to make sure that testunit created successfully'.format(new_random_name))
         self.test_unit_page.search(value=new_random_name)
 
         self.base_selenium.LOGGER.info('Getting records count')
-        testunits_count = self.order_page.get_table_records()
+        testunits_count = self.test_unit_page.get_table_records()
 
-        self.base_selenium.LOGGER.info('+ Assert testunit records count is: {}, and it should be {}'.format(testunits_count, 1))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit records count is: {}, and it should be {}'.format(testunits_count, 1))
         self.assertEqual(testunits_count, 1)
-
-
-
-
-
-        

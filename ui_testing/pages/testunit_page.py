@@ -1,4 +1,6 @@
 from ui_testing.pages.testunits_page import TstUnits
+
+
 class TstUnit(TstUnits):
 
     def set_method(self, method=''):
@@ -14,7 +16,8 @@ class TstUnit(TstUnits):
         self.base_selenium.click(element='test_units:new_testunit')
         self.sleep_tiny()
 
-    def create_new_testunit(self, name='', material_type='', category='', testunit_type='', spec_or_quan='', upper_limit='', lower_limit='', unit='', iteration='', method=''):
+    def create_new_testunit(self, name='', material_type='', category='', testunit_type='', spec_or_quan='',
+                            upper_limit='', lower_limit='', unit='qt', iteration='', method=''):
         self.click_create_new_testunit()
         self.set_testunit_name(name=name)
         self.set_material_type(material_type=material_type)
@@ -35,9 +38,9 @@ class TstUnit(TstUnits):
         self.set_testunit_iteration(iteration=iteration)
         self.set_method(method=method)
 
-    
     def set_material_type(self, material_type=''):
-        self.base_selenium.LOGGER.info('Set material type to be " {} ", if it is empty, then it will be random'.format(material_type))
+        self.base_selenium.LOGGER.info(
+            'Set material type to be "{}", if it is empty, then it will be random'.format(material_type))
         if material_type:
             self.base_selenium.select_item_from_drop_down(
                 element='test_unit:material_type_by_id', item_text=material_type)
@@ -50,7 +53,8 @@ class TstUnit(TstUnits):
         return self.base_selenium.get_text(element='test_unit:material_type_by_id').split('\n')
 
     def set_category(self, category=''):
-        self.base_selenium.LOGGER.info('Set category to be " {} ", if it is empty, then it will be random'.format(category))
+        self.base_selenium.LOGGER.info(
+            'Set category to be "{}", if it is empty, then it will be random'.format(category))
         if category:
             self.base_selenium.select_item_from_drop_down(
                 element='test_unit:category', item_text=category)
@@ -86,14 +90,14 @@ class TstUnit(TstUnits):
     def get_testunit_iteration(self):
         self.base_selenium.LOGGER.info('Get testunit iterations')
         return self.base_selenium.get_value(element='test_unit:iteration').split('\n')[0]
-    
-    def saveAndCreateNewVersion (self, confirm=True):
+
+    def save_and_create_new_version(self, confirm=True):
         self.save(save_btn='general:save_and_complete', logger_msg='Save And Create New Version')
         self.sleep_small()
         self.confirm_popup(force=confirm)
         self.sleep_small()
 
-    def set_testunit_type (self, testunit_type=''):
+    def set_testunit_type(self, testunit_type=''):
         self.base_selenium.LOGGER.info('Set testunit type to be {}'.format(testunit_type))
         if testunit_type:
             self.base_selenium.select_item_from_drop_down(
@@ -105,15 +109,19 @@ class TstUnit(TstUnits):
     def use_specification_or_quantification(self, type_to_use='spec'):
         self.base_selenium.LOGGER.info('Check to use {}'.format(type_to_use))
         if type_to_use == 'spec':
-            self.base_selenium.click(element='test_unit:use_specification')
+            spec = self.base_selenium.find_element_in_element(destination_element='general:span',
+                                                              source_element='test_unit:use_specification')
+            spec.click()
         elif type_to_use == 'quan':
-            self.base_selenium.click(element='test_unit:use_quantification')
+            quan = self.base_selenium.find_element_in_element(destination_element='general:span',
+                                                              source_element='test_unit:use_quantification')
+            quan.click()
         self.sleep_tiny()
 
     def set_spec_upper_limit(self, value=''):
         self.base_selenium.LOGGER.info('Set specification upper limit to be {}'.format(value))
         self.base_selenium.set_text(element='test_unit:spec_upper_limit', value=value)
-    
+
     def set_spec_lower_limit(self, value=''):
         self.base_selenium.LOGGER.info('Set specification lower limit to be {}'.format(value))
         self.base_selenium.set_text(element='test_unit:sepc_lower_limit', value=value)
@@ -137,7 +145,7 @@ class TstUnit(TstUnits):
     def get_spec_upper_limit(self):
         self.base_selenium.LOGGER.info('Get testunit specification upper limit')
         return self.base_selenium.get_value(element='test_unit:spec_upper_limit').split('\n')[0]
-    
+
     def get_spec_lower_limit(self):
         self.base_selenium.LOGGER.info('Get testunit specification lower limit')
         return self.base_selenium.get_value(element='test_unit:sepc_lower_limit').split('\n')[0]

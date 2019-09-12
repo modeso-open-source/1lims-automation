@@ -38,8 +38,8 @@ class BaseTest(TestCase):
     def generate_random_string(self):
         return str(uuid4()).replace("-", "")[:10]
 
-    def generate_random_number(self, limit=100000):
-        return randint(1, limit)
+    def generate_random_number(self, lower=1, upper=100000):
+        return randint(lower, upper)
 
     def fix_data_format(self, data_list):
         tmp = []
