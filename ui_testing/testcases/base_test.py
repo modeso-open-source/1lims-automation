@@ -1,6 +1,7 @@
 from unittest import TestCase
 from ui_testing.pages.base_selenium import BaseSelenium
 from uuid import uuid4
+from random import randint
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
@@ -36,6 +37,9 @@ class BaseTest(TestCase):
 
     def generate_random_string(self):
         return str(uuid4()).replace("-", "")[:10]
+
+    def generate_random_number(self, lower=1, upper=100000):
+        return randint(lower, upper)
 
     def fix_data_format(self, data_list):
         tmp = []
