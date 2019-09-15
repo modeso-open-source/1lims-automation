@@ -287,7 +287,9 @@ elements = {
         'quan_lower_limit': {'method': 'id',
                              'value': 'quantificationLowerLimitfield'},
         'quan_unit': {'method': 'id',
-                      'value': 'quantificationUnitfield'}
+                      'value': 'quantificationUnitfield'},
+        'selected_cons': {'method': 'id',
+                          'value': 'selectedConcs'}
     },
     'orders': {
         'orders_table': {'method': 'id',

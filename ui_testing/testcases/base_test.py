@@ -6,6 +6,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.order_page import Order
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
@@ -25,6 +26,7 @@ class BaseTest(TestCase):
         self.test_plan = TstPlan()
         self.article_page = Article()
         self.test_unit_page = TstUnit()
+        self.order_page = Order()
 
         self.article_api = ArticleAPI()
         self.test_plan_api = TestPlanAPI()
