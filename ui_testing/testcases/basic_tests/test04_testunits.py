@@ -163,10 +163,8 @@ class TestUnitsTestCases(BaseTest):
         Upper limit Approach, user can't enter  in the upper limit
         LIMS-3768
         """
-        self.base_selenium.LOGGER.info('Search by Quantitative MiBi')
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
-        #new_random_upper_limit = -1 * self.generate_random_number(lower=500, upper=1000)
 
         self.base_selenium.LOGGER.info('Create new testunit with Quantitative MiBi and random generated data')
         self.test_unit_page.create_new_testunit(name=new_random_name, testunit_type='Quantitative MiBi',
@@ -269,3 +267,26 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             '+ Assert testunit records count is: {}, and it should be {}'.format(testunits_count, 1))
         self.assertEqual(testunits_count, 1)
+
+    @parameterized.expand(['Qualitative', 'Quantitative MiBi'])
+    def test009_qualitative_value_should_be_mandatory_field(self, testunit_type):
+
+        """
+        The qualitative value should be mandatory field in the qualitative type
+
+        LIMS-3766
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with Quantitative MiBi and random generated data')
+        self.test_unit_page.create_new_testunit(name=new_random_name, testunit_type=testunit_type, method=new_random_method)
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Waiting for error message')
+        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
+
+        self.base_selenium.LOGGER.info('Assert error msg')
+        self.assertEqual(validation_result, True)
