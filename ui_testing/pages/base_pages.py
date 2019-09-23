@@ -11,6 +11,9 @@ class BasePages:
     def generate_random_text(self):
         return str(uuid4()).replace("-", "")[:10]
 
+    def generate_random_number(self, lower=1, upper=100000):
+        return randint(lower, upper)
+
     def search(self, value):
         """
         Search for a specific value

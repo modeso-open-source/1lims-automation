@@ -5,14 +5,14 @@ class TestUnitAPI(BaseAPI):
     def get_all_test_units(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_all_test_units'])
         _payload = {"sort_value": "number",
-                    "limit": 100,
-                    "start": 1,
+                    "limit": 1000,
+                    "start": 0,
                     "sort_order": "DESC",
                     "filter": "{}",
                     "deleted": "0"}
         payload = self.update_payload(_payload, **kwargs)
         self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers)
+        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
         return response
 
@@ -25,6 +25,6 @@ class TestUnitAPI(BaseAPI):
                     'filter': '{"id":2440}'}
         payload = self.update_payload(_payload, **kwargs)
         self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers)
+        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
         return response
