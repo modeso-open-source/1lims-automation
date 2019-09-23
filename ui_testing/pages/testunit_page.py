@@ -41,6 +41,30 @@ class TstUnit(TstUnits):
         self.set_testunit_iteration(iteration=iteration)
         self.set_method(method=method)
 
+    def create_qualitative_testunit(self, name='', material_type='', category='', value='', unit='', iteration=1,
+                                    method=''):
+        self.click_create_new_testunit()
+        self.set_testunit_name(name=name)
+        self.set_material_type(material_type=material_type)
+        self.set_category(category=category)
+        self.set_testunit_type(testunit_type='Qualitative')
+        self.set_qualitative_value(value=value)
+        self.base_selenium.set_text(element='test_unit:spec_unit', value=unit)
+        self.set_testunit_iteration(iteration=iteration)
+        self.set_method(method=method)
+
+    def create_quantitative_mibi_testunit(self, name='', material_type='', category='', upper_limit='',
+                                          selected_cons='', iteration=1, method=''):
+        self.click_create_new_testunit()
+        self.set_testunit_name(name=name)
+        self.set_material_type(material_type=material_type)
+        self.set_category(category=category)
+        self.set_testunit_type(testunit_type='Quantitative MiBi')
+        self.set_spec_upper_limit(value=upper_limit)
+        self.set_selected_concs(selected_cons=selected_cons)
+        self.set_testunit_iteration(iteration=iteration)
+        self.set_method(method=method)
+
     def set_material_type(self, material_type=''):
         self.base_selenium.LOGGER.info(
             'Set material type to be "{}", if it is empty, then it will be random'.format(material_type))
@@ -172,3 +196,9 @@ class TstUnit(TstUnits):
     def set_selected_concs(self, selected_cons=''):
         self.base_selenium.LOGGER.info('Set selected cons : {}'.format(selected_cons))
         self.base_selenium.select_item_from_drop_down(element='test_unit:selected_cons', item_text=selected_cons)
+
+    def set_qualitative_value(self, value=''):
+        value = value or self.generate_random_number()
+        qualitative_value = self.base_selenium.find_element_in_element(destination_element='general:input',
+                                                                       source_element='test_unit:qualitative_value')
+        qualitative_value.send_keys(value)

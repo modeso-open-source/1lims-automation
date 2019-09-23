@@ -205,8 +205,9 @@ elements = {
         'active': {'method': 'link_text',
                    'value': 'Active'},
         'new_testunit': {'method': 'link_text',
-                         'value': 'New Test Unit'}
-
+                         'value': 'New Test Unit'},
+        'qualitative_value': {'method': 'id',
+                              'value': 'textValueArrayfield'}
     },
 
     'test_plan': {
@@ -289,7 +290,9 @@ elements = {
         'quan_unit': {'method': 'id',
                       'value': 'quantificationUnitfield'},
         'selected_cons': {'method': 'id',
-                          'value': 'selectedConcs'}
+                          'value': 'selectedConcs'},
+        'qualitative_value': {'method': 'id',
+                              'value': 'textValueArrayfield'}
     },
     'orders': {
         'orders_table': {'method': 'id',

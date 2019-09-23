@@ -132,29 +132,38 @@ class TestUnitsTestCases(BaseTest):
         updated_iterations = self.test_unit_page.get_testunit_iteration()
         updated_method = self.test_unit_page.get_method()
 
-        self.base_selenium.LOGGER.info('+ Assert testunit name is: {}, and should be {}'.format(new_random_name, updated_testunit_name))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit name is: {}, and should be {}'.format(new_random_name, updated_testunit_name))
         self.assertEqual(new_random_name, updated_testunit_name)
 
-        self.base_selenium.LOGGER.info('+ Assert testunit number is: {}, and should be {}'.format(str(new_random_number), update_testunit_number))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit number is: {}, and should be {}'.format(str(new_random_number), update_testunit_number))
         self.assertEqual(str(new_random_number), update_testunit_number)
 
-        self.base_selenium.LOGGER.info('+ Assert testunit materialTypes are: {}, and should be {}'.format(new_materialtypes, updated_material_types))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit materialTypes are: {}, and should be {}'.format(new_materialtypes,
+                                                                               updated_material_types))
         self.assertEqual(new_materialtypes, updated_material_types)
 
-        self.base_selenium.LOGGER.info('+ Assert testunit category is: {}, and should be {}'.format(new_random_category, updated_category))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit category is: {}, and should be {}'.format(new_random_category, updated_category))
         self.assertEqual(new_random_category, updated_category)
 
-        self.base_selenium.LOGGER.info('+ Assert testunit iterations is: {}, and should be {}'.format(str(new_random_iteration), updated_iterations))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit iterations is: {}, and should be {}'.format(str(new_random_iteration),
+                                                                           updated_iterations))
         self.assertEqual(str(new_random_iteration), updated_iterations)
 
-        self.base_selenium.LOGGER.info('+ Assert testunit Method is: {}, and should be {}'.format(new_random_method, updated_method))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit Method is: {}, and should be {}'.format(new_random_method, updated_method))
         self.assertEqual(new_random_method, updated_method)
 
         self.test_unit_page.get_test_units_page()
         testunit_records = self.test_unit_page.result_table()
         first_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_records[0])
         new_version = first_testunit_data['Version']
-        self.base_selenium.LOGGER.info('+ Assert testunit version is: {}, new version: {}'.format(old_version, new_version))
+        self.base_selenium.LOGGER.info(
+            '+ Assert testunit version is: {}, new version: {}'.format(old_version, new_version))
         self.assertNotEqual(old_version, new_version)
 
     def test005_quantative_mibi_not_entering_dash_in_upper_limit(self):
@@ -173,14 +182,17 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('Waiting for error message to make sure that validation forbids adding - in the upper limit')
+        self.base_selenium.LOGGER.info(
+            'Waiting for error message to make sure that validation forbids adding - in the upper limit')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
 
-        self.base_selenium.LOGGER.info('+ Assert error msg which indicates that it does not allow to add - in upper limit has appeared? {}'.format(validation_result))
+        self.base_selenium.LOGGER.info(
+            '+ Assert error msg which indicates that it does not allow to add - in upper limit has appeared? {}'.format(
+                validation_result))
         self.assertEqual(validation_result, True)
 
     @parameterized.expand(['spec', 'quan'])
-    def test007_allow_unit_field_to_be_optional (self, specification_type):
+    def test007_allow_unit_field_to_be_optional(self, specification_type):
         """
         Make sure the unit field of the specification or limit of quantification is an optional field.
         LIMS-4161
@@ -203,7 +215,8 @@ class TestUnitsTestCases(BaseTest):
         test_unit = self.test_unit_page.search(value=new_random_name)[0]
         self.test_unit_page.get_random_x(test_unit)
 
-        self.base_selenium.LOGGER.info('Getting values of the unit field and upper limit to make sure that values saved correctly')
+        self.base_selenium.LOGGER.info(
+            'Getting values of the unit field and upper limit to make sure that values saved correctly')
         if specification_type == 'spec':
             unit_value = self.test_unit_page.get_spec_unit()
             upper_limit_value = self.test_unit_page.get_spec_upper_limit()
@@ -216,7 +229,6 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Checking with upper limit to make sure that data saved normally')
         self.assertEqual(upper_limit_value, str(new_random_upper_limit))
-
 
     @parameterized.expand(['spec', 'quan'])
     def test008_force_use_to_choose_specification_or_limit_of_quantification(self, specification_type):
@@ -280,7 +292,8 @@ class TestUnitsTestCases(BaseTest):
         new_random_method = self.generate_random_string()
 
         self.base_selenium.LOGGER.info('Create new testunit with Quantitative MiBi and random generated data')
-        self.test_unit_page.create_new_testunit(name=new_random_name, testunit_type=testunit_type, method=new_random_method)
+        self.test_unit_page.create_new_testunit(name=new_random_name, testunit_type=testunit_type,
+                                                method=new_random_method)
 
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
@@ -290,3 +303,43 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Assert error msg')
         self.assertEqual(validation_result, True)
+
+    @parameterized.expand(['Qualitative', 'Quantitative MiBi'])
+    def test010_material_type_approach(self, testunit_type):
+        """"
+        In case I created test unit with 4 materiel type, when I go to test plan I should found that each test unit
+         displayed according to it's materiel type.
+
+         LIMS-3683
+
+        """
+
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with {} and random generated data'.format(testunit_type))
+        if testunit_type == 'Qualitative':
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method)
+        else:
+            new_random_upper_limit = self.generate_random_number(lower=500, upper=1000)
+            self.test_unit_page.create_quantitative_mibi_testunit(name=new_random_name, method=new_random_method,
+                                                                  upper_limit=new_random_upper_limit)
+
+        self.base_selenium.LOGGER.info('Set random n material type')
+        for _ in range(3):
+            self.test_unit_page.set_material_type()
+
+        material_types = [material_type.replace('×', '') for material_type in self.test_unit_page.get_material_type()]
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        test_units = self.test_unit_api.get_all_test_units().json()['testUnits']
+
+        for test_unit in test_units:
+            if test_unit['name'] == new_random_name:
+                for material_type in material_types:
+                    self.assertIn(material_type, test_unit['materialTypes'])
+                break
+        else:
+            self.fail('Material type is not there')
