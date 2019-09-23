@@ -317,7 +317,7 @@ class TestUnitsTestCases(BaseTest):
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
 
-        self.base_selenium.LOGGER.info(f'Create new testunit with {testunit_type} and random generated data')
+        self.base_selenium.LOGGER.info('Create new testunit with {} and random generated data'.format(testunit_type))
         if testunit_type == 'Qualitative':
             self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method)
         else:
