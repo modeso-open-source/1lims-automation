@@ -191,6 +191,41 @@ class TestUnitsTestCases(BaseTest):
                 validation_result))
         self.assertEqual(validation_result, True)
 
+    def test006_search_by_archived_testunit(self):
+        """
+        Archived test units shouldn't display in the test plan step two & also in the analysis step two.
+        LIMS-3677
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Search by the testunit name {} to archive'.format(new_random_name))
+        self.test_unit_page.search(value=new_random_name)
+
+        self.base_selenium.LOGGER.info('Archive the testunit')
+        self.test_unit_page.select_random_multiple_table_rows()
+        self.test_unit_page.archive_selected_test_units()
+
+        self.base_selenium.LOGGER.info('Get testplans page')
+        self.test_plan.get_test_plans_page()
+
+        self.base_selenium.LOGGER.info('Get first record in testplans page')
+        testplans_records = self.test_plan.result_table()
+        self.test_plan.get_random_x(row=testplans_records[0])
+
+        self.base_selenium.click('test_plan:next')
+        self.base_selenium.click('test_plan:add_test_units')
+        self.base_selenium.LOGGER.info('Assert that archived test unit is not existing')
+        self.assertFalse(self.base_selenium.is_item_in_drop_down(element='test_plan:test_units', item_text=new_random_name))
+
     @parameterized.expand(['spec', 'quan'])
     def test007_allow_unit_field_to_be_optional(self, specification_type):
         """
