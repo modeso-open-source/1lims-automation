@@ -1,7 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from unittest import skip
 from parameterized import parameterized
-import re
+import re, random
 
 
 class TestUnitsTestCases(BaseTest):
@@ -378,3 +378,25 @@ class TestUnitsTestCases(BaseTest):
                 break
         else:
             self.fail('Material type is not there')
+
+    def test011_create_test_unit_with_random_category(self):
+        """
+        User can create test unit with an random category
+
+        LIMS-3682
+        """
+        self.base_selenium.LOGGER.info("Create new test unit with existing category")
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,category=new_random_category)
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the category of it')
+        test_unit = self.test_unit_page.search(new_random_name)[0]
+        self.test_unit_page.get_random_x(test_unit)
+
+        category = self.test_unit_page.get_category()
+        self.base_selenium.LOGGER.info('Assert category : {}'.format(category))
+        self.assertEqual(new_random_category, category)
