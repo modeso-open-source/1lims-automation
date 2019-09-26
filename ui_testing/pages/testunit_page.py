@@ -65,6 +65,26 @@ class TstUnit(TstUnits):
         self.set_testunit_iteration(iteration=iteration)
         self.set_method(method=method)
 
+    def create_quantitative_testunit(self, name='', material_type='', category='', unit='', iteration='1',
+                                    method='', upper_limit='', lower_limit='', spec_or_quan='spec'):
+        self.click_create_new_testunit()
+        self.set_testunit_name(name=name)
+        self.set_material_type(material_type=material_type)
+        self.set_category(category=category)
+        self.set_testunit_type(testunit_type='Quantitative')
+        self.use_specification_or_quantification(type_to_use=spec_or_quan)
+        if spec_or_quan == 'spec':
+            self.set_spec_upper_limit(value=upper_limit)
+            self.set_spec_lower_limit(value=lower_limit)
+            self.set_spec_unit(value=unit)
+        elif spec_or_quan == 'quan':
+            self.set_quan_upper_limit(value=upper_limit)
+            self.set_quan_lower_limit(value=lower_limit)
+            self.set_quan_unit(value=unit)
+        self.base_selenium.set_text(element='test_unit:spec_unit', value=unit)
+        self.set_testunit_iteration(iteration=iteration)
+        self.set_method(method=method)
+
     def set_material_type(self, material_type=''):
         self.base_selenium.LOGGER.info(
             'Set material type to be "{}", if it is empty, then it will be random'.format(material_type))
