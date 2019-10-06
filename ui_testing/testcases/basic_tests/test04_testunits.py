@@ -445,3 +445,40 @@ class TestUnitsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('Check that >= is existing in specifications')
             self.assertIn('>=', specification)
 
+    @parameterized.expand([('upper'), ('lower')])
+    def test013_limits_of_quantification_approach(self, limit):
+        """
+        New: Test units : Limits of quantification Approach: In case I didn't enter empty values in the upper/lower
+        limits of the specification of limits of quantification, it should display N/A in the active table
+
+
+        LIMS:4427
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+        new_random_limit = self.generate_random_number(lower=500, upper=1000)
+        spec_or_quan = 'spec'
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        if limit == "upper":
+            self.base_selenium.LOGGER.info('Create with upper limit : {} & {} '.format(new_random_limit, spec_or_quan))
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             upper_limit=new_random_limit, spec_or_quan=spec_or_quan,
+                                                             category=new_random_category)
+        else:
+            self.base_selenium.LOGGER.info('Create with lower limit : {} & {} '.format(new_random_limit, spec_or_quan))
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             lower_limit=new_random_limit, spec_or_quan=spec_or_quan,
+                                                             category=new_random_category)
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        test_unit = self.test_unit_page.search(new_random_name)[0]
+
+        quantifications_limit = self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit)['Quantification Limit']
+        self.base_selenium.LOGGER.info('Check that N/A is existing in Quantification')
+        self.assertIn('N/A', quantifications_limit)
