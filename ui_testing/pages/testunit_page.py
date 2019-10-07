@@ -54,7 +54,7 @@ class TstUnit(TstUnits):
         self.set_method(method=method)
 
     def create_quantitative_mibi_testunit(self, name='', material_type='', category='', upper_limit='',
-                                          selected_cons='', iteration=1, method=''):
+                                          selected_cons='', iteration='1', method=''):
         self.click_create_new_testunit()
         self.set_testunit_name(name=name)
         self.set_material_type(material_type=material_type)
@@ -167,7 +167,12 @@ class TstUnit(TstUnits):
 
     def set_spec_upper_limit(self, value=''):
         self.base_selenium.LOGGER.info('Set specification upper limit to be {}'.format(value))
+        self.sleep_tiny()
         self.base_selenium.set_text(element='test_unit:spec_upper_limit', value=value)
+
+    def clear_spec_upper_limit(self):
+        self.base_selenium.LOGGER.info('Clear specification upper limit')
+        self.base_selenium.clear_text(element='test_unit:spec_upper_limit')
 
     def set_spec_lower_limit(self, value=''):
         self.base_selenium.LOGGER.info('Set specification lower limit to be {}'.format(value))
@@ -216,6 +221,10 @@ class TstUnit(TstUnits):
     def set_selected_concs(self, selected_cons=''):
         self.base_selenium.LOGGER.info('Set selected cons : {}'.format(selected_cons))
         self.base_selenium.select_item_from_drop_down(element='test_unit:selected_cons', item_text=selected_cons)
+
+    def clear_cons(self):
+        self.base_selenium.LOGGER.info('Clear selected concentrations')
+        self.base_selenium.clear_items_in_drop_down(element='test_unit:selected_cons')
 
     def set_qualitative_value(self, value=''):
         value = value or self.generate_random_number()

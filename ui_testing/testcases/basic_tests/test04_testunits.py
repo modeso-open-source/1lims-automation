@@ -479,6 +479,43 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Get the test unit of it')
         test_unit = self.test_unit_page.search(new_random_name)[0]
 
-        quantifications_limit = self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit)['Quantification Limit']
+        quantifications_limit = self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit)[
+            'Quantification Limit']
         self.base_selenium.LOGGER.info('Check that N/A is existing in Quantification')
         self.assertIn('N/A', quantifications_limit)
+
+    def test014_quantitative_mibi_type_allow_upper_limit_the_concentration_to_be_mandatory_fields(self):
+        """
+            Copy the link to this issue New: Test unit: Specification Approach: In quantitative MiBi type allow upper
+             limit & the concentration to be mandatory fields
+
+        LIMS-3769
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+        new_random_limit = self.generate_random_number(lower=500, upper=1000)
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.base_selenium.LOGGER.info('Create with upper limit : {}'.format(new_random_limit))
+        self.test_unit_page.create_quantitative_mibi_testunit(name=new_random_name, method=new_random_method,
+                                                              upper_limit=new_random_limit, category=new_random_category)
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        test_unit = self.test_unit_page.search(new_random_name)[0]
+        self.test_unit_page.get_random_x(test_unit)
+
+        self.test_unit_page.clear_spec_upper_limit()
+        self.test_unit_page.clear_cons()
+
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit, should fail')
+
+        self.base_selenium.LOGGER.info('Waiting for error message')
+        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
+
+        self.base_selenium.LOGGER.info('Assert error msg')
+        self.assertEqual(validation_result, True)
