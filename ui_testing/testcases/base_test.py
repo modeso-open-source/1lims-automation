@@ -106,3 +106,6 @@ class BaseTest(TestCase):
             if test_unit_dict['Type'] == search and material_type in test_unit_dict['Material Type']:
                 return test_unit_dict
         return {}
+
+    def info(self, message):
+        self.base_selenium.LOGGER.info(message)

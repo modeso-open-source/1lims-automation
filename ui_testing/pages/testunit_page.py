@@ -81,6 +81,13 @@ class TstUnit(TstUnits):
             self.set_quan_upper_limit(value=upper_limit)
             self.set_quan_lower_limit(value=lower_limit)
             self.set_quan_unit(value=unit)
+        elif spec_or_quan == 'spec_quan':
+            self.set_spec_upper_limit(value=upper_limit)
+            self.set_spec_lower_limit(value=lower_limit)
+            self.set_spec_unit(value=unit)
+            self.set_quan_upper_limit(value=upper_limit)
+            self.set_quan_lower_limit(value=lower_limit)
+            self.set_quan_unit(value=unit)
         self.base_selenium.set_text(element='test_unit:spec_unit', value=unit)
         self.set_testunit_iteration(iteration=iteration)
         self.set_method(method=method)
@@ -163,6 +170,14 @@ class TstUnit(TstUnits):
             quan = self.base_selenium.find_element_in_element(destination_element='general:span',
                                                               source_element='test_unit:use_quantification')
             quan.click()
+        elif type_to_use == "spec_quan":
+            spec = self.base_selenium.find_element_in_element(destination_element='general:span',
+                                                              source_element='test_unit:use_specification')
+            spec.click()
+            quan = self.base_selenium.find_element_in_element(destination_element='general:span',
+                                                              source_element='test_unit:use_quantification')
+            quan.click()
+
         self.sleep_tiny()
 
     def set_spec_upper_limit(self, value=''):

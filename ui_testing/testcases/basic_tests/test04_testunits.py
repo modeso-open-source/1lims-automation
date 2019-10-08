@@ -500,7 +500,8 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.base_selenium.LOGGER.info('Create with upper limit : {}'.format(new_random_limit))
         self.test_unit_page.create_quantitative_mibi_testunit(name=new_random_name, method=new_random_method,
-                                                              upper_limit=new_random_limit, category=new_random_category)
+                                                              upper_limit=new_random_limit,
+                                                              category=new_random_category)
 
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
@@ -519,3 +520,38 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Assert error msg')
         self.assertEqual(validation_result, True)
+
+    def test015_specification_limit_of_quantification_approach(self):
+        """
+        New: Test unit: Specification/limit of quantification Approach: Allow user to select those both options
+        ( specification & limit of quantification ) at the same time ( create test unit with both selection )
+
+        LIMS-4159
+        :return:
+        """
+
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+        new_random_upper_limit = self.generate_random_number(lower=500, upper=1000)
+        new_random_lower_limit = self.generate_random_number(lower=1, upper=500)
+        spec_or_quan = 'spec_quan'
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                         upper_limit=new_random_upper_limit, lower_limit=new_random_lower_limit,
+                                                         spec_or_quan=spec_or_quan, category=new_random_category)
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        test_unit = self.test_unit_page.search(new_random_name)[0]
+        test_unit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit)
+        specifications = test_unit_data['Specifications']
+        quantification_limit = test_unit_data['Quantification Limit']
+
+        self.info('Assert upper and lower limits are in specifications')
+        self.assertEqual("{}-{}".format(new_random_lower_limit, new_random_upper_limit), specifications)
+
+        self.info('Assert upper and lower limits are in quantification_limit')
+        self.assertEqual("{}-{}".format(new_random_lower_limit, new_random_upper_limit), quantification_limit)
