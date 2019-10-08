@@ -279,7 +279,7 @@ elements = {
                                'value': 'useQuantification'},
         'spec_upper_limit': {'method': 'id',
                              'value': 'upperLimitfield'},
-        'sepc_lower_limit': {'method': 'id',
+        'spec_lower_limit': {'method': 'id',
                              'value': 'lowerLimitfield'},
         'spec_unit': {'method': 'id',
                       'value': 'unitfield'},

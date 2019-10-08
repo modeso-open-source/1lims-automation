@@ -486,10 +486,11 @@ class TestUnitsTestCases(BaseTest):
 
     def test014_quantitative_mibi_type_allow_upper_limit_the_concentration_to_be_mandatory_fields(self):
         """
-            Copy the link to this issue New: Test unit: Specification Approach: In quantitative MiBi type allow upper
+            Test unit: Specification Approach: In quantitative MiBi type allow upper
              limit & the concentration to be mandatory fields
 
         LIMS-3769
+        LIMS-5287
         :return:
         """
         new_random_name = self.generate_random_string()
@@ -539,7 +540,8 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
-                                                         upper_limit=new_random_upper_limit, lower_limit=new_random_lower_limit,
+                                                         upper_limit=new_random_upper_limit,
+                                                         lower_limit=new_random_lower_limit,
                                                          spec_or_quan=spec_or_quan, category=new_random_category)
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
@@ -555,3 +557,23 @@ class TestUnitsTestCases(BaseTest):
 
         self.info('Assert upper and lower limits are in quantification_limit')
         self.assertEqual("{}-{}".format(new_random_lower_limit, new_random_upper_limit), quantification_limit)
+
+    def test016_fields_of_the_specification_limits_of_quant_should_be_disabled_if_the_checkbox_is_not_selected(self):
+        """
+        The fields of the specification & limits of quantification should be  disabled if the checkbox is not selected
+
+        LIMS-4418
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                         category=new_random_category, spec_or_quan="")
+        self.info('Assert that all limits fields are not active')
+        for limit in ['quan_upper', 'quan_lower', 'spec_upper', 'spec_lower']:
+            class_attr = self.base_selenium.get_attribute('test_unit:{}_limit'.format(limit), 'class')
+            self.info('Assert that {}_limit is not active'.format(limit))
+            self.assertNotIn('ng-valid', class_attr)

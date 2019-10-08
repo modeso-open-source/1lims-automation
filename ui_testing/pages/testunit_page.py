@@ -191,7 +191,7 @@ class TstUnit(TstUnits):
 
     def set_spec_lower_limit(self, value=''):
         self.base_selenium.LOGGER.info('Set specification lower limit to be {}'.format(value))
-        self.base_selenium.set_text(element='test_unit:sepc_lower_limit', value=value)
+        self.base_selenium.set_text(element='test_unit:spec_lower_limit', value=value)
 
     def set_spec_unit(self, value=''):
         self.base_selenium.LOGGER.info('Set specification unit to be {}'.format(value))
@@ -215,7 +215,7 @@ class TstUnit(TstUnits):
 
     def get_spec_lower_limit(self):
         self.base_selenium.LOGGER.info('Get testunit specification lower limit')
-        return self.base_selenium.get_value(element='test_unit:sepc_lower_limit').split('\n')[0]
+        return self.base_selenium.get_value(element='test_unit:spec_lower_limit').split('\n')[0]
 
     def get_spec_unit(self):
         self.base_selenium.LOGGER.info('Get testunit specification unit')
