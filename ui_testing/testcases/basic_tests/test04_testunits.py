@@ -415,6 +415,7 @@ class TestUnitsTestCases(BaseTest):
          the specification should display <=or >= according to that in the table view.
 
         LIMS-3681
+        LIMS-4415
         :return:
         """
         new_random_name = self.generate_random_string()
@@ -436,14 +437,16 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Get the test unit of it')
         test_unit = self.test_unit_page.search(new_random_name)[0]
-        specification = self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit)['Specifications']
+        test_unit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit)
+        specifications = test_unit_data['Specifications']
+        quantification_limit = test_unit_data['Quantification Limit']
 
         if limit == "upper":
-            self.base_selenium.LOGGER.info('Check that <= is existing in specifications')
-            self.assertIn('<=', specification)
+            self.base_selenium.LOGGER.info('Check that <= is existing in {}'.format(spec_or_quan))
+            self.assertIn('<=', specifications) if 'spec' in spec_or_quan else self.assertIn('<=', quantification_limit)
         else:
             self.base_selenium.LOGGER.info('Check that >= is existing in specifications')
-            self.assertIn('>=', specification)
+            self.assertIn('>=', specifications) if 'spec' in spec_or_quan else self.assertIn('>=', quantification_limit)
 
     @parameterized.expand([('upper'), ('lower')])
     def test013_limits_of_quantification_approach(self, limit):
