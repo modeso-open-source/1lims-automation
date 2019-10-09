@@ -580,3 +580,51 @@ class TestUnitsTestCases(BaseTest):
             class_attr = self.base_selenium.get_attribute('test_unit:{}_limit'.format(limit), 'class')
             self.info('Assert that {}_limit is not active'.format(limit))
             self.assertNotIn('ng-valid', class_attr)
+
+    @parameterized.expand([('quan'), ('spec')])
+    def test017_create_quantative_with_limits_of_quantative_only_and_specification_only(self):
+        """
+        New:Test unit: Create Approach: User can create test unit with limits of quantification type only &
+        with upper lower limits
+        New: Test unit: Creation Approach: User can create test units with Quantitative type with specification only
+        LIMS-5427
+        LIMS-4156
+        :return:
+        """
+
+        new_name = self.generate_random_string()
+        new_method = self.generate_random_string()
+        new_random_limit = self.generate_random_number()
+
+        self.test_unit_page.create_quantitative_testunit(name=new_name, material_type='', category='',
+                                                         upper_limit=new_random_limit, lower_limit=new_random_limit,
+                                                         spec_or_quan='quan', method=new_method)
+
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        test_unit = self.test_unit_page.search(new_name)[0]
+        self.test_unit_page.get_random_x(test_unit)
+        testunit_name = self.test_unit_page.get_testunit_name()
+        self.base_selenium.LOGGER.info('Assert test unit name : {}'.format(testunit_name))
+        self.assertEqual(new_name, testunit_name)
+
+        new_name = self.generate_random_string()
+        new_method = self.generate_random_string()
+        new_random_limit = self.generate_random_number()
+
+        self.test_unit_page.create_quantitative_testunit(name=new_name, material_type='', category='',
+                                                         upper_limit=new_random_limit, lower_limit=new_random_limit,
+                                                         spec_or_quan='spec', method=new_method)
+
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        test_unit = self.test_unit_page.search(new_name)[0]
+        self.test_unit_page.get_random_x(test_unit)
+        testunit_name = self.test_unit_page.get_testunit_name()
+        self.base_selenium.LOGGER.info('Assert test unit name : {}'.format(testunit_name))
+        self.assertEqual(new_name, testunit_name)
+
+
+
+
+
