@@ -580,3 +580,26 @@ class TestUnitsTestCases(BaseTest):
             class_attr = self.base_selenium.get_attribute('test_unit:{}_limit'.format(limit), 'class')
             self.info('Assert that {}_limit is not active'.format(limit))
             self.assertNotIn('ng-valid', class_attr)
+
+    @skip('https://modeso.atlassian.net/browse/LIMS-5525')
+    def test019_download_test_units_sheet(self):
+        """
+        New: Test unit: Limit of quantification Approach: Allow those fields to displayed in table view &
+        XSLX file ( upper limit & lower limit & unit )
+
+        LIMS:4166
+        :return:
+        """
+        self.info(' * Download XSLX sheet')
+        self.test_unit_page.download_xslx_sheet()
+        rows_data = self.test_unit_page.get_table_rows_data()
+        for index in range(len(rows_data)):
+            self.base_selenium.LOGGER.info(' * Comparing the test units with index : {} '.format(index))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.test_unit_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            self.info(fixed_sheet_row_data)
+            for item in fixed_row_data:
+                if item == 'N/A' or str(item)[-3:] == '...':
+                    continue
+                self.assertIn(item, fixed_sheet_row_data)
