@@ -631,6 +631,7 @@ class TestUnitsTestCases(BaseTest):
         XSLX file ( upper limit & lower limit & unit )
 
         LIMS:4166
+        LIMS-3672
         :return:
         """
         self.info(' * Download XSLX sheet')
@@ -646,3 +647,31 @@ class TestUnitsTestCases(BaseTest):
                 if item == 'N/A' or str(item)[-3:] == '...':
                     continue
                 self.assertIn(item, fixed_sheet_row_data)
+
+    def test020_specification_limit_of_quantification_approach_can_be_minus(self):
+        """
+        New: Test unit: Quantitative: Specification Approach User can enter (-) in upper/lower limit
+
+        LIMS-3767
+        :return:
+        """
+
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+        spec_or_quan = 'spec_quan'
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                         upper_limit="-", lower_limit="-",
+                                                         spec_or_quan=spec_or_quan, category=new_random_category)
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        test_unit = self.test_unit_page.search(new_random_name)[0]
+        test_unit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit)
+        specifications = test_unit_data['Specifications']
+
+        self.info('Assert upper and lower limits are in specifications with N/A values')
+        self.assertEqual("N/A", specifications)
