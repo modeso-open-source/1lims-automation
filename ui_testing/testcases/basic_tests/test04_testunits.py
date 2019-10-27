@@ -675,3 +675,46 @@ class TestUnitsTestCases(BaseTest):
 
         self.info('Assert upper and lower limits are in specifications with N/A values')
         self.assertEqual("N/A", specifications)
+
+    def test021_change_quantification_limits_not_effect_test_plan(self):
+        """
+        New: Test units/effect on test plan: Limits of quantification Approach: In case I make any edit in the limits
+         of quantification, this shouldn't effect on test plan
+
+         LIMS-4420
+        :return:
+        """
+        active_articles_with_material_types = self.get_active_articles_with_material_type()
+        material_type = next(iter(active_articles_with_material_types))
+        article = active_articles_with_material_types[material_type][0]
+        test_unit_new_name = self.generate_random_string()
+        new_method = self.generate_random_string()
+        new_random_limit = self.generate_random_number()
+
+        self.test_unit_page.create_quantitative_testunit(name=test_unit_new_name, material_type=material_type,
+                                                         upper_limit=new_random_limit, lower_limit=new_random_limit,
+                                                         spec_or_quan='quan', method=new_method)
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='save new testunit')
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.create_new_test_plan(name=test_unit_new_name, material_type=material_type,
+                                            test_unit=test_unit_new_name, article=article, upper=100, lower=10)
+
+        self.info('change upper limits of the test unut')
+        self.test_unit_page.get_test_units_page()
+        test_unit = self.test_unit_page.search(test_unit_new_name)[0]
+        self.test_unit_page.get_random_x(test_unit)
+
+        self.test_unit_page.set_quan_upper_limit('10000')
+        self.test_unit_page.set_quan_lower_limit('10000')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='save the changes')
+
+        self.test_plan.get_test_plans_page()
+        test_plan = self.test_plan.search(test_unit_new_name)[0]
+        self.test_plan.get_random_x(test_plan)
+
+        upper, lower = self.test_plan.get_test_unit_limits()
+        self.info('assert that limits have not changed')
+        self.assertEqual(upper, '100')
+        self.assertEqual(lower, '10')

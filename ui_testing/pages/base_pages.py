@@ -32,22 +32,22 @@ class BasePages:
         self.base_selenium.clear_element_text(element= element)
 
     def sleep_tiny(self):
-        self.base_selenium.LOGGER.info(' + Tiny sleep.')
+        self.base_selenium.LOGGER.info(' Tiny sleep.')
         time.sleep(self.base_selenium.TIME_TINY)
 
     def sleep_small(self):
-        self.base_selenium.LOGGER.info(' + Small sleep.')
+        self.base_selenium.LOGGER.info(' Small sleep.')
         time.sleep(self.base_selenium.TIME_SMALL)
 
     def sleep_medium(self):
-        self.base_selenium.LOGGER.info(' + Medium sleep.')
+        self.base_selenium.LOGGER.info(' Medium sleep.')
         time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def sleep_large(self):
-        self.base_selenium.LOGGER.info(' + Large sleep.')
+        self.base_selenium.LOGGER.info(' Large sleep.')
         time.sleep(self.base_selenium.TIME_LARGE)
 
-    def save(self, sleep=True, save_btn='general:save', logger_msg=' + Save the changes.'):
+    def save(self, sleep=True, save_btn='general:save', logger_msg=' Save the changes.'):
         self.base_selenium.LOGGER.info(logger_msg)
         self.base_selenium.click(element=save_btn)
         if sleep:
@@ -93,7 +93,7 @@ class BasePages:
         rows = self.base_selenium.get_table_rows(element=element)
         no_of_rows = randint(min(1, len(rows)-1), min(5, len(rows)-1))
         count = 0
-        self.base_selenium.LOGGER.info(' * No. of selected rows {} '.format(no_of_rows))
+        self.base_selenium.LOGGER.info(' No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:
             row = rows[randint(0, len(rows) - 1)]
             row_text = row.text
@@ -178,14 +178,14 @@ class BasePages:
         return self.base_selenium.get_text(element='general:table_info')
 
     def get_table_records(self):
-        self.base_selenium.LOGGER.info(' + Get table records.')
+        self.base_selenium.LOGGER.info(' Get table records.')
         return int(self.get_table_info().split(' ')[5])
 
     def get_random_date(self):
         return '{:02d}.{:02d}.{}'.format(randint(1, 30), randint(1, 12), 2019)
 
     def filter(self,field_name, element, filter_text, type):
-        self.base_selenium.LOGGER.info(' + Filter by {} : {}'.format(field_name,filter_text))
+        self.base_selenium.LOGGER.info(' Filter by {} : {}'.format(field_name,filter_text))
         self.filter_by(filter_element= element, filter_text=filter_text, field_type = type)
         self.filter_apply()
 
@@ -193,7 +193,7 @@ class BasePages:
         pyperclip.copy(value)
 
     def _paste(self, element):
-        self.base_selenium.LOGGER.info(' + past. {}'.format(pyperclip.paste()))
+        self.base_selenium.LOGGER.info(' past. {}'.format(pyperclip.paste()))
         self.base_selenium.paste(element=element)
 
     def copy_paste(self, element, value):

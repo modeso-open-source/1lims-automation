@@ -12,7 +12,7 @@ class TestPlanAPI(BaseAPI):
                     "deleted": "0"}
         payload = self.update_payload(_payload, **kwargs)
         self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers)
+        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
         return response
 

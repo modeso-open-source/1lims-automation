@@ -103,7 +103,10 @@ elements = {
                               'value': 'submitWithVersion'
                               },
         'save_form': {'method': 'id',
-                      'value': 'saveButton'}
+                      'value': 'saveButton'},
+        'col_6': {'method': 'class_name',
+                  'value': 'col-md-6',
+                  'order': -1}
     },
     'login': {
         'username': {'method': 'name',
@@ -235,7 +238,12 @@ elements = {
                  'value': 'btn-primary',
                  'order': 1},
         'add_test_units': {'method': 'id',
-                           'value': 'first-col'}
+                           'value': 'first-col'},
+        'testunit_upper_limit': {'method': 'class_name',
+                                 'value': '//*[@id="88"]/div[2]/div/div[3]/input'},
+        'testunit_lower_limit': {'method': 'xpath',
+                                 'value': '//*[@id="88"]/div[2]/div/div[4]/input'},
+
     },
 
     'test_unit': {
