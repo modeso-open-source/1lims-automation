@@ -339,7 +339,7 @@ class BaseSelenium:
         """
         if element:
             if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
-                self.LOGGER.info(' * Drop-down is disabled')
+                self.LOGGER.info(' Drop-down is disabled')
                 return
 
         if item_text:
@@ -386,16 +386,7 @@ class BaseSelenium:
         :param options_element:
         :return:
         """
-        if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
-            self.LOGGER.info(' * Drop-down is disabled')
-            return False
-
-        input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
-        input_element.send_keys(item_text)
-        time.sleep(self.TIME_SMALL)
-
-        items = self.find_elements(element=options_element)
-        if item_text in [item.text for item in items]:
+        if item_text in self.get_drop_down_suggestion_list(element, item_text, options_element):
             return True
         else:
             return False
@@ -422,6 +413,27 @@ class BaseSelenium:
             return True
         else:
             return False
+
+    def get_drop_down_suggestion_list(self, element, item_text, options_element='general:drop_down_options'):
+        """
+
+        :param element: element refer to ng-select dom item.
+        :param element_source:  dom item.
+        :param item_text:
+        :param avoid_duplicate:
+        :param options_element:
+        :return:
+        """
+        if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
+            self.LOGGER.info('Drop-down is disabled')
+            return False
+
+        input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
+        input_element.send_keys(item_text)
+        time.sleep(self.TIME_SMALL)
+
+        items = self.find_elements(element=options_element)
+        return [item.text for item in items]
 
     def update_item_value(self, item, item_text=''):
         """

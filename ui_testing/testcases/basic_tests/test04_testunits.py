@@ -718,3 +718,42 @@ class TestUnitsTestCases(BaseTest):
         self.info('assert that limits have not changed')
         self.assertEqual(upper, '100')
         self.assertEqual(lower, '10')
+
+    def test022_create_multi_test_units_with_same_name(self):
+        """
+        New: Test unit: Creation Approach; In case I create two test units with the same name,
+        when I go to the test plan I found both of those with the same name
+
+        LIMS-3684
+        :return:
+        """
+        active_articles_with_material_types = self.get_active_articles_with_material_type()
+        material_type = next(iter(active_articles_with_material_types))
+        article = active_articles_with_material_types[material_type][0]
+        test_unit_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.test_unit_page.create_qualitative_testunit(name=test_unit_name, method=new_random_method,
+                                                        material_type=material_type)
+        self.test_unit_page.save(save_btn='general:save_form',
+                                 logger_msg='create {} qualitative test unit'.format(test_unit_name))
+
+        self.test_unit_page.create_quantitative_mibi_testunit(name=test_unit_name, method=new_random_method,
+                                                              upper_limit=1000, material_type=material_type)
+        self.test_unit_page.save(save_btn='general:save_form',
+                                 logger_msg='create {} quantitative_mibi test unit'.format(test_unit_name))
+
+        self.test_unit_page.create_qualitative_testunit(name=test_unit_name, method=new_random_method,
+                                                        material_type=material_type)
+        self.test_unit_page.save(save_btn='general:save_form',
+                                 logger_msg='create {} qualitative test unit'.format(test_unit_name))
+        self.test_plan.get_test_plans_page()
+        self.test_plan.create_new_test_plan(name=test_unit_name, material_type=material_type, article=article)
+        test_plan = self.test_plan.search(test_unit_name)[0]
+        self.test_plan.get_random_x(test_plan)
+        self.base_selenium.click('test_plan:next')
+        self.base_selenium.click('test_plan:add_test_units')
+        test_units = self.base_selenium.get_drop_down_suggestion_list(element='test_plan:test_units', item_text=test_unit_name)
+
+        self.info('assert that all test units are in the suggestions list')
+        self.assertEqual(len(test_units), 3)
