@@ -732,21 +732,22 @@ class TestUnitsTestCases(BaseTest):
         article = active_articles_with_material_types[material_type][0]
         test_unit_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
+        category = self.generate_random_string()
 
         self.test_unit_page.create_qualitative_testunit(name=test_unit_name, method=new_random_method,
-                                                        material_type=material_type)
+                                                        material_type=material_type, category=category)
         self.test_unit_page.save(save_btn='general:save_form',
-                                 logger_msg='create {} qualitative test unit'.format(test_unit_name))
+                                 logger_msg='save {} qualitative test unit'.format(test_unit_name))
 
         self.test_unit_page.create_quantitative_mibi_testunit(name=test_unit_name, method=new_random_method,
-                                                              upper_limit=1000, material_type=material_type)
+                                                              upper_limit=1000, material_type=material_type, category=category)
         self.test_unit_page.save(save_btn='general:save_form',
-                                 logger_msg='create {} quantitative_mibi test unit'.format(test_unit_name))
+                                 logger_msg='save {} quantitative_mibi test unit'.format(test_unit_name))
 
         self.test_unit_page.create_qualitative_testunit(name=test_unit_name, method=new_random_method,
-                                                        material_type=material_type)
+                                                        material_type=material_type, category=category)
         self.test_unit_page.save(save_btn='general:save_form',
-                                 logger_msg='create {} qualitative test unit'.format(test_unit_name))
+                                 logger_msg='save {} qualitative test unit'.format(test_unit_name))
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(name=test_unit_name, material_type=material_type, article=article)
         test_plan = self.test_plan.search(test_unit_name)[0]

@@ -43,6 +43,7 @@ class TstUnit(TstUnits):
 
     def create_qualitative_testunit(self, name='', material_type='', category='', value='', unit='', iteration=1,
                                     method=''):
+        self.base_selenium.LOGGER.info('create_qualitative_testunit')
         self.click_create_new_testunit()
         self.set_testunit_name(name=name)
         self.set_material_type(material_type=material_type)
@@ -55,6 +56,7 @@ class TstUnit(TstUnits):
 
     def create_quantitative_mibi_testunit(self, name='', material_type='', category='', upper_limit='',
                                           selected_cons='', iteration='1', method=''):
+        self.base_selenium.LOGGER.info('create_quantitative_mibi_testunit')
         self.click_create_new_testunit()
         self.set_testunit_name(name=name)
         self.set_material_type(material_type=material_type)
@@ -67,6 +69,7 @@ class TstUnit(TstUnits):
 
     def create_quantitative_testunit(self, name='', material_type='', category='', unit='', iteration='1',
                                     method='', upper_limit='', lower_limit='', spec_or_quan='spec'):
+        self.base_selenium.LOGGER.info('create_quantitative_testunit')
         self.click_create_new_testunit()
         self.set_testunit_name(name=name)
         self.set_material_type(material_type=material_type)
