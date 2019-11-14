@@ -47,7 +47,7 @@ class BasePages:
         self.base_selenium.LOGGER.info(' Large sleep.')
         time.sleep(self.base_selenium.TIME_LARGE)
 
-    def save(self, sleep=True, save_btn='general:save', logger_msg=' Save the changes.'):
+    def save(self, sleep=True, save_btn='general:save', logger_msg='save the changes'):
         self.base_selenium.LOGGER.info(logger_msg)
         self.base_selenium.click(element=save_btn)
         if sleep:
@@ -107,6 +107,17 @@ class BasePages:
             selected_rows.append(row)
             selected_rows_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=row))
         return selected_rows_data, selected_rows
+
+    def select_random_table_row(self, element='general:table'):
+        self.info("select random row")
+        rows = self.base_selenium.get_table_rows(element=element)
+        for _ in range(5):
+            row = rows[randint(0, len(rows) - 1)]
+            row_text = row.text
+            if not row_text:
+                continue
+            self.click_check_box(source=row)
+            return self.base_selenium.get_row_cells_dict_related_to_header(row)
 
     def click_check_box(self, source):
         check_box = self.base_selenium.find_element_in_element(
@@ -218,4 +229,6 @@ class BasePages:
                 child_table_data.append(rows_with_headers)
 
         return child_table_data
-        
+
+    def info(self, message):
+        self.base_selenium.LOGGER.info(message)

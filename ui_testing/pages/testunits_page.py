@@ -58,3 +58,10 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:active')
         self.sleep_small()
+
+    def duplicate_test_unit(self):
+        self.info('duplicate the selected test unit')
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click('orders:duplicate')
+        self.save()

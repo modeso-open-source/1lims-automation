@@ -758,3 +758,19 @@ class TestUnitsTestCases(BaseTest):
 
         self.info('assert that all test units are in the suggestions list')
         self.assertEqual(len(test_units), 3)
+
+    def test023_duplicate_test_case(self):
+        """"
+        New: Test unit: Duplication Approach: I can duplicate the test unit with only one record
+
+        LIMS-3678
+        """
+        random_test_unit = self.test_unit_page.select_random_table_row()
+        test_unit_name = random_test_unit['Test Unit Name']
+        self.info('test unit name : {}'.format(test_unit_name))
+        old_test_units = len(self.test_unit_page.search(test_unit_name))
+        self.test_unit_page.duplicate_test_unit()
+        new_test_units = len(self.test_unit_page.search(test_unit_name))
+        self.info('assert there is a new test unit')
+        self.assertGreater(new_test_units, old_test_units)
+
