@@ -234,3 +234,13 @@ class BasePages:
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
+
+    def generate_random_email(self):
+        name = str(uuid4()).replace("-", "")[:10]
+        server = "@" + str(uuid4()).replace("-", "")[:6] + "." + str(uuid4()).replace("-", "")[:3]
+        
+        return name+server
+
+    def generate_random_website(self):
+        return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]

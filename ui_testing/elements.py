@@ -440,5 +440,38 @@ elements = {
             'method': 'id',
             'value': 'nofield'
         }
+    },
+    'contacts': {
+        'contact_archive_button': {'method': 'tag_name',
+                                   'value': 'a',
+                                   'order': 0},
+        'contact_table': {'method': 'id',
+                          'value': 'table'},
+    },
+    'contact': {
+        'name': {'method': 'id',
+                 'value': 'namefield'},
+        'no': {'method': 'id',
+               'value': 'companyNofield'},
+        'address': {'method': 'id',
+               'value': 'addressfield'},
+        'postalcode': {'method': 'id',
+               'value': 'postalCodefield'},
+        'location': {'method': 'id',
+               'value': 'locationfield'},
+        'country': {'method': 'id',
+               'value': 'selectedcountryfield'},
+        'email': {'method': 'id',
+               'value': 'emailfield'},
+        'phone': {'method': 'id',
+               'value': 'phonefield'},
+        'skype': {'method': 'id',
+               'value': 'skypefield'},
+        'website': {'method': 'id',
+               'value': 'websitefield'},
+        'departments': {'method': 'id',
+               'value': 'departmentsfield'},
+        'contacttype': {'method': 'id',
+               'value': 'contactType'}
     }
 }

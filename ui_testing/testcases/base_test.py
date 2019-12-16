@@ -3,6 +3,7 @@ from ui_testing.pages.base_selenium import BaseSelenium
 from uuid import uuid4
 from random import randint
 from ui_testing.pages.article_page import Article
+from ui_testing.pages.contact_page import Contact
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
@@ -25,6 +26,7 @@ class BaseTest(TestCase):
         self.login_page = Login()
         self.test_plan = TstPlan()
         self.article_page = Article()
+        self.contact_page = Contact()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
 
