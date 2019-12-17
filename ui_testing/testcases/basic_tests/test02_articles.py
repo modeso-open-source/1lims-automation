@@ -464,3 +464,19 @@ class ArticlesTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
+
+    def test020_i_can_filter_by_any_field(self):
+        """
+        New: Article: Filter Approach: I can filter by any field ( static or dynamic ) & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        material_type_text = 'Raw Material'
+        article = self.article_page.create_new_article(material_type=None, sleep=False, full_options=True)
+        print(article)
+        # if test_plan_text:
+        #     self.article_page.filter_by_test_plan(filter_text=test_plan_text)
+        #     result_article = self.article_page.result_table()[0]
+        #     self.base_selenium.LOGGER.info(' + User could filter with test plan.')
+        #     self.assertIn(test_plan_text, result_article.text)
