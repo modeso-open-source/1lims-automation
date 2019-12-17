@@ -102,11 +102,17 @@ class TstPlan(TestPlans):
         self.set_article(article=article)
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)
 
-    def pressSaveButton(self, save_btn='test_plan:save', logger_msg='save the changeees'):
-        self.base_selenium.LOGGER.info(logger_msg)
-        self.base_selenium.click(element=save_btn)
-
     def navigate_to_testunits_selection_page(self):
+        self.base_selenium.LOGGER.info('Navigating to testplan create/update step 2')
         self.base_selenium.click(element='test_plan:testunits_selection')
         self.sleep_small()
 
+    def get_all_testunits_in_testplan(self):
+        self.base_selenium.LOGGER.info('Getting the testunits data')
+        rows = self.base_selenium.get_table_rows(element='test_plan:testunits_table')
+        return rows
+
+    def delete_the_first_testunit_from_the_tableview(self):
+        self.base_selenium.LOGGER.info('Deleting the first testunit from the testunits table')
+        self.base_selenium.click(element='test_plan:row_delete_button')
+        self.sleep_small()

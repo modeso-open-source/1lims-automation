@@ -21,6 +21,7 @@ class TestPlans(BasePages):
         self.sleep_small()
 
     def get_test_plan_edit_page(self, name):
+        self.base_selenium.LOGGER.info('Navigating to testplan [' + name + '] edit page')
         test_plan = self.search(value=name)[0]
         self.get_random_x(row=test_plan)
 
