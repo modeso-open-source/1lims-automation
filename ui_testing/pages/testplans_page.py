@@ -24,6 +24,7 @@ class TestPlans(BasePages):
         self.base_selenium.LOGGER.info('Navigating to testplan [' + name + '] edit page')
         test_plan = self.search(value=name)[0]
         self.get_random_x(row=test_plan)
+        self.sleep_small()
 
     def get_testunits_in_testplans(self, test_plan_name=''):
         self.base_selenium.LOGGER.info('Filter by testplan name {}'.format(test_plan_name))

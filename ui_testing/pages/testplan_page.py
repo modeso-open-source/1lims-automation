@@ -115,4 +115,4 @@ class TstPlan(TestPlans):
     def delete_the_first_testunit_from_the_tableview(self):
         self.base_selenium.LOGGER.info('Deleting the first testunit from the testunits table')
         self.base_selenium.click(element='test_plan:row_delete_button')
-        self.sleep_small()
+        self.sleep_medium()
