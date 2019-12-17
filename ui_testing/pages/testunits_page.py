@@ -14,7 +14,7 @@ class TstUnits(BasePages):
 
     def get_random_test_units(self):
         row = self.base_selenium.get_table_rows(element='test_units:test_units_table')
-        self.get_random_x(row=row)
+        self.open_edit_page(row=row)
 
     def get_random_test_units_row(self):
         return self.get_random_table_row(table_element='test_units:test_units_table')
