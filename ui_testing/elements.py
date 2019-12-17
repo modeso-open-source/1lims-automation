@@ -472,6 +472,13 @@ elements = {
         'departments': {'method': 'id',
                'value': 'departmentsfield'},
         'contacttype': {'method': 'id',
-               'value': 'contactType'}
+               'value': 'contactType'},
+        'contacttype-isClient': {'method': 'id',
+               'value': 'isClient'},
+        'contacttype-isSupplier': {'method': 'id',
+               'value': 'isSupplier'},
+        'contacttype-isLaboratory': {'method': 'id',
+               'value': 'isLaboratory'},
+        
     }
 }

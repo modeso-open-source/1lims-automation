@@ -103,14 +103,18 @@ class Contact(Contacts):
         
         return website
 
-    # to be fixed
     def set_contact_departments(self, departments=[]):
-        
+        for department in departments:
+            value = department or self.generate_random_text()
+            qualitative_value = self.base_selenium.find_element_in_element(destination_element='general:input',
+                                                                        source_element='contact:departments')
+            qualitative_value.send_keys(value)
         return departments
-    # to be fixed
-    def set_contact_type(self, contacttype=''):
-        
-        return contacttype
+
+    def set_contact_type(self, contact_types=['isSupplier']):
+        for contact_type in contact_types :
+            self.base_selenium.click(element='contact:contacttype-'+contact_type)
+        return contact_types
 
     def get_contact_number(self):
         return self.base_selenium.get_value(element="contact:no")
