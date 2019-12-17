@@ -132,7 +132,7 @@ class BasePages:
         #         x_cell.click()
         #         break
         # self.sleep_medium()
-        row.find_element_by_xpath('//span/a').click()
+        row.find_element_by_xpath('//span/a[@title="Edit details"]').click()
         self.sleep_small() # sleep for loading
 
     def get_archived_items(self):

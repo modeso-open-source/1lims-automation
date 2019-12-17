@@ -102,4 +102,11 @@ class TstPlan(TestPlans):
         self.set_article(article=article)
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)
 
+    def pressSaveButton(self, save_btn='test_plan:save', logger_msg='save the changeees'):
+        self.base_selenium.LOGGER.info(logger_msg)
+        self.base_selenium.click(element=save_btn)
+
+    def navigate_to_testunits_selection_page(self):
+        self.base_selenium.click(element='test_plan:testunits_selection')
+        self.sleep_small()
 
