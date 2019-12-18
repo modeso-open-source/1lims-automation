@@ -190,13 +190,14 @@ class Contact(Contacts):
 
         return ', '.join(contact_types) or '-'
 
-    def create_new_contact(self, no='', name='', address='', postalcode='', location='', country='', email='', phone='', skype='', website='', contact_types=['isClient'], departments=['']):
+    def create_update_contact(self, create=True, no='', name='', address='', postalcode='', location='', country='', email='', phone='', skype='', website='', contact_types=['isClient'], departments=['']):
 
-        self.base_selenium.LOGGER.info(' + Create new contact.')
-        self.base_selenium.click(element='contacts:new_contact')
+        if create:
+            self.base_selenium.LOGGER.info(' + Create new contact.')
+            self.base_selenium.click(element='contacts:new_contact')
 
-        self.base_selenium.LOGGER.info('Wait untill data are loaded')
-        self.sleep_tiny()
+            self.base_selenium.LOGGER.info('Wait untill data are loaded')
+            self.sleep_tiny()
 
         self.set_contact_number(no=no)
         self.set_contact_name(name=name)
