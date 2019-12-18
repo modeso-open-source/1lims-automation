@@ -12,15 +12,15 @@ class ContactsTestCases(BaseTest):
         self.contact_page.get_contacts_page()
 
     
-    def test_002_create_contact(self):
+    def test_003_upadte_contact(self):
         """
-        New: Contact: Creation Approach: I can create new contact successfully
-        User can create new conatcts successfully 
+        New: Contact: Edit Approach: I can update any contact record 
+        I can edit in step one or two & this update should saved successfully 
 
-        LIMS-3563
+        LIMS-3564
         """
         
-        self.base_selenium.LOGGER.info('Creating new contact')
+        self.base_selenium.LOGGER.info('Select random table row')
         contact_data = self.contact_page.create_update_contact()
 
         self.base_selenium.LOGGER.info('comparing contact\'s data with the first record in contact page')
