@@ -21,7 +21,7 @@ class ContactsTestCases(BaseTest):
         """
         
         self.base_selenium.LOGGER.info('Creating new contact')
-        contact_data = self.contact_page.create_new_contact()
+        contact_data = self.contact_page.create_update_contact()
 
         self.base_selenium.LOGGER.info('comparing contact\'s data with the first record in contact page')
         self.base_selenium.LOGGER.info('to make sure that when new record is created is set to the be the first record in the page')
