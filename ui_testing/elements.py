@@ -106,7 +106,13 @@ elements = {
                       'value': 'saveButton'},
         'col_6': {'method': 'class_name',
                   'value': 'col-md-6',
-                  'order': -1}
+                  'order': -1},
+        'overview': {'method': 'xpath',
+                     'value': "//span[contains(text(),'Overview')]"},
+        'confirm_overview': {'method': 'xpath',
+                             'value': "//div[contains(@class, 'swal2-actions')]//button[1]"},
+        'cancel_overview': {'method': 'xpath',
+                            'value': "//div[contains(@class, 'swal2-actions')]//button[2]"}
     },
     'login': {
         'username': {'method': 'name',
@@ -440,5 +446,10 @@ elements = {
             'method': 'id',
             'value': 'nofield'
         }
+    },
+    'contacts':{
+        'new_contact': {'method': 'xpath',
+                        'value': '//span[contains(text(),"New Contact")]'}
     }
+
 }

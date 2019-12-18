@@ -6,6 +6,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.base_pages import BasePages
 from ui_testing.pages.order_page import Order
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
@@ -27,6 +28,7 @@ class BaseTest(TestCase):
         self.article_page = Article()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
+        self.base_page = BasePages()
 
         self.article_api = ArticleAPI()
         self.test_plan_api = TestPlanAPI()
@@ -124,3 +126,4 @@ class BaseTest(TestCase):
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
