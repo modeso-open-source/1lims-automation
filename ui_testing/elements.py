@@ -447,6 +447,8 @@ elements = {
                                    'order': 0},
         'contact_table': {'method': 'id',
                           'value': 'table'},
+        'new_contact': {'method': 'id',
+                        'value': 'add-btn'}
     },
     'contact': {
         'name': {'method': 'id',
@@ -479,6 +481,9 @@ elements = {
                'value': 'isSupplier'},
         'contacttype-isLaboratory': {'method': 'id',
                'value': 'isLaboratory'},
+        'save': {'method': 'class_name',
+                 'value': 'btn-primary',
+                 'order': 1}
         
     }
 }

@@ -624,3 +624,6 @@ class BaseSelenium:
 
     def refresh(self):
         self.driver.refresh()
+
+    def find_element_by_xpath(self, xpath=''):
+        return self.driver.find_element_by_xpath(xpath)

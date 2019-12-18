@@ -238,9 +238,11 @@ class BasePages:
 
     def generate_random_email(self):
         name = str(uuid4()).replace("-", "")[:10]
-        server = "@" + str(uuid4()).replace("-", "")[:6] + "." + str(uuid4()).replace("-", "")[:3]
+        server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'
         
         return name+server
 
     def generate_random_website(self):
         return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
+
+  
