@@ -269,7 +269,9 @@ class ArticlesTestCases(BaseTest):
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
 
-        self.article_page.filter_article_by(filter_element='article:filter_test_plan', filter_text=self.test_plan.test_plan_name, field_type="drop_down")
+        self.article_page.open_filter_menu()
+        self.article_page.filter_article_by(filter_element='article:filter_test_plan', 
+                                            filter_text=self.test_plan.test_plan_name, field_type="drop_down")
         article = self.article_page.result_table()[0]
         self.base_selenium.LOGGER.info(' + Assert user could filter with test plan.')
         self.assertIn(self.test_plan.test_plan_name, article.text)
@@ -467,12 +469,71 @@ class ArticlesTestCases(BaseTest):
 
     def test020_i_can_filter_by_any_field(self):
         """
-        New: Article: Filter Approach: I can filter by any field ( static or dynamic ) & and also from the default filter.
+        New: Article: Filter Approach: I can filter by any sttic field & and also from the default filter.
 
         LIMS:3595
         :return:
         """
+        # create new article with full options
         article = self.article_page.create_new_article(material_type=None, full_options=True)
-        self.article_page.filter_article_by(filter_element='article:filter_name', filter_text=article['name'])
+        # create new test plan with this article
+        self.test_plan.get_test_plans_page()
+        self.test_plan.create_new_test_plan(material_type=article['material_type'], article=article['name'])
+
+        # open article table page and open the filter menu       
+        self.article_page.get_articles_page()
+        self.article_page.sleep_small()
+        self.article_page.open_filter_menu()
+
+        # filter by article name
+        self.article_page.filter_article_by(
+            filter_element='article:filter_name', filter_text=article['name'])
         result_article = self.article_page.result_table()[0]
         self.assertIn(article['name'], result_article.text)
+
+        # filter by article number
+        self.article_page.filter_reset()
+        self.article_page.filter_article_by(
+            filter_element='article:filter_number', filter_text=article['number'])
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['number'], result_article.text)
+
+        # filter by article unit
+        self.article_page.filter_reset()
+        self.article_page.filter_article_by(
+            filter_element='article:filter_unit', filter_text=article['unit'])
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['unit'], result_article.text)
+
+        # filter by article created at
+        self.article_page.filter_reset()
+        self.article_page.filter_article_by(
+            filter_element='article:filter_created_at', filter_text=article['created_at'])
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['created_at'], result_article.text)
+
+        # filter by article material type
+        self.article_page.filter_reset()
+        self.article_page.filter_article_by(
+            filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['material_type'], result_article.text)
+
+        # filter by article changed by
+        self.article_page.filter_reset()
+        self.article_page.filter_article_by(
+            filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['changed_by'], result_article.text)
+
+        # filter by article test plan
+        self.article_page.filter_article_by(filter_element='article:filter_test_plan',
+                                            filter_text=self.test_plan.test_plan_name, field_type="drop_down")
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(self.test_plan.test_plan_name, result_article.text)
+
+        # default filters
+
+        # finish
+        self.article_page.filter_reset()
+        self.article_page.open_filter_menu()

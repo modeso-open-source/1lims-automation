@@ -106,8 +106,7 @@ class Article(Articles):
 
     def filter_article_by(self, filter_element, filter_text, field_type='text'):
         self.base_selenium.LOGGER.info(
-            ' + Filter by {} : {}'.format(filter_element.replace('article:filter_', ''), filter_text))
-        self.open_filter_menu()
+            ' + Filter by {} : {}'.format(filter_element.replace('article:filter_', '').replace('_', ' '), filter_text))
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
 

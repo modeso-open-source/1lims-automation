@@ -172,8 +172,7 @@ elements = {
 
         'filter_test_plan': {'method': 'id',
                              'value': 'testPlansfield'},
-        'filter_start_createdAt': {'method': 'id', 'value': 'start_createdAt'},
-        'filter_end_createdAt': {'method': 'id', 'value': 'end_createdAt'},
+        'filter_created_at': {'method': 'id', 'value': 'start_createdAt'},
         'filter_name': {'method': 'id', 'value': 'namefield'},
         'filter_material_type': {'method': 'id', 'value': 'materialTypefield'},
         'filter_number': {'method': 'id', 'value': 'Nofield'},
