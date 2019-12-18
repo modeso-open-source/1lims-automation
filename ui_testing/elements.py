@@ -172,6 +172,13 @@ elements = {
 
         'filter_test_plan': {'method': 'id',
                              'value': 'testPlansfield'},
+        'filter_start_createdAt': {'method': 'id', 'value': 'start_createdAt'},
+        'filter_end_createdAt': {'method': 'id', 'value': 'end_createdAt'},
+        'filter_name': {'method': 'id', 'value': 'namefield'},
+        'filter_material_type': {'method': 'id', 'value': 'materialTypefield'},
+        'filter_number': {'method': 'id', 'value': 'Nofield'},
+        'filter_changed_by': {'method': 'id', 'value': 'lastModifiedUserfield'},
+        'filter_unit': {'method': 'id', 'value': 'unitfield'},
         'filter_actions': {'method': 'class_name',
                            'value': 'actions',
                            'order': 0},

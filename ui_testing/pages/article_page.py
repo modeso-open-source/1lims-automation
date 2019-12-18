@@ -1,6 +1,8 @@
 from ui_testing.pages.articles_page import Articles
+from testconfig import config
 from random import randint
 import time
+from datetime import date
 
 
 class Article(Articles):
@@ -18,16 +20,35 @@ class Article(Articles):
             self.set_material_type(random=True)
         self.article_material_type = self.get_material_type()
 
+        current_date = date.today()
+        self.article_create_date = "{}.{}.{}".format(current_date.day, current_date.month, current_date.year)
+        self.article_create_user = config['site']['username']
+
+        article_data = {
+            "number": self.get_no(),
+            "name": self.article_name,
+            "material_type": self.article_material_type,
+            "created_at": self.article_create_date,
+            "changed_at": self.article_create_date,
+            "changed_by": self.article_create_user,
+        }
+
         if full_options:
             self.article_unit = self.generate_random_text()
             self.set_unit(self.article_unit)
             self.set_related_article()
             self.article_related_article = self.get_related_article()
-        
-        article_data={
-            "name": self.article_name,
-            "material_type": self.article_material_type
-        }
+            article_data = {
+                "number": self.get_no(),
+                "name": self.article_name,
+                "material_type": self.article_material_type,
+                "related_article": self.article_related_article,
+                "unit": self.article_unit,
+                "comment": self.article_comment,
+                "created_at": self.article_create_date,
+                "changed_at": self.article_create_date,
+                "changed_by": self.article_create_user,
+            }
 
         self.save(sleep)
         self.base_selenium.LOGGER.info(' + Article name : {}'.format(self.article_name))
@@ -83,10 +104,11 @@ class Article(Articles):
     def set_comment(self, comment):
         self.base_selenium.set_text(element="article:comment", value=comment)
 
-    def filter_by_test_plan(self, filter_text):
-        self.base_selenium.LOGGER.info(' + Filter by test plan : {}'.format(filter_text))
+    def filter_article_by(self, filter_element, filter_text, field_type='text'):
+        self.base_selenium.LOGGER.info(
+            ' + Filter by {} : {}'.format(filter_element.replace('article:filter_', ''), filter_text))
         self.open_filter_menu()
-        self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
+        self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
 
     def set_related_article(self):

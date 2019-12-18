@@ -269,7 +269,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
 
-        self.article_page.filter_by_test_plan(filter_text=self.test_plan.test_plan_name)
+        self.article_page.filter_article_by(filter_element='article:filter_test_plan', filter_text=self.test_plan.test_plan_name, field_type="drop_down")
         article = self.article_page.result_table()[0]
         self.base_selenium.LOGGER.info(' + Assert user could filter with test plan.')
         self.assertIn(self.test_plan.test_plan_name, article.text)
@@ -472,11 +472,7 @@ class ArticlesTestCases(BaseTest):
         LIMS:3595
         :return:
         """
-        material_type_text = 'Raw Material'
-        article = self.article_page.create_new_article(material_type=None, sleep=False, full_options=True)
-        print(article)
-        # if test_plan_text:
-        #     self.article_page.filter_by_test_plan(filter_text=test_plan_text)
-        #     result_article = self.article_page.result_table()[0]
-        #     self.base_selenium.LOGGER.info(' + User could filter with test plan.')
-        #     self.assertIn(test_plan_text, result_article.text)
+        article = self.article_page.create_new_article(material_type=None, full_options=True)
+        self.article_page.filter_article_by(filter_element='article:filter_name', filter_text=article['name'])
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['name'], result_article.text)
