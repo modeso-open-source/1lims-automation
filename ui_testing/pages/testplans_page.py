@@ -13,8 +13,8 @@ class TestPlans(BasePages):
         self.sleep_small()
 
     def get_random_test_plans(self):
-        row = self.base_selenium.get_table_rows(element='test_plans:test_plans_table')
-        self.get_random_x(row=row)
+        row = self.get_random_table_row('test_plans:test_plans_table')
+        self.open_edit_page(row=row)
 
     def click_create_test_plan_button(self):
         self.base_selenium.click(element='test_plans:new_test_plan')
@@ -22,7 +22,7 @@ class TestPlans(BasePages):
 
     def get_test_plan_edit_page(self, name):
         test_plan = self.search(value=name)[0]
-        self.get_random_x(row=test_plan)
+        self.open_edit_page(row=test_plan)
 
     def get_testunits_in_testplans(self, test_plan_name=''):
         self.base_selenium.LOGGER.info('Filter by testplan name {}'.format(test_plan_name))

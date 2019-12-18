@@ -27,7 +27,7 @@ class Articles(BasePages):
 
     def get_random_article(self):
         row = self.get_random_article_row()
-        self.get_random_x(row=row)
+        self.open_edit_page(row=row)
 
     def get_random_article_row(self):
         return self.get_random_table_row(table_element='articles:article_table')

@@ -96,7 +96,7 @@ class TestUnitsTestCases(BaseTest):
         old_version = first_testunit_data['Version']
         self.base_selenium.LOGGER.info('old version: {}'.format(old_version))
         self.base_selenium.LOGGER.info('Open the first record to update it')
-        self.test_unit_page.get_random_x(row=testunits_records[0])
+        self.test_unit_page.open_edit_page(row=testunits_records[0])
 
         self.base_selenium.LOGGER.info('Set the new testunit number to be: {}'.format(new_random_number))
         self.test_unit_page.set_testunit_number(number=new_random_number)
@@ -219,7 +219,7 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Get first record in testplans page')
         testplans_records = self.test_plan.result_table()
-        self.test_plan.get_random_x(row=testplans_records[0])
+        self.test_plan.open_edit_page(row=testplans_records[0])
 
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
@@ -249,7 +249,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             'Search by testunit name: {}, to make sure that testunit created successfully'.format(new_random_name))
         test_unit = self.test_unit_page.search(value=new_random_name)[0]
-        self.test_unit_page.get_random_x(test_unit)
+        self.test_unit_page.open_edit_page(test_unit)
 
         self.base_selenium.LOGGER.info(
             'Getting values of the unit field and upper limit to make sure that values saved correctly')
@@ -398,7 +398,7 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Get the category of it')
         test_unit = self.test_unit_page.search(new_random_name)[0]
-        self.test_unit_page.get_random_x(test_unit)
+        self.test_unit_page.open_edit_page(test_unit)
 
         category = self.test_unit_page.get_category()
         self.base_selenium.LOGGER.info('Assert category : {}'.format(category))
@@ -512,7 +512,7 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Get the test unit of it')
         test_unit = self.test_unit_page.search(new_random_name)[0]
-        self.test_unit_page.get_random_x(test_unit)
+        self.test_unit_page.open_edit_page(test_unit)
 
         self.test_unit_page.clear_spec_upper_limit()
         self.test_unit_page.clear_cons()
@@ -603,7 +603,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
         self.base_selenium.LOGGER.info('Get the test unit of it')
         test_unit = self.test_unit_page.search(new_name)[0]
-        self.test_unit_page.get_random_x(test_unit)
+        self.test_unit_page.open_edit_page(test_unit)
         testunit_name = self.test_unit_page.get_testunit_name()
         self.base_selenium.LOGGER.info('Assert test unit name : {}'.format(testunit_name))
         self.assertEqual(new_name, testunit_name)
@@ -619,7 +619,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
         self.base_selenium.LOGGER.info('Get the test unit of it')
         test_unit = self.test_unit_page.search(new_name)[0]
-        self.test_unit_page.get_random_x(test_unit)
+        self.test_unit_page.open_edit_page(test_unit)
         testunit_name = self.test_unit_page.get_testunit_name()
         self.base_selenium.LOGGER.info('Assert test unit name : {}'.format(testunit_name))
         self.assertEqual(new_name, testunit_name)
@@ -704,7 +704,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('change upper limits of the test unut')
         self.test_unit_page.get_test_units_page()
         test_unit = self.test_unit_page.search(test_unit_new_name)[0]
-        self.test_unit_page.get_random_x(test_unit)
+        self.test_unit_page.open_edit_page(test_unit)
 
         self.test_unit_page.set_quan_upper_limit('10000')
         self.test_unit_page.set_quan_lower_limit('10000')
@@ -712,7 +712,7 @@ class TestUnitsTestCases(BaseTest):
 
         self.test_plan.get_test_plans_page()
         test_plan = self.test_plan.search(test_unit_new_name)[0]
-        self.test_plan.get_random_x(test_plan)
+        self.test_plan.open_edit_page(test_plan)
 
         upper, lower = self.test_plan.get_test_unit_limits()
         self.info('assert that limits have not changed')
@@ -751,7 +751,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(name=test_unit_name, material_type=material_type, article=article)
         test_plan = self.test_plan.search(test_unit_name)[0]
-        self.test_plan.get_random_x(test_plan)
+        self.test_plan.open_edit_page(test_plan)
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
         test_units = self.base_selenium.get_drop_down_suggestion_list(element='test_plan:test_units', item_text=test_unit_name)
