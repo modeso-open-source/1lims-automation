@@ -171,7 +171,6 @@ class Contact(Contacts):
     def get_contact_departments(self):
         return []
     
-    # to be fixed
     def get_contact_type(self):
         isClient = self.base_selenium.find_element_by_xpath(xpath="//label[@id='isClient']//input[@type='checkbox']").is_selected()
         isSupplier = self.base_selenium.find_element_by_xpath(xpath="//label[@id='isSupplier']//input[@type='checkbox']").is_selected()
@@ -189,7 +188,7 @@ class Contact(Contacts):
             contact_types[counter] = 'Laboratory'
             counter = counter +1
 
-        return ', '.join(contact_types)
+        return ', '.join(contact_types) or '-'
 
     def create_new_contact(self, no='', name='', address='', postalcode='', location='', country='', email='', phone='', skype='', website='', contact_types=['isClient'], departments=['']):
 
