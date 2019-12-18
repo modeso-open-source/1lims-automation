@@ -237,12 +237,16 @@ elements = {
         'save': {'method': 'class_name',
                  'value': 'btn-primary',
                  'order': 1},
+        'save_and_complete': {'method': 'id',
+                                'value': 'save_and_complete_btn'},
         'add_test_units': {'method': 'id',
                            'value': 'first-col'},
         'testunit_upper_limit': {'method': 'class_name',
                                  'value': '//*[@id="88"]/div[2]/div/div[3]/input'},
         'testunit_lower_limit': {'method': 'xpath',
                                  'value': '//*[@id="88"]/div[2]/div/div[4]/input'},
+        'status_filter': {'method': 'id', 
+                          'value': 'statusfield'}
 
     },
 
