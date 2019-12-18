@@ -169,7 +169,16 @@ class Contact(Contacts):
 
     # to be fixed
     def get_contact_departments(self):
-        return []
+        departments_tags = self.base_selenium.find_element_by_xpath("//div[@class='ng2-tags-container']").find_elements_by_tag_name('tag')
+        departments = []
+        counter = 0
+        for tag in departments_tags:
+            departments.append(tag.find_element_by_xpath("//div[@class='tag__text inline']").text)
+            counter = counter +1
+        if counter > 0 :
+            return ', '.join(departments)
+        else:
+            return '-'
     
     def get_contact_type(self):
         isClient = self.base_selenium.find_element_by_xpath(xpath="//label[@id='isClient']//input[@type='checkbox']").is_selected()
@@ -178,17 +187,24 @@ class Contact(Contacts):
 
         contact_types = [3]
         counter = 0
+        no_type = True
         if isSupplier:
             contact_types[counter] = 'Contact'
             counter = counter +1
+            no_type = False
         if isClient:
             contact_types[counter] = 'Client'
             counter = counter +1
+            no_type = False
         if isLaboratory:
             contact_types[counter] = 'Laboratory'
             counter = counter +1
-
-        return ', '.join(contact_types) or '-'
+            no_type = False
+            
+        if no_type:
+            return  '-'
+        else:
+            return ', '.join(contact_types)
 
     def create_update_contact(self, create=True, no='', name='', address='', postalcode='', location='', country='', email='', phone='', skype='', website='', contact_types=['isClient'], departments=['']):
 
@@ -227,10 +243,26 @@ class Contact(Contacts):
             "phone": self.get_contact_phone(),
             "skype": self.get_contact_skype(),
             "website": self.get_contact_website(),
-            "departments": ', '.join(contact_departments),
+            "departments": self.get_contact_departments(),
             "contact_type": self.get_contact_type()
         }
 
         self.base_selenium.LOGGER.info('Saving the contact created')
         self.save(save_btn='contact:save')
         return contact_data
+
+    def get_full_contact_data(self):
+        return {
+            "no": self.get_contact_number(),
+            "name": self.get_contact_name(),
+            "address": self.get_contact_address(),
+            "postalcode": self.get_contact_postalcode(),
+            "location": self.get_contact_location(),
+            "country": self.get_contact_country(),
+            "email": self.get_contact_email(),
+            "phone": self.get_contact_phone(),
+            "skype": self.get_contact_skype(),
+            "website": self.get_contact_website(),
+            "departments": self.get_contact_departments(),
+            "contact_type": self.get_contact_type()
+        }

@@ -27,7 +27,7 @@ class Contacts(BasePages):
 
     def get_random_contact(self):
         row = self.get_random_contact_row()
-        self.get_random_x(row=row)
+        self.open_edit_page(row=row)
 
     def get_random_contact_row(self):
         return self.get_random_table_row(table_element='contacts:contact_table')

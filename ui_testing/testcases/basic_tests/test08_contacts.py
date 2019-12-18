@@ -21,55 +21,52 @@ class ContactsTestCases(BaseTest):
         """
         
         self.base_selenium.LOGGER.info('Select random table row')
-        contact_data = self.contact_page.create_update_contact()
+        self.contact_page.get_random_contact()
+        self.contact_page.sleep_tiny()
 
-        self.base_selenium.LOGGER.info('comparing contact\'s data with the first record in contact page')
-        self.base_selenium.LOGGER.info('to make sure that when new record is created is set to the be the first record in the page')
+        self.base_selenium.LOGGER.info('updating contact with newrandom data')
+        contact_data_before_refresh = self.contact_page.create_update_contact(create=False)
 
-        created_contact_record = self.contact_page.result_table()[0]
-        first_contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_contact_record)
-
-        self.base_selenium.LOGGER.info('contact no is {}, and it should be {}'.format(first_contact_data['Contact No'], contact_data['no']) )
-        self.assertEqual(first_contact_data['Contact No'], contact_data['no'])
-
-        self.base_selenium.LOGGER.info('contact name is {}, and it should be {}'.format(first_contact_data['Contact Name'], contact_data['name']) )
-        self.assertEqual(first_contact_data['Contact Name'], contact_data['name'])
-
-        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(first_contact_data['Address'], contact_data['address']) )
-        self.assertEqual(first_contact_data['Address'], contact_data['address'])
-
-        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(first_contact_data['Address'], contact_data['address']) )
-        self.assertEqual(first_contact_data['Address'], contact_data['address'])
-
-        self.base_selenium.LOGGER.info('contact postalcode is {}, and it should be {}'.format(first_contact_data['Postal Code'], contact_data['postalcode']) )
-        self.assertEqual(first_contact_data['Postal Code'], contact_data['postalcode'])
-
-
-        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(first_contact_data['Location'], contact_data['location']) )
-        self.assertEqual(first_contact_data['Location'], contact_data['location'])
-
-        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(first_contact_data['Location'], contact_data['location']) )
-        self.assertEqual(first_contact_data['Location'], contact_data['location'])
-
+        self.base_selenium.LOGGER.info('Refresh the page to make sure that data updated successfully')
+        self.base_selenium.refresh()
         
-        self.base_selenium.LOGGER.info('contact country is {}, and it should be {}'.format(first_contact_data['Country'], contact_data['country']) )
-        self.assertEqual(first_contact_data['Country'], contact_data['country'])
+        contact_data_after_refresh = self.contact_page.get_full_contact_data()
 
-        self.base_selenium.LOGGER.info('contact email is {}, and it should be {}'.format(first_contact_data['Email'], contact_data['email']) )
-        self.assertEqual(first_contact_data['Email'], contact_data['email'])
+        self.base_selenium.LOGGER.info('Compare Contact before refresh and after refresh')
 
-        self.base_selenium.LOGGER.info('contact phone is {}, and it should be {}'.format(first_contact_data['Phone'], contact_data['phone']) )
-        self.assertEqual(first_contact_data['Phone'], contact_data['phone'])
+        self.base_selenium.LOGGER.info('contact no is {}, and it should be {}'.format(contact_data_after_refresh['no'], contact_data_before_refresh['no']) )
+        self.assertEqual(contact_data_after_refresh['no'], contact_data_before_refresh['no'])
 
-        self.base_selenium.LOGGER.info('contact skype is {}, and it should be {}'.format(first_contact_data['Skype'], contact_data['skype']) )
-        self.assertEqual(first_contact_data['Skype'], contact_data['skype'])
+        self.base_selenium.LOGGER.info('contact name is {}, and it should be {}'.format(contact_data_after_refresh['name'], contact_data_before_refresh['name']) )
+        self.assertEqual(contact_data_after_refresh['name'], contact_data_before_refresh['name'])
 
-        self.base_selenium.LOGGER.info('contact website is {}, and it should be {}'.format(first_contact_data['Website'], contact_data['website']) )
-        self.assertEqual(first_contact_data['Website'], contact_data['website'])        
+        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(contact_data_after_refresh['address'], contact_data_before_refresh['address']) )
+        self.assertEqual(contact_data_after_refresh['address'], contact_data_before_refresh['address'])
 
-        self.base_selenium.LOGGER.info('contact departments is {}, and it should be {}'.format(first_contact_data['Departments'], contact_data['departments']) )
-        self.assertEqual(first_contact_data['Departments'], contact_data['departments'])
+        self.base_selenium.LOGGER.info('contact postalcode is {}, and it should be {}'.format(contact_data_after_refresh['postalcode'], contact_data_before_refresh['postalcode']) )
+        self.assertEqual(contact_data_after_refresh['postalcode'], contact_data_before_refresh['postalcode'])
 
-        self.base_selenium.LOGGER.info('contact contact_type is {}, and it should be {}'.format(first_contact_data['Type'], contact_data['contact_type']) )
-        self.assertEqual(first_contact_data['Type'], contact_data['contact_type'])
+        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(contact_data_after_refresh['location'], contact_data_before_refresh['location']) )
+        self.assertEqual(contact_data_after_refresh['location'], contact_data_before_refresh['location'])
+        
+        self.base_selenium.LOGGER.info('contact country is {}, and it should be {}'.format(contact_data_after_refresh['country'], contact_data_before_refresh['country']) )
+        self.assertEqual(contact_data_after_refresh['country'], contact_data_before_refresh['country'])
+
+        self.base_selenium.LOGGER.info('contact email is {}, and it should be {}'.format(contact_data_after_refresh['email'], contact_data_before_refresh['email']) )
+        self.assertEqual(contact_data_after_refresh['email'], contact_data_before_refresh['email'])
+
+        self.base_selenium.LOGGER.info('contact phone is {}, and it should be {}'.format(contact_data_after_refresh['phone'], contact_data_before_refresh['phone']) )
+        self.assertEqual(contact_data_after_refresh['phone'], contact_data_before_refresh['phone'])
+
+        self.base_selenium.LOGGER.info('contact skype is {}, and it should be {}'.format(contact_data_after_refresh['skype'], contact_data_before_refresh['skype']) )
+        self.assertEqual(contact_data_after_refresh['skype'], contact_data_before_refresh['skype'])
+
+        self.base_selenium.LOGGER.info('contact website is {}, and it should be {}'.format(contact_data_after_refresh['website'], contact_data_before_refresh['website']) )
+        self.assertEqual(contact_data_after_refresh['website'], contact_data_before_refresh['website'])        
+
+        self.base_selenium.LOGGER.info('contact departments is {}, and it should be {}'.format(contact_data_after_refresh['departments'], contact_data_before_refresh['departments']) )
+        self.assertEqual(contact_data_after_refresh['departments'], contact_data_before_refresh['departments'])
+
+        self.base_selenium.LOGGER.info('contact contact_type is {}, and it should be {}'.format(contact_data_after_refresh['contact_type'], contact_data_before_refresh['contact_type']) )
+        self.assertEqual(contact_data_after_refresh['contact_type'], contact_data_before_refresh['contact_type'])
         
