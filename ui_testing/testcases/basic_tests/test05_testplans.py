@@ -13,46 +13,64 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_plan.get_test_plans_page()
 
-    def test001_test_plan_delete_testunit(self):
+    def test005_archive_restore_test_plan(self):
         '''
-        LIMS-3504
-        Testing deleting a test unit from testplan create or update step two
-        It deletes the first test unit in the chosen test plan and saves this,
-        then refreshes the page and checks if the deletion was done correctly.
+        LIMS-3506
         '''
 
-        completed_test_plans = self.get_completed_testplans()
-        random_completed_testplan = random.choice(completed_test_plans)
-        testplan_name = random_completed_testplan['testPlanName']
-        self.test_plan.sleep_medium()
-
-        # navigate to the chosen testplan edit page
-        self.test_plan.get_test_plan_edit_page(testplan_name)
-
-        # navigate to the testunits selection tab [Test plan create or update step 2] and get the testunits
-        all_testunits = self.test_plan.navigate_to_testplan_stepII_and_get_testunits()
-
-        # get the name of the first testunit, which is the one to be deleted
-        deleted_test_unit = (all_testunits[0])[0]
-
-        # delete the first testunit
-        self.test_plan.delete_the_first_testunit_from_the_tableview()
-
-        # save the changes
-        self.test_plan.save_and_confirm_popup()
-
-        # refresh the page to make sure the changes were saved correctly
-        self.base_selenium.LOGGER.info('Refreshing the page')
-        self.base_selenium.refresh()
+        # archive
+        self.base_selenium.LOGGER.info('Choosing a random testplan table row to edit')
+        # choose a random table row and navigate to its edit page
+        row = self.test_plan.get_random_table_row('test_plans:test_plans_table')
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
+        testplan_number = row_data['Test Plan No.']
+        print(testplan_number)
+        self.test_plan.sleep_small()
+        print(row)
+        self.test_plan.click_check_box(source=row)
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:right_menu')
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:archive')
+        self.test_plan.sleep_small()
+        self.test_plan.confirm_popup()
         self.test_plan.sleep_small()
 
-        self.test_plan.navigate_to_testunits_selection_page()
-        all_testunits = self.test_plan.get_all_testunits_in_testplan()
+        # self.test_plan.sleep_small()
+        # self.test_plan.click_check_box(source=row)
+        # self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:right_menu')
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:archived')
+        self.test_plan.sleep_small()
+        # self.base_selenium.click(element='test_plans:archive')
+        # self.test_plan.sleep_small()
+        # self.test_plan.confirm_popup()
+        # self.test_plan.sleep_small()
+        # self.confirm_popup()
 
-        # checking if the data was saved correctly
-        self.base_selenium.LOGGER.info('Checking if the changes were saved successfully')
-        deleted_test_unit_found = self.test_plan.check_if_deleted_testunit_is_available(all_testunits=all_testunits, deleted_test_unit=deleted_test_unit)
-        
-        self.assertFalse(deleted_test_unit_found)
 
-
+        # restore
+        self.base_selenium.click(element='test_plans:right_menu')
+        self.test_plan.sleep_small()
+        r = self.test_plan.search(testplan_number)
+        # print(r[0].text)
+        self.test_plan.sleep_small()
+       
+        self.test_plan.click_check_box(source=r[0])
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:right_menu')
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:restore')
+        self.test_plan.sleep_small()
+        self.test_plan.confirm_popup()
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:right_menu')
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:active')
+        self.test_plan.sleep_small()
+        self.base_selenium.click(element='test_plans:right_menu')
+        self.test_plan.sleep_small()
+        r = self.test_plan.search(testplan_number)
+        print(r[0].text)
+        self.test_plan.sleep_small()

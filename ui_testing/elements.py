@@ -191,7 +191,17 @@ elements = {
                                    'value': 'a',
                                    'order': 1},
         'new_test_plan': {'method': 'link_text',
-                          'value': 'New Test Plan'}
+                          'value': 'New Test Plan'},
+        'right_menu': {'method': 'xpath',
+                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+        'archived': {'method': 'link_text',
+                     'value': 'Archived'},
+        'archive': {'method': 'link_text',
+                    'value': 'Archive'},
+        'active': {'method': 'link_text',
+                   'value': 'Active'},
+        'restore': {'method': 'link_text',
+                    'value': 'Restore'},
     },
 
     'test_units': {
@@ -262,6 +272,7 @@ elements = {
         'ok': {'method': 'class_name',
                'value': 'swal2-confirm',
                'order': 0},
+        
     },
 
     'test_unit': {
