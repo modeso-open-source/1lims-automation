@@ -124,3 +124,9 @@ class BaseTest(TestCase):
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
+    def get_completed_testplans(self):
+        response = self.test_plan_api.get_all_test_plans()
+        all_test_plans = response.json()['testPlans']
+        completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
+        return completed_test_plans
