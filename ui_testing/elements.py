@@ -483,7 +483,15 @@ elements = {
                'value': 'isLaboratory'},
         'save': {'method': 'class_name',
                  'value': 'btn-primary',
-                 'order': 1}
-        
+                 'order': 1}, 
+        'contact_persons': {'method': 'id',
+                 'value': 'contact_persons_page'},
+        'delete_table_view': {'method': 'id',
+                 'value': 'delete_table_view'},
+        'add_another_item': {'method': 'class_name',
+                     'value': 'addNewItem',
+                     'order': 0},
+        'contact_persons_table': {'method': 'id',
+                     'value': 'table-with-add'}
     }
 }

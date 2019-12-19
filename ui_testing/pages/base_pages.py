@@ -124,8 +124,10 @@ class BasePages:
             destination_element='general:checkbox', source=source)
         check_box.click()
 
-    def open_edit_page(self, row):
-        row.find_element_by_xpath('//span[@class="mr-auto"]/a').click()
+    def open_edit_page(self, row, xpath=''):
+        if xpath == '':
+            xpath = '//span[@class="mr-auto"]/a'
+        row.find_element_by_xpath(xpath).click()
         self.sleep_small() # sleep for loading
 
     def get_archived_items(self):
@@ -237,5 +239,9 @@ class BasePages:
 
     def generate_random_website(self):
         return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
+
+    def click_element_by_xpath(self, element, xpath=''):
+        element.find_element_by_xpath(xpath).click()
+        self.sleep_small() # sleep for loading
 
   
