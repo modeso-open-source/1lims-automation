@@ -124,15 +124,8 @@ class BasePages:
             destination_element='general:checkbox', source=source)
         check_box.click()
 
-    def get_random_x(self, row):
-        # x_cells = self.base_selenium.get_row_cells(row=row)
-        #
-        # for x_cell in x_cells:
-        #     if x_cell.text:
-        #         x_cell.click()
-        #         break
-        # self.sleep_medium()
-        row.find_element_by_xpath('//span/a[@title="Edit details"]').click()
+    def open_edit_page(self, row):
+        row.find_element_by_xpath('//span[@class="mr-auto"]/a').click()
         self.sleep_small() # sleep for loading
 
     def get_archived_items(self):
@@ -179,7 +172,7 @@ class BasePages:
 
     def open_random_table_row_page(self, table_element):
         row = self.get_random_table_row(table_element)
-        self.get_random_x(row=row)
+        self.open_edit_page(row=row)
 
     def get_random_table_row(self, table_element):
         rows = self.base_selenium.get_table_rows(element=table_element)
