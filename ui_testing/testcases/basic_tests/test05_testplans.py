@@ -32,9 +32,8 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.click_check_box(source=row)
         self.test_plan.sleep_small()
 
-        self.test_plan.right_menu_action('archive')
-        self.test_plan.right_menu_action('archived')
-
+        self.test_plan.archive_selected_items()
+        self.test_plan.get_archived_items()
               
         archived_row = self.test_plan.search(testplan_number)
         self.test_plan.sleep_small()
@@ -47,13 +46,14 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.click_check_box(source=archived_row[0])
         self.test_plan.sleep_small()
 
-        self.test_plan.right_menu_action('restore')
-        self.test_plan.right_menu_action('active')
+        self.test_plan.restore_selected_items()
+        self.test_plan.get_active_items()
 
         restored_row = self.test_plan.search(testplan_number)
         self.base_selenium.LOGGER.info('Checking if testplan number: {} is restored correctly'.format(testplan_number))
         self.assertIsNotNone(restored_row[0])
         self.base_selenium.LOGGER.info('Testplan number: {} is restored correctly'.format(testplan_number))
+
 
     def test006_archive_restore_test_plan_multiple_records(self):
         '''
@@ -71,8 +71,8 @@ class TestPlansTestCases(BaseTest):
         # archive and navigate to archived table
         self.base_selenium.LOGGER.info('Testplan numbers: {} will be archived'.format(testplans_numbers))
 
-        self.test_plan.right_menu_action('archive')
-        self.test_plan.right_menu_action('archived')
+        self.test_plan.archive_selected_items()
+        self.test_plan.get_archived_items()
 
         self.base_selenium.LOGGER.info('Checking if testplan numbers: {} are archived correctly'.format(testplans_numbers))
 
@@ -86,8 +86,8 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Testplan numbers: {} are archived correctly'.format(testplans_numbers))
 
         # restore and navigate to active table
-        self.test_plan.right_menu_action('restore')
-        self.test_plan.right_menu_action('active')
+        self.test_plan.restore_selected_items()
+        self.test_plan.get_active_items()
 
         self.base_selenium.LOGGER.info('Checking if testplan numbers: {} are restored correctly'.format(testplans_numbers))
 
