@@ -36,3 +36,26 @@ class TestPlans(BasePages):
     
         return testplan_testunits
 
+    def right_menu_action(self, action, row=''):
+
+        self.base_selenium.LOGGER.info('Opening the right menu')
+        self.base_selenium.click(element='test_plans:right_menu')
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Choosing {} from the right menu'.format(action))
+        self.base_selenium.click(element='test_plans:{}'.format(action))
+        self.sleep_small()
+
+        if action == 'archive' or action == 'restore':
+            self.confirm_popup()
+
+    def search_for_multiple_rows(self, testplans_numbers, check=0):
+        rows = []
+        for tp_number in testplans_numbers:
+            self.base_selenium.LOGGER.info('Searching for testplan number: {}'.format(tp_number))
+            row = self.search(tp_number)
+            rows.append(row[0])
+            if check:
+                self.base_selenium.LOGGER.info('Clicking the checkbox for testplan number: {}'.format(tp_number))
+                self.click_check_box(row[0])
+        return rows
+
