@@ -114,42 +114,12 @@ class ContactsTestCases(BaseTest):
         contact_data_after_refresh = self.contact_page.get_full_contact_data()
 
         self.base_selenium.LOGGER.info('Compare Contact before refresh and after refresh')
+        if self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh, data_before_save=contact_data_before_refresh):
+            self.base_selenium.LOGGER.info('contact data have been saved successfully')
+        else:
+            self.base_selenium.LOGGER.info('contact data was not saved successfully, you should report a BUG')
+            self.assertEqual(True, False)
 
-        self.base_selenium.LOGGER.info('contact no is {}, and it should be {}'.format(contact_data_after_refresh['no'], contact_data_before_refresh['no']) )
-        self.assertEqual(contact_data_after_refresh['no'], contact_data_before_refresh['no'])
-
-        self.base_selenium.LOGGER.info('contact name is {}, and it should be {}'.format(contact_data_after_refresh['name'], contact_data_before_refresh['name']) )
-        self.assertEqual(contact_data_after_refresh['name'], contact_data_before_refresh['name'])
-
-        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(contact_data_after_refresh['address'], contact_data_before_refresh['address']) )
-        self.assertEqual(contact_data_after_refresh['address'], contact_data_before_refresh['address'])
-
-        self.base_selenium.LOGGER.info('contact postalcode is {}, and it should be {}'.format(contact_data_after_refresh['postalcode'], contact_data_before_refresh['postalcode']) )
-        self.assertEqual(contact_data_after_refresh['postalcode'], contact_data_before_refresh['postalcode'])
-
-        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(contact_data_after_refresh['location'], contact_data_before_refresh['location']) )
-        self.assertEqual(contact_data_after_refresh['location'], contact_data_before_refresh['location'])
-        
-        self.base_selenium.LOGGER.info('contact country is {}, and it should be {}'.format(contact_data_after_refresh['country'], contact_data_before_refresh['country']) )
-        self.assertEqual(contact_data_after_refresh['country'], contact_data_before_refresh['country'])
-
-        self.base_selenium.LOGGER.info('contact email is {}, and it should be {}'.format(contact_data_after_refresh['email'], contact_data_before_refresh['email']) )
-        self.assertEqual(contact_data_after_refresh['email'], contact_data_before_refresh['email'])
-
-        self.base_selenium.LOGGER.info('contact phone is {}, and it should be {}'.format(contact_data_after_refresh['phone'], contact_data_before_refresh['phone']) )
-        self.assertEqual(contact_data_after_refresh['phone'], contact_data_before_refresh['phone'])
-
-        self.base_selenium.LOGGER.info('contact skype is {}, and it should be {}'.format(contact_data_after_refresh['skype'], contact_data_before_refresh['skype']) )
-        self.assertEqual(contact_data_after_refresh['skype'], contact_data_before_refresh['skype'])
-
-        self.base_selenium.LOGGER.info('contact website is {}, and it should be {}'.format(contact_data_after_refresh['website'], contact_data_before_refresh['website']) )
-        self.assertEqual(contact_data_after_refresh['website'], contact_data_before_refresh['website'])        
-
-        self.base_selenium.LOGGER.info('contact departments is {}, and it should be {}'.format(contact_data_after_refresh['departments'], contact_data_before_refresh['departments']) )
-        self.assertEqual(contact_data_after_refresh['departments'], contact_data_before_refresh['departments'])
-
-        self.base_selenium.LOGGER.info('contact contact_type is {}, and it should be {}'.format(contact_data_after_refresh['contact_type'], contact_data_before_refresh['contact_type']) )
-        self.assertEqual(contact_data_after_refresh['contact_type'], contact_data_before_refresh['contact_type'])
     
     def test_004_search_by_any_field(self):
         """
@@ -173,7 +143,23 @@ class ContactsTestCases(BaseTest):
                     break
             self.assertEqual(row_data[column], search_data[column])
 
-    
+    def test05_download_contact_sheet(self):
+        """
+        New: Contact: XSLX File: I can download all the data in the table view in the excel sheet
+        I can download all the data in the table view in the excel sheet 
+
+        LIMS:3568
+        """
+        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
+        self.contact_page.download_xslx_sheet()
+        rows_data = self.contact_page.get_table_rows_data()
+        for index in range(len(rows_data)):
+            self.base_selenium.LOGGER.info(' * Comparing the contact no. {} '.format(index))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.contact_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                self.assertIn(item, fixed_sheet_row_data)
 
     def test_06_create_contact_with_person(self):
         contact_data = self.contact_page.create_update_contact()
@@ -241,7 +227,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(True, False)
         
 
-    # @skip('https://modeso.atlassian.net/browse/LIMS-6394')
+    @skip('https://modeso.atlassian.net/browse/LIMS-6394')
     def test_08_delete_contact_person(self):
         """
         Contact: Edit Approach: Make sure that you can delete any contact person from the edit mode 
