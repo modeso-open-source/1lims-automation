@@ -1,5 +1,6 @@
 from ui_testing.pages.contacts_page import Contacts
 from random import randint
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 
@@ -321,20 +322,20 @@ class Contact(Contacts):
     def get_contact_persons_data(self):
         self.get_contact_persons_page()
         self.base_selenium.LOGGER.info('Collecting persons data')
-        contact_persons_table_records = self.base_selenium.get_table_rows(element='contact:contact_persons_table')
         contact_persons_arr = []
         
         person_counter=0
+        webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
+        contact_persons_table_records = self.base_selenium.get_table_rows(element='contact:contact_persons_table')
         for person in contact_persons_table_records:
-            row_data = self.base_selenium.get_row_cells_id_elements_related_to_header(row=person, table_element='contact:contact_persons_table')
-            self.click_element_by_xpath(element=row_data, xpath='//span[@class="m-section__content ng-star-inserted"]')
+            row_data = self.base_selenium.get_row_cells_elements_related_to_header(row=person, table_element='contact:contact_persons_table')
             contact_persons_arr.append({
-                'name': row_data['name'].text,
-                'position': row_data['position'].text,
-                'email': row_data['email'+str(person_counter)],
-                'phone': row_data['phone'],
-                'skype': row_data['skype'],
-                'info': row_data['info']
+                'name': row_data['Contact Person: *'].text,
+                'position': row_data['Position:'].text,
+                'email': row_data['Email:'].text,
+                'phone': row_data['Phone:'].text,
+                'skype': row_data['Skype:'].text,
+                'info': row_data['Info:'].text
             })
             person_counter = person_counter+1
         self.base_selenium.LOGGER.info(contact_persons_arr)
