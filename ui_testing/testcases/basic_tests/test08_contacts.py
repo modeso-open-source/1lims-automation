@@ -21,63 +21,22 @@ class ContactsTestCases(BaseTest):
         self.contact_page.open_edit_page(row=first_contact_record, xpath='//span[@class="mr-auto ng-star-inserted"]/a')
 
         contact_data_after_create = self.contact_page.get_full_contact_data()
-        self.base_selenium.LOGGER.info('contact no is {}, and it should be {}'.format(contact_data_after_create['no'], contact_data['no']) )
-        self.assertEqual(contact_data_after_create['no'], contact_data['no'])
+        if self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_create, data_before_save=contact_data):
+            self.base_selenium.LOGGER.info('contact data have been saved successfully')
+        else:
+            self.base_selenium.LOGGER.info('contact data was not saved successfully, you should report a BUG')
+            self.assertEqual(True, False)
 
-        self.base_selenium.LOGGER.info('contact name is {}, and it should be {}'.format(contact_data_after_create['name'], contact_data['name']) )
-        self.assertEqual(contact_data_after_create['name'], contact_data['name'])
-
-        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(contact_data_after_create['address'], contact_data['address']) )
-        self.assertEqual(contact_data_after_create['address'], contact_data['address'])
-
-        self.base_selenium.LOGGER.info('contact postalcode is {}, and it should be {}'.format(contact_data_after_create['postalcode'], contact_data['postalcode']) )
-        self.assertEqual(contact_data_after_create['postalcode'], contact_data['postalcode'])
-
-        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(contact_data_after_create['location'], contact_data['location']) )
-        self.assertEqual(contact_data_after_create['location'], contact_data['location'])
-
-        self.base_selenium.LOGGER.info('contact country is {}, and it should be {}'.format(contact_data_after_create['country'], contact_data['country']) )
-        self.assertEqual(contact_data_after_create['country'], contact_data['country'])
-
-        self.base_selenium.LOGGER.info('contact email is {}, and it should be {}'.format(contact_data_after_create['email'], contact_data['email']) )
-        self.assertEqual(contact_data_after_create['email'], contact_data['email'])
-
-        self.base_selenium.LOGGER.info('contact phone is {}, and it should be {}'.format(contact_data_after_create['phone'], contact_data['phone']) )
-        self.assertEqual(contact_data_after_create['phone'], contact_data['phone'])
-
-        self.base_selenium.LOGGER.info('contact skype is {}, and it should be {}'.format(contact_data_after_create['skype'], contact_data['skype']) )
-        self.assertEqual(contact_data_after_create['skype'], contact_data['skype'])
-
-        self.base_selenium.LOGGER.info('contact website is {}, and it should be {}'.format(contact_data_after_create['website'], contact_data['website']) )
-        self.assertEqual(contact_data_after_create['website'], contact_data['website'])        
-
-        self.base_selenium.LOGGER.info('contact departments is {}, and it should be {}'.format(contact_data_after_create['departments'], contact_data['departments']) )
-        self.assertEqual(contact_data_after_create['departments'], contact_data['departments'])
-
-        self.base_selenium.LOGGER.info('contact contact_type is {}, and it should be {}'.format(contact_data_after_create['contact_type'], contact_data['contact_type']) )
-        self.assertEqual(contact_data_after_create['contact_type'], contact_data['contact_type'])
-
-        self.base_selenium.LOGGER.info('navigate to persons page to compare the data')
         self.contact_page.get_contact_persons_page()
 
         contact_persons_data_after_create = self.contact_page.get_contact_persons_data()
-
-        person_counter = 0
-        for contact_person in contact_persons_data_after_create:
-            current_contact_person = contact_data["contact_persons"][person_counter]
-            self.base_selenium.LOGGER.info('contact person #{} name is: {}, and it should be: {}'.format(person_counter, contact_person['name'], current_contact_person['name']))
-            self.assertEqual(contact_person['name'], current_contact_person['name'])
-            self.base_selenium.LOGGER.info('contact person #{} position is: {}, and it should be: {}'.format(person_counter, contact_person['position'], current_contact_person['position']))
-            self.assertEqual(contact_person['position'], current_contact_person['position'])
-            self.base_selenium.LOGGER.info('contact person #{} email is: {}, and it should be: {}'.format(person_counter, contact_person['email'], current_contact_person['email']))
-            self.assertEqual(contact_person['email'], current_contact_person['email'])
-            self.base_selenium.LOGGER.info('contact person #{} phone is: {}, and it should be: {}'.format(person_counter, contact_person['phone'], current_contact_person['phone']))
-            self.assertEqual(contact_person['phone'], current_contact_person['phone'])
-            self.base_selenium.LOGGER.info('contact person #{} skype is: {}, and it should be: {}'.format(person_counter, contact_person['skype'], current_contact_person['skype']))
-            self.assertEqual(contact_person['skype'], current_contact_person['skype'])
-            self.base_selenium.LOGGER.info('contact person #{} info is: {}, and it should be: {}'.format(person_counter, contact_person['info'], current_contact_person['info']))
-            self.assertEqual(contact_person['info'], current_contact_person['info'])
-            person_counter = person_counter +1
+        
+        self.base_selenium.LOGGER.info('compare contact persons data after refresh')
+        if self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_data_after_create, data_before_save=contact_data["contact_persons"]):
+                self.base_selenium.LOGGER.info('contact persons have been saved successfully')
+        else:
+            self.base_selenium.LOGGER.info('contact persons was not saved successfully, you should report a BUG')
+            self.assertEqual(True, False)
 
     def test_07_create_contact_person_from_edit_update_old_value(self):
         """
@@ -101,62 +60,89 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.refresh()
 
         contact_data_after_refresh = self.contact_page.get_full_contact_data()
-        self.base_selenium.LOGGER.info('Compare contact data after refresh')
-
-        self.base_selenium.LOGGER.info('contact no is {}, and it should be {}'.format(contact_data_after_refresh['no'], contact_data['no']) )
-        self.assertEqual(contact_data_after_refresh['no'], contact_data['no'])
-
-        self.base_selenium.LOGGER.info('contact name is {}, and it should be {}'.format(contact_data_after_refresh['name'], contact_data['name']) )
-        self.assertEqual(contact_data_after_refresh['name'], contact_data['name'])
-
-        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(contact_data_after_refresh['address'], contact_data['address']) )
-        self.assertEqual(contact_data_after_refresh['address'], contact_data['address'])
-
-        self.base_selenium.LOGGER.info('contact postalcode is {}, and it should be {}'.format(contact_data_after_refresh['postalcode'], contact_data['postalcode']) )
-        self.assertEqual(contact_data_after_refresh['postalcode'], contact_data['postalcode'])
-
-        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(contact_data_after_refresh['location'], contact_data['location']) )
-        self.assertEqual(contact_data_after_refresh['location'], contact_data['location'])
-
-        self.base_selenium.LOGGER.info('contact country is {}, and it should be {}'.format(contact_data_after_refresh['country'], contact_data['country']) )
-        self.assertEqual(contact_data_after_refresh['country'], contact_data['country'])
-
-        self.base_selenium.LOGGER.info('contact email is {}, and it should be {}'.format(contact_data_after_refresh['email'], contact_data['email']) )
-        self.assertEqual(contact_data_after_refresh['email'], contact_data['email'])
-
-        self.base_selenium.LOGGER.info('contact phone is {}, and it should be {}'.format(contact_data_after_refresh['phone'], contact_data['phone']) )
-        self.assertEqual(contact_data_after_refresh['phone'], contact_data['phone'])
-
-        self.base_selenium.LOGGER.info('contact skype is {}, and it should be {}'.format(contact_data_after_refresh['skype'], contact_data['skype']) )
-        self.assertEqual(contact_data_after_refresh['skype'], contact_data['skype'])
-
-        self.base_selenium.LOGGER.info('contact website is {}, and it should be {}'.format(contact_data_after_refresh['website'], contact_data['website']) )
-        self.assertEqual(contact_data_after_refresh['website'], contact_data['website'])        
-
-        self.base_selenium.LOGGER.info('contact departments is {}, and it should be {}'.format(contact_data_after_refresh['departments'], contact_data['departments']) )
-        self.assertEqual(contact_data_after_refresh['departments'], contact_data['departments'])
-
-        self.base_selenium.LOGGER.info('contact contact_type is {}, and it should be {}'.format(contact_data_after_refresh['contact_type'], contact_data['contact_type']) )
-        self.assertEqual(contact_data_after_refresh['contact_type'], contact_data['contact_type'])
+        if self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh, data_before_save=contact_data):
+            self.base_selenium.LOGGER.info('contact data have been saved successfully')
+        else:
+            self.base_selenium.LOGGER.info('contact data was not saved successfully, you should report a BUG')
+            self.assertEqual(True, False)
 
         self.contact_page.get_contact_persons_page()
         contact_persons_after_refresh = self.contact_page.get_contact_persons_data()
 
         self.base_selenium.LOGGER.info('compare contact persons data after refresh')
+        if self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh, data_before_save=contact_persons_after_update):
+                self.base_selenium.LOGGER.info('contact persons have been saved successfully')
+        else:
+            self.base_selenium.LOGGER.info('contact persons was not saved successfully, you should report a BUG')
+            self.assertEqual(True, False)
+        
 
-        person_counter = 0
-        for contact_person in contact_persons_after_refresh:
-            current_contact_person = contact_persons_after_update[person_counter]
-            self.base_selenium.LOGGER.info('contact person #{} name is: {}, and it should be: {}'.format(person_counter, contact_person['name'], current_contact_person['name']))
-            self.assertEqual(contact_person['name'], current_contact_person['name'])
-            self.base_selenium.LOGGER.info('contact person #{} position is: {}, and it should be: {}'.format(person_counter, contact_person['position'], current_contact_person['position']))
-            self.assertEqual(contact_person['position'], current_contact_person['position'])
-            self.base_selenium.LOGGER.info('contact person #{} email is: {}, and it should be: {}'.format(person_counter, contact_person['email'], current_contact_person['email']))
-            self.assertEqual(contact_person['email'], current_contact_person['email'])
-            self.base_selenium.LOGGER.info('contact person #{} phone is: {}, and it should be: {}'.format(person_counter, contact_person['phone'], current_contact_person['phone']))
-            self.assertEqual(contact_person['phone'], current_contact_person['phone'])
-            self.base_selenium.LOGGER.info('contact person #{} skype is: {}, and it should be: {}'.format(person_counter, contact_person['skype'], current_contact_person['skype']))
-            self.assertEqual(contact_person['skype'], current_contact_person['skype'])
-            self.base_selenium.LOGGER.info('contact person #{} info is: {}, and it should be: {}'.format(person_counter, contact_person['info'], current_contact_person['info']))
-            self.assertEqual(contact_person['info'], current_contact_person['info'])
-            person_counter = person_counter +1
+    # @skip('https://modeso.atlassian.net/browse/LIMS-6394')
+    def test_08_delete_contact_person(self):
+        """
+        Contact: Edit Approach: Make sure that you can delete any contact person from the edit mode 
+        LIMS-6387
+        """
+
+        self.base_selenium.LOGGER.info('in this case, we will delete contact person that exist in the first record in the table')
+        self.base_selenium.LOGGER.info('because in the sequence of test cases, first record will contain for sure a contact person')
+
+        self.base_selenium.LOGGER.info('select the first contact record')
+        first_contact_record = self.contact_page.result_table()[0]
+
+        self.base_selenium.LOGGER.info('open the record in edit form')
+        self.contact_page.open_edit_page(row=first_contact_record)
+
+        self.base_selenium.LOGGER.info('acquire the data from the form to compare it with the data after saving to make sure it is saved correctly')
+        contact_data = self.contact_page.get_full_contact_data()
+
+        self.contact_page.get_contact_persons_page()
+        count_of_contact_person_before_delete = self.contact_page.get_contact_persons_count()
+        self.contact_page.delete_contact_person()
+        count_of_contact_person_after_delete = self.contact_page.get_contact_persons_count()
+
+        if count_of_contact_person_after_delete == count_of_contact_person_before_delete:
+            is_successfully_deleted = self.contact_page.check_contact_persons_table_is_empty()
+            if is_successfully_deleted:
+                self.base_selenium.LOGGER.info('Contact person removed successfully')
+            else:
+                self.base_selenium.LOGGER.info('Contact person was not removed successfully, a bug should be created')
+                self.assertEqual(True, is_successfully_deleted)
+        else:
+            self.base_selenium.LOGGER.info('Contact person removed successfully')
+        
+        self.base_selenium.LOGGER.info('getting contact person data after remove the record to check that it was not corrupted after being saved')
+        contact_persons_after_remove = self.contact_page.get_contact_persons_data()
+
+        self.contact_page.save(save_btn='contact:save')
+        
+        self.base_selenium.LOGGER.info('Refreshing to make sure that data are saved without being corrupted')
+        self.base_selenium.refresh()
+
+        contact_data_after_refresh = self.contact_page.get_full_contact_data()
+        if self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh, data_before_save=contact_data):
+            self.base_selenium.LOGGER.info('contact data have been saved successfully')
+        else:
+            self.base_selenium.LOGGER.info('contact data was not saved successfully, you should report a BUG')
+            self.assertEqual(True, False)
+
+        self.contact_page.get_contact_persons_page()
+        self.base_selenium.LOGGER.info('get contact person data after refresh to make sure it was saved correctly')
+        
+        contact_persons_after_refresh = self.contact_page.get_contact_persons_data()
+        if count_of_contact_person_before_delete == 1:
+            if self.contact_page.check_contact_persons_table_is_empty():
+                self.base_selenium.LOGGER.info('contact person deleted successfully')
+            else:
+                self.base_selenium.LOGGER.info('contact person was not deleted successfully, report a bug')
+                self.assertEqual(True, False)
+
+        if len(contact_persons_after_refresh) == len(contact_persons_after_remove):
+            if self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh, data_before_save=contact_persons_after_remove):
+                self.base_selenium.LOGGER.info('contact persons have been saved successfully')
+            else:
+                self.base_selenium.LOGGER.info('contact persons was not saved successfully, you should report a BUG')
+                self.assertEqual(True, False)
+        else:
+            self.base_selenium.LOGGER.info('Data were not correctly saved, report a bug')
+            self.assertEqual(True, False)
