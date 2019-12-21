@@ -49,7 +49,7 @@ class ContactsTestCases(BaseTest):
         """
         
         self.base_selenium.LOGGER.info('Creating new contact')
-        contact_data = self.contact_page.create_update_contact()
+        contact_data = self.contact_page.create_update_contact(contact_persons=False)
 
         self.base_selenium.LOGGER.info('comparing contact\'s data with the first record in contact page')
         self.base_selenium.LOGGER.info('to make sure that when new record is created is set to the be the first record in the page')
@@ -106,7 +106,7 @@ class ContactsTestCases(BaseTest):
         self.contact_page.sleep_tiny()
 
         self.base_selenium.LOGGER.info('updating contact with newrandom data')
-        contact_data_before_refresh = self.contact_page.create_update_contact(create=False)
+        contact_data_before_refresh = self.contact_page.create_update_contact(create=False, contact_persons=False)
 
         self.base_selenium.LOGGER.info('Refresh the page to make sure that data updated successfully')
         self.base_selenium.refresh()
