@@ -266,7 +266,7 @@ class Contact(Contacts):
         self.base_selenium.click(element='contact:contact_persons')
         self.sleep_tiny()
 
-    def create_update_contact_person(self, create=True, indexToEdit=-1, name='', position='', email='', phone='', skype='', info=''):
+    def create_update_contact_person(self, create=True, indexToEdit=-1, name='', position='', email='', phone='', skype='', info='', save=False):
         if create:
             self.base_selenium.click(element='contact:add_another_item')
 
@@ -317,6 +317,8 @@ class Contact(Contacts):
         self.base_selenium.LOGGER.info('Acquire contact persons data')
         contact_person_data = self.get_contact_persons_data()
         
+        if save:
+            self.save(save_btn='contact:save')
         return contact_person_data
         
     def get_contact_persons_data(self):
@@ -324,7 +326,6 @@ class Contact(Contacts):
         self.base_selenium.LOGGER.info('Collecting persons data')
         contact_persons_arr = []
         
-        person_counter=0
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
         contact_persons_table_records = self.base_selenium.get_table_rows(element='contact:contact_persons_table')
         for person in contact_persons_table_records:
@@ -337,7 +338,6 @@ class Contact(Contacts):
                 'skype': row_data['Skype:'].text,
                 'info': row_data['Info:'].text
             })
-            person_counter = person_counter+1
         self.base_selenium.LOGGER.info(contact_persons_arr)
         return contact_persons_arr
             
