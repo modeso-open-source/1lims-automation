@@ -244,4 +244,71 @@ class BasePages:
         element.find_element_by_xpath(xpath).click()
         self.sleep_small() # sleep for loading
 
-  
+    def open_configure_table(self):
+        self.base_selenium.LOGGER.info('open configure table')
+        configure_table_menu = self.base_selenium.find_element_by_xpath(xpath='//a[@class="m-dropdown__toggle btn no-padding"]')
+        if configure_table_menu:
+            configure_table_menu.click()
+            self.sleep_small()
+        else:
+            self.base_selenium.LOGGER.info('Couldn\'t find the item')
+    
+    def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
+        self.open_configure_table()
+        total_columns = self.base_selenium.find_element_by_xpath(xpath='//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
+        random_indices_arr = index_arr
+        hidden_columns_names = []
+        if random:
+            random_indices_arr = self.generate_random_indices(max_index=len(total_columns), count=count)
+
+        for index in random_indices_arr:
+            if total_columns[index].get_attribute('id') and total_columns[index].get_attribute('id') != 'id' and total_columns[index].get_attribute('id') not in always_hidden_columns:
+                try:
+                    new_label_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//label[@class='sortable-label']"
+                    new_checkbox_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//span[@class='checkbox']"
+                    column_name = self.base_selenium.find_element_by_xpath(new_label_xpath)
+                    column = self.base_selenium.find_element_by_xpath(new_checkbox_xpath)
+                    hidden_columns_names.append(column_name)
+                    column.click()
+                except Exception as e:
+                    self.base_selenium.LOGGER.info("element with the id '{}' doesn't  exit in the configure table".format(total_columns[index].get_attribute('id')))
+                    self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
+
+        
+        self.press_apply_in_configure_table()
+        return hidden_columns_names
+
+
+    def generate_random_indices(self, max_index=3, count=3):
+        counter = 0
+        indices_arr = []
+        while counter < count:
+            random_index = self.generate_random_number(lower=0, upper=max_index-1)
+            if random_index not in indices_arr:
+                indices_arr.append(random_index)
+                counter = counter +1
+        
+        return indices_arr
+
+    def press_apply_in_configure_table(self):
+        apply_button = self.base_selenium.find_element_by_xpath('//a[@class="btn btn-primary m-btn pull-right"]')
+        if apply_button:
+            apply_button.click()
+            
+    def set_all_configure_table_columns_to_specific_value(self, value=True, always_hidden_columns=['']):
+        self.open_configure_table()
+        total_columns = self.base_selenium.find_element_by_xpath('//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
+        for column in total_columns:
+            if column.get_attribute('id') and column.get_attribute('id') != 'id' and column.get_attribute('id') not in always_hidden_columns  :
+                try:
+                    new_checkbox_value = "//li[@id='" + column.get_attribute('id') + "']//input[@type='checkbox']"
+                    new_checkbox_xpath = "//li[@id='" + column.get_attribute('id') + "']//span[@class='checkbox']"
+                    checkbox = self.base_selenium.find_element_by_xpath(new_checkbox_xpath)
+                    checkbox_value = self.base_selenium.find_element_by_xpath(new_checkbox_value)
+                    if checkbox_value:
+                        if checkbox_value.is_selected() != value:
+                            checkbox.click()
+                except Exception as e:
+                    self.base_selenium.LOGGER.info("element with the id '{}' doesn't  exit in the configure table".format(column.get_attribute('id')))
+                    self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
+        self.press_apply_in_configure_table()

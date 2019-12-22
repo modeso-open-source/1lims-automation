@@ -82,3 +82,20 @@ class Contacts(BasePages):
             self.base_selenium.click(element='general:confirm_pop')
             return False
         return True
+
+    def check_if_table_is_empty(self):
+        row = self.base_selenium.get_table_rows(element='contacts:contact_table')[0]
+        if row.text != '':
+            return False
+        return True
+
+    def check_delete_message(self):
+        msg = self.base_selenium.find_element_by_xpath(xpath='//h2[@id="swal2-title"]')
+        if msg.text != "You can't Delete this item as it's related to some other data":
+            return False
+        confirmation_button = self.base_selenium.find_element_by_xpath(xpath='//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]')
+        if confirmation_button:
+            confirmation_button.click()
+            return True
+
+    

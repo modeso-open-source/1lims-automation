@@ -296,3 +296,87 @@ class ContactsTestCases(BaseTest):
         else:
             self.base_selenium.LOGGER.info('Data were not correctly saved, report a bug')
             self.assertEqual(True, False)
+
+
+    def test_09_delete_contact_used_in_other_data(self):
+        """
+        New: Contact: Delete Approach: I can't delete any contact if this contact related to some data 
+        I can't delete any contact if this contact related to some data 
+        """
+
+        self.base_selenium.LOGGER.info('get orders page to get any record\'s contact to make sure that we are deleting contact that is sued in other data')
+        self.order_page.get_orders_page()
+        random_order_record = self.order_page.get_random_order_row()
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=random_order_record)
+        contact_name = order_data['Contact Name'].split(', ')[0]
+
+        self.contact_page.get_contacts_page()
+        self.base_selenium.LOGGER.info('filter by contact name: {}'.format(contact_name))
+        contact_record = self.contact_page.search(value=contact_name)[0]
+        if self.contact_page.check_if_table_is_empty():
+            self.base_selenium.LOGGER.info('Contact "{}" doesn\'t exist in active table'.format(contact_name))
+        else:
+            self.contact_page.click_check_box(source=contact_record)
+            self.contact_page.archive_selected_items()
+        
+        self.base_selenium.LOGGER.info('get the archived contacts')
+        self.contact_page.get_archived_contacts()
+
+        contact_archived_records = self.contact_page.search(value=contact_name)[0]
+        if self.contact_page.check_if_table_is_empty():
+            self.base_selenium.LOGGER.info('Contact is not in archived section, report a BUG')
+            self.assertEqual(True, False)
+        else:
+            self.base_selenium.LOGGER.info('delete selected record')
+            self.contact_page.click_check_box(source=contact_archived_records)
+            self.contact_page.delete_selected_contacts()
+            if self.contact_page.check_delete_message():
+                self.base_selenium.LOGGER.info('refresh to check that data wasn\'t affected')
+                self.base_selenium.refresh()
+                self.contact_page.get_archived_contacts()
+                archived_record = self.contact_page.search(value=contact_name)
+                if self.contact_page.check_if_table_is_empty:
+                    self.base_selenium.LOGGER.info('archived page should not be empty, report a BUG')
+                    self.assertEqual(True, False)
+                else:
+                    self.base_selenium.LOGGER.info('Contact record could not be deleted')
+                    self.base_selenium.LOGGER.info('making sure that the archived contact is the same that is used in data')
+                    contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=archived_record[0])
+                    self.base_selenium.LOGGER.info('Contact name is {}, and it should be {}'.format(contact_data['Contact Name'], contact_name))
+                    self.assertEqual(contact_data['Contact Name'], contact_name)
+
+    def test_10_user_can_show_hide_any_column(self):
+        """
+        New:  contacts: Optional fields: User can hide/show any optional field in Edit/Create form 
+        In the configuration section, In case I archive any optional field this field should be hidden from Edit/Create from and it should also found in the archive in table configuration.
+        LIMS-4129
+        """
+        
+        self.base_selenium.LOGGER.info('hide multiple columns')
+        hidden_columns = self.contact_page.hide_columns(always_hidden_columns=['fax'])
+        self.contact_page.sleep_small()
+        
+        self.base_selenium.LOGGER.info('Compare the headers of teh tables to make sure that those columns are hidden')
+        table_headers = self.base_selenium.get_table_head_elements(element="contacts:contact_table")
+        headers_text = [header.text for header in table_headers]
+        
+        for column in hidden_columns:
+            if column in headers_text:
+                self.base_selenium.LOGGER.info('Column: {} is show, it should be hidden, report a bug '.format(column))
+                self.assertEqual(True, False)
+
+        self.base_selenium.LOGGER.info('All columns are hidden successfully')
+        self.base_selenium.LOGGER.info('export the data to make sure that hidden columns are hidden also form export')
+        self.contact_page.download_xslx_sheet()
+        rows_data = self.contact_page.get_table_rows_data()
+        for index in range(len(rows_data)):
+            self.base_selenium.LOGGER.info(' * Comparing the contact no. {} '.format(index))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.contact_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                self.assertIn(item, fixed_sheet_row_data)
+        
+        self.base_selenium.LOGGER.info('set all columns to shown again')
+        self.contact_page.set_all_configure_table_columns_to_specific_value(value=True, always_hidden_columns=['fax'])
+        
