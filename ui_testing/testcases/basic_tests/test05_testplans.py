@@ -21,16 +21,16 @@ class TestPlansTestCases(BaseTest):
         then refreshes the page and checks if the deletion was done correctly.
         '''
 
-        completed_test_plans = self.get_completed_testplans()
-        random_completed_testplan = random.choice(completed_test_plans)
-        testplan_name = random_completed_testplan['testPlanName']
-        self.test_plan.sleep_medium()
+        completed_test_plans = self.test_plan_api.get_completed_testplans()
+        testplan_name = random.choice(completed_test_plans)['testPlanName']
 
         # navigate to the chosen testplan edit page
         self.test_plan.get_test_plan_edit_page(testplan_name)
 
         # navigate to the testunits selection tab [Test plan create or update step 2] and get the testunits
-        all_testunits = self.test_plan.navigate_to_testplan_stepII_and_get_testunits()
+        self.test_plan.navigate_to_testunits_selection_page()
+        self.test_plan.switch_test_units_to_row_view()
+        all_testunits = self.test_plan.get_all_testunits_in_testplan()
 
         # get the name of the first testunit, which is the one to be deleted
         deleted_test_unit = (all_testunits[0])[0]
