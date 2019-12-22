@@ -10,6 +10,7 @@ from ui_testing.pages.order_page import Order
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
+from ui_testing.pages.header_page import Header
 import datetime, re
 
 
@@ -27,6 +28,7 @@ class BaseTest(TestCase):
         self.article_page = Article()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
+        self.header_page = Header()
 
         self.article_api = ArticleAPI()
         self.test_plan_api = TestPlanAPI()

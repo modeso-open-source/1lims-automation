@@ -440,5 +440,82 @@ elements = {
             'method': 'id',
             'value': 'nofield'
         }
-    }
+    },
+
+    'header': {
+        'header_button': {'method': 'xpath',
+                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+        'user_management_button': {'method': 'xpath',
+                  'value': '//*[@id="dropdown-body"]/div/ul/li[5]/a/span'},
+        'roles_permissions_button': {'method': 'xpath',
+                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+        'myprofile_button': {'method': 'xpath',
+                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+        'companyprofile_button': {'method': 'xpath',
+                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+
+    },
+   'user_management': {
+       'right_menu': {'method': 'xpath',
+                 'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+
+       'archive': {'method': 'xpath',
+                 'value': '//*[@id="custom-accordion-panel"]/div/div/a[1]'},
+
+       'archived': {'method': 'link_text',
+                 'value': 'Archived'},
+
+       'restore': {'method': 'link_text',
+                 'value': 'Restore'},
+
+       'active': {'method': 'link_text',
+                 'value': 'Active'},
+
+       'user_table': {'method': 'id',
+                 'value': 'table'},
+
+       'user_name': {'method': 'id',
+                 'value': 'usernamefield'},
+       'user_role': {'method': 'id',
+                     'value': 'rolefield'},
+       'user_email': {'method': 'id',
+                     'value': 'emailfield'},
+       'user_password': {'method': 'xpath',
+                     'value': '//*[@id="password"]'},
+       'user_confirm_password': {'method': 'id',
+                     'value': 'confirmPassword'},
+       'create_user_button': {'method': 'xpath',
+                     'value': '//*[@id="add-btn"]/span/span'},
+       'save_btn': {'method': 'id',
+                 'value': 'saveButton'},
+
+       'filter_number': {'method': 'id',
+                 'value':'userIdfield'},
+
+       'filter_contact': {'method': 'xpath',
+                   'value': '//*[@id="supplierfield"]/div/div/div[2]/input'},
+
+       'filter_created_by': {'method': 'xpath',
+                        'value': '//*[@id="lastModifiedUserfield"]/div/div/div[2]/input'},
+
+       'filter_created_on': {'method': 'id',
+                 'value':'start_createdAt'},
+
+       'filter_name': {'method': 'id',
+                 'value':'usernamefield'},
+       'filter_email': {'method': 'id',
+                 'value':'emailfield'},
+
+       'filter_role': {'method': 'xpath',
+                 'value':'//*[@id="rolefield"]/div/div/div[2]/input'},
+
+       'filter_reset_btn': {'method': 'id',
+                 'value':'reset_btn'},
+       'clear_role_btn': {'method': 'xpath',
+                 'value':'//*[@id="rolefield"]/div/div/div[2]'},
+
+
+
+
+   }
 }
