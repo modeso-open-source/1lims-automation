@@ -72,21 +72,18 @@ class TestPlansTestCases(BaseTest):
             self.base_selenium.LOGGER.info('Navigating to edit page of testplan: {} with version: {}'.format(old_completed_testplan_name, old_completed_testplan_version))
             self.test_plan.get_test_plan_edit_page(name=old_completed_testplan_name)
 
-            # go to step 2 and add testunit
+            # go to step 2 and remove all the testunits
             self.base_selenium.LOGGER.info('Going to step 2 to remove all the testunits from it')
             self.test_plan.navigate_to_testunits_selection_page()
             self.test_plan.delete_all_testunits()
-            self.test_plan.save()
-            self.test_plan.confirm_popup()
+            self.test_plan.save_and_confirm_popup()
 
             # go back to the active table
             self.test_plan.get_test_plans_page()
 
             # get the testplan to check its version
             self.base_selenium.LOGGER.info('Getting the currently changed testplan to check its status and version')
-            testplan = self.test_plan.search(old_completed_testplan_name)[0]
-            testplan_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testplan)
-            completed_testplan_version = testplan_row_data['Version']
+            inprogress_testplan_version, testplan_row_data_status = self.test_plan.get_testplan_version_and_status(search_text='old_completed_testplan_name')
 
-            self.assertEqual(old_completed_testplan_version + 1, int(completed_testplan_version))
-            self.assertEqual(testplan_row_data['Status'], 'In Progress')
+            self.assertEqual(old_completed_testplan_version + 1, int(inprogress_testplan_version))
+            self.assertEqual(testplan_row_data_status, 'In Progress')
