@@ -1,0 +1,18 @@
+from ui_testing.pages.base_pages import BasePages
+
+class AuditTrail(BasePages):
+    def __init__(self):
+        super().__init__()
+        self.audit_trails_url = "{}auditTrails".format(self.base_selenium.url)
+
+    def get_audit_trails_page(self):
+        self.base_selenium.get(url=self.audit_trails_url)
+        self.sleep_small()
+
+    def download_xslx_sheet(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.sheet = self.base_selenium.download_excel_file(element='general:xslx')
+
+    def get_table_rows_data(self):
+        return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]                      
