@@ -62,7 +62,7 @@ class TestPlansTestCases(BaseTest):
         '''
 
         self.base_selenium.LOGGER.info('Searching for test plans with Completed status')
-        completed_testplans = self.get_completed_testplans()
+        completed_testplans = self.test_plan_api.get_completed_testplans()
 
         if completed_testplans is not None:
             self.base_selenium.LOGGER.info('Getting the first testplan')
@@ -76,16 +76,13 @@ class TestPlansTestCases(BaseTest):
             self.base_selenium.LOGGER.info('Going to step 2 to add testunit to this test plan')
             self.test_plan.set_test_unit(test_unit='a')
             self.test_plan.save_and_confirm_popup()
+
             # go back to the active table
             self.test_plan.get_test_plans_page()
 
             # get the testplan to check its version
             self.base_selenium.LOGGER.info('Getting the currently changed testplan to check its status and version')
-            testplan = self.test_plan.search(old_completed_testplan_name)[0]
-            testplan_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testplan)
-            completed_testplan_version = testplan_row_data['Version']
+            inprogress_testplan_version, testplan_row_data_status = self.test_plan.get_testplan_version_and_status(search_text=old_completed_testplan_name)
 
-            self.assertEqual(old_completed_testplan_version + 1, int(completed_testplan_version))
-            self.assertEqual(testplan_row_data['Status'], 'Completed')
-
-        return  
+            self.assertEqual(old_completed_testplan_version + 1, int(inprogress_testplan_version))
+            self.assertEqual(testplan_row_data_status, 'Completed')

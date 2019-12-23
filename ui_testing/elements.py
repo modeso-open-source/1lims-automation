@@ -246,8 +246,6 @@ elements = {
                                  'value': '//*[@id="88"]/div[2]/div/div[4]/input'},
         'testunits_selection': {'method': 'id',
                                 'value': 'test_unit_selection_tab'},
-        'delete_first_test_unit_btn': {'method': 'xpath',
-                                       'value': '//*[@id="remove_testunit"]'},
         'testunit_label': {'method': 'class_name',
                            'value': 'm-portlet__head-text',
                            'order': 1},
@@ -264,6 +262,8 @@ elements = {
         'ok': {'method': 'class_name',
                'value': 'swal2-confirm',
                'order': 0},
+        'remove_testunit': {'method': 'id',
+                           'value': 'remove_testunit'},
     },
 
     'test_unit': {
