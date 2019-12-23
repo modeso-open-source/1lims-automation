@@ -1,5 +1,6 @@
 from ui_testing.pages.orders_page import Orders
-
+from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
 
 class Order(Orders):
     def get_order(self):
@@ -53,7 +54,8 @@ class Order(Orders):
             return self.get_contact()
 
     def get_contact(self):
-        return self.base_selenium.get_text(element='order:contact').split('\n')[0]
+        self.base_selenium.LOGGER.info(self.base_selenium.get_text(element='order:contact'))
+        return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]}, self.base_selenium.get_text(element='order:contact').split('\n')))
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
@@ -92,13 +94,17 @@ class Order(Orders):
             return []
 
     def create_new_order(self, material_type='', article='', contact='', test_plans=[], test_units=[],
-                         multiple_suborders=0):
+                         multiple_suborders=0, departments=''):
         self.base_selenium.LOGGER.info(' Create new order.')
         self.click_create_order_button()
         self.set_new_order()
-        self.set_material_type(material_type=material_type)
-        self.set_article(article=article)
         self.set_contact(contact=contact)
+        self.sleep_tiny()
+        self.set_departments(departments=departments)
+        self.set_material_type(material_type=material_type)
+        self.sleep_tiny()
+        self.set_article(article=article)
+        self.sleep_tiny()
         order_no = self.get_no()
 
         for test_plan in test_plans:
@@ -238,6 +244,8 @@ class Order(Orders):
             else:
                 self.base_selenium.LOGGER.info(' {} is not a header element!'.format(key))
                 self.base_selenium.LOGGER.info(' Header keys : {}'.format(suborder_elements_dict.keys()))
+        
+        return self.get_suborder_data()
 
     def duplicate_from_table_view(self, number_of_duplicates=1, index_to_duplicate_from=0):
         suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
@@ -262,29 +270,30 @@ class Order(Orders):
 
     # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
     def get_suborder_data(self, sub_order_index=0):
+        webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
         table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        required_suborder = self.base_selenium.get_row_cells_id_elements_related_to_header(
-            row=table_suborders[sub_order_index],
-            table_element='order:suborder_table')
-        response = {
-            "departments": required_suborder["departments"].text.replace("×", "").split("\n"),
-            "material_types": required_suborder["materialType"].text.replace("×", "").split("\n"),
-            "article": required_suborder["article"].text.replace("×", "").split("\n"),
-            "test_plan": required_suborder["testPlans"].text.replace("×", "").split("\n"),
-            "test_unit": required_suborder["testUnits"].text.replace("×", "").split("\n"),
-            "test_date": "",
-            "shipment_date": ""
+        self.base_selenium.LOGGER.info(self.get_contact())
+        order_data = {
+            "orderNo": self.get_order_number(),
+            "contacts": self.get_contact(),
+            "suborders": []
         }
-        response["departments"] = "|".join(
-            list(map(lambda s: str(s)[1:], required_suborder["departments"].text.split("\n"))))
-        response["test_plan"] = "|".join(
-            list(map(lambda s: str(s)[1:], required_suborder["testPlans"].text.split("\n"))))
-        response["test_unit"] = "|".join(
-            list(map(lambda s: str(s).split(' No:')[0][1:], required_suborder["testUnits"].text.split("\n"))))
-        response["article"] = required_suborder["article"].text.split("\n")[0].split(' No:')[0]
-        response["material_types"] = required_suborder["materialType"].text.split("\n")[0].split(' No:')[0]
-
-        return response
+        suborders_data = []
+        for suborder in table_suborders:
+            suborder_data = self.base_selenium.get_row_cells_id_dict_related_to_header(row=suborder, table_element='order:suborder_table')
+            temp_suborder_data = {
+                'analysis_no': suborder_data['analysisNo'],
+                'departments': suborder_data['departments'].split(',\n'),
+                'material_type': suborder_data['materialType'],
+                'article': {"name": suborder_data['article'].split(' No: ')[0], "no": suborder_data['article'].split(' No: ')[1]},
+                'testplans': suborder_data['testPlans'].split(',\n') ,
+                'testunits': list(map(lambda s: {"name": str(s).split(' No: ')[0], "no": str(s).split(' No: ')[1]}, suborder_data['testUnits'].split(',\n'))),
+                'shipment_date': suborder_data['shipmentDate'],
+                'test_date': suborder_data['testDate']
+            }
+            suborders_data.append(temp_suborder_data)
+        order_data['suborders'] = suborders_data
+        return order_data
 
     def remove_testplan_by_name(self, index, testplan_name):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
