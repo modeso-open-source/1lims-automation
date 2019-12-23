@@ -56,3 +56,37 @@ class TestPlansTestCases(BaseTest):
         self.assertFalse(deleted_test_unit_found)
 
 
+    def test010_test_plan_completed_to_in_progress(self):
+        '''
+        LIMS-3503
+        When the testplan status is converted from completed to in progress a new version is created
+        '''
+        self.base_selenium.LOGGER.info('Searching for test plans with Completed status')
+        completed_testplans = self.get_completed_testplans()
+
+        if completed_testplans is not None:
+            self.base_selenium.LOGGER.info('Getting the first testplan')
+            completed_testplan = completed_testplans[0]
+            old_completed_testplan_name = completed_testplan['testPlanName']
+            old_completed_testplan_version = completed_testplan['version']
+            self.base_selenium.LOGGER.info('Navigating to edit page of testplan: {} with version: {}'.format(old_completed_testplan_name, old_completed_testplan_version))
+            self.test_plan.get_test_plan_edit_page(name=old_completed_testplan_name)
+
+            # go to step 2 and add testunit
+            self.base_selenium.LOGGER.info('Going to step 2 to remove all the testunits from it')
+            self.test_plan.navigate_to_testunits_selection_page()
+            self.test_plan.delete_all_testunits()
+            self.test_plan.save()
+            self.test_plan.confirm_popup()
+
+            # go back to the active table
+            self.test_plan.get_test_plans_page()
+
+            # get the testplan to check its version
+            self.base_selenium.LOGGER.info('Getting the currently changed testplan to check its status and version')
+            testplan = self.test_plan.search(old_completed_testplan_name)[0]
+            testplan_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testplan)
+            completed_testplan_version = testplan_row_data['Version']
+
+            self.assertEqual(old_completed_testplan_version + 1, int(completed_testplan_version))
+            self.assertEqual(testplan_row_data['Status'], 'In Progress')
