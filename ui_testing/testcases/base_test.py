@@ -122,5 +122,18 @@ class BaseTest(TestCase):
             data[material_type].append(article['name'])
         return data
 
+    '''
+    Removes the data that was changed in the duplication process in order to compare
+    between the objects to make sure that the duplication was done correcly.
+    '''
+    def remove_unduplicated_data(self, data_changed=[], first_element=[], second_element=[]):
+        for data in data_changed:
+            if first_element[data] != None:
+                del first_element[data]
+            if second_element[data] != None:
+                del second_element[data]
+
+        return first_element, second_element
+
     def info(self, message):
         self.base_selenium.LOGGER.info(message)

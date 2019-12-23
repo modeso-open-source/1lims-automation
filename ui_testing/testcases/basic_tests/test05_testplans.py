@@ -55,4 +55,34 @@ class TestPlansTestCases(BaseTest):
         
         self.assertFalse(deleted_test_unit_found)
 
+    def test009_test_plan_duplicate(self):
+        '''
+        LIMS-3679
+        Duplicate a test plan
+        '''
+        # get the maxinmum number of testplan number
+        largest_number = (self.test_plan.get_table_rows_data()[0].split('\n'))[0]
+        duplicated_test_plan_number = int(largest_number) + 1
+        self.base_selenium.LOGGER.info('The duplicated testplan should have the number: {}'.format(duplicated_test_plan_number))        
 
+        self.base_selenium.LOGGER.info('Choosing a random testplan table row')
+        main_testplan_data, row_index = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
+        testplan_number = main_testplan_data['Test Plan No.']
+        self.base_selenium.LOGGER.info('Testplan number: {} will be duplicated'.format(testplan_number))
+
+        self.base_selenium.LOGGER.info('Saving the child data of the main testplan')        
+        main_testplan_childtable_data = self.test_plan.get_child_table_data(index=row_index)
+
+        self.base_selenium.LOGGER.info('Duplicating testplan number: {}'.format(testplan_number))        
+        self.test_plan.duplicate_selected_item()
+
+        self.test_plan.duplicate_testplan(change=['name'])
+        self.test_plan.sleep_small()
+
+        duplicated_testplan_data, duplicated_testplan_childtable_data = self.test_plan.get_specific_testplan_data_and_childtable_data(filter_by='number', filter_text=duplicated_test_plan_number)
+
+        main_testplan_data, duplicated_testplan_data = self.remove_unduplicated_data(data_changed=['Test Plan No.', 'Test Plan Name'], first_element=main_testplan_data, second_element=duplicated_testplan_data)
+
+        self.base_selenium.LOGGER.info('Asserting that the data is duplicated correctly')        
+        self.assertEqual(main_testplan_childtable_data, duplicated_testplan_childtable_data)
+        self.assertEqual(main_testplan_data, duplicated_testplan_data)

@@ -93,6 +93,8 @@ elements = {
                    'value': 'Delete'},
         'xslx': {'method': 'link_text',
                  'value': 'XSLX'},
+        'duplicate': {'method': 'link_text',
+                        'value': 'Duplicate'},
         'table_info': {'method': 'id',
                        'value': 'table_info'},
         'filter_btn': {'method': 'id',
@@ -191,7 +193,9 @@ elements = {
                                    'value': 'a',
                                    'order': 1},
         'new_test_plan': {'method': 'link_text',
-                          'value': 'New Test Plan'}
+                          'value': 'New Test Plan'},
+        'testplan_number_filter': {'method': 'id',
+                             'value': 'numberfield'},
     },
 
     'test_units': {

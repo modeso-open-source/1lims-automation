@@ -112,12 +112,13 @@ class BasePages:
         self.info("select random row")
         rows = self.base_selenium.get_table_rows(element=element)
         for _ in range(5):
-            row = rows[randint(0, len(rows) - 1)]
+            row_index = randint(0, len(rows) - 1)
+            row = rows[row_index]
             row_text = row.text
             if not row_text:
                 continue
             self.click_check_box(source=row)
-            return self.base_selenium.get_row_cells_dict_related_to_header(row)
+            return self.base_selenium.get_row_cells_dict_related_to_header(row), row_index
 
     def click_check_box(self, source):
         check_box = self.base_selenium.find_element_in_element(
@@ -227,3 +228,9 @@ class BasePages:
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
+    def duplicate_selected_item(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:duplicate')
+        self.sleep_small()
