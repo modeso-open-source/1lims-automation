@@ -54,7 +54,6 @@ class Order(Orders):
             return self.get_contact()
 
     def get_contact(self):
-        self.base_selenium.LOGGER.info(self.base_selenium.get_text(element='order:contact'))
         return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]}, self.base_selenium.get_text(element='order:contact').split('\n')))
 
     def set_test_plan(self, test_plan=''):
@@ -93,18 +92,18 @@ class Order(Orders):
         else:
             return []
 
-    def create_new_order(self, material_type='', article='', contact='', test_plans=[], test_units=[],
+    def create_new_order(self, material_type='', article='', contact='', test_plans=[''], test_units=[''],
                          multiple_suborders=0, departments=''):
         self.base_selenium.LOGGER.info(' Create new order.')
         self.click_create_order_button()
         self.set_new_order()
         self.set_contact(contact=contact)
-        self.sleep_tiny()
+        self.sleep_small()
         self.set_departments(departments=departments)
         self.set_material_type(material_type=material_type)
-        self.sleep_tiny()
+        self.sleep_small()
         self.set_article(article=article)
-        self.sleep_tiny()
+        self.sleep_small()
         order_no = self.get_no()
 
         for test_plan in test_plans:
@@ -117,7 +116,7 @@ class Order(Orders):
 
         self.save(save_btn='order:save_btn')
         self.base_selenium.LOGGER.info(' Order created with no : {} '.format(order_no))
-        return order_no
+        return self.get_suborder_data()
 
     def create_existing_order(self, no='', material_type='', article='', contact='', test_units=[],
                               multiple_suborders=0):
@@ -272,22 +271,36 @@ class Order(Orders):
     def get_suborder_data(self, sub_order_index=0):
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
         table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        self.base_selenium.LOGGER.info(self.get_contact())
+        self.base_selenium.LOGGER.info('getting main order data')
         order_data = {
-            "orderNo": self.get_order_number(),
+            "orderNo": self.get_no(),
             "contacts": self.get_contact(),
             "suborders": []
         }
         suborders_data = []
+        self.base_selenium.LOGGER.info('getting suborders data')
         for suborder in table_suborders:
             suborder_data = self.base_selenium.get_row_cells_id_dict_related_to_header(row=suborder, table_element='order:suborder_table')
+            article = {"name": suborder_data['article'].split(' No:')[0], "no": suborder_data['article'].split(' No:')[1]} if len(suborder_data['article'].split(' No:')) > 1 else '-'
+            testunits =[]
+            rawTestunitArr = suborder_data['testUnits'].split(',\n')
+            
+            for testunit in rawTestunitArr:
+                if len(testunit.split(' No: ')) > 1:
+                    testunits.append({
+                        "name": testunit.split(' No: ')[0],
+                        "no": testunit.split(' No: ')[1]
+                    })
+                else:
+                    testunits.append('-')
+
             temp_suborder_data = {
                 'analysis_no': suborder_data['analysisNo'],
                 'departments': suborder_data['departments'].split(',\n'),
                 'material_type': suborder_data['materialType'],
-                'article': {"name": suborder_data['article'].split(' No: ')[0], "no": suborder_data['article'].split(' No: ')[1]},
+                'article': article,
                 'testplans': suborder_data['testPlans'].split(',\n') ,
-                'testunits': list(map(lambda s: {"name": str(s).split(' No: ')[0], "no": str(s).split(' No: ')[1]}, suborder_data['testUnits'].split(',\n'))),
+                'testunits': testunits,
                 'shipment_date': suborder_data['shipmentDate'],
                 'test_date': suborder_data['testDate']
             }
