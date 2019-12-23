@@ -498,8 +498,8 @@ elements = {
                      'value': 'rolefield'},
        'user_email': {'method': 'id',
                      'value': 'emailfield'},
-       'user_password': {'method': 'xpath',
-                     'value': '//*[@id="password"]'},
+       'user_password': {'method': 'id',
+                     'value': 'password'},
        'user_confirm_password': {'method': 'id',
                      'value': 'confirmPassword'},
        'create_user_button': {'method': 'xpath',
@@ -532,6 +532,21 @@ elements = {
        'clear_role_btn': {'method': 'xpath',
                  'value':'//*[@id="rolefield"]/div/div/div[2]'},
 
+       'delete': {'method': 'link_text',
+                 'value': 'Delete'},
+
+       'confirm_pop': {'method': 'class_name',
+                        'value': 'btn-success',
+                        'order': 0},
+
+       'alert_confirmation': {'method': 'id',
+                               'value': 'noty_layout__topCenter'},
+
+       'overview_btn': {'method': 'xpath',
+                               'value': '/html/body/div[2]/div[2]/div[2]/modeso-add-test-unit/div[1]/div/ul/li[3]/a/span'},
+
+       'cancel': {'method': 'id',
+                               'value': 'cancelButton'},
 
 
 

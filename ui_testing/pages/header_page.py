@@ -86,7 +86,7 @@ class Header(BasePages):
             self.save(sleep)
 
     def set_user_name(self, user_name):
-            self.base_selenium.set_text(element="user_management:user_name", value=user_name)
+            self.base_selenium.set_text(element='user_management:user_name', value=user_name)
 
     def get_user_name(self):
             return self.base_selenium.get_text(element='user_management:user_name').split('\n')[0]
@@ -108,8 +108,14 @@ class Header(BasePages):
     def set_user_password(self, user_password):
             self.base_selenium.set_text(element="user_management:user_password", value=user_password)
 
+    def get_user_password(self):
+        return self.base_selenium.get_text(element='user_management:user_password').split('\n')[0]
+
     def set_user_confirm_password(self, user_confirm_password):
             self.base_selenium.set_text(element="user_management:user_confirm_password", value=user_confirm_password)
+
+    def get_user_confirm_password(self):
+        return self.base_selenium.get_text(element='user_management:user_confirm_password').split('\n')[0]
 
     def get_user_role(self):
             return self.base_selenium.get_text(element='user_management:user_role').split('\n')[0]
@@ -165,7 +171,7 @@ class Header(BasePages):
 
     def click_create_new_user(self):
             self.base_selenium.LOGGER.info('Press on the create new user button')
-            self.base_selenium.click(element='user_management:create_user')
+            self.base_selenium.click(element='user_management:create_user_button')
             self.sleep_small()
 
     def clear_user_role(self):
@@ -179,6 +185,27 @@ class Header(BasePages):
     def clear_user_email(self):
         self.base_selenium.LOGGER.info('Clear user email')
         self.base_selenium.clear_text(element='user_management:user_email')
+
+    def click_on_the_confirm_message(self):
+        self.base_selenium.LOGGER.info('Press on ok button')
+        self.base_selenium.click(element='general:confirm_pop')
+        self.sleep_small()
+
+    def click_on_delete_button(self):
+        self.base_selenium.LOGGER.info('Press on the delete button')
+        self.base_selenium.click(element='user_management:delete')
+        self.sleep_small()
+
+    def click_on_user_right_menu(self):
+        self.base_selenium.LOGGER.info('Press on the right menu')
+        self.base_selenium.click(element='user_management:right_menu')
+        self.sleep_small()
+
+    def click_on_overview_btn(self):
+        self.base_selenium.LOGGER.info('Press on the overview button button')
+        self.base_selenium.click(element='user_management:overview_btn')
+        self.sleep_small()
+
 
 
 
