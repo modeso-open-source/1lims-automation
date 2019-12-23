@@ -56,14 +56,14 @@ class TestPlansTestCases(BaseTest):
         self.assertFalse(deleted_test_unit_found)
 
 
-    def test010_test_plan_completed_to_in_progress(self):
+    def test010_test_plan_completed_to_inprogress(self):
         '''
         LIMS-3503
         When the testplan status is converted from completed to in progress a new version is created
         '''
         self.base_selenium.LOGGER.info('Searching for test plans with Completed status')
-        completed_testplans = self.get_completed_testplans()
-
+        completed_testplans = self.test_plan_api.get_completed_testplans()
+        
         if completed_testplans is not None:
             self.base_selenium.LOGGER.info('Getting the first testplan')
             completed_testplan = completed_testplans[0]
@@ -83,7 +83,7 @@ class TestPlansTestCases(BaseTest):
 
             # get the testplan to check its version
             self.base_selenium.LOGGER.info('Getting the currently changed testplan to check its status and version')
-            inprogress_testplan_version, testplan_row_data_status = self.test_plan.get_testplan_version_and_status(search_text='old_completed_testplan_name')
+            inprogress_testplan_version, testplan_row_data_status = self.test_plan.get_testplan_version_and_status(search_text=old_completed_testplan_name)
 
             self.assertEqual(old_completed_testplan_version + 1, int(inprogress_testplan_version))
             self.assertEqual(testplan_row_data_status, 'In Progress')
