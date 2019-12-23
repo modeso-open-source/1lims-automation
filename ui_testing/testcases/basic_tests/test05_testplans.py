@@ -60,8 +60,9 @@ class TestPlansTestCases(BaseTest):
         LIMS-3679
         Duplicate a test plan
         '''
-        # get the maxinmum number of testplan number
-        largest_number = (self.test_plan.get_table_rows_data()[0].split('\n'))[0]
+        # get the maximum number given to the latest testplan
+        latest_testplan_row_data = self.test_plan.get_the_latest_row_data()
+        largest_number = latest_testplan_row_data['Test Plan No.']
         duplicated_test_plan_number = int(largest_number) + 1
         self.base_selenium.LOGGER.info('The duplicated testplan should have the number: {}'.format(duplicated_test_plan_number))        
 
@@ -80,8 +81,8 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.sleep_small()
 
         duplicated_testplan_data, duplicated_testplan_childtable_data = self.test_plan.get_specific_testplan_data_and_childtable_data(filter_by='number', filter_text=duplicated_test_plan_number)
-
-        main_testplan_data, duplicated_testplan_data = self.remove_unduplicated_data(data_changed=['Test Plan No.', 'Test Plan Name'], first_element=main_testplan_data, second_element=duplicated_testplan_data)
+        data_changed = ['Test Plan No.', 'Test Plan Name', 'Version', 'Changed On', 'Changed By', 'Created On']
+        main_testplan_data, duplicated_testplan_data = self.remove_unduplicated_data(data_changed=data_changed, first_element=main_testplan_data, second_element=duplicated_testplan_data)
 
         self.base_selenium.LOGGER.info('Asserting that the data is duplicated correctly')        
         self.assertEqual(main_testplan_childtable_data, duplicated_testplan_childtable_data)

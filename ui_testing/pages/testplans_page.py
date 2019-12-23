@@ -51,3 +51,6 @@ class TestPlans(BasePages):
         self.filter_by(filter_element='test_plans:testplan_number_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
 
+    def get_the_latest_row_data(self):
+        latest_testplan_row = (self.result_table()[0])
+        return self.base_selenium.get_row_cells_dict_related_to_header(latest_testplan_row)
