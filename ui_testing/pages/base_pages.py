@@ -230,5 +230,5 @@ class BasePages:
 
     def open_configuration(self):
         self.base_selenium.click(element='general:right_menu')
-        self.base_selenium.click(element='general:configration')
+        self.base_selenium.click(element='general:configurations')
         self.sleep_medium()

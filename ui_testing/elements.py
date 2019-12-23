@@ -107,10 +107,14 @@ elements = {
         'col_6': {'method': 'class_name',
                   'value': 'col-md-6',
                   'order': -1},
-        'configration': {
+        'configurations': {
             'method': 'xpath',
             'value': '//*[@id="custom-accordion-panel"]/div/div/a[4]'
-        }
+        },
+        'configurations_archived': {
+            'method': 'xpath',
+            'value': '//*[@id="tabs"]/li[2]/a'
+        },
     },
     'login': {
         'username': {'method': 'name',
@@ -161,12 +165,15 @@ elements = {
                                
         'unit_field_options': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/a'},
         'unit_field_archive': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/ul/li[1]/a'},
+        'unit_field_restore': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/ul/li[2]/a'},
 
         'comment_field_options': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/a'},
         'comment_field_archive': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/ul/li[1]/a'},
+        'comment_field_restore': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/ul/li[2]/a'},
 
         'related_article_field_options': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/a'},
         'related_article_field_archive': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/ul/li[1]/a'},
+        'related_article_field_restore': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/ul/li[2]/a'},
     },
     'article': {
         'unit': {'method': 'id',

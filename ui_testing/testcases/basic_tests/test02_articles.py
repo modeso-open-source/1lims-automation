@@ -472,25 +472,116 @@ class ArticlesTestCases(BaseTest):
         LIMS:4123
         :return:
         """
+        
+        ################
+        ## ARCHIVING ###
+        ################ 
+
+
         # open the configuration
-        # self.article_page.open_configuration()
+        self.article_page.info('+ Open article configuration')
+        self.article_page.open_configuration()
 
-        # # Archive the optional fields
-        # self.article_page.archive_field(field_name='unit')
-        # self.article_page.archive_field(field_name='comment')
-        # self.article_page.archive_field(field_name='related_article')
-
-        # # go back to the table
-        # self.article_page.get_articles_page()
+        # Archive the optional fields
+        self.article_page.toggle_archive_field(field_name='unit')
+        self.article_page.toggle_archive_field(field_name='comment')
+        self.article_page.toggle_archive_field(field_name='related_article')
 
         # check if the fields still exist in the table
-        article_header_fields = self.base_selenium.get_table_head_elements('general:table')
-        self.assertIn('comment', article_header_fields)
-        self.assertIn('unit', article_header_fields)
+        self.article_page.info('+ Open article table')
+        self.article_page.get_articles_page()
+        article_headers = self.base_selenium.get_table_head_elements('general:table')
+        article_headers_text = [header.text for header in article_headers]
+
+        self.article_page.info('+ Check Comment field existance in the table')
+        self.assertIn('Comment', article_headers_text)
+
+        self.article_page.info('+ Check Unit field existance in the table')
+        self.assertIn('Unit', article_headers_text)
         # ignore related article since it shouldn't display in the table anyway
 
         # open create page
+        self.article_page.info('+ Open article create')
         self.base_selenium.click(element='articles:new_article')
         self.article_page.sleep_small()
-        here = self.article_page.get_comment()
-        print(here)
+
+        self.article_page.info('+ Check Unit field existance in create page')
+        self.assertFalse(self.base_selenium.check_element_is_exist('article:unit'))
+
+        self.article_page.info('+ Check Comment field existance in create page')
+        self.assertFalse(self.base_selenium.check_element_is_exist('article:comment'))
+
+        self.article_page.info('+ Check Related article field existance in create page')
+        self.assertFalse(self.base_selenium.check_element_is_exist('article:related_article'))
+
+        # open edit page
+        self.article_page.info('+ Open article edit')
+        self.article_page.get_articles_page()
+        self.article_page.open_edit_page(row=self.article_page.get_random_article_row())
+
+        self.article_page.info('+ Check Unit field existance in edit page')
+        self.assertFalse(self.base_selenium.check_element_is_exist('article:unit'))
+
+        self.article_page.info('+ Check Comment field existance in edit page')
+        self.assertFalse(self.base_selenium.check_element_is_exist('article:comment'))
+
+        self.article_page.info('+ Check Related article field existance in edit page')
+        self.assertFalse(self.base_selenium.check_element_is_exist('article:related_article'))
+
+
+        #################
+        ### Restoring ###
+        ################# 
+
+
+        # open the configuration
+        self.article_page.get_articles_page()
+        self.article_page.info('+ Open article configuration')
+        self.article_page.open_configuration()
+        self.base_selenium.click(element='general:configurations_archived') # open the archived tab
+
+        # Restore the optional fields
+        self.article_page.toggle_archive_field(field_name='unit', restore=True)
+        self.article_page.toggle_archive_field(field_name='comment', restore=True)
+        self.article_page.toggle_archive_field(field_name='related_article', restore=True)
+
+        # check if the fields still exist in the table after restore
+        self.article_page.info('+ Open article table')
+        self.article_page.get_articles_page()
+        article_headers = self.base_selenium.get_table_head_elements('general:table')
+        article_headers_text = [header.text for header in article_headers]
+
+        self.article_page.info('+ Check Comment field existance in the table')
+        self.assertIn('Comment', article_headers_text)
+
+        self.article_page.info('+ Check Unit field existance in the table')
+        self.assertIn('Unit', article_headers_text)
+        # ignore related article since it shouldn't display in the table anyway
+
+        # open create page after restore
+        self.article_page.info('+ Open article create')
+        self.base_selenium.click(element='articles:new_article')
+        self.article_page.sleep_small()
+
+        self.article_page.info('+ Check Unit field existance in create page')
+        self.assertTrue(self.base_selenium.check_element_is_exist('article:unit'))
+
+        self.article_page.info('+ Check Comment field existance in create page')
+        self.assertTrue(self.base_selenium.check_element_is_exist('article:comment'))
+
+        self.article_page.info('+ Check Related article field existance in create page')
+        self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
+
+        # open edit page after restore
+        self.article_page.info('+ Open article edit')
+        self.article_page.get_articles_page()
+        self.article_page.open_edit_page(row=self.article_page.get_random_article_row())
+
+        self.article_page.info('+ Check Unit field existance in edit page')
+        self.assertTrue(self.base_selenium.check_element_is_exist('article:unit'))
+
+        self.article_page.info('+ Check Comment field existance in edit page')
+        self.assertTrue(self.base_selenium.check_element_is_exist('article:comment'))
+
+        self.article_page.info('+ Check Related article field existance in edit page')
+        self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
