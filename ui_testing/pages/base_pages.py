@@ -227,3 +227,8 @@ class BasePages:
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
+    def open_configuration(self):
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:configration')
+        self.sleep_medium()

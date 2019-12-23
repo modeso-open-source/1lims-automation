@@ -9,9 +9,7 @@ class Article(Articles):
         self.base_selenium.click(element='articles:new_article')
         time.sleep(self.base_selenium.TIME_SMALL)
         self.article_name = self.generate_random_text()
-        self.article_comment = self.generate_random_text()
         self.set_name(name=self.article_name)
-        self.set_comment(comment=self.article_comment)
         if material_type:
             self.set_material_type(material_type)
         else:
@@ -19,6 +17,8 @@ class Article(Articles):
         self.article_material_type = self.get_material_type()
 
         if full_options:
+            self.article_comment = self.generate_random_text()
+            self.set_comment(comment=self.article_comment)
             self.article_unit = self.generate_random_text()
             self.set_unit(self.article_unit)
             self.set_related_article()

@@ -82,3 +82,9 @@ class Articles(BasePages):
             self.base_selenium.click(element='general:confirm_pop')
             return False
         return True
+
+    def archive_field(self, field_name):
+        self.base_selenium.click(element='articles:{}_field_options'.format(field_name))
+        self.base_selenium.click(element='articles:{}_field_archive'.format(field_name))
+        self.confirm_popup()
+        self.sleep_tiny()

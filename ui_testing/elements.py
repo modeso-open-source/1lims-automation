@@ -106,7 +106,11 @@ elements = {
                       'value': 'saveButton'},
         'col_6': {'method': 'class_name',
                   'value': 'col-md-6',
-                  'order': -1}
+                  'order': -1},
+        'configration': {
+            'method': 'xpath',
+            'value': '//*[@id="custom-accordion-panel"]/div/div/a[4]'
+        }
     },
     'login': {
         'username': {'method': 'name',
@@ -153,8 +157,16 @@ elements = {
         'right_menu': {'method': 'xpath',
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
         'alert_confirmation': {'method': 'id',
-                               'value': 'noty_layout__topCenter'}
+                               'value': 'noty_layout__topCenter'},
+                               
+        'unit_field_options': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/a'},
+        'unit_field_archive': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/ul/li[1]/a'},
 
+        'comment_field_options': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/a'},
+        'comment_field_archive': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/ul/li[1]/a'},
+
+        'related_article_field_options': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/a'},
+        'related_article_field_archive': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/ul/li[1]/a'},
     },
     'article': {
         'unit': {'method': 'id',

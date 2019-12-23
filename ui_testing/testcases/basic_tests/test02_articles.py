@@ -464,3 +464,33 @@ class ArticlesTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
+
+    def test021_optional_fields(self):
+        """
+        New: Articles: Optional fields: User can hide/show any optional field in Edit/Create form
+
+        LIMS:4123
+        :return:
+        """
+        # open the configuration
+        # self.article_page.open_configuration()
+
+        # # Archive the optional fields
+        # self.article_page.archive_field(field_name='unit')
+        # self.article_page.archive_field(field_name='comment')
+        # self.article_page.archive_field(field_name='related_article')
+
+        # # go back to the table
+        # self.article_page.get_articles_page()
+
+        # check if the fields still exist in the table
+        article_header_fields = self.base_selenium.get_table_head_elements('general:table')
+        self.assertIn('comment', article_header_fields)
+        self.assertIn('unit', article_header_fields)
+        # ignore related article since it shouldn't display in the table anyway
+
+        # open create page
+        self.base_selenium.click(element='articles:new_article')
+        self.article_page.sleep_small()
+        here = self.article_page.get_comment()
+        print(here)
