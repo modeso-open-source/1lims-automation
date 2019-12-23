@@ -12,6 +12,9 @@ class AuditTrailTestCases(BaseTest):
     def test001_download_audit_trail_sheet(self):
         """
         Header: Audit trail: Make sure that you can export all the fields in the active table
+        
+        ** NB ** Everybody using the system should stop while this test case is running, because
+        the export gets the latest info in the server while the rows are not the latest ** NB ** 
 
         LIMS-6357
         """
