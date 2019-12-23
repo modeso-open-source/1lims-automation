@@ -16,3 +16,13 @@ class AuditTrail(BasePages):
 
     def get_table_rows_data(self):
         return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]                      
+
+    def filter_audit_trail_by(self, filter_name , filter_text, field_type='drop_down'):
+        self.base_selenium.LOGGER.info(' + Filter by test plan : {}'.format(filter_text))
+        self.open_filter_menu()
+        self.filter_by(filter_element='audit_trail:filter_{}'.format(filter_name), filter_text=filter_text, field_type=field_type)
+        self.filter_apply()
+        self.sleep_tiny()
+
+    def get_random_audit_trail_row(self):
+         return self.get_random_table_row(table_element='general:table')

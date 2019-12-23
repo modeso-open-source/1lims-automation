@@ -29,7 +29,19 @@ class AuditTrailTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
                 
-                
-                
+    
+    def test002_audit_trail_filters(self):
+        """
+        Header: Audit trail Approach: Make sure that I can filter by all the following fields 
+        ( action date & entity & action & entity no & changed by )
+
+        LIMS-6357
+        """
+        audit_trail_row = self.audit_trail_page.get_random_audit_trail_row()
+        audit_trail_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=audit_trail_row)
+        action_date = audit_trail_row_data['Action Date'].split(',')[0]
+        self.audit_trail_page.filter_audit_trail_by(filter_name='action_date', filter_text=action_date, field_type='text')
+        result = self.audit_trail_page.get_table_rows_data()[0]
+        self.assertIn(action_date, result)
                
 
