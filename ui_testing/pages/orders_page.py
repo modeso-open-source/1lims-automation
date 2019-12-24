@@ -6,7 +6,7 @@ import time
 class Orders(BasePages):
     def __init__(self):
         super().__init__()
-        self.orders_url = "{}orders".format(self.base_selenium.url)
+        self.orders_url = "{}sample/orders".format(self.base_selenium.url)
 
     def get_orders_page(self):
         self.base_selenium.get(url=self.orders_url)
