@@ -134,19 +134,10 @@ class TstPlan(TestPlans):
                 deleted_test_unit_found = 1
         return deleted_test_unit_found
 
-    def navigate_to_testplan_stepII_and_get_testunits(self):
-        # navigate to the testunits selection tab [Test plan create or update step 2]
-        self.navigate_to_testunits_selection_page()
-
-        # switch to table view
+    def switch_test_units_to_row_view(self):
         self.base_selenium.LOGGER.info('Switching from card view to table view')
         self.base_selenium.click(element='test_plan:table_card_switcher')
 
-        # get all the testunits from the table view
-        all_testunits = self.get_all_testunits_in_testplan()
-
-        return all_testunits
-    
     def save_and_confirm_popup(self):
         self.save(save_btn='test_plan:save_btn')
         # press 'Ok' on the popup
