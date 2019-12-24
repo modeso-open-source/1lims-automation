@@ -774,3 +774,25 @@ class TestUnitsTestCases(BaseTest):
         self.info('assert there is a new test unit')
         self.assertGreater(new_test_units, old_test_units)
 
+    @parameterized.expand(['ok', 'cancel'])
+    def test024_create_approach_overview_button(self, ok):
+        """
+        Master data: Create: Overview button Approach: Make sure
+        after I press on the overview button, it redirects me to the active table
+        LIMS-6203
+        """
+        self.base_selenium.LOGGER.info('Click Create New Test Unit')
+        self.base_selenium.click(element='test_units:new_testunit')
+        self.test_unit_page.sleep_tiny()
+        # click on Overview, this will display an alert to the user
+        self.base_page.click_overview()
+        # switch to the alert
+        if 'ok' == ok:
+            self.base_page.confirm_overview_pop_up()
+            self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits')
+            self.base_selenium.LOGGER.info(' + clicking on Overview confirmed')
+        else:
+            self.base_page.cancel_overview_pop_up()
+            self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits/add')
+            self.base_selenium.LOGGER.info('clicking on Overview cancelled')
+
