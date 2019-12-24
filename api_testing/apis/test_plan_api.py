@@ -17,7 +17,7 @@ class TestPlanAPI(BaseAPI):
         return response
 
     def get_completed_testplans(self):
-        response = self.get_all_test_plans()
+        response = self.get_all_test_plans(limit=150)
         all_test_plans = response.json()['testPlans']
         completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
         return completed_test_plans

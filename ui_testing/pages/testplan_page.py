@@ -144,3 +144,11 @@ class TstPlan(TestPlans):
         self.base_selenium.LOGGER.info('Accepting the changes made')
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
+
+    def delete_all_testunits(self):
+        testunits_still_available = 1
+        while testunits_still_available:
+            try:
+                self.base_selenium.click(element='test_plan:remove_testunit')
+            except:
+                testunits_still_available = 0      
