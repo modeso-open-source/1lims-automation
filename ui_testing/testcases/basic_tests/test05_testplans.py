@@ -55,6 +55,37 @@ class TestPlansTestCases(BaseTest):
         
         self.assertFalse(deleted_test_unit_found)
 
+    def test011_create_testplans_same_name_article_materialtype(self):
+        '''
+        LIMS-3499
+        Testing the creation of two testplans with the same name, material type
+        and article, this shouldn't happen
+        '''
+
+        # navigate to the articles page to create a new article
+        self.article_page.get_articles_page()
+        article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
+        self.base_selenium.LOGGER.info('New article is created successfully with name: {} and material type: {}'.format(article_data['name'], article_data['material_type']))
+
+        # navigate to the testplans page
+        self.test_plan.get_test_plans_page()
+        testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['material_type'], article=article_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, article_data['name'], article_data['material_type']))
+
+        self.base_selenium.LOGGER.info('Attempting to create another testplan with the same data as the previously created one')
+
+        # create another testplan with the same data
+        self.test_plan.create_new_test_plan(name=testplan_name, material_type=article_data['material_type'], article=article_data['name'])
+        
+        self.base_selenium.LOGGER.info(
+            'Waiting for the error message to make sure that validation forbids the creation of two testplans having the same name, material type and article')
+        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
+
+        self.base_selenium.LOGGER.info(
+            'Assert the error message to make sure that validation forbids the creation of two testplans having the same name, material type and article? {}'.format(
+                validation_result))
+        self.assertTrue(validation_result)
+
 
     def test012_create_testplans_same_name_different_materialtype(self):
         '''
@@ -89,3 +120,4 @@ class TestPlansTestCases(BaseTest):
                 search_length += 1
 
         self.assertEqual(search_length, 2)
+    
