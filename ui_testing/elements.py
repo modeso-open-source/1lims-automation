@@ -198,8 +198,6 @@ elements = {
                                    'order': 1},
         'new_test_plan': {'method': 'link_text',
                           'value': 'New Test Plan'},
-        'right_menu': {'method': 'xpath',
-                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
         'archived': {'method': 'link_text',
                      'value': 'Archived'},
         'archive': {'method': 'link_text',
