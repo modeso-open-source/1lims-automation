@@ -251,7 +251,9 @@ class BasePages:
     
     def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
         self.open_configure_table()
-        total_columns = self.base_selenium.find_element_by_xpath(xpath='//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
+        total_columns = self.base_selenium.find_element_in_element(source_element='general:configure_table_items',
+                                                            destination_element='general:li')
+        # total_columns = self.base_selenium.find_element_by_xpath(xpath='//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
         random_indices_arr = index_arr
         hidden_columns_names = []
         if random:

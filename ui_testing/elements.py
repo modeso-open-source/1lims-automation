@@ -8,6 +8,9 @@ elements = {
         'span': {'method': 'tag_name',
                  'value': 'span',
                  'order': 0},
+        'li': {'method': 'tag_name',
+                 'value': 'li',
+                 'order': 0},
 
         'search': {'method': 'id',
                    'value': 'generalSearch'},
@@ -108,7 +111,9 @@ elements = {
                   'value': 'col-md-6',
                   'order': -1},
        'configure_table': {'method': 'xpath',
-                            'value': '//a[@class="m-dropdown__toggle btn no-padding"]'}
+                            'value': '//a[@class="m-dropdown__toggle btn no-padding"]'},
+       'configure_table_items': {'method': 'xpath',
+                            'value': '//ul[@class="m-nav sortable sortable-table1 ui-sortable"]'},
     },
     'login': {
         'username': {'method': 'name',
