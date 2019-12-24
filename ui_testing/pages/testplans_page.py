@@ -26,7 +26,7 @@ class TestPlans(BasePages):
         self.open_edit_page(row=test_plan)
 
     def get_testunits_in_testplans(self, test_plan_name=''):
-        self.base_selenium.LOGGER.info('Filter by testplan name {}'.format(test_plan_name))
+        self.base_selenium.LOGGER.info('Search by testplan name {}'.format(test_plan_name))
         self.search(value=test_plan_name)
         new_testplan_testunits=self.get_child_table_data(index=0)
 
@@ -42,3 +42,22 @@ class TestPlans(BasePages):
         testplan_version = testplan_row_data['Version']
         testplan_status = testplan_row_data['Status']
         return testplan_version, testplan_status
+        
+    def get_specific_testplan_data_and_childtable_data(self, filter_by='number', filter_text=''):
+        if filter_by == 'number':
+            self.filter_by_testplan_number(filter_text)
+        found_testplan = self.result_table()[0]
+        found_testplan_data = self.base_selenium.get_row_cells_dict_related_to_header(row=found_testplan)
+        found_testplan_childtable_data = self.get_child_table_data(index=0)
+
+        return found_testplan_data, found_testplan_childtable_data
+
+    def filter_by_testplan_number(self, filter_text):
+        self.base_selenium.LOGGER.info('Filtering by testplan number: {}'.format(filter_text))
+        self.open_filter_menu()
+        self.filter_by(filter_element='test_plans:testplan_number_filter', filter_text=filter_text, field_type='text')
+        self.filter_apply()
+
+    def get_the_latest_row_data(self):
+        latest_testplan_row = (self.result_table()[0])
+        return self.base_selenium.get_row_cells_dict_related_to_header(latest_testplan_row)

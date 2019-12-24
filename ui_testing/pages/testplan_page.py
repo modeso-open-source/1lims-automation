@@ -152,3 +152,15 @@ class TstPlan(TestPlans):
                 self.base_selenium.click(element='test_plan:remove_testunit')
             except:
                 testunits_still_available = 0      
+                
+    '''
+    Changes the fields in the testplan after choosing the duplicate option on
+    a specific testplan
+    '''
+    def duplicate_testplan(self, change=[]):
+        for c in change:
+            self.base_selenium.LOGGER.info('Changing the {} field'.format(c))
+            if c == 'name':
+                duplicated_test_plan_name = self.generate_random_text()
+                self.set_test_plan(name=duplicated_test_plan_name)
+        self.save()
