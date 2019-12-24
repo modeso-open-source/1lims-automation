@@ -112,8 +112,10 @@ class Contact(Contacts):
 
     def set_contact_departments(self, departments=[]):
         counter = 0
+        department_list = []
         for department in departments:
             value = department or self.generate_random_text()
+            department_list.append(value)
             departments_field = self.base_selenium.find_element_in_element(destination_element='general:input',
                                                                         source_element='contact:departments')
             departments_field.send_keys(value)
@@ -122,14 +124,14 @@ class Contact(Contacts):
             departments_field.send_keys(Keys.ENTER)
 
         self.base_selenium.LOGGER.info('set contact departments to be {}', departments)
-        return departments
+        return ', '.join(department_list)
 
     def set_contact_type(self, contact_types=['isSupplier']):
         for contact_type in contact_types :
             self.base_selenium.click(element='contact:contacttype-'+contact_type)
 
         self.base_selenium.LOGGER.info('set contact type to be {}', contact_types)
-        return contact_types
+        return ', '.join(contact_types)
 
     def get_contact_number(self):
         return self.base_selenium.get_value(element="contact:no")
@@ -210,24 +212,37 @@ class Contact(Contacts):
             self.sleep_tiny()
 
         # get the data from the return type
-        self.set_contact_number(no=no)
-        self.set_contact_name(name=name)
-        self.set_contact_address(address=address)
-        self.set_contact_postalcode(postalcode=postalcode)
-        self.set_contact_location(location=location)
-        self.set_contact_country(country=country)
-        self.set_contact_email(email=email)
-        self.set_contact_phone(phone=phone)
-        self.set_contact_skype(skype=skype)
-        self.set_contact_website(website=website)
-        self.set_contact_type(contact_types=contact_types)
+        contact_no = self.set_contact_number(no=no)
+        contact_name = self.set_contact_name(name=name)
+        contact_address = self.set_contact_address(address=address)
+        contact_postalcode = self.set_contact_postalcode(postalcode=postalcode)
+        contact_location = self.set_contact_location(location=location)
+        contact_country = self.set_contact_country(country=country)
+        contact_email = self.set_contact_email(email=email)
+        contact_phone = self.set_contact_phone(phone=phone)
+        contact_skype = self.set_contact_skype(skype=skype)
+        contact_website = self.set_contact_website(website=website)
+        contact_type = self.set_contact_type(contact_types=contact_types)
         contact_departments = self.set_contact_departments(departments=departments)
 
         self.base_selenium.LOGGER.info('wait to make sure that all data are writtent correctly')
         self.sleep_tiny()
         
         self.base_selenium.LOGGER.info('acquiring contact data')
-        contact_data = self.get_full_contact_data()
+        contact_data = {
+            "Contact No": contact_no,
+            "Contact Name": contact_name,
+            "Address": contact_address,
+            "Postal Code": contact_postalcode,
+            "Location": contact_location,
+            "Country": contact_country,
+            "Email": contact_email,
+            "Phone": contact_phone,
+            "Skype": contact_skype,
+            "Website": contact_website,
+            "Departments": contact_departments,
+            "Contact Type": contact_type
+            }
 
         if contact_persons:
             self.get_contact_persons_page()
@@ -243,18 +258,18 @@ class Contact(Contacts):
     def get_full_contact_data(self):
         self.base_selenium.LOGGER.info('Collecting contact data')
         return {
-            "no": self.get_contact_number(),
-            "name": self.get_contact_name(),
-            "address": self.get_contact_address(),
-            "postalcode": self.get_contact_postalcode(),
-            "location": self.get_contact_location(),
-            "country": self.get_contact_country(),
-            "email": self.get_contact_email(),
-            "phone": self.get_contact_phone(),
-            "skype": self.get_contact_skype(),
-            "website": self.get_contact_website(),
-            "departments": self.get_contact_departments(),
-            "contact_type": self.get_contact_type()
+            "Contact No": self.get_contact_number(),
+            "Contact Name": self.get_contact_name(),
+            "Address": self.get_contact_address(),
+            "Postal Code": self.get_contact_postalcode(),
+            "Location": self.get_contact_location(),
+            "Country": self.get_contact_country(),
+            "Email": self.get_contact_email(),
+            "Phone": self.get_contact_phone(),
+            "Skype": self.get_contact_skype(),
+            "Website": self.get_contact_website(),
+            "Departments": self.get_contact_departments(),
+            "Contact Type": self.get_contact_type()
         }
 
     def get_contact_persons_page(self):

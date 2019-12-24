@@ -11,36 +11,41 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.contact_page.get_contacts_page()
 
-    @parameterized.expand(['archive', 'restore'])
-    def test_001_archive_restore_contact(self, action):
+    def test_001_archive_contact(self, action):
         """
         New: Contact: Restore/Archive Approach: I can archive/restore any contact successfully
         I can archive/restore any contact successfully
         LIMS-3566
         """
         
-        if action == 'restore':
-            self.contact_page.get_archived_contacts()
 
         selected_contacts_data, _ = self.contact_page.select_random_multiple_table_rows()
-        if action == 'archive':
-            self.contact_page.archive_selected_contacts()
-        elif action == 'restore':
-            self.contact_page.restore_selected_contacts()
-        if action == 'archive':
-            self.contact_page.get_archived_contacts()
-        elif action == 'restore':
-            self.contact_page.get_active_contacts()
+        self.contact_page.archive_selected_contacts()
+        self.contact_page.get_archived_contacts()
 
         for contact in selected_contacts_data:
             contact_no = contact['Contact No']
-            if action == 'archive':
-                self.base_selenium.LOGGER.info(' + {} Contact should be archived.'.format(contact_no))
-            elif action == 'restore':
-                self.base_selenium.LOGGER.info(' + {} Contact should be active.'.format(contact_no))
+            self.base_selenium.LOGGER.info(' + {} Contact should be archived.'.format(contact_no))
             self.assertTrue(self.contact_page.is_contact_in_table(value=contact_no))
 
-    def test_002_create_contact(self):
+    def test_002_restore_contact(self):
+        """
+        New: Contact: Restore/Archive Approach: I can archive/restore any contact successfully
+        I can archive/restore any contact successfully
+        LIMS-3566
+        """
+            
+        self.contact_page.get_archived_contacts()
+        selected_contacts_data, _ = self.contact_page.select_random_multiple_table_rows()
+        self.contact_page.restore_selected_contacts()
+        self.contact_page.get_active_contacts()
+
+        for contact in selected_contacts_data:
+            contact_no = contact['Contact No']
+            self.base_selenium.LOGGER.info(' + {} Contact should be active.'.format(contact_no))
+            self.assertTrue(self.contact_page.is_contact_in_table(value=contact_no))
+
+    def test_003_create_contact(self):
         """
         New: Contact: Creation Approach: I can create new contact successfully
         User can create new conatcts successfully 
@@ -54,46 +59,18 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('comparing contact\'s data with the first record in contact page')
         self.base_selenium.LOGGER.info('to make sure that when new record is created is set to the be the first record in the page')
 
-        created_contact_record = self.contact_page.result_table()[0]
+        created_contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
         first_contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_contact_record)
 
-        self.base_selenium.LOGGER.info('contact no is {}, and it should be {}'.format(first_contact_data['Contact No'], contact_data['no']) )
-        self.assertEqual(first_contact_data['Contact No'], contact_data['no'])
+        table_headers = self.base_selenium.get_table_head_elements(element="contacts:contact_table")
+        headers_text = [header.text for header in table_headers]
 
-        self.base_selenium.LOGGER.info('contact name is {}, and it should be {}'.format(first_contact_data['Contact Name'], contact_data['name']) )
-        self.assertEqual(first_contact_data['Contact Name'], contact_data['name'])
+        for header in headers_text:
+            self.base_selenium.LOGGER.info('contact {} is {}, and it should be {}'.format(header, first_contact_data[header], contact_data[header]) )
+            self.assertEqual(first_contact_data[header], contact_data[header])
 
-        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(first_contact_data['Address'], contact_data['address']) )
-        self.assertEqual(first_contact_data['Address'], contact_data['address'])
-
-        self.base_selenium.LOGGER.info('contact postalcode is {}, and it should be {}'.format(first_contact_data['Postal Code'], contact_data['postalcode']) )
-        self.assertEqual(first_contact_data['Postal Code'], contact_data['postalcode'])
-
-        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(first_contact_data['Location'], contact_data['location']) )
-        self.assertEqual(first_contact_data['Location'], contact_data['location'])
         
-        self.base_selenium.LOGGER.info('contact country is {}, and it should be {}'.format(first_contact_data['Country'], contact_data['country']) )
-        self.assertEqual(first_contact_data['Country'], contact_data['country'])
-
-        self.base_selenium.LOGGER.info('contact email is {}, and it should be {}'.format(first_contact_data['Email'], contact_data['email']) )
-        self.assertEqual(first_contact_data['Email'], contact_data['email'])
-
-        self.base_selenium.LOGGER.info('contact phone is {}, and it should be {}'.format(first_contact_data['Phone'], contact_data['phone']) )
-        self.assertEqual(first_contact_data['Phone'], contact_data['phone'])
-
-        self.base_selenium.LOGGER.info('contact skype is {}, and it should be {}'.format(first_contact_data['Skype'], contact_data['skype']) )
-        self.assertEqual(first_contact_data['Skype'], contact_data['skype'])
-
-        self.base_selenium.LOGGER.info('contact website is {}, and it should be {}'.format(first_contact_data['Website'], contact_data['website']) )
-        self.assertEqual(first_contact_data['Website'], contact_data['website'])        
-
-        self.base_selenium.LOGGER.info('contact departments is {}, and it should be {}'.format(first_contact_data['Departments'], contact_data['departments']) )
-        self.assertEqual(first_contact_data['Departments'], contact_data['departments'])
-
-        self.base_selenium.LOGGER.info('contact contact_type is {}, and it should be {}'.format(first_contact_data['Type'], contact_data['contact_type']) )
-        self.assertEqual(first_contact_data['Type'], contact_data['contact_type'])
-
-    def test_003_upadte_contact(self):
+    def test_004_upadte_contact(self):
         """
         New: Contact: Edit Approach: I can update any contact record 
         I can edit in step one or two & this update should saved successfully 
@@ -102,8 +79,8 @@ class ContactsTestCases(BaseTest):
         """
         
         self.base_selenium.LOGGER.info('Select random table row')
-        self.contact_page.get_random_contact()
-        self.contact_page.sleep_tiny()
+        row = self.contact_page.get_random_contact()
+        self.contact_page.open_edit_page(row=row)
 
         self.base_selenium.LOGGER.info('updating contact with newrandom data')
         contact_data_before_refresh = self.contact_page.create_update_contact(create=False, contact_persons=False)
@@ -117,7 +94,7 @@ class ContactsTestCases(BaseTest):
         self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh, data_before_save=contact_data_before_refresh))
 
     
-    def test_004_search_by_any_field(self):
+    def test_005_search_by_any_field(self):
         """
         New: Contacts: Search Approach: I can search by any field in the table view 
         I can search by any field in the table view 
@@ -139,7 +116,7 @@ class ContactsTestCases(BaseTest):
                     break
             self.assertEqual(row_data[column], search_data[column])
 
-    def test_005_download_contact_sheet(self):
+    def test_006_download_contact_sheet(self):
         """
         New: Contact: XSLX File: I can download all the data in the table view in the excel sheet
         I can download all the data in the table view in the excel sheet 
@@ -157,11 +134,11 @@ class ContactsTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test_006_create_contact_with_person(self):
+    def test_007_create_contact_with_person(self):
         contact_data = self.contact_page.create_update_contact()
 
-        self.base_selenium.LOGGER.info('filter by contact no.: {} to get the record'.format(contact_data['no']))
-        first_contact_record = self.contact_page.search(value=contact_data['no'])[0]
+        self.base_selenium.LOGGER.info('filter by contact no.: {} to get the record'.format(contact_data['Contact No']))
+        first_contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
 
         self.base_selenium.LOGGER.info('open the record in edit to compare the data')
         self.contact_page.open_edit_page(row=first_contact_record)
@@ -180,15 +157,15 @@ class ContactsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('contact persons was not saved successfully, you should report a BUG')
             self.assertEqual(True, False)
 
-    def test_007_create_contact_person_from_edit_update_old_value(self):
+    def test_008_create_contact_person_from_edit_update_old_value(self):
         """
         Contact: Edit Approach: make sure that you can add contact person from the edit mode 
         LIMS-6388
         """
 
         self.base_selenium.LOGGER.info('open random contact record to add a new contact persons to it')
-        first_contact_record = self.contact_page.get_random_contact_row()
-        self.contact_page.open_edit_page(row=first_contact_record)
+        random_contact_record = self.contact_page.get_random_contact_row()
+        self.contact_page.open_edit_page(row=random_contact_record)
 
         self.base_selenium.LOGGER.info('acquire contact data to compare it after updating the persons')
         contact_data = self.contact_page.get_full_contact_data()
@@ -212,7 +189,7 @@ class ContactsTestCases(BaseTest):
         
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6394')
-    def test_008_delete_contact_person(self):
+    def test_009_delete_contact_person(self):
         """
         Contact: Edit Approach: Make sure that you can delete any contact person from the edit mode 
         LIMS-6387
@@ -278,19 +255,19 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(True, False)
 
 
-    def test_009_delete_contact_used_in_other_data(self):
+    def test_010_delete_contact_used_in_other_data(self):
         """
         New: Contact: Delete Approach: I can't delete any contact if this contact related to some data 
         I can't delete any contact if this contact related to some data 
         """
 
-        self.base_selenium.LOGGER.info('get orders page to get any record\'s contact to make sure that we are deleting contact that is sued in other data')
-        self.order_page.get_orders_page()
-        random_order_record = self.order_page.get_random_order_row()
-        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=random_order_record)
-        contact_name = order_data['Contact Name'].split(', ')[0]
-
-        self.contact_page.get_contacts_page()
+        order_request = self.orders_api.get_all_orders().json()
+        self.assertEqual(order_request['status'], 1)
+        orders_records = order_request['orders']
+        self.assertNotEqual(len(orders_records), 0)
+        random_order_index = self.generate_random_number(lower=0, upper=len(orders_records)-1)
+        selected_order_record = orders_records[random_order_index]
+        contact_name = selected_order_record['company'][0]
         self.base_selenium.LOGGER.info('filter by contact name: {}'.format(contact_name))
         contact_record = self.contact_page.search(value=contact_name)[0]
         if self.contact_page.check_if_table_is_empty():
@@ -323,7 +300,7 @@ class ContactsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('Contact name is {}, and it should be {}'.format(contact_data['Contact Name'], contact_name))
             self.assertEqual(contact_data['Contact Name'], contact_name)
 
-    def test_010_user_can_show_hide_any_column(self):
+    def test_011_user_can_show_hide_any_column(self):
         """
         New:  contacts: Optional fields: User can hide/show any optional field in Edit/Create form 
         In the configuration section, In case I archive any optional field this field should be hidden from Edit/Create from and it should also found in the archive in table configuration.
