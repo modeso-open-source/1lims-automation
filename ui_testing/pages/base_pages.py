@@ -240,10 +240,6 @@ class BasePages:
     def generate_random_website(self):
         return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
 
-    def click_element_by_xpath(self, element, xpath=''):
-        element.find_element_by_xpath(xpath).click()
-        self.sleep_small() # sleep for loading
-
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
         configure_table_menu = self.base_selenium.find_element_by_xpath(xpath='//a[@class="m-dropdown__toggle btn no-padding"]')
