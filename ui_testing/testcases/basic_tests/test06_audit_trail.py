@@ -37,11 +37,47 @@ class AuditTrailTestCases(BaseTest):
 
         LIMS-6357
         """
+
+        # get random row in the table
         audit_trail_row = self.audit_trail_page.get_random_audit_trail_row()
+        # map the header to the row data
         audit_trail_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=audit_trail_row)
-        action_date = audit_trail_row_data['Action Date'].split(',')[0]
+        
+        # get each column data from that row
+        action_date = audit_trail_row_data['Action Date'].split(',')[0] # get only the date
+        changed_by = audit_trail_row_data['Changed By']
+        action = audit_trail_row_data['Action']
+        entity = audit_trail_row_data['Entity']
+        entity_number = audit_trail_row_data['Entity Number']
+
+        # open filter menu
+        self.audit_trail_page.open_filter_menu()
+
+        # filter by Action Date
         self.audit_trail_page.filter_audit_trail_by(filter_name='action_date', filter_text=action_date, field_type='text')
         result = self.audit_trail_page.get_table_rows_data()[0]
         self.assertIn(action_date, result)
-               
+
+        # filter by Change By
+        self.audit_trail_page.filter_audit_trail_by(filter_name='changed_by', filter_text=changed_by, field_type='drop_down')
+        result = self.audit_trail_page.get_table_rows_data()[0]
+        self.assertIn(changed_by, result)
+
+        # filter by Action
+        self.audit_trail_page.filter_audit_trail_by(filter_name='action', filter_text=action, field_type='drop_down')
+        result = self.audit_trail_page.get_table_rows_data()[0]
+        self.assertIn(action, result)
+
+        # filter by Change By
+        self.audit_trail_page.filter_audit_trail_by(filter_name='entity', filter_text=entity, field_type='drop_down')
+        result = self.audit_trail_page.get_table_rows_data()[0]
+        self.assertIn(entity, result)
+
+        # filter by Change By
+        self.audit_trail_page.filter_audit_trail_by(filter_name='entity_number', filter_text=entity_number, field_type='text')
+        result = self.audit_trail_page.get_table_rows_data()[0]
+        self.assertIn(entity_number, result)
+        
+        # close filter menu
+        self.audit_trail_page.open_filter_menu()
 

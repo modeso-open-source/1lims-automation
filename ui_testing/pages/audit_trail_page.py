@@ -19,7 +19,6 @@ class AuditTrail(BasePages):
 
     def filter_audit_trail_by(self, filter_name , filter_text, field_type='drop_down'):
         self.base_selenium.LOGGER.info(' + Filter by test plan : {}'.format(filter_text))
-        self.open_filter_menu()
         self.filter_by(filter_element='audit_trail:filter_{}'.format(filter_name), filter_text=filter_text, field_type=field_type)
         self.filter_apply()
         self.sleep_tiny()
