@@ -33,8 +33,7 @@ class Contact(Contacts):
     def set_contact_address(self, address=''):
         # case contact address was not provided, it generates random text to be the contact address
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if address == '':
-            address = self.generate_random_text()
+        address = address or self.generate_random_text()
 
         self.base_selenium.LOGGER.info('set contact address to be {}', address)
         self.base_selenium.set_text(element="contact:address", value=address)
@@ -44,8 +43,7 @@ class Contact(Contacts):
     def set_contact_postalcode(self, postalcode=''):
         # case contact postalcode was not provided, it generates random text to be the contact postalcode
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if postalcode == '':
-            postalcode = self.generate_random_text()
+        postalcode = postalcode or  self.generate_random_text()
 
         self.base_selenium.LOGGER.info('set contact postalcode to be {}', postalcode)
         self.base_selenium.set_text(element="contact:postalcode", value=postalcode)
@@ -55,8 +53,7 @@ class Contact(Contacts):
     def set_contact_location(self, location=''):
         # case contact location was not provided, it generates random text to be the contact location
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if location == '':
-            location = self.generate_random_text()
+        location = location or self.generate_random_text()
 
         self.base_selenium.LOGGER.info('set contact location to be {}', location)
         self.base_selenium.set_text(element="contact:location", value=location)
@@ -76,8 +73,7 @@ class Contact(Contacts):
     def set_contact_email(self, email=''):
         # case contact email was not provided, it generates random text to be the contact email
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if email == '':
-            email = self.generate_random_email()
+        email = email or self.generate_random_email()
 
         self.base_selenium.LOGGER.info('set contact email to be {}', email)
         self.base_selenium.set_text(element="contact:email", value=email)
@@ -87,8 +83,7 @@ class Contact(Contacts):
     def set_contact_phone(self, phone=''):
         # case contact phone was not provided, it generates random text to be the contact phone
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if phone == '':
-            phone = self.generate_random_text()
+        phone = phone or self.generate_random_text()
 
         self.base_selenium.LOGGER.info('set contact phone to be {}', phone)
         self.base_selenium.set_text(element="contact:phone", value=phone)
@@ -98,8 +93,7 @@ class Contact(Contacts):
     def set_contact_skype(self, skype=''):
         # case contact skype was not provided, it generates random text to be the contact skype
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if skype == '':
-            skype = self.generate_random_text()
+        skype = skype or self.generate_random_text()
 
         self.base_selenium.LOGGER.info('set contact skype to be {}', skype)
         self.base_selenium.set_text(element="contact:skype", value=skype)
@@ -109,8 +103,7 @@ class Contact(Contacts):
     def set_contact_website(self, website=''):
         # case contact website was not provided, it generates random text to be the contact website
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if website == '':
-            website = self.generate_random_website()
+        website = website or self.generate_random_website()
 
         self.base_selenium.LOGGER.info('set contact website to be {}', website)
         self.base_selenium.set_text(element="contact:website", value=website)
@@ -170,11 +163,11 @@ class Contact(Contacts):
 
     # to be fixed
     def get_contact_departments(self):
-        departments_tags = self.base_selenium.find_element_by_xpath("//div[@class='ng2-tags-container']").find_elements_by_tag_name('tag')
+        departments_tags = self.base_selenium.find_element("contact:departments_field_tags").find_elements_by_tag_name('tag')
         departments = []
         counter = 0
         for tag in departments_tags:
-            departments.append(tag.find_element_by_xpath("//div[@class='tag__text inline']").text)
+            departments.append(tag.find_element("contact:departments_tag").text)
             counter = counter +1
         if counter > 0 :
             return ', '.join(departments)
@@ -182,9 +175,9 @@ class Contact(Contacts):
             return '-'
     
     def get_contact_type(self):
-        isClient = self.base_selenium.find_element_by_xpath(xpath="//label[@id='isClient']//input[@type='checkbox']").is_selected()
-        isSupplier = self.base_selenium.find_element_by_xpath(xpath="//label[@id='isSupplier']//input[@type='checkbox']").is_selected()
-        isLaboratory = self.base_selenium.find_element_by_xpath(xpath="//label[@id='isLaboratory']//input[@type='checkbox']").is_selected()
+        isClient = self.base_selenium.find_element(element="contact:is_client_checkbox").is_selected()
+        isSupplier = self.base_selenium.find_element(element="contact:is_supplier_checkbox").is_selected()
+        isLaboratory = self.base_selenium.find_element(element="contact:is_laboratory_checkbox").is_selected()
 
         contact_types = [3]
         counter = 0
@@ -278,38 +271,32 @@ class Contact(Contacts):
             
         row_data = self.base_selenium.get_row_cells_elements_related_to_header(row=contact_persons_table_records[indexToEdit], table_element='contact:contact_persons_table')
 
-        if name == '':
-            name = self.generate_random_text()
+        name = name or self.generate_random_text()
         
         self.base_selenium.LOGGER.info(' Set contact person name : {}'.format(name))
         self.base_selenium.update_item_value(item=row_data['Contact Person: *'], item_text=name)
         
-        if position == '':
-            position = self.generate_random_text()
+        position = position or self.generate_random_text()
         
         self.base_selenium.LOGGER.info(' Set contact person position : {}'.format(position))
         self.base_selenium.update_item_value(item=row_data['Position:'], item_text=position)
         
-        if email == '':
-            email = self.generate_random_email()
+        email = email or self.generate_random_email()
         
         self.base_selenium.LOGGER.info(' Set contact person email : {}'.format(email))
         self.base_selenium.update_item_value(item=row_data['Email:'], item_text=email)
         
-        if phone == '':
-            phone = self.generate_random_text()
+        phone = phone or self.generate_random_text()
         
         self.base_selenium.LOGGER.info(' Set contact person phone : {}'.format(phone))
         self.base_selenium.update_item_value(item=row_data['Phone:'], item_text=phone)
         
-        if skype == '':
-            skype = self.generate_random_text()
+        skype = skype or self.generate_random_text()
         
         self.base_selenium.LOGGER.info(' Set contact person skype : {}'.format(skype))
         self.base_selenium.update_item_value(item=row_data['Skype:'], item_text=skype)
         
-        if info == '':
-            info = self.generate_random_text()
+        info = info or self.generate_random_text()
         
         self.base_selenium.LOGGER.info(' Set contact person info : {}'.format(info))
         self.base_selenium.update_item_value(item=row_data['Info:'], item_text=info)
@@ -349,12 +336,12 @@ class Contact(Contacts):
     def delete_contact_person(self, index=0, save=False):
         contact_persons_table_records = self.base_selenium.get_table_rows(element='contact:contact_persons_table')
         if index < len(contact_persons_table_records):
-            delete_button = contact_persons_table_records[index].find_element_by_xpath('//span[@id="delete_table_view"]')
+            delete_button = contact_persons_table_records[index].find_element(element='contact:delete_person_button')
             if delete_button:
                 delete_button.click()
 
         else:
-            delete_button = contact_persons_table_records[0].find_element_by_xpath('//span[@id="delete_table_view"]')
+            delete_button = contact_persons_table_records[0].find_element(element='contact:delete_person_button')
             if delete_button:
                 delete_button.click()
 
@@ -369,54 +356,12 @@ class Contact(Contacts):
 
     def compare_contact_main_data(self, data_before_save, data_after_save):
         self.base_selenium.LOGGER.info('Comparing contact main data')
-        self.base_selenium.LOGGER.info('contact no is {}, and it should be {}'.format(data_after_save['no'], data_before_save['no']) )
-        if data_after_save['no'] != data_before_save['no']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact name is {}, and it should be {}'.format(data_after_save['name'], data_before_save['name']) )
-        if data_after_save['name'] != data_before_save['name']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact address is {}, and it should be {}'.format(data_after_save['address'], data_before_save['address']) )
-        if data_after_save['address']!= data_before_save['address']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact postalcode is {}, and it should be {}'.format(data_after_save['postalcode'], data_before_save['postalcode']) )
-        if data_after_save['postalcode'] != data_before_save['postalcode']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact location is {}, and it should be {}'.format(data_after_save['location'], data_before_save['location']) )
-        if data_after_save['location'] != data_before_save['location']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact country is {}, and it should be {}'.format(data_after_save['country'], data_before_save['country']) )
-        if data_after_save['country'] != data_before_save['country']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact email is {}, and it should be {}'.format(data_after_save['email'], data_before_save['email']) )
-        if data_after_save['email'] != data_before_save['email']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact phone is {}, and it should be {}'.format(data_after_save['phone'], data_before_save['phone']) )
-        if data_after_save['phone'] != data_before_save['phone']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact skype is {}, and it should be {}'.format(data_after_save['skype'], data_before_save['skype']) )
-        if data_after_save['skype'] != data_before_save['skype']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact website is {}, and it should be {}'.format(data_after_save['website'], data_before_save['website']) )
-        if data_after_save['website'] != data_before_save['website']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact departments is {}, and it should be {}'.format(data_after_save['departments'], data_before_save['departments']) )
-        if data_after_save['departments'] != data_before_save['departments']:
-            return False
-
-        self.base_selenium.LOGGER.info('contact contact_type is {}, and it should be {}'.format(data_after_save['contact_type'], data_before_save['contact_type']) )
-        if data_after_save['contact_type'] != data_before_save['contact_type']:
-            return False
-
+        for key in data_before_save:
+            if key not in data_after_save:
+                return False
+            self.base_selenium.LOGGER.info('contact {} is {}, and it should be {}'.format(key, data_after_save[key], data_before_save[key]) )        
+            if data_before_save[key] != data_after_save[key]:
+                    return False
         return True
 
     def compare_contact_persons_data(self, data_before_save, data_after_save):
@@ -424,31 +369,12 @@ class Contact(Contacts):
         person_counter = 0
         for contact_person in data_after_save:
             current_contact_person = data_before_save[person_counter]
-            self.base_selenium.LOGGER.info('contact person #{} name is: {}, and it should be: {}'.format(person_counter, contact_person['name'], current_contact_person['name']))
-            
-            if contact_person['name'] != current_contact_person['name']:
-                return False
-
-            self.base_selenium.LOGGER.info('contact person #{} position is: {}, and it should be: {}'.format(person_counter, contact_person['position'], current_contact_person['position']))
-            if contact_person['position'] != current_contact_person['position']:
-                return False
-
-            self.base_selenium.LOGGER.info('contact person #{} email is: {}, and it should be: {}'.format(person_counter, contact_person['email'], current_contact_person['email']))
-            if contact_person['email'] != current_contact_person['email']:
-                return False
-
-            self.base_selenium.LOGGER.info('contact person #{} phone is: {}, and it should be: {}'.format(person_counter, contact_person['phone'], current_contact_person['phone']))
-            if contact_person['phone'] != current_contact_person['phone']:
-                return False
-
-            self.base_selenium.LOGGER.info('contact person #{} skype is: {}, and it should be: {}'.format(person_counter, contact_person['skype'], current_contact_person['skype']))
-            if contact_person['skype'] != current_contact_person['skype']:
-                return False
-                
-            self.base_selenium.LOGGER.info('contact person #{} info is: {}, and it should be: {}'.format(person_counter, contact_person['info'], current_contact_person['info']))
-            if contact_person['info'] != current_contact_person['info']:
-                return False
-
+            for key in data_before_save:
+                if key not in data_after_save:
+                    return False
+                self.base_selenium.LOGGER.info('contact person #{} {} is: {}, and it should be: {}'.format(person_counter, key, data_after_save[key], data_before_save[key]) )        
+                if data_before_save[key] != data_after_save[key]:
+                        return False
             person_counter = person_counter +1
 
         return True

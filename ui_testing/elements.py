@@ -475,7 +475,11 @@ elements = {
         'contact_table': {'method': 'id',
                           'value': 'table'},
         'new_contact': {'method': 'id',
-                        'value': 'add-btn'}
+                        'value': 'add-btn'},
+       'delete_contact_msg': {'method': 'xpath',
+                            'value': '//h2[@id="swal2-title"]'},
+       'confirmation_button': {'method': 'xpath',
+                            'value': '//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'}
     },
     'contact': {
         'name': {'method': 'id',
@@ -519,6 +523,18 @@ elements = {
                      'value': 'addNewItem',
                      'order': 0},
         'contact_persons_table': {'method': 'id',
-                     'value': 'table-with-add'}
+                     'value': 'table-with-add'},
+       'departments_field_tags': {'method': 'xpath',
+                     'value': '//div[@class="ng2-tags-container"]'},
+       'departments_tag': {'method': 'xpath',
+                     'value': '//div[@class="tag__text inline"]'},
+       'is_client_checkbox': {'method': 'xpath',
+                     'value': '//label[@id="isClient"]//input[@type="checkbox"]'},
+       'is_supplier_checkbox': {'method': 'xpath',
+                     'value': '//label[@id="isSupplier"]//input[@type="checkbox"]'},
+       'is_laboratory_checkbox': {'method': 'xpath',
+                     'value': '//label[@id="isLaboratory"]//input[@type="checkbox"]'},
+       'delete_person_button': {'method': 'xpath',
+                     'value': '//span[@id="delete_table_view"]'}
     }
 }

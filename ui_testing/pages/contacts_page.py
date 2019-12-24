@@ -90,10 +90,10 @@ class Contacts(BasePages):
         return True
 
     def check_delete_message(self):
-        msg = self.base_selenium.find_element_by_xpath(xpath='//h2[@id="swal2-title"]')
+        msg = self.base_selenium.find_element(element='contacts:delete_contact_msg')
         if msg.text != "You can't Delete this item as it's related to some other data":
             return False
-        confirmation_button = self.base_selenium.find_element_by_xpath(xpath='//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]')
+        confirmation_button = self.base_selenium.find_element(element='contacts:confirmation_button')
         if confirmation_button:
             confirmation_button.click()
             return True
