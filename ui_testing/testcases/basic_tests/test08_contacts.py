@@ -11,7 +11,7 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.contact_page.get_contacts_page()
 
-    def test_001_archive_contact(self, action):
+    def test_001_archive_contact(self):
         """
         New: Contact: Restore/Archive Approach: I can archive/restore any contact successfully
         I can archive/restore any contact successfully
