@@ -56,3 +56,36 @@ class TestPlansTestCases(BaseTest):
         self.assertFalse(deleted_test_unit_found)
 
 
+    def test012_create_testplans_same_name_different_materialtype(self):
+        '''
+        LIMS-3498
+        Testing the creation of two testplans with the same name, but different material type
+        and article. It should be created successfully.
+        '''
+
+        # navigate to the articles page to create two new articles
+        self.article_page.get_articles_page()
+        first_article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
+        self.base_selenium.LOGGER.info('The first new article is created successfully with name: {} and material type: {}'.format(first_article_data['name'], first_article_data['material_type']))
+        
+        second_article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
+        self.base_selenium.LOGGER.info('The second new article is created successfully with name: {} and material type: {}'.format(second_article_data['name'], second_article_data['material_type']))
+
+        # navigate to the testplans page
+        self.test_plan.get_test_plans_page()
+        testplan_name = self.test_plan.create_new_test_plan(material_type=first_article_data['material_type'], article=first_article_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, first_article_data['name'], first_article_data['material_type']))
+
+        self.base_selenium.LOGGER.info('Attempting to create another testplan with the same name as the previously created one, but with different material type and article name')
+
+        # create another testplan with the same name, but with the second article's data
+        self.test_plan.create_new_test_plan(name=testplan_name, material_type=second_article_data['material_type'], article=second_article_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, second_article_data['name'], second_article_data['material_type']))
+
+        data = self.test_plan.search(testplan_name)
+        search_length = 0
+        for d in data:
+            if len(d.text) != 0:
+                search_length += 1
+
+        self.assertEqual(search_length, 2)
