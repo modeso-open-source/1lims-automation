@@ -261,20 +261,26 @@ class BasePages:
 
         for index in random_indices_arr:
             if total_columns[index].get_attribute('id') and total_columns[index].get_attribute('id') != 'id' and total_columns[index].get_attribute('id') not in always_hidden_columns:
-                try:
-                    new_label_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//label[@class='sortable-label']"
-                    new_checkbox_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//span[@class='checkbox']"
-                    column_name = self.base_selenium.find_element_by_xpath(new_label_xpath)
-                    column = self.base_selenium.find_element_by_xpath(new_checkbox_xpath)
+                column_name = self.hide_column(index=index, total_columns=total_columns)
+                if column_name != '':
                     hidden_columns_names.append(column_name)
-                    column.click()
-                except Exception as e:
-                    self.base_selenium.LOGGER.info("element with the id '{}' doesn't  exit in the configure table".format(total_columns[index].get_attribute('id')))
-                    self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
 
         
         self.press_apply_in_configure_table()
         return hidden_columns_names
+
+    def hide_column(self, index, total_columns=[]):
+        try:
+            new_label_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//label[@class='sortable-label']"
+            new_checkbox_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//span[@class='checkbox']"
+            column_name = self.base_selenium.find_element_by_xpath(new_label_xpath)
+            column = self.base_selenium.find_element_by_xpath(new_checkbox_xpath)
+            column.click()
+            return column_name
+        except Exception as e:
+            self.base_selenium.LOGGER.info("element with the id '{}' doesn't  exit in the configure table".format(total_columns[index].get_attribute('id')))
+            self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
+            return ''
 
 
     def generate_random_indices(self, max_index=3, count=3):
