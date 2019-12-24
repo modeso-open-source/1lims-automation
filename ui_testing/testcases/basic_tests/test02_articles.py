@@ -1,4 +1,5 @@
 from ui_testing.testcases.base_test import BaseTest
+
 from parameterized import parameterized
 import re
 from unittest import skip
@@ -464,3 +465,25 @@ class ArticlesTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
+
+    @parameterized.expand(['ok', 'cancel'])
+    def test020_create_approach_overview_button(self, ok):
+        """
+        Master data: Create: Overview button Approach: Make sure
+        after I press on the overview button, it redirects me to the active table
+        LIMS-6203
+        """
+        self.base_selenium.LOGGER.info('create new article.')
+        self.base_selenium.click(element='articles:new_article')
+        self.article_page.sleep_tiny()
+        # click on Overview, this will display an alert to the user
+        self.base_page.click_overview()
+        # switch to the alert
+        if 'ok' == ok:
+            self.base_page .confirm_overview_pop_up()
+            self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
+            self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+        else:
+            self.base_page.cancel_overview_pop_up()
+            self.assertEqual(self.base_selenium.get_url(), '{}articles/add'.format(self.base_selenium.url))
+            self.base_selenium.LOGGER.info('clicking on Overview cancelled')

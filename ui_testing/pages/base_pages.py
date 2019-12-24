@@ -316,3 +316,16 @@ class BasePages:
                     self.base_selenium.LOGGER.info("element with the id '{}' doesn't  exit in the configure table".format(column.get_attribute('id')))
                     self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
         self.press_apply_in_configure_table()
+    def click_overview(self):
+        # click on Overview, this will display an alert to the user
+        self.base_selenium.LOGGER.info('click on Overview')
+        self.base_selenium.click(element='general:overview')
+        self.sleep_tiny()
+
+    def confirm_overview_pop_up(self):
+        self.base_selenium.click(element='general:confirm_overview')
+        self.sleep_tiny()
+
+    def cancel_overview_pop_up(self):
+        self.base_selenium.click(element='general:cancel_overview')
+        self.sleep_tiny()

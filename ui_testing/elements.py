@@ -116,6 +116,12 @@ elements = {
                             'value': '//ul[@class="m-nav sortable sortable-table1 ui-sortable"]'},
        'apply_configure_table': {'method': 'xpath',
                             'value': '//a[@class="btn btn-primary m-btn pull-right"]'},
+        'overview': {'method': 'xpath',
+                     'value': "//span[contains(text(),'Overview')]"},
+        'confirm_overview': {'method': 'xpath',
+                             'value': "//div[contains(@class, 'swal2-actions')]//button[1]"},
+        'cancel_overview': {'method': 'xpath',
+                            'value': "//div[contains(@class, 'swal2-actions')]//button[2]"}
     },
     'login': {
         'username': {'method': 'name',
@@ -536,5 +542,6 @@ elements = {
                      'value': '//label[@id="isLaboratory"]//input[@type="checkbox"]'},
        'delete_person_button': {'method': 'xpath',
                      'value': '//span[@id="delete_table_view"]'}
+
     }
 }
