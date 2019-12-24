@@ -209,6 +209,7 @@ class Contact(Contacts):
             self.base_selenium.LOGGER.info('Wait untill data are loaded')
             self.sleep_tiny()
 
+        # get the data from the return type
         self.set_contact_number(no=no)
         self.set_contact_name(name=name)
         self.set_contact_address(address=address)
@@ -232,6 +233,8 @@ class Contact(Contacts):
             self.get_contact_persons_page()
             contact_person_data = self.create_update_contact_person()
             contact_data['contact_persons'] = contact_person_data
+        else:
+            contact_data['contact_persons'] = []
 
         self.base_selenium.LOGGER.info('Saving the contact created')
         self.save(save_btn='contact:save')
