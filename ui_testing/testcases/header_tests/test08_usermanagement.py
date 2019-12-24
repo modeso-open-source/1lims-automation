@@ -84,7 +84,8 @@ class HeaderTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test005_delete_user(self):
+    @parameterized.expand(['ok', 'pop_up_ok'])
+    def test005_delete_user(self, ok):
         """
         User management : Delete Approach: Make sure that you an delete any record successfully
         LIMS-6381
@@ -98,18 +99,17 @@ class HeaderTestCases(BaseTest):
             row=user_row)
         self.header_page.click_on_user_right_menu()
         self.header_page.click_on_delete_button()
-        user_deleted = self.header_page.click_on_the_confirm_message()
-        self.base_selenium.LOGGER.info(' + {} '.format(user_deleted))
-        #In case the user record is deleted
-        if user_deleted:
-            self.base_selenium.LOGGER.info(
+        if 'ok_btn'== ok:
+             self.header_page.click_on_the_confirm_message()
+             self.base_selenium.LOGGER.info(
                 ' + user number : {} deleted successfully'.format(user_data['User No.']))
-            self.assertEqual(self.base_selenium.get_text(element='user_management:alert_confirmation'),
+             self.assertEqual(self.base_selenium.get_text(element='user_management:alert_confirmation'),
                              'Successfully deleted')
             # In case user used in other entity
         else:
             self.base_selenium.LOGGER.info(
                 ' + pop up will appear that this item related to some data : {}'.format(user_data))
+            self.header_page.confirm_popup()
             self.assertFalse(self.header_page.confirm_popup())
 
     def test006_create_new_user(self):
@@ -128,40 +128,7 @@ class HeaderTestCases(BaseTest):
         self.assertIn(self.header_page.user_name, user_text)
 
 
-    def test007_validate_all_user_fields(self):
-        """
-        New: Header: User management: Make sure from the validation of all fields
-        LIMS-6121
-        """
-        self.base_selenium.LOGGER.info(
-            ' Running test case to check on the validation of all fields')
-
-         #validate in edit mode, go to to user active table
-        self.header_page.click_on_user_management_button()
-        self.header_page.get_random_user()
-        user_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + user_url : {}'.format(user_url))
-
-        self.base_selenium.LOGGER.info(
-            ' Remove all selected fields name & email & role')
-        #delete all fields
-        self.header_page.get_user_name()
-        self.header_page.clear_user_name()
-        self.header_page.clear_user_email()
-        self.header_page.sleep_small()
-        self.header_page.clear_user_role()
-        self.header_page.sleep_small()
-        self.header_page.save(save_btn='user_management:save_btn', logger_msg='Save new user, should fail')
-
-         #check name & email & role fields have error
-        user_name_class_name = self.base_selenium.get_attribute(element="user_management:user_name", attribute='class')
-        user_email_class_name = self.base_selenium.get_attribute(element="user_management:user_email", attribute='class')
-        user_role_class_name = self.base_selenium.get_attribute(element="user_management:user_role", attribute='class')
-        self.assertIn('has-error', user_name_class_name)
-        self.assertIn('has-error', user_email_class_name)
-        self.assertIn('has-error', user_role_class_name)
-
-    def test008_user_filter(self):
+    def test007_user_filter(self):
         """
         Header: User management Approach: Make sure that you can filter by any field in the active table
         LIMS-6002
@@ -171,15 +138,8 @@ class HeaderTestCases(BaseTest):
         # create new user to get it's data
         user = self.header_page.create_new_user(user_email='diana.mohamed@modeso.ch', user_role='',
                                                 user_password='1', user_confirm_password='1')
-
         # the filter view will open
         self.header_page.click_on_filter_view()
-
-        # filter by number
-        self.header_page.filter_user_by(filter_element='user_management:filter_number',
-                                        filter_text=user['user_number'])
-        result_user = self.header_page.result_table()[0]
-        self.assertIn(user['user_number']), result_user.text
 
         # filter by user name
         self.header_page.filter_user_by(filter_element='user_management:filter_name',
@@ -188,37 +148,7 @@ class HeaderTestCases(BaseTest):
         self.assertIn(user['user_name'], result_user.text)
         self.header_page.filter_reset_btn()
 
-        # filter by email
-        self.header_page.filter_user_by(filter_element='user_management:user_email',
-                                        filter_text=user['user_email'])
-        result_user = self.header_page.result_table()[0]
-        self.assertIn(user['user_email'], result_user.text)
-        self.header_page.filter_reset_btn()
-
-
-        # filter by role
-        self.header_page.filter_user_by(filter_element='user_management:filter_role', filter_text=user['user_role'],
-                                        field_type='drop_down')
-        result_user = self.header_page.result_table()[0]
-        self.assertIn(user['user_role'], result_user.text)
-        self.header_page.filter_reset_btn()
-
-        # filter by created by
-        self.header_page.filter_user_by(filter_element='user_management:user_created_by', filter_text=user['created by'],
-                                        field_type='drop_down')
-        result_user = self.header_page.result_table()[0]
-        self.assertIn(user['created by'], result_user.text)
-        self.header_page.filter_reset_btn()
-
-        # filter by created on
-        self.header_page.filter_user_by(filter_element='user_management:user_created_on', filter_text=['created on'],
-                                        field_type='drop_down')
-        result_user = self.header_page.result_table()[0]
-        self.assertIn(['created on'], result_user.text)
-        self.header_page.filter_reset_btn()
-
-
-    def test009_overview_btn_from_create_edit_mode(self):
+    def test008_overview_btn_from_create_edit_mode(self):
         """
         User Management: Overview button Approach: Make sure after you press on the overview button,
         it will redirect me to the active table
@@ -241,7 +171,7 @@ class HeaderTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}users'.format(self.base_selenium.url))
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test010_update_user_name_with_save_cancel_btn(self, save):
+    def test009_update_user_name_with_save_cancel_btn(self, save):
         """
         User managemen: User management: I can update user name with save & cancel button
         LIMS-6395
@@ -275,7 +205,7 @@ class HeaderTestCases(BaseTest):
             self.assertEqual(current_name, user_name)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test011_update_user_email_with_save_cancel_btn(self, save):
+    def test010_update_user_email_with_save_cancel_btn(self, save):
         """
         User management: I can update user email with save & cancel button
         LIMS-6397
@@ -309,7 +239,7 @@ class HeaderTestCases(BaseTest):
             self.assertEqual(current_email, user_email)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test012_update_user_role_with_save_cancel_btn(self, save):
+    def test011_update_user_role_with_save_cancel_btn(self, save):
         """
         User management: I can update user role with save & cancel button
         LIMS-6398

@@ -72,18 +72,26 @@ class Header(BasePages):
             self.sleep_small()
 
 
-    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password=''):
-            self.base_selenium.LOGGER.info(' + Create new user.')
-            self.base_selenium.click(element='user_management:create_user_button')
-            time.sleep(self.base_selenium.TIME_SMALL)
-            self.user_name = self.generate_random_text()
-            self.set_user_name(user_name=self.user_name)
-            self.set_user_email(user_email)
-            self.set_user_role(user_role)
-            self.set_user_password(user_password)
-            self.set_user_confirm_password(user_confirm_password)
+    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name=''):
+        self.base_selenium.LOGGER.info(' + Create new user.')
+        self.base_selenium.click(element='user_management:create_user_button')
+        time.sleep(self.base_selenium.TIME_SMALL)
+        self.user_name = self.generate_random_text()
+        self.set_user_name(self.user_name)
+        self.set_user_email(user_email)
+        self.set_user_role(user_role)
+        self.set_user_password(user_password)
+        self.set_user_confirm_password(user_confirm_password)
 
-            self.save(sleep)
+        user_data = {
+            "user_name":self.get_user_name(),
+            "user_email":self.set_user_email,
+            "user_role": self.get_user_role(),
+            "user_password": self.get_user_password(),
+            "user_confirm_password": self.get_user_confirm_password()
+        }
+        self.save(sleep)
+        return user_data
 
     def set_user_name(self, user_name):
             self.base_selenium.set_text(element='user_management:user_name', value=user_name)
@@ -206,10 +214,10 @@ class Header(BasePages):
         self.base_selenium.click(element='user_management:overview_btn')
         self.sleep_small()
 
-
-
-
-
+    def click_on_clear_all(self):
+        self.base_selenium.LOGGER.info('Press on the overview button')
+        self.base_selenium.click(element='user_management:clear_all')
+        self.sleep_small()
 
 
 

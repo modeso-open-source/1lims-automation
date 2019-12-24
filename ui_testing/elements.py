@@ -462,23 +462,23 @@ elements = {
 
     'header': {
         'header_button': {'method': 'xpath',
-                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+                  'value': '//*[@class="m--img-rounded m--marginless m--img-centered"]'},
         'user_management_button': {'method': 'xpath',
-                  'value': '//*[@id="dropdown-body"]/div/ul/li[5]/a/span'},
+                  'value': '//*[contains(text(),"User Management")]'},
         'roles_permissions_button': {'method': 'xpath',
-                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+                  'value': '//*[contains(text(),"Role & Permissions")]'},
         'myprofile_button': {'method': 'xpath',
-                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+                  'value': '//*[contains(text(),"My Profile")]'},
         'companyprofile_button': {'method': 'xpath',
-                  'value': '//*[@id="m_header_topbar"]/div/ul/li/a/span[1]/img'},
+                  'value': '//*[contains(text(),"Company Profile")]'},
 
     },
    'user_management': {
        'right_menu': {'method': 'xpath',
-                 'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+                 'value': '//*[@class="flaticon-grid-menu-v2"]'},
 
        'archive': {'method': 'xpath',
-                 'value': '//*[@id="custom-accordion-panel"]/div/div/a[1]'},
+                 'value': '//*[@class="dropdown-menu dropdown-menu-right show"]//a[1]'},
 
        'archived': {'method': 'link_text',
                  'value': 'Archived'},
@@ -494,8 +494,11 @@ elements = {
 
        'user_name': {'method': 'id',
                  'value': 'usernamefield'},
-       'user_role': {'method': 'id',
-                     'value': 'rolefield'},
+        'user_number': {'method': 'id',
+                 'value': 'userIdfield'},
+
+       'user_role': {'method': 'xpath',
+                     'value': '//*[@class="ng-input"]'},
        'user_email': {'method': 'id',
                      'value': 'emailfield'},
        'user_password': {'method': 'id',
@@ -503,7 +506,7 @@ elements = {
        'user_confirm_password': {'method': 'id',
                      'value': 'confirmPassword'},
        'create_user_button': {'method': 'xpath',
-                     'value': '//*[@id="add-btn"]/span/span'},
+                     'value': '//*[contains(text(),"New User")]'},
        'save_btn': {'method': 'id',
                  'value': 'saveButton'},
 
@@ -511,10 +514,10 @@ elements = {
                  'value':'userIdfield'},
 
        'filter_contact': {'method': 'xpath',
-                   'value': '//*[@id="supplierfield"]/div/div/div[2]/input'},
+                   'value': '//*[@id="supplierfield"]//input'},
 
-       'filter_created_by': {'method': 'xpath',
-                        'value': '//*[@id="lastModifiedUserfield"]/div/div/div[2]/input'},
+       'filter_changed_by': {'method': 'xpath',
+                        'value': '//*[@id="lastModifiedUserfield"]//input'},
 
        'filter_created_on': {'method': 'id',
                  'value':'start_createdAt'},
@@ -525,12 +528,12 @@ elements = {
                  'value':'emailfield'},
 
        'filter_role': {'method': 'xpath',
-                 'value':'//*[@id="rolefield"]/div/div/div[2]/input'},
+                 'value':'//*[@id="rolefield"]//input'},
 
        'filter_reset_btn': {'method': 'id',
                  'value':'reset_btn'},
        'clear_role_btn': {'method': 'xpath',
-                 'value':'//*[@id="rolefield"]/div/div/div[2]'},
+                 'value':'//*[@class="ng-input"]'},
 
        'delete': {'method': 'link_text',
                  'value': 'Delete'},
@@ -545,8 +548,15 @@ elements = {
        'overview_btn': {'method': 'xpath',
                                'value': '/html/body/div[2]/div[2]/div[2]/modeso-add-test-unit/div[1]/div/ul/li[3]/a/span'},
 
+
        'cancel': {'method': 'id',
-                               'value': 'cancelButton'},
+                        'value': 'cancelButton'},
+
+       'ok_btn': {'method': 'xpath',
+                        'value': '//*[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'},
+
+       'pop-up-ok': {'method': 'xpath',
+                        'value': '//*[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'},
 
 
 
