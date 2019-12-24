@@ -291,6 +291,8 @@ elements = {
                              'value': 'lowerLimitfield'},
         'spec_unit': {'method': 'id',
                       'value': 'unitfield'},
+        'spec_unit_preview': {'method': 'css_selector',
+                               'value': '[class="form-control field-with-scrips"]'},
         'quan_upper_limit': {'method': 'id',
                              'value': 'quantificationUpperLimitfield'},
         'quan_lower_limit': {'method': 'id',
