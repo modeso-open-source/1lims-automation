@@ -897,7 +897,7 @@ class TestUnitsTestCases(BaseTest):
 
     @parameterized.expand(['unitsub', 'unitsuper'])
     def test027_quantitative_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self,
-                                                                                           unit_with_sub_or_super):
+                                                                                            unit_with_sub_or_super):
         """
         Test unit: Export: Sub & Super scripts Approach:  Allow user to see the sub & super scripts in the export file
 
@@ -936,3 +936,44 @@ class TestUnitsTestCases(BaseTest):
             for item in fixed_row_data:
                 if item == unit_with_sub_or_super:
                     self.assertIn(item, fixed_sheet_row_data)
+
+    @parameterized.expand(['quantitative', 'qualitative'])
+    def test028_create_test_unit_appears_in_version_table(self, unit_type):
+        """
+
+        New: Test unit: Versions Approach: After you create new record, all the columns should display in the version table
+
+        LIMS-5289
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        if unit_type == 'quantitative':
+            self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit='',
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+        else:
+            self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            material_type='All',
+                                                            unit='',
+                                                            category=new_random_category)
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+
+        self.base_selenium.LOGGER.info('Open Versions for the newly created test unit')
+        self.test_unit_page.get_versions_of_selected_test_units()
+        rows_data = self.test_unit_page.get_table_rows_data()
+        self.base_selenium.LOGGER.info(' * Comparing the unit name and method')
+        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
+        self.assertIn(new_random_name, fixed_row_data)
+        self.assertIn(new_random_method, fixed_row_data)
