@@ -870,7 +870,6 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
         if unit_with_sub_or_super == 'unitsub':
-
             self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
                                                              material_type='All', upper_limit='33',
                                                              unit=unit_with_sub_or_super.replace('sub', '[sub]'),
@@ -895,3 +894,45 @@ class TestUnitsTestCases(BaseTest):
         fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
         self.assertIn(preview_unit, fixed_row_data)
         self.assertNotIn(inserted_unit, fixed_row_data)
+
+    @parameterized.expand(['unitsub', 'unitsuper'])
+    def test027_quantitative_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self,
+                                                                                           unit_with_sub_or_super):
+        """
+        Test unit: Export: Sub & Super scripts Approach:  Allow user to see the sub & super scripts in the export file
+
+        LIMS-5809
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
+        if unit_with_sub_or_super == 'unitsub':
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit=unit_with_sub_or_super.replace('sub', '[sub]'),
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+        else:
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit=unit_with_sub_or_super.replace('super', '{super}'),
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+        self.test_unit_page.download_xslx_sheet()
+        rows_data = self.test_unit_page.get_table_rows_data()
+        for index in range(len(rows_data) - 1):
+            self.base_selenium.LOGGER.info(' * Comparing the unit name no. {} '.format(index))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.test_unit_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                if item == unit_with_sub_or_super:
+                    self.assertIn(item, fixed_sheet_row_data)
