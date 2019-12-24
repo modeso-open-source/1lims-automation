@@ -242,7 +242,7 @@ class BasePages:
 
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
-        configure_table_menu = self.base_selenium.find_element_by_xpath(xpath='//a[@class="m-dropdown__toggle btn no-padding"]')
+        configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
         if configure_table_menu:
             configure_table_menu.click()
             self.sleep_small()

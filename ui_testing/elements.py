@@ -106,7 +106,9 @@ elements = {
                       'value': 'saveButton'},
         'col_6': {'method': 'class_name',
                   'value': 'col-md-6',
-                  'order': -1}
+                  'order': -1},
+       'configure_table': {'method': 'xpath',
+                            'value': '//a[@class="m-dropdown__toggle btn no-padding"]'}
     },
     'login': {
         'username': {'method': 'name',
