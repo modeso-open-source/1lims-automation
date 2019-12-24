@@ -58,6 +58,7 @@ class BasePages:
         self.confirm_popup(force)
 
     def confirm_popup(self, force=True):
+        self.base_selenium.LOGGER.info('Confirming the popup')
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
             if force:
                 self.base_selenium.click(element='general:confirm_pop')

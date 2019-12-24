@@ -200,6 +200,7 @@ elements = {
                                    'order': 1},
         'new_test_plan': {'method': 'link_text',
                           'value': 'New Test Plan'},
+                          
         'testplan_number_filter': {'method': 'id',
                              'value': 'numberfield'},
     },
@@ -270,6 +271,7 @@ elements = {
         'ok': {'method': 'class_name',
                'value': 'swal2-confirm',
                'order': 0},
+               
         'remove_testunit': {'method': 'id',
                            'value': 'remove_testunit'},
     },

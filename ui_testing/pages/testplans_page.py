@@ -61,3 +61,15 @@ class TestPlans(BasePages):
     def get_the_latest_row_data(self):
         latest_testplan_row = (self.result_table()[0])
         return self.base_selenium.get_row_cells_dict_related_to_header(latest_testplan_row)
+
+    def search_for_multiple_rows(self, testplans_numbers, check=0):
+        rows = []
+        for tp_number in testplans_numbers:
+            self.base_selenium.LOGGER.info('Searching for testplan number: {}'.format(tp_number))
+            row = self.search(tp_number)
+            rows.append(row[0])
+            if check:
+                self.base_selenium.LOGGER.info('Clicking the checkbox for testplan number: {}'.format(tp_number))
+                self.click_check_box(row[0])
+        return rows
+
