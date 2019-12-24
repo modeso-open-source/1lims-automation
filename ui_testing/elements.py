@@ -224,12 +224,12 @@ elements = {
                'value': 'numberfield'},
         'test_plan': {'method': 'id',
                       'value': 'testPlan'},
-        'material_type': {'method': 'xpath',
-                          'value': '//*[@id="materialTypefield"]'},
+        'material_type': {'method': 'id',
+                          'value': 'materialTypefield'},
         'material_type_options': {'method': 'class_name',
                                   'value': 'ng-option'},
-        'article': {'method': 'css_selector',
-                    'value': '#selectedArticles > div'
+        'article': {'method': 'id',
+                    'value': 'selectedArticles'
                     },
         'article_options': {'method': 'class_name',
                             'value': 'ng-option'},
