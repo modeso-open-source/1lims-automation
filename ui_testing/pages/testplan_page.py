@@ -102,4 +102,45 @@ class TstPlan(TestPlans):
         self.set_article(article=article)
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)
 
+    def navigate_to_testunits_selection_page(self):
+        self.base_selenium.LOGGER.info('Navigating to testplan create/update step 2')
+        self.base_selenium.click(element='test_plan:testunits_selection')
+        self.sleep_small()
 
+    def get_all_testunits_in_testplan(self):
+        # returns all testunits in testplan 
+        testunits = []
+        self.base_selenium.LOGGER.info('Getting the testunits data')
+        rows = self.base_selenium.get_table_rows(element='test_plan:testunits_table')
+        for row in rows:
+            row_data = self.base_selenium.get_row_cells(row)
+            row_data_text = []
+            for r in row_data:
+                row_data_text.append(r.text) 
+            testunits.append(row_data_text)
+            
+        return testunits
+
+    def delete_the_first_testunit_from_the_tableview(self):
+        self.base_selenium.LOGGER.info('Deleting the first testunit from the testunits table')
+        self.base_selenium.click(element='test_plan:row_delete_button')
+        self.sleep_medium()
+    
+    def check_if_deleted_testunit_is_available(self, all_testunits, deleted_test_unit):
+        deleted_test_unit_found = 0
+        for testunit in all_testunits:
+            current_testunit_name = testunit[0]
+            if (current_testunit_name == deleted_test_unit):
+                deleted_test_unit_found = 1
+        return deleted_test_unit_found
+
+    def switch_test_units_to_row_view(self):
+        self.base_selenium.LOGGER.info('Switching from card view to table view')
+        self.base_selenium.click(element='test_plan:table_card_switcher')
+
+    def save_and_confirm_popup(self):
+        self.save(save_btn='test_plan:save_btn')
+        # press 'Ok' on the popup
+        self.base_selenium.LOGGER.info('Accepting the changes made')
+        self.base_selenium.click(element='test_plan:ok')
+        self.sleep_small()
