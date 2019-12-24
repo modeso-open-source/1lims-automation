@@ -333,4 +333,58 @@ class ContactsTestCases(BaseTest):
         
         self.base_selenium.LOGGER.info('set all columns to shown again')
         self.contact_page.set_all_configure_table_columns_to_specific_value(value=True, always_hidden_columns=['fax'])
-        
+    
+    def test_012_update_departments_should_reflect_orders(self):
+        """
+        New: Contacts: Department Approach: Any edit in the department, will reflect in the table view of orders and analysis sections.
+        Any edit in the department, will reflect in the table view of orders and analysis sections.
+        LIMS-3571
+        """
+
+        self.base_selenium.LOGGER.info('Creating new contact with new department to keep track of the updated departments')
+        contact_data = self.contact_page.create_update_contact()
+
+        contact_name = contact_data['name']
+        departments = contact_data['departments']
+
+        self.base_selenium.LOGGER.info('create order with the desired contact to keep track of the updated')
+        self.order_page.get_orders_page()
+        order_data = self.order_page.create_new_order(material_type='Raw Material', departments=departments, contact=contact_name, test_plans=[])
+
+        self.base_selenium.LOGGER.info('get the contacts to update the desired contact department')
+        self.contact_page.get_contacts_page()
+
+        contact_record = self.contact_page.search(value=contact_data['no'])[0]
+        self.contact_page.open_edit_page(row=contact_record)
+
+        self.base_selenium.LOGGER.info('generating list of new updated departments')
+        new_departments_list = []
+        counter = 0
+        while counter < 1:
+            new_departments_list.append(self.contact_page.generate_random_text())
+            counter = counter +1
+
+        new_updated_departments = self.contact_page.update_department_list(departments=new_departments_list)
+        self.base_selenium.LOGGER.info('refresh to make sure that departments updated correctly')
+
+        self.base_selenium.refresh()
+        new_departments_after_refresh = self.contact_page.get_contact_departments()
+        self.base_selenium.LOGGER.info('compare departments, departments are {}, and should be {}'.format(new_departments_after_refresh, new_updated_departments))
+
+        self.assertEqual(new_updated_departments, new_departments_after_refresh)
+
+        departments_list = new_updated_departments.split(', ')
+
+        self.base_selenium.LOGGER.info('get orders page and open order no {}, to make sure that departments updated correctly'.format(order_data['orderNo']))
+        self.order_page.get_orders_page()
+
+        order_record = self.order_page.search(value=order_data['orderNo'])[0]
+        self.order_page.open_edit_page(row=order_record)
+
+        order_data_after_department_updates = self.order_page.get_suborder_data()
+
+        order_departments = order_data_after_department_updates['suborders'][0]['departments']
+
+        self.base_selenium.LOGGER.info('check departments after update')
+        for department in order_departments:
+            self.assertIn(department, departments_list)
