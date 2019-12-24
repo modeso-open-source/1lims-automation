@@ -161,6 +161,9 @@ class ContactsTestCases(BaseTest):
         """
         Contact: Edit Approach: make sure that you can add contact person from the edit mode 
         LIMS-6388
+
+        Contact: Edit Approach: Make sure that you can delete any contact person from the edit mode 
+        LIMS-6387
         """
 
         self.base_selenium.LOGGER.info('open random contact record to add a new contact persons to it')
@@ -195,64 +198,50 @@ class ContactsTestCases(BaseTest):
         LIMS-6387
         """
 
-        self.base_selenium.LOGGER.info('in this case, we will delete contact person that exist in the first record in the table')
-        self.base_selenium.LOGGER.info('because in the sequence of test cases, first record will contain for sure a contact person')
 
-        self.base_selenium.LOGGER.info('select the first contact record')
-        first_contact_record = self.contact_page.result_table()[0]
+        self.base_selenium.LOGGER.info('select random contact record')
+        random_contact_record = self.contact_page.get_random_contact_row()
 
         self.base_selenium.LOGGER.info('open the record in edit form')
-        self.contact_page.open_edit_page(row=first_contact_record)
+        self.contact_page.open_edit_page(row=random_contact_record)
 
         self.base_selenium.LOGGER.info('acquire the data from the form to compare it with the data after saving to make sure it is saved correctly')
         contact_data = self.contact_page.get_full_contact_data()
 
         self.contact_page.get_contact_persons_page()
-        count_of_contact_person_before_delete = self.contact_page.get_contact_persons_count()
-        self.contact_page.delete_contact_person()
-        count_of_contact_person_after_delete = self.contact_page.get_contact_persons_count()
-
-        if count_of_contact_person_after_delete == count_of_contact_person_before_delete:
-            is_successfully_deleted = self.contact_page.check_contact_persons_table_is_empty()
-            if is_successfully_deleted:
-                self.base_selenium.LOGGER.info('Contact person removed successfully')
-            else:
-                self.base_selenium.LOGGER.info('Contact person was not removed successfully, a bug should be created')
-                self.assertEqual(True, is_successfully_deleted)
-        else:
-            self.base_selenium.LOGGER.info('Contact person removed successfully')
+        self.base_selenium.LOGGER.info('check if there is no contact person, create new one and then refresh the page')
         
-        self.base_selenium.LOGGER.info('getting contact person data after remove the record to check that it was not corrupted after being saved')
-        contact_persons_after_remove = self.contact_page.get_contact_persons_data()
+        if self.contact_page.check_contact_persons_table_is_empty():
+            self.contact_page.create_update_contact_person()
+            self.contact_page.save(save_btn='contact:save')
+            self.base_selenium.refresh()
+            self.contact_page.get_contact_persons_page()
+
+        self.base_selenium.LOGGER.info('get the data of the contact_persons before delete')
+        contact_persons_data_before_delete = self.contact_page.get_contact_persons_data()
+        random_index_to_delete = self.generate_random_number(lower = 0, upper=len(contact_persons_data_before_delete)-1)
+        self.contact_page.delete_contact_person(index=random_index_to_delete)
+        deleted_person_name = contact_persons_data_before_delete[random_index_to_delete]['name']
+        contact_persons_data_after_delete = self.contact_page.get_contact_persons_data()
+
+        self.assertNotEqual(len(contact_persons_data_before_delete), len(contact_persons_data_after_delete))
+        
+        for person in contact_persons_data_after_delete:
+            self.assertNotEqual(deleted_person_name, person['name'])
 
         self.contact_page.save(save_btn='contact:save')
-        
-        self.base_selenium.LOGGER.info('Refreshing to make sure that data are saved without being corrupted')
+        self.base_selenium.LOGGER.info('refresh to make sure that data are saved correctly')
         self.base_selenium.refresh()
-
+        
+        self.base_selenium.LOGGER.info('compare contact data before refresh and after refresh')
         contact_data_after_refresh = self.contact_page.get_full_contact_data()
-        self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh, data_before_save=contact_data))
+
+        self.assertTrue(self.contact_page.compare_contact_main_data(data_before_save=contact_data, data_after_save=contact_data_after_refresh))
 
         self.contact_page.get_contact_persons_page()
-        self.base_selenium.LOGGER.info('get contact person data after refresh to make sure it was saved correctly')
-        
-        contact_persons_after_refresh = self.contact_page.get_contact_persons_data()
-        if count_of_contact_person_before_delete == 1:
-            if self.contact_page.check_contact_persons_table_is_empty():
-                self.base_selenium.LOGGER.info('contact person deleted successfully')
-            else:
-                self.base_selenium.LOGGER.info('contact person was not deleted successfully, report a bug')
-                self.assertEqual(True, False)
-
-        if len(contact_persons_after_refresh) == len(contact_persons_after_remove):
-            if self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh, data_before_save=contact_persons_after_remove):
-                self.base_selenium.LOGGER.info('contact persons have been saved successfully')
-            else:
-                self.base_selenium.LOGGER.info('contact persons was not saved successfully, you should report a BUG')
-                self.assertEqual(True, False)
-        else:
-            self.base_selenium.LOGGER.info('Data were not correctly saved, report a bug')
-            self.assertEqual(True, False)
+        self.base_selenium.LOGGER.info('compare contact person data before refresh and after refresh')
+        contact_person_data_after_save = self.contact_page.get_contact_persons_data()
+        self.assertTrue(self.contact_page.compare_contact_persons_data(data_before_save=contact_persons_data_after_delete, data_after_save=contact_person_data_after_save))
 
 
     def test_010_delete_contact_used_in_other_data(self):
@@ -350,7 +339,7 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('create order with the desired contact to keep track of the updated')
         self.order_page.get_orders_page()
         order_data = self.order_page.create_new_order(material_type='Raw Material', departments=departments, contact=contact_name, test_plans=[])
-
+        order_id = self.order_page.get_order_id()
         self.base_selenium.LOGGER.info('get the contacts to update the desired contact department')
         self.contact_page.get_contacts_page()
 
@@ -373,18 +362,19 @@ class ContactsTestCases(BaseTest):
 
         self.assertEqual(new_updated_departments, new_departments_after_refresh)
 
-        departments_list = new_updated_departments.split(', ')
+        departments_list = new_updated_departments
 
-        self.base_selenium.LOGGER.info('get orders page and open order no {}, to make sure that departments updated correctly'.format(order_data['orderNo']))
-        self.order_page.get_orders_page()
+        self.base_selenium.LOGGER.info('get order data of order with id {}'.format(order_id))
+        order_request = self.orders_api.get_order_by_id(id=order_id).json()
+        self.assertEqual(order_request['status'], 1)
+        order_data = order_request['orders']
+        self.assertNotEqual(len(order_data), 0)
 
-        order_record = self.order_page.search(value=order_data['orderNo'])[0]
-        self.order_page.open_edit_page(row=order_record)
+        orders_departments = []
+        for suborder in order_data:
+            temp_departments = list(map(lambda s: s['name'],  suborder['departments'].split(',')))
+            orders_departments = orders_departments + temp_departments
 
-        order_data_after_department_updates = self.order_page.get_suborder_data()
-
-        order_departments = order_data_after_department_updates['suborders'][0]['departments']
-
-        self.base_selenium.LOGGER.info('check departments after update')
-        for department in order_departments:
-            self.assertIn(department, departments_list)
+        self.base_selenium.LOGGER.info('making sure that the updated departments does exist in the order departments list')
+        for dep in departments_list:
+            self.assertIn(dep, orders_departments)

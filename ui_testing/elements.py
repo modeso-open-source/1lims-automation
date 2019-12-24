@@ -11,6 +11,9 @@ elements = {
         'li': {'method': 'tag_name',
                  'value': 'li',
                  'order': 0},
+        'tag': {'method': 'tag_name',
+                 'value': 'tag',
+                 'order': 0},
 
         'search': {'method': 'id',
                    'value': 'generalSearch'},

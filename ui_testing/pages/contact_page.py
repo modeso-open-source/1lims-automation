@@ -396,3 +396,25 @@ class Contact(Contacts):
             person_counter = person_counter +1
 
         return True
+
+    def update_department_list(self, departments=[]):
+        self.base_selenium.LOGGER.info('updating departments list')
+        departments_tags = self.base_selenium.find_element_in_element(source='contact:departments_field_tags', destination_element='general:tag')
+        counter=0
+        actions = webdriver.ActionChains(self.base_selenium.driver)
+        for department in departments:
+            if counter < len(departments_tags):
+                # needs to be done through xpath as it is generated dynamically during runtime
+                temp_department = departments_tags[counter].find_element_by_xpath("//div[@class='tag__text inline' and @title='"+departments_tags[counter].text+"']")
+                actions.double_click(temp_department).perform()
+                actions.key_down(Keys.CONTROL).send_keys("a").key_up(Keys.CONTROL).perform()
+                actions.send_keys(department).perform()
+                webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ENTER).perform()
+                self.sleep_tiny()
+                counter = counter+1
+            else:
+                self.set_contact_departments(departments=[department])
+        
+        self.sleep_tiny()
+        self.save(save_btn='contact:save')
+        return self.get_contact_departments()
