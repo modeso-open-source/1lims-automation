@@ -295,7 +295,7 @@ class BasePages:
         return indices_arr
 
     def press_apply_in_configure_table(self):
-        apply_button = self.base_selenium.find_element_by_xpath('//a[@class="btn btn-primary m-btn pull-right"]')
+        apply_button = self.base_selenium.find_element(element="general:apply_configure_table")
         if apply_button:
             apply_button.click()
             

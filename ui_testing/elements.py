@@ -114,6 +114,8 @@ elements = {
                             'value': '//a[@class="m-dropdown__toggle btn no-padding"]'},
        'configure_table_items': {'method': 'xpath',
                             'value': '//ul[@class="m-nav sortable sortable-table1 ui-sortable"]'},
+       'apply_configure_table': {'method': 'xpath',
+                            'value': '//a[@class="btn btn-primary m-btn pull-right"]'},
     },
     'login': {
         'username': {'method': 'name',
