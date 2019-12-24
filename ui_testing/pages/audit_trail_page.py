@@ -22,6 +22,18 @@ class AuditTrail(BasePages):
         self.filter_by(filter_element='audit_trail:filter_{}'.format(filter_name), filter_text=filter_text, field_type=field_type)
         self.filter_apply()
         self.sleep_tiny()
+        return self.get_table_rows_data()[0]
 
     def get_random_audit_trail_row(self):
          return self.get_random_table_row(table_element='general:table')
+
+    def search(self, value):
+        """
+        Search for a specific value
+        :param value:
+        :return: The first element in the search table
+        """
+        self.base_selenium.set_text(element='general:search', value=value)
+        self.base_selenium.click(element='general:search')
+        self.sleep_medium()
+        return self.get_table_rows_data()[0]
