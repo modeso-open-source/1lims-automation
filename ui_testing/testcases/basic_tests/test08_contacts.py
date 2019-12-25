@@ -57,17 +57,18 @@ class ContactsTestCases(BaseTest):
         contact_data = self.contact_page.create_update_contact(contact_persons=False)
 
         self.base_selenium.LOGGER.info('comparing contact\'s data with the first record in contact page')
-        self.base_selenium.LOGGER.info('to make sure that when new record is created is set to the be the first record in the page')
-
         created_contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
         first_contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_contact_record)
 
         table_headers = self.base_selenium.get_table_head_elements(element="contacts:contact_table")
         headers_text = [header.text for header in table_headers]
 
-        for header in headers_text:
-            self.base_selenium.LOGGER.info('contact {} is {}, and it should be {}'.format(header, first_contact_data[header], contact_data[header]) )
-            self.assertEqual(first_contact_data[header], contact_data[header])
+        self.base_selenium.LOGGER.info(headers_text)
+        for header, value in contact_data.items():
+            if header != 'contact_persons':
+                self.base_selenium.LOGGER.info('contact {} is {}, and it should be {}'.format(header, first_contact_data[header], contact_data[header]) )
+                self.assertEqual(first_contact_data[header], contact_data[header])
+            
 
         
     def test_004_upadte_contact(self):
@@ -79,7 +80,7 @@ class ContactsTestCases(BaseTest):
         """
         
         self.base_selenium.LOGGER.info('Select random table row')
-        row = self.contact_page.get_random_contact()
+        row = self.contact_page.get_random_contact_row()
         self.contact_page.open_edit_page(row=row)
 
         self.base_selenium.LOGGER.info('updating contact with newrandom data')
@@ -138,10 +139,10 @@ class ContactsTestCases(BaseTest):
         contact_data = self.contact_page.create_update_contact()
 
         self.base_selenium.LOGGER.info('filter by contact no.: {} to get the record'.format(contact_data['Contact No']))
-        first_contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
+        contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
 
         self.base_selenium.LOGGER.info('open the record in edit to compare the data')
-        self.contact_page.open_edit_page(row=first_contact_record)
+        self.contact_page.open_edit_page(row=contact_record)
 
         contact_data_after_create = self.contact_page.get_full_contact_data()
         self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_create, data_before_save=contact_data))
@@ -191,7 +192,7 @@ class ContactsTestCases(BaseTest):
         self.assertTrue(self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh, data_before_save=contact_persons_after_update))
         
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-6394')
+    # @skip('https://modeso.atlassian.net/browse/LIMS-6394')
     def test_009_delete_contact_person(self):
         """
         Contact: Edit Approach: Make sure that you can delete any contact person from the edit mode 
@@ -270,24 +271,24 @@ class ContactsTestCases(BaseTest):
 
         contact_archived_records = self.contact_page.search(value=contact_name)[0]
 
-        self.assertFalse(self.contact_page.check_if_table_is_empty)
+        self.assertFalse(self.contact_page.check_if_table_is_empty())
         
         self.base_selenium.LOGGER.info('delete selected record')
         self.contact_page.click_check_box(source=contact_archived_records)
         self.contact_page.delete_selected_contacts()
-        if self.contact_page.check_delete_message():
-            self.base_selenium.LOGGER.info('refresh to check that data wasn\'t affected')
-            self.base_selenium.refresh()
-            self.contact_page.get_archived_contacts()
-            archived_record = self.contact_page.search(value=contact_name)
+        self.contact_page.sleep_tiny()
+        self.base_selenium.LOGGER.info('refresh to check that data wasn\'t affected')
+        self.base_selenium.refresh()
+        self.contact_page.get_archived_contacts()
+        archived_record = self.contact_page.search(value=contact_name)
 
-            self.assertFalse(self.contact_page.check_if_table_is_empty)
-            
-            self.base_selenium.LOGGER.info('Contact record could not be deleted')
-            self.base_selenium.LOGGER.info('making sure that the archived contact is the same that is used in data')
-            contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=archived_record[0])
-            self.base_selenium.LOGGER.info('Contact name is {}, and it should be {}'.format(contact_data['Contact Name'], contact_name))
-            self.assertEqual(contact_data['Contact Name'], contact_name)
+        self.assertFalse(self.contact_page.check_if_table_is_empty())
+        
+        self.base_selenium.LOGGER.info('Contact record could not be deleted')
+        self.base_selenium.LOGGER.info('making sure that the archived contact is the same that is used in data')
+        contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=archived_record[0])
+        self.base_selenium.LOGGER.info('Contact name is {}, and it should be {}'.format(contact_data['Contact Name'], contact_name))
+        self.assertEqual(contact_data['Contact Name'], contact_name)
 
     def test_011_user_can_show_hide_any_column(self):
         """
@@ -306,7 +307,7 @@ class ContactsTestCases(BaseTest):
         
         
         for column in hidden_columns:
-            self.assertIn(column, headers_text)
+            self.assertNotIn(column, headers_text)
 
         self.base_selenium.LOGGER.info('All columns are hidden successfully')
         self.base_selenium.LOGGER.info('export the data to make sure that hidden columns are hidden also form export')

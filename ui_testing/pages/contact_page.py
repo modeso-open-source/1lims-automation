@@ -124,14 +124,14 @@ class Contact(Contacts):
             departments_field.send_keys(Keys.ENTER)
 
         self.base_selenium.LOGGER.info('set contact departments to be {}', departments)
-        return ', '.join(department_list)
+        return self.get_contact_departments()
 
     def set_contact_type(self, contact_types=['isSupplier']):
         for contact_type in contact_types :
             self.base_selenium.click(element='contact:contacttype-'+contact_type)
 
         self.base_selenium.LOGGER.info('set contact type to be {}', contact_types)
-        return ', '.join(contact_types)
+        return self.get_contact_type()
 
     def get_contact_number(self):
         return self.base_selenium.get_value(element="contact:no")
@@ -163,13 +163,19 @@ class Contact(Contacts):
     def get_contact_website(self):
         return self.base_selenium.get_value(element="contact:website")
 
-    # to be fixed
+    def get_departments_tags(self):
+        return self.base_selenium.find_elements(element='contact:departments_tag')
+
+    def get_department_tag(self, departments_tags=[], counter=0):
+        return departments_tags[counter].find_element_by_xpath("//div[@class='tag__text inline' and @title='"+departments_tags[counter].text+"']")
+
     def get_contact_departments(self):
-        departments_tags = self.base_selenium.find_element("contact:departments_field_tags").find_elements_by_tag_name('tag')
+        departments_tags = self.get_departments_tags()
         departments = []
         counter = 0
         for tag in departments_tags:
-            departments.append(tag.find_element("contact:departments_tag").text)
+            temp_department = self.get_department_tag(departments_tags=departments_tags, counter=counter)
+            departments.append(temp_department.text)
             counter = counter +1
         if counter > 0 :
             return ', '.join(departments)
@@ -241,7 +247,7 @@ class Contact(Contacts):
             "Skype": contact_skype,
             "Website": contact_website,
             "Departments": contact_departments,
-            "Contact Type": contact_type
+            "Type": contact_type
             }
 
         if contact_persons:
@@ -269,7 +275,7 @@ class Contact(Contacts):
             "Skype": self.get_contact_skype(),
             "Website": self.get_contact_website(),
             "Departments": self.get_contact_departments(),
-            "Contact Type": self.get_contact_type()
+            "Type": self.get_contact_type()
         }
 
     def get_contact_persons_page(self):
@@ -399,13 +405,13 @@ class Contact(Contacts):
 
     def update_department_list(self, departments=[]):
         self.base_selenium.LOGGER.info('updating departments list')
-        departments_tags = self.base_selenium.find_element_in_element(source='contact:departments_field_tags', destination_element='general:tag')
+        departments_tags = self.get_departments_tags()
         counter=0
         actions = webdriver.ActionChains(self.base_selenium.driver)
         for department in departments:
             if counter < len(departments_tags):
                 # needs to be done through xpath as it is generated dynamically during runtime
-                temp_department = departments_tags[counter].find_element_by_xpath("//div[@class='tag__text inline' and @title='"+departments_tags[counter].text+"']")
+                temp_department = self.get_department_tag(departments_tags=departments_tags, counter=counter)
                 actions.double_click(temp_department).perform()
                 actions.key_down(Keys.CONTROL).send_keys("a").key_up(Keys.CONTROL).perform()
                 actions.send_keys(department).perform()

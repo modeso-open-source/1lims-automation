@@ -485,8 +485,8 @@ elements = {
                           'value': 'table'},
         'new_contact': {'method': 'id',
                         'value': 'add-btn'},
-       'delete_contact_msg': {'method': 'xpath',
-                            'value': '//h2[@id="swal2-title"]'},
+       'delete_contact_msg': {'method': 'id',
+                            'value': 'swal2-title'},
        'confirmation_button': {'method': 'xpath',
                             'value': '//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'}
     },

@@ -127,6 +127,20 @@ class BaseSelenium:
             raise BaseException
         return element_value
 
+    def find_elements_in_element(self, destination_element, source_element='', source=''):
+        if not source:
+            source = self.find_element(element=source_element)
+        method, value, order = self.get_method_value_order(element=destination_element)
+        if method in ['XPATH', 'ID', 'LINK_TEXT', 'CSS_SELECTOR']:
+            element_value = source.find_element(getattr(By, method), value)
+        elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
+            elements_value = source.find_elements(getattr(By, method), value)
+            return elements_value
+        else:
+            self.LOGGER.error(" This %s method isn't defined" % method)
+            raise BaseException
+        return element_value
+
     def get(self, url, sleep=0):
         try:
             self.driver.get(url)

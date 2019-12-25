@@ -243,21 +243,17 @@ class BasePages:
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
-        if configure_table_menu:
-            configure_table_menu.click()
-            self.sleep_small()
-        else:
-            self.base_selenium.LOGGER.info('Couldn\'t find the item')
+        configure_table_menu.click()
+        self.sleep_small()
     
     def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
         self.open_configure_table()
-        total_columns = self.base_selenium.find_element_in_element(source_element='general:configure_table_items',
-                                                            destination_element='general:li')
+        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items', destination_element='general:li')
         # total_columns = self.base_selenium.find_element_by_xpath(xpath='//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
         random_indices_arr = index_arr
         hidden_columns_names = []
         if random:
-            random_indices_arr = self.generate_random_indices(max_index=len(total_columns), count=count)
+            random_indices_arr = self.generate_random_indices(max_index=len(total_columns)-2, count=count)
 
         for index in random_indices_arr:
             if total_columns[index].get_attribute('id') and total_columns[index].get_attribute('id') != 'id' and total_columns[index].get_attribute('id') not in always_hidden_columns:
@@ -267,13 +263,14 @@ class BasePages:
 
         
         self.press_apply_in_configure_table()
+        self.base_selenium.LOGGER.info(hidden_columns_names)
         return hidden_columns_names
 
     def hide_column(self, index, total_columns=[]):
         try:
             new_label_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//label[@class='sortable-label']"
             new_checkbox_xpath = "//li[@id='" + total_columns[index].get_attribute('id') + "']//span[@class='checkbox']"
-            column_name = self.base_selenium.find_element_by_xpath(new_label_xpath)
+            column_name = self.base_selenium.find_element_by_xpath(new_label_xpath).text
             column = self.base_selenium.find_element_by_xpath(new_checkbox_xpath)
             column.click()
             return column_name
@@ -301,7 +298,7 @@ class BasePages:
             
     def set_all_configure_table_columns_to_specific_value(self, value=True, always_hidden_columns=['']):
         self.open_configure_table()
-        total_columns = self.base_selenium.find_element_by_xpath('//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
+        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items', destination_element='general:li')
         for column in total_columns:
             if column.get_attribute('id') and column.get_attribute('id') != 'id' and column.get_attribute('id') not in always_hidden_columns  :
                 try:
