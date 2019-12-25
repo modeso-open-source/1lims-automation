@@ -287,9 +287,12 @@ class ContactsTestCases(BaseTest):
         
         self.base_selenium.LOGGER.info('Contact record could not be deleted')
         self.base_selenium.LOGGER.info('making sure that the archived contact is the same that is used in data')
-        contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=archived_record[0])
-        self.base_selenium.LOGGER.info('Contact name is {}, and it should be {}'.format(contact_data['Contact Name'], contact_name))
-        self.assertEqual(contact_data['Contact Name'], contact_name)
+        found = False
+        for row in archived_record:
+            contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
+            if contact_data['Contact Name'] == contact_name:
+                found = True
+        self.assertTrue(found)
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6402')
     def test_011_user_can_show_hide_any_column(self):
