@@ -502,6 +502,7 @@ class ArticlesTestCases(BaseTest):
 
         # create new article with full options
         article = self.article_page.create_new_article(material_type=None, full_options=True)
+        self.article_page.sleep_small()
 
         # create new test plan with this article
         self.test_plan.get_test_plans_page()
@@ -515,39 +516,39 @@ class ArticlesTestCases(BaseTest):
         # filter by article name
         result_article = self.article_page.filter_article_by(filter_element='article:filter_name', filter_text=article['name'])
         self.assertIn(article['name'], result_article.text)
+        self.article_page.filter_reset()
 
         # filter by article number
-        self.article_page.filter_reset()
         result_article = self.article_page.filter_article_by(filter_element='article:filter_number', filter_text=article['number'])  
         self.assertIn(article['number'], result_article.text)
+        self.article_page.filter_reset()
 
         # filter by article unit
-        self.article_page.filter_reset()
         result_article = self.article_page.filter_article_by(filter_element='article:filter_unit', filter_text=article['unit'])
         self.assertIn(article['unit'], result_article.text)
+        self.article_page.filter_reset()
 
         # filter by article created at
-        self.article_page.filter_reset()
         result_article =  self.article_page.filter_article_by(filter_element='article:filter_created_at', filter_text=article['created_at'])
         self.assertIn(article['created_at'], result_article.text)
+        self.article_page.filter_reset()
 
         # filter by article material type
-        self.article_page.filter_reset()
         result_article = self.article_page.filter_article_by(filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
         self.assertIn(article['material_type'], result_article.text)
+        self.article_page.filter_reset()
 
         # filter by article changed by
-        self.article_page.filter_reset()
         result_article = self.article_page.filter_article_by(filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
         self.assertIn(article['changed_by'], result_article.text)
+        self.article_page.filter_reset()
 
         # filter by article test plan
-        self.article_page.filter_reset()
         result_article = self.article_page.filter_article_by(filter_element='article:filter_test_plan', filter_text=self.test_plan.test_plan_name, field_type='drop_down')
         self.assertIn(self.test_plan.test_plan_name, result_article.text)
+        self.article_page.filter_reset()
 
         # finish
-        self.article_page.filter_reset()
         self.article_page.open_filter_menu()
 
     def test022_filter_article_by_any_default_filter(self):

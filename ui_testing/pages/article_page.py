@@ -110,7 +110,7 @@ class Article(Articles):
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
         self.sleep_tiny()
-        return self.article_page.result_table()[0]
+        return self.result_table()[0]
 
     def set_related_article(self):
         self.base_selenium.select_item_from_drop_down(element='article:related_article')
