@@ -465,7 +465,7 @@ elements = {
                   'value': '//*[@class="m--img-rounded m--marginless m--img-centered"]'},
         'user_management_button': {'method': 'xpath',
                   'value': '//*[contains(text(),"User Management")]'},
-        'roles_permissions_button': {'method': 'xpath',
+        'roles_and_permissions_button': {'method': 'xpath',
                   'value': '//*[contains(text(),"Role & Permissions")]'},
         'myprofile_button': {'method': 'xpath',
                   'value': '//*[contains(text(),"My Profile")]'},
@@ -475,10 +475,10 @@ elements = {
     },
    'user_management': {
        'right_menu': {'method': 'xpath',
-                 'value': '//*[@class="flaticon-grid-menu-v2"]'},
+                 'value': '//i[@class="flaticon-grid-menu-v2"]'},
 
-       'archive': {'method': 'xpath',
-                 'value': '//*[@class="dropdown-menu dropdown-menu-right show"]//a[1]'},
+       'archive': {'method': 'link_text',
+                 'value': 'Archive'},
 
        'archived': {'method': 'link_text',
                  'value': 'Archived'},
@@ -532,11 +532,9 @@ elements = {
 
        'filter_reset_btn': {'method': 'id',
                  'value':'reset_btn'},
-       'clear_role_btn': {'method': 'xpath',
-                 'value':'//*[@class="ng-input"]'},
-
        'delete': {'method': 'link_text',
                  'value': 'Delete'},
+
 
        'confirm_pop': {'method': 'class_name',
                         'value': 'btn-success',
@@ -546,19 +544,11 @@ elements = {
                                'value': 'noty_layout__topCenter'},
 
        'overview_btn': {'method': 'xpath',
-                               'value': '/html/body/div[2]/div[2]/div[2]/modeso-add-test-unit/div[1]/div/ul/li[3]/a/span'},
-
+                               'value': '//span[contains(text(),"Overview")]'},
 
        'cancel': {'method': 'id',
                         'value': 'cancelButton'},
 
-       'ok_btn': {'method': 'xpath',
-                        'value': '//*[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'},
 
-       'pop-up-ok': {'method': 'xpath',
-                        'value': '//*[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'},
-
-
-
-   }
+    }
 }

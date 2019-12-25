@@ -45,8 +45,8 @@ class Header(BasePages):
 
     def is_user_in_table(self, value):
             """
-                - get_archived_test_units then call me to check if the test unit has been archived.
-                - get_active_test_units then call me to check if the test unit is active.
+                - get_archived_users then call me to check if the user has been archived.
+                - get_active_users then call me to check if the user is active.
             :param value: search value
             :return:
             """
@@ -105,12 +105,13 @@ class Header(BasePages):
     def get_user_number(self):
             return self.base_selenium.get_text(element='user_management:user_number').split('\n')[0]
 
-
-    def set_user_email(self, user_email):
+    def set_user_email(self, user_email=''):
+            self.generate_random_email()
             self.base_selenium.set_text(element="user_management:user_email", value=user_email)
+            return user_email
 
     def get_user_email(self):
-            return self.base_selenium.get_text(element='user_management:user_email').split('\n')[0]
+        return self.base_selenium.get_value(element="user_management:user_email")
 
 
     def set_user_password(self, user_password):

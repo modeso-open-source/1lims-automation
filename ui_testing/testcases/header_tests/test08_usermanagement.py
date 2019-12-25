@@ -84,33 +84,33 @@ class HeaderTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    @parameterized.expand(['ok', 'pop_up_ok'])
-    def test005_delete_user(self, ok):
+    def test005_delete_user(self):
         """
         User management : Delete Approach: Make sure that you an delete any record successfully
+        if this user not used in other entities
         LIMS-6381
         :return:
             """
         self.header_page.click_on_user_management_button()
+        # create new user
+        self.header_page.create_new_user(user_email=(self.header_page.generate_random_email()), user_role='',
+                                         user_password='1', user_confirm_password='1')
+        self.base_selenium.LOGGER.info('make sure that that the user record created in the active table')
+        active_user = self.header_page.search(value=self.header_page.user_name)[0].text
+        self.assertIn(self.header_page.user_name, active_user)
+        self.header_page.select_all_records()
+        self.header_page.archive_selected_users()
         self.header_page.get_archived_users()
-        user_row = self.header_page.get_random_table_row('user_management:user_table')
-        self.order_page.click_check_box(source=user_row)
-        user_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=user_row)
+        self.base_selenium.LOGGER.info('make sure that that the user record navigate to the archive table')
+        archive_user = self.header_page.search(value=self.header_page.user_name)[0].text
+        self.assertIn(self.header_page.user_name, archive_user)
+        self.header_page.select_all_records()
         self.header_page.click_on_user_right_menu()
         self.header_page.click_on_delete_button()
-        if 'ok_btn'== ok:
-             self.header_page.click_on_the_confirm_message()
-             self.base_selenium.LOGGER.info(
-                ' + user number : {} deleted successfully'.format(user_data['User No.']))
-             self.assertEqual(self.base_selenium.get_text(element='user_management:alert_confirmation'),
-                             'Successfully deleted')
-            # In case user used in other entity
-        else:
-            self.base_selenium.LOGGER.info(
-                ' + pop up will appear that this item related to some data : {}'.format(user_data))
-            self.header_page.confirm_popup()
-            self.assertFalse(self.header_page.confirm_popup())
+        self.header_page.confirm_popup()
+        result = self.header_page.search(value=self.header_page.user_name)[0].text
+        self.base_selenium.LOGGER.info('deleted successfully')
+        self.assertFalse(result, 'deleted successfully')
 
     def test006_create_new_user(self):
         """
@@ -120,7 +120,7 @@ class HeaderTestCases(BaseTest):
         """
         self.header_page.click_on_user_management_button()
         #create new user
-        self.header_page.create_new_user(user_email='diana.mohamed@modeso.ch', user_role='',
+        self.header_page.create_new_user(user_email='', user_role='',
                                          user_password='1', user_confirm_password='1')
 
         #make sure when you search you will find it
@@ -136,7 +136,7 @@ class HeaderTestCases(BaseTest):
         """
         self.header_page.click_on_user_management_button()
         # create new user to get it's data
-        user = self.header_page.create_new_user(user_email='diana.mohamed@modeso.ch', user_role='',
+        user = self.header_page.create_new_user(user_email='', user_role='',
                                                 user_password='1', user_confirm_password='1')
         # the filter view will open
         self.header_page.click_on_filter_view()
