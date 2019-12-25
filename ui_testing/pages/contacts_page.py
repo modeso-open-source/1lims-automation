@@ -5,10 +5,10 @@ from random import randint
 class Contacts(BasePages):
     def __init__(self):
         super().__init__()
-        self.contact_url = "{}contacts".format(self.base_selenium.url)
+        self.contacts_url = "{}contacts".format(self.base_selenium.url)
 
     def get_contacts_page(self):
-        self.base_selenium.get(url=self.contact_url)
+        self.base_selenium.get(url=self.contacts_url)
         self.sleep_small()
 
     def archive_contact(self, name='', random=False, force=True):

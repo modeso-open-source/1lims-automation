@@ -389,9 +389,9 @@ elements = {
         'material_type': {'method': 'xpath',
                           'value': '//td//*[@id="materialType"]'},
         'article': {'method': 'xpath',
-                          'value': '//td//*[@id="article"]'},
+                    'value': '//td//*[@id="article"]'},
         'departments': {'method': 'xpath',
-                          'value': '//td//*[@id="departments"]'},
+                        'value': '//td//*[@id="departments"]'},
 
         'auto_fill': {'method': 'xpath', 'value': '//*[@id="field"]/div[2]/div/span'},
         'auto_fill_container': {'method': 'xpath', 'value': '//*[@id="field"]/div[2]'},
@@ -401,9 +401,9 @@ elements = {
         'tests': {'method': 'id',
                   'value': 'tests'},
         'test_plan': {'method': 'xpath',
-                          'value': '//td//*[@id="testPlans"]'},
+                      'value': '//td//*[@id="testPlans"]'},
         'test_unit': {'method': 'xpath',
-                          'value': '//td//*[@id="testUnits"]'},
+                      'value': '//td//*[@id="testUnits"]'},
         'test_plan_btn': {'method': 'tag_name',
                           'value': 'span',
                           'order': 0},
@@ -490,7 +490,9 @@ elements = {
        'confirmation_button': {'method': 'xpath',
                             'value': '//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'},
        'edit_button': {'method': 'xpath',
-                            'value': '//button[@class="mr-auto ng-star-inserted"]'}
+                            'value': '//button[@class="mr-auto ng-star-inserted"]'},
+        'contacts_table': {'method': 'id',
+                           'value': 'table'}
     },
     'contact': {
         'name': {'method': 'id',

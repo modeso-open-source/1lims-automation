@@ -21,7 +21,7 @@ class Contact(Contacts):
         # case contact no was not provided, it generates random text to be the contact no
         # returns the value of the name in case i generated a random text, so i have the value to be used later
         # random text function is used in case of number because of a requirement from the client that it should support text
-        no = nor o self.generate_random_text()
+        no = no or self.generate_random_text()
 
         self.base_selenium.LOGGER.info('set contact no to be {}', no)
         self.base_selenium.set_text(element="contact:no", value=no)
