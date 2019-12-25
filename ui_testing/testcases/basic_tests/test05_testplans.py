@@ -335,20 +335,19 @@ class TestPlansTestCases(BaseTest):
         and article, this shouldn't happen
         '''
 
-        # navigate to the articles page to create a new article
-        self.article_page.get_articles_page()
-        article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
-        self.base_selenium.LOGGER.info('New article is created successfully with name: {} and material type: {}'.format(article_data['name'], article_data['material_type']))
+        # get all articles and choose a random one to take its information
+        articles = self.get_all_articles()
+        random_index = self.generate_random_number(lower=0, upper=len(articles))
+        article_data = articles[random_index]
+        self.base_selenium.LOGGER.info('A random article is chosen, its name: {} and its material type: {}'.format(article_data['name'], article_data['materialType']))
 
-        # navigate to the testplans page
-        self.test_plan.get_test_plans_page()
-        testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['material_type'], article=article_data['name'])
-        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, article_data['name'], article_data['material_type']))
+        testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['materialType'], article=article_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, article_data['name'], article_data['materialType']))
 
         self.base_selenium.LOGGER.info('Attempting to create another testplan with the same data as the previously created one')
 
         # create another testplan with the same data
-        self.test_plan.create_new_test_plan(name=testplan_name, material_type=article_data['material_type'], article=article_data['name'])
+        self.test_plan.create_new_test_plan(name=testplan_name, material_type=article_data['materialType'], article=article_data['name'])
         
         self.base_selenium.LOGGER.info(
             'Waiting for the error message to make sure that validation forbids the creation of two testplans having the same name, material type and article')
@@ -365,25 +364,26 @@ class TestPlansTestCases(BaseTest):
         Testing the creation of two testplans with the same name, but different material type
         and article. It should be created successfully.
         '''
-
-        # navigate to the articles page to create two new articles
-        self.article_page.get_articles_page()
-        first_article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
-        self.base_selenium.LOGGER.info('The first new article is created successfully with name: {} and material type: {}'.format(first_article_data['name'], first_article_data['material_type']))
         
-        second_article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
-        self.base_selenium.LOGGER.info('The second new article is created successfully with name: {} and material type: {}'.format(second_article_data['name'], second_article_data['material_type']))
+        # get all articles and choose a random one to take its information
+        articles = self.get_all_articles()
 
-        # navigate to the testplans page
-        self.test_plan.get_test_plans_page()
-        testplan_name = self.test_plan.create_new_test_plan(material_type=first_article_data['material_type'], article=first_article_data['name'])
-        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, first_article_data['name'], first_article_data['material_type']))
+        first_article_random_index = self.generate_random_number(lower=0, upper=len(articles) - 1)
+        second_article_random_index = self.generate_random_number(lower=0, upper=len(articles) - 1)
+        
+        first_article_data = articles[first_article_random_index]
+        second_article_data = articles[second_article_random_index]
+        self.base_selenium.LOGGER.info('The first random article is chosen, its name: {} and its material type: {}'.format(first_article_data['name'], first_article_data['materialType']))
+        self.base_selenium.LOGGER.info('The second random article is chosen, its name: {} and its material type: {}'.format(second_article_data['name'], second_article_data['materialType']))
+
+        testplan_name = self.test_plan.create_new_test_plan(material_type=first_article_data['materialType'], article=first_article_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, first_article_data['name'], first_article_data['materialType']))
 
         self.base_selenium.LOGGER.info('Attempting to create another testplan with the same name as the previously created one, but with different material type and article name')
 
         # create another testplan with the same name, but with the second article's data
-        self.test_plan.create_new_test_plan(name=testplan_name, material_type=second_article_data['material_type'], article=second_article_data['name'])
-        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, second_article_data['name'], second_article_data['material_type']))
+        self.test_plan.create_new_test_plan(name=testplan_name, material_type=second_article_data['materialType'], article=second_article_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(testplan_name, second_article_data['name'], second_article_data['materialType']))
 
         data = self.test_plan.search(testplan_name)
         search_length = 0

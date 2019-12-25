@@ -139,6 +139,11 @@ class BaseTest(TestCase):
 
         return first_element, second_element
 
+
+    def get_all_articles(self):
+        articles = self.article_api.get_all_articles().json()['articles']
+        return articles
+        
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
 
