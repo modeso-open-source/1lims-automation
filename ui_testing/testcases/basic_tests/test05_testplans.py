@@ -55,7 +55,7 @@ class TestPlansTestCases(BaseTest):
         
         self.assertFalse(deleted_test_unit_found)
 
-    def test012_test_unit_update_version_in_testplat(self):
+    def test012_test_unit_update_version_in_testplan(self):
         '''
         LIMS-3703
         Create two testplans the first one with the testunit before updating its version, while
@@ -64,19 +64,63 @@ class TestPlansTestCases(BaseTest):
         '''
 
         # get all the testunits
+        response = self.test_unit_api.get_all_test_units()
+        testunits = response.json()['testUnits']
 
         # choose a random testunit to create the first testplan with
+        random_testunit_index = self.generate_random_number(lower=0, upper=len(testunits) - 1)
+        testunit_data = testunits[random_testunit_index]
+        print(testunit_data)
+
+
+        # get all articles and choose a random one to take its information
+        articles = self.get_all_articles()
+        random_index = self.generate_random_number(lower=0, upper=len(articles) - 1)
+        article_data = articles[random_index]
+        self.base_selenium.LOGGER.info('A random article is chosen, its name: {} and its material type: {}'.format(article_data['name'], article_data['materialType']))
 
         # create the first testplan
+        first_testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['materialType'], article=article_data['name'], test_unit=testunit_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(first_testplan_name, article_data['name'], article_data['materialType']))
 
-        # go to testunits active table and search for this testunit
+        # go to testplan edit to get the number of iterations and testunit category
+        self.test_plan.get_test_plan_edit_page(first_testplan_name)
+        self.test_plan.navigate_to_testunits_selection_page()
+        testunit_category = self.base_selenium.get_text(element='test_plan:testunit_category')
+        testunit_iteration = self.base_selenium.get_value(element='test_plan:testunit_iteration')
+        print(testunit_category)
+        print(testunit_iteration)
 
+
+        # go to testunits active table and search for this testunit-
+        self.test_unit_page.get_test_units_page()
+        self.base_selenium.LOGGER.info('Navigating to testplan {} edit page'.format(testunit_data['name']))
+        testunit = self.test_unit_page.search(value=testunit_data['name'])[0]
+        self.test_unit_page.open_edit_page(row=testunit)
+        
         # update the iteration and category
+        self.test_unit_page.set_category()
+        new_iteration = int(testunit_iteration) + 1
+        string_iteration = str(new_iteration)
+        self.test_unit_page.set_testunit_iteration(iteration=string_iteration)
 
         # press save and complete to create a new version
+        self.test_unit_page.save_and_create_new_version()
 
         # go back to testplans active table
+        self.test_plan.get_test_plans_page()
 
         # create new testplan with this testunit after creating the new version
+        second_testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['materialType'], article=article_data['name'], test_unit=testunit_data['name'])
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(second_testplan_name, article_data['name'], article_data['materialType']))
 
         # check the iteration and category to be the same as the new version
+        # go to testplan edit to get the number of iterations and testunit category
+        self.test_plan.get_test_plan_edit_page(second_testplan_name)
+        self.test_plan.navigate_to_testunits_selection_page()
+        testunit_category = self.base_selenium.get_text(element='test_plan:testunit_category')
+        testunit_iteration = self.base_selenium.get_value(element='test_plan:testunit_iteration')
+        print(testunit_category)
+        print(testunit_iteration)
+
+

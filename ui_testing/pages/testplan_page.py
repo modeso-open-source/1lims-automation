@@ -91,7 +91,7 @@ class TstPlan(TestPlans):
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
             self.set_test_unit(test_unit=test_unit, **kwargs)
-            self.save(save_btn='test_plan:save')
+            self.save(save_btn='test_plan:save_btn')
         else:
             self.save()
 
