@@ -42,7 +42,7 @@ class HeaderTestCases(BaseTest):
         self.header_page.restore_selected_user()
         self.header_page.get_active_users()
         for user_name in user_names:
-            self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=user_name))
+            self.assertTrue(self.header_page.is_user_in_table(value=user_name))
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6384')
     def test003_user_search(self):
