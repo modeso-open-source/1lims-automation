@@ -109,7 +109,7 @@ elements = {
                   'order': -1},
         'configurations': {
             'method': 'xpath',
-            'value': '//*[@id="custom-accordion-panel"]/div/div/a[4]'
+            'value': '//*[@id="custom-accordion-panel"]//a[4]'
         },
         'configurations_archived': {
             'method': 'xpath',
@@ -169,17 +169,17 @@ elements = {
         'alert_confirmation': {'method': 'id',
                                'value': 'noty_layout__topCenter'},
                                
-        'unit_field_options': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/a'},
-        'unit_field_archive': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/ul/li[1]/a'},
-        'unit_field_restore': {'method': 'xpath', 'value': '//*[@id="5_field"]/div/div/ul/li[2]/a'},
+        'unit_field_options': {'method': 'xpath', 'value': '//*[@id="5_field"]//a'},
+        'unit_field_archive': {'method': 'xpath', 'value': '//*[@id="5_field"]//li[1]/a'},
+        'unit_field_restore': {'method': 'xpath', 'value': '//*[@id="5_field"]//li[2]/a'},
 
-        'comment_field_options': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/a'},
-        'comment_field_archive': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/ul/li[1]/a'},
-        'comment_field_restore': {'method': 'xpath', 'value': '//*[@id="7_field"]/div/div/ul/li[2]/a'},
+        'comment_field_options': {'method': 'xpath', 'value': '//*[@id="7_field"]//a'},
+        'comment_field_archive': {'method': 'xpath', 'value': '//*[@id="7_field"]//li[1]/a'},
+        'comment_field_restore': {'method': 'xpath', 'value': '//*[@id="7_field"]//li[2]/a'},
 
-        'related_article_field_options': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/a'},
-        'related_article_field_archive': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/ul/li[1]/a'},
-        'related_article_field_restore': {'method': 'xpath', 'value': '//*[@id="18_field"]/div/div/ul/li[2]/a'},
+        'related_article_field_options': {'method': 'xpath', 'value': '//*[@id="18_field"]//a'},
+        'related_article_field_archive': {'method': 'xpath', 'value': '//*[@id="18_field"]//li[1]/a'},
+        'related_article_field_restore': {'method': 'xpath', 'value': '//*[@id="18_field"]//li[2]/a'},
     },
     'article': {
         'unit': {'method': 'id',

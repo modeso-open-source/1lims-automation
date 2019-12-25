@@ -511,20 +511,8 @@ class ArticlesTestCases(BaseTest):
         LIMS:4123
         :return:
         """
-        
-        ################
-        ## ARCHIVING ###
-        ################ 
-
-
-        # open the configuration
-        self.article_page.info('+ Open article configuration')
-        self.article_page.open_configuration()
-
-        # Archive the optional fields
-        self.article_page.toggle_archive_field(field_name='unit')
-        self.article_page.toggle_archive_field(field_name='comment')
-        self.article_page.toggle_archive_field(field_name='related_article')
+        # archive the optional fields
+        self.article_page.archive_restore_optional_fields(restore=False)
 
         # check if the fields still exist in the table
         self.article_page.info('+ Open article table')
@@ -538,6 +526,16 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Unit field existance in the table')
         self.assertIn('Unit', article_headers_text)
         # ignore related article since it shouldn't display in the table anyway
+
+    def test023_optional_fields(self):
+        """
+        New: Articles: Optional fields: User can hide/show any optional field in Edit/Create form
+
+        LIMS:4123
+        :return:
+        """
+        # archive the optional fields
+        self.article_page.archive_restore_optional_fields(restore=False)
 
         # open create page
         self.article_page.info('+ Open article create')
@@ -553,6 +551,16 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Related article field existance in create page')
         self.assertFalse(self.base_selenium.check_element_is_exist('article:related_article'))
 
+    def test024_optional_fields(self):
+        """
+        New: Articles: Optional fields: User can hide/show any optional field in Edit/Create form
+
+        LIMS:4123
+        :return:
+        """
+        # archive the optional fields
+        self.article_page.archive_restore_optional_fields(restore=False)
+
         # open edit page
         self.article_page.info('+ Open article edit')
         self.article_page.get_articles_page()
@@ -567,22 +575,11 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Related article field existance in edit page')
         self.assertFalse(self.base_selenium.check_element_is_exist('article:related_article'))
 
-
-        #################
-        ### Restoring ###
-        ################# 
-
-
-        # open the configuration
-        self.article_page.get_articles_page()
-        self.article_page.info('+ Open article configuration')
-        self.article_page.open_configuration()
-        self.base_selenium.click(element='general:configurations_archived') # open the archived tab
-
-        # Restore the optional fields
-        self.article_page.toggle_archive_field(field_name='unit', restore=True)
-        self.article_page.toggle_archive_field(field_name='comment', restore=True)
-        self.article_page.toggle_archive_field(field_name='related_article', restore=True)
+    def test025_optional_fields(self):
+        # archive the optional fields
+        self.article_page.archive_restore_optional_fields(restore=False)
+        # restore the optional fields
+        self.article_page.archive_restore_optional_fields(restore=True)
 
         # check if the fields still exist in the table after restore
         self.article_page.info('+ Open article table')
@@ -597,6 +594,12 @@ class ArticlesTestCases(BaseTest):
         self.assertIn('Unit', article_headers_text)
         # ignore related article since it shouldn't display in the table anyway
 
+    def test026_optional_fields(self):
+        # archive the optional fields
+        self.article_page.archive_restore_optional_fields(restore=False)
+        # restore the optional fields
+        self.article_page.archive_restore_optional_fields(restore=True)
+
         # open create page after restore
         self.article_page.info('+ Open article create')
         self.base_selenium.click(element='articles:new_article')
@@ -610,6 +613,12 @@ class ArticlesTestCases(BaseTest):
 
         self.article_page.info('+ Check Related article field existance in create page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
+
+    def test027_optional_fields(self):
+        # archive the optional fields
+        self.article_page.archive_restore_optional_fields(restore=False)
+        # restore the optional fields
+        self.article_page.archive_restore_optional_fields(restore=True)
 
         # open edit page after restore
         self.article_page.info('+ Open article edit')
