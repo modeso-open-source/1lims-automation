@@ -36,7 +36,7 @@ class TestPlans(BasePages):
     
         return testplan_testunits
 
-    def get_testplan_version_and_status(self, search_text=''):
+    def get_testplan_version_and_status(self, search_text):
         testplan = self.search(search_text)[0]
         testplan_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testplan)
         testplan_version = testplan_row_data['Version']

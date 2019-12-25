@@ -46,14 +46,7 @@ class TstPlan(TestPlans):
 
     def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
-        
-        # self.base_selenium.click('test_plan:add_test_units')
-
-        try:
-            self.base_selenium.click(element='test_plan:add_test_units_first_column')
-        except NoSuchElementException:
-            print('here')
-            self.base_selenium.click(element='test_plan:add_test_units_second_column')
+        self.base_selenium.click('test_plan:add_test_units')
         self.sleep_small()
         self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
         self.base_selenium.click('test_plan:add')

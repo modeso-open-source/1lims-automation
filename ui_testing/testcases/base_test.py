@@ -130,10 +130,11 @@ class BaseTest(TestCase):
     '''
     def remove_unduplicated_data(self, data_changed=[], first_element=[], second_element=[]):
         for data in data_changed:
-            if first_element[data] != None:
-                del first_element[data]
-            if second_element[data] != None:
-                del second_element[data]
+            if data in first_element and data in second_element:
+                if first_element[data] != None:
+                    del first_element[data]
+                if second_element[data] != None:
+                    del second_element[data]
 
         return first_element, second_element
 

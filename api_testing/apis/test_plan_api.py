@@ -21,3 +21,9 @@ class TestPlanAPI(BaseAPI):
         all_test_plans = response.json()['testPlans']
         completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
         return completed_test_plans
+    
+    def get_inprogress_testplans(self):
+        response = self.get_all_test_plans(limit=150)
+        all_test_plans = response.json()['testPlans']
+        inprogress_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'InProgress']
+        return inprogress_test_plans
