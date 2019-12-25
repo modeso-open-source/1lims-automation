@@ -55,4 +55,28 @@ class TestPlansTestCases(BaseTest):
         
         self.assertFalse(deleted_test_unit_found)
 
+    def test012_test_unit_update_version_in_testplat(self):
+        '''
+        LIMS-3703
+        Create two testplans the first one with the testunit before updating its version, while
+        the second is after updating the version (category and iteration)
+        The updates should be only available in the second testplan
+        '''
 
+        # get all the testunits
+
+        # choose a random testunit to create the first testplan with
+
+        # create the first testplan
+
+        # go to testunits active table and search for this testunit
+
+        # update the iteration and category
+
+        # press save and complete to create a new version
+
+        # go back to testplans active table
+
+        # create new testplan with this testunit after creating the new version
+
+        # check the iteration and category to be the same as the new version
