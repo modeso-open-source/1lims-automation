@@ -573,8 +573,8 @@ elements = {
     'contacts':{
         'new_contact': {'method': 'xpath',
                         'value': '//span[contains(text(),"New Contact")]'},
-    }
-}
+    },
+
     'contacts': {
         'contact_archive_button': {'method': 'tag_name',
                                    'value': 'a',
