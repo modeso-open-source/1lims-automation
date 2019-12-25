@@ -17,7 +17,7 @@ class OrdersAPI(BaseAPI):
         return response
 
     def get_order_by_id(self, id=1):
-        api = '{}{}'.format(self.url, self.END_POINTS['orders_api']['get_order_by_id']+ str(id)) 
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['get_order_by_id'], str(id)) 
         self.info('GET : {}'.format(api))
         response = self.session.get(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))

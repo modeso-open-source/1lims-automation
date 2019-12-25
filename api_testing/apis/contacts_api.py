@@ -1,7 +1,7 @@
 from api_testing.apis.base_api import BaseAPI
 
 
-class OrdersAPI(BaseAPI):
+class ContactsAPI(BaseAPI):
     def get_all_contacts(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['contacts_api']['list_all_contacts'])
         _payload = {"sort_value": "companyNo",
