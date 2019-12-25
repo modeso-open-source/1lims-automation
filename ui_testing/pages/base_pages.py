@@ -227,3 +227,17 @@ class BasePages:
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
+    def click_overview(self):
+        # click on Overview, this will display an alert to the user
+        self.base_selenium.LOGGER.info('click on Overview')
+        self.base_selenium.click(element='general:overview')
+        self.sleep_tiny()
+
+    def confirm_overview_pop_up(self):
+        self.base_selenium.click(element='general:confirm_overview')
+        self.sleep_tiny()
+
+    def cancel_overview_pop_up(self):
+        self.base_selenium.click(element='general:cancel_overview')
+        self.sleep_tiny()
