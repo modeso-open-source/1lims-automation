@@ -24,3 +24,19 @@ class TestPlansTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), '{}testPlans/add'.format(self.base_selenium.url))
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
 
+    def test002_edit_approach_overview_button(self):
+        """
+        Edit: Overview Approach: Make sure after I press on
+        the overview button, it redirects me to the active table
+        LIMS-6202
+        """
+        self.test_plan.get_random_test_plans()
+        testplans_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info('testplans_url : {}'.format(testplans_url))
+        # click on Overview, it will redirect you to articles' page
+        self.base_selenium.LOGGER.info('click on Overview')
+        self.base_page.click_overview()
+        self.test_plan.sleep_tiny()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+        self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+
