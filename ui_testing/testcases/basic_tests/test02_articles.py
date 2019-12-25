@@ -562,9 +562,6 @@ class ArticlesTestCases(BaseTest):
 
         # create new article with full options
         article = self.article_page.create_new_article(material_type=None, full_options=True)
-
-        # open the configuration 
-        self.article_page.open_filter_menu()
         self.article_page.sleep_tiny()
 
         ################## [name / number] filters ##################
@@ -574,15 +571,15 @@ class ArticlesTestCases(BaseTest):
 
         # filter by article name
         result_article = self.article_page.filter_by(filter_element='article:filter_name', filter_text=article['name'], field_type='text')
+        self.article_page.sleep_medium()
         self.assertIn(article['name'], result_article.text)
-        # reset the filter
-        self.article_page.filter_by(filter_element='article:filter_name', filter_text='', field_type='text')
+        self.article_page.filter_by(filter_element='article:filter_name', filter_text='', field_type='text') # reset the filter
 
         # filter by article number
         result_article = self.article_page.filter_by(filter_element='article:filter_number', filter_text=article['number'], field_type='text')
+        self.article_page.sleep_medium()
         self.assertIn(article['number'], result_article.text)
-        # reset the filter
-        self.article_page.filter_by(filter_element='article:filter_number', filter_text='', field_type='text')
+        self.article_page.filter_by(filter_element='article:filter_number', filter_text='', field_type='text') # reset the filter
 
         # turn them off
         self.article_page.toggle_default_filters(element1='article:default_filter_name', element2='article:default_filter_number')
@@ -595,14 +592,14 @@ class ArticlesTestCases(BaseTest):
         # filter by article name
         result_article = self.article_page.filter_by(filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
         self.assertIn(article['created_at'], result_article.text)
-        # reset the filter
-        self.article_page.filter_by(filter_element='article:filter_created_at', filter_text='', field_type='text')
+        self.article_page.sleep_medium()
+        self.article_page.filter_by(filter_element='article:filter_created_at', filter_text='', field_type='text')  # reset the filter
 
         # filter by article number
         result_article = self.article_page.filter_by(filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
         self.assertIn(article['unit'], result_article.text)
-        # reset the filter
-        self.article_page.filter_by(filter_element='article:filter_unit', filter_text='', field_type='text')
+        self.article_page.sleep_medium()
+        self.article_page.filter_by(filter_element='article:filter_unit', filter_text='', field_type='text')  # reset the filter
 
         # turn them off
         self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
