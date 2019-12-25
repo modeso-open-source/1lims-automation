@@ -144,3 +144,11 @@ class TstPlan(TestPlans):
         self.base_selenium.LOGGER.info('Accepting the changes made')
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
+
+    def get_testunit_category_and_iterations(self, testplan_name):
+        self.get_test_plan_edit_page(testplan_name)
+        self.navigate_to_testunits_selection_page()
+        testunit_category = self.base_selenium.get_text(element='test_plan:testunit_category')
+        testunit_iteration = self.base_selenium.get_value(element='test_plan:testunit_iteration')
+        
+        return testunit_category, testunit_iteration

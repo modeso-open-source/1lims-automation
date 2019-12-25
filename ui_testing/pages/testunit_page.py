@@ -249,3 +249,16 @@ class TstUnit(TstUnits):
         qualitative_value = self.base_selenium.find_element_in_element(destination_element='general:input',
                                                                        source_element='test_unit:qualitative_value')
         qualitative_value.send_keys(value)
+
+    # if random is false, take the arguments that are not None only
+    # if random is true, take all the arguments, check if a value is given, otherwise generate random values
+    def update_testunit(self, number, name, iterations, category, random=True):
+        if not random:
+            if number != None:
+                self.set_testunit_number(number)
+            if name != None:
+                self.set_testunit_name(name)
+            if iterations != None:
+                self.set_testunit_iteration(iterations)
+            if category != None:
+                self.set_category(category)
