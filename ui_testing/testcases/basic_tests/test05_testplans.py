@@ -336,12 +336,10 @@ class TestPlansTestCases(BaseTest):
         '''
 
         # navigate to the articles page to create a new article
-        # self.article_page.get_articles_page()
-        # article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
-        # self.base_selenium.LOGGER.info('New article is created successfully with name: {} and material type: {}'.format(article_data['name'], article_data['material_type']))
+        self.article_page.get_articles_page()
+        article_data = self.article_page.create_new_article() # dictionary of 'name' and 'material_type'
+        self.base_selenium.LOGGER.info('New article is created successfully with name: {} and material type: {}'.format(article_data['name'], article_data['material_type']))
 
-        articles = self.article_api.get_all_articles()
-        print(articles[0])
         # navigate to the testplans page
         self.test_plan.get_test_plans_page()
         testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['material_type'], article=article_data['name'])
