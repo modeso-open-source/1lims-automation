@@ -53,7 +53,7 @@ class BaseTest(TestCase):
         tmp = []
         for item in data_list:
             if len(str(item)) > 0:
-                if re.search(r'\d{2}.\d{2}.\d{4}', str(item)):
+                if re.search(r'\d{2}\.\d{2}\.\d{4}', str(item)):
                     tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y'))
                 elif "-" == str(item):
                     continue

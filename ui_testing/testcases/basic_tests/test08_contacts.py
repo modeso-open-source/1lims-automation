@@ -10,6 +10,8 @@ class ContactsTestCases(BaseTest):
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.contact_page.get_contacts_page()
+        self.contact_page.set_all_configure_table_columns_to_specific_value(value=True, always_hidden_columns=['fax'])
+        self.contact_page.sleep_tiny()
 
     def test_001_archive_contact(self):
         """
@@ -22,7 +24,6 @@ class ContactsTestCases(BaseTest):
         selected_contacts_data, _ = self.contact_page.select_random_multiple_table_rows()
         self.contact_page.archive_selected_contacts()
         self.contact_page.get_archived_contacts()
-
         for contact in selected_contacts_data:
             contact_no = contact['Contact No']
             self.base_selenium.LOGGER.info(' + {} Contact should be archived.'.format(contact_no))
@@ -117,6 +118,7 @@ class ContactsTestCases(BaseTest):
                     break
             self.assertEqual(row_data[column], search_data[column])
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-6402')
     def test_006_download_contact_sheet(self):
         """
         New: Contact: XSLX File: I can download all the data in the table view in the excel sheet
@@ -142,7 +144,7 @@ class ContactsTestCases(BaseTest):
         contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
 
         self.base_selenium.LOGGER.info('open the record in edit to compare the data')
-        self.contact_page.open_edit_page(row=contact_record)
+        self.base_selenium.find_element(element='contacts:edit_button').click()
 
         contact_data_after_create = self.contact_page.get_full_contact_data()
         self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_create, data_before_save=contact_data))
@@ -152,11 +154,9 @@ class ContactsTestCases(BaseTest):
         contact_persons_data_after_create = self.contact_page.get_contact_persons_data()
         
         self.base_selenium.LOGGER.info('compare contact persons data after refresh')
-        if self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_data_after_create, data_before_save=contact_data["contact_persons"]):
-                self.base_selenium.LOGGER.info('contact persons have been saved successfully')
-        else:
-            self.base_selenium.LOGGER.info('contact persons was not saved successfully, you should report a BUG')
-            self.assertEqual(True, False)
+        self.assertTrue(self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_data_after_create, data_before_save=contact_data["contact_persons"]))
+        self.base_selenium.LOGGER.info('contact persons have been saved successfully')
+        
 
     def test_008_create_contact_person_from_edit_update_old_value(self):
         """
@@ -192,7 +192,7 @@ class ContactsTestCases(BaseTest):
         self.assertTrue(self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh, data_before_save=contact_persons_after_update))
         
 
-    # @skip('https://modeso.atlassian.net/browse/LIMS-6394')
+    @skip('https://modeso.atlassian.net/browse/LIMS-6394')
     def test_009_delete_contact_person(self):
         """
         Contact: Edit Approach: Make sure that you can delete any contact person from the edit mode 
@@ -290,6 +290,7 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Contact name is {}, and it should be {}'.format(contact_data['Contact Name'], contact_name))
         self.assertEqual(contact_data['Contact Name'], contact_name)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-6402')
     def test_011_user_can_show_hide_any_column(self):
         """
         New:  contacts: Optional fields: User can hide/show any optional field in Edit/Create form 
@@ -320,9 +321,6 @@ class ContactsTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
-        
-        self.base_selenium.LOGGER.info('set all columns to shown again')
-        self.contact_page.set_all_configure_table_columns_to_specific_value(value=True, always_hidden_columns=['fax'])
     
     def test_012_update_departments_should_reflect_orders(self):
         """
@@ -334,8 +332,8 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Creating new contact with new department to keep track of the updated departments')
         contact_data = self.contact_page.create_update_contact()
 
-        contact_name = contact_data['name']
-        departments = contact_data['departments']
+        contact_name = contact_data['Contact Name']
+        departments = contact_data['Departments']
 
         self.base_selenium.LOGGER.info('create order with the desired contact to keep track of the updated')
         self.order_page.get_orders_page()
@@ -344,7 +342,7 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('get the contacts to update the desired contact department')
         self.contact_page.get_contacts_page()
 
-        contact_record = self.contact_page.search(value=contact_data['no'])[0]
+        contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
         self.contact_page.open_edit_page(row=contact_record)
 
         self.base_selenium.LOGGER.info('generating list of new updated departments')
@@ -363,7 +361,7 @@ class ContactsTestCases(BaseTest):
 
         self.assertEqual(new_updated_departments, new_departments_after_refresh)
 
-        departments_list = new_updated_departments
+        departments_list = new_updated_departments.split(', ')
 
         self.base_selenium.LOGGER.info('get order data of order with id {}'.format(order_id))
         order_request = self.orders_api.get_order_by_id(id=order_id).json()
@@ -373,7 +371,7 @@ class ContactsTestCases(BaseTest):
 
         orders_departments = []
         for suborder in order_data:
-            temp_departments = list(map(lambda s: s['name'],  suborder['departments'].split(',')))
+            temp_departments = list(map(lambda s: s['name'],  suborder['departments']))
             orders_departments = orders_departments + temp_departments
 
         self.base_selenium.LOGGER.info('making sure that the updated departments does exist in the order departments list')

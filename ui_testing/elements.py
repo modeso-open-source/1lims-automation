@@ -488,7 +488,9 @@ elements = {
        'delete_contact_msg': {'method': 'id',
                             'value': 'swal2-title'},
        'confirmation_button': {'method': 'xpath',
-                            'value': '//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'}
+                            'value': '//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'},
+       'edit_button': {'method': 'xpath',
+                            'value': '//button[@class="mr-auto ng-star-inserted"]'}
     },
     'contact': {
         'name': {'method': 'id',
@@ -543,8 +545,8 @@ elements = {
                      'value': '//label[@id="isSupplier"]//input[@type="checkbox"]'},
        'is_laboratory_checkbox': {'method': 'xpath',
                      'value': '//label[@id="isLaboratory"]//input[@type="checkbox"]'},
-       'delete_person_button': {'method': 'xpath',
-                     'value': '//span[@id="delete_table_view"]'}
+       'delete_person_button': {'method': 'id',
+                     'value': 'delete_table_view'}
 
     }
 }

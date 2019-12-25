@@ -228,7 +228,7 @@ class Contact(Contacts):
         contact_phone = self.set_contact_phone(phone=phone)
         contact_skype = self.set_contact_skype(skype=skype)
         contact_website = self.set_contact_website(website=website)
-        contact_type = self.set_contact_type(contact_types=contact_types)
+        self.set_contact_type(contact_types=contact_types)
         contact_departments = self.set_contact_departments(departments=departments)
 
         self.base_selenium.LOGGER.info('wait to make sure that all data are writtent correctly')
@@ -247,7 +247,7 @@ class Contact(Contacts):
             "Skype": contact_skype,
             "Website": contact_website,
             "Departments": contact_departments,
-            "Type": contact_type
+            "Type": self.get_contact_type()
             }
 
         if contact_persons:
@@ -393,11 +393,11 @@ class Contact(Contacts):
         person_counter = 0
         for contact_person in data_after_save:
             current_contact_person = data_before_save[person_counter]
-            for key in data_before_save:
-                if key not in data_after_save:
+            for key in current_contact_person:
+                if key not in contact_person:
                     return False
-                self.base_selenium.LOGGER.info('contact person #{} {} is: {}, and it should be: {}'.format(person_counter, key, data_after_save[key], data_before_save[key]) )        
-                if data_before_save[key] != data_after_save[key]:
+                self.base_selenium.LOGGER.info('contact person #{} {} is: {}, and it should be: {}'.format(person_counter, key, contact_person[key], current_contact_person[key]) )        
+                if current_contact_person[key] != contact_person[key]:
                         return False
             person_counter = person_counter +1
 
