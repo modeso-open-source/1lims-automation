@@ -8,6 +8,7 @@ from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
 from ui_testing.pages.base_pages import BasePages
 from ui_testing.pages.order_page import Order
+from ui_testing.pages.contacts_page import Contacts
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
@@ -29,7 +30,7 @@ class BaseTest(TestCase):
         self.test_unit_page = TstUnit()
         self.order_page = Order()
         self.base_page = BasePages()
-
+        self.contacts_page = Contacts()
         self.article_api = ArticleAPI()
         self.test_plan_api = TestPlanAPI()
         self.test_unit_api = TestUnitAPI()
