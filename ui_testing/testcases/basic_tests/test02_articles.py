@@ -467,15 +467,18 @@ class ArticlesTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test020_i_can_filter_by_any_field(self):
+    def test020_filter_article_by_any_field(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
         LIMS:3595
         :return:
         """
+        # normal filters
+
         # create new article with full options
         article = self.article_page.create_new_article(material_type=None, full_options=True)
+
         # create new test plan with this article
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(material_type=article['material_type'], article=article['name'])
@@ -486,117 +489,95 @@ class ArticlesTestCases(BaseTest):
         self.article_page.open_filter_menu()
 
         # filter by article name
-        self.article_page.filter_article_by(
-            filter_element='article:filter_name', filter_text=article['name'])
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_article_by(filter_element='article:filter_name', filter_text=article['name'])
         self.assertIn(article['name'], result_article.text)
 
         # filter by article number
         self.article_page.filter_reset()
-        self.article_page.filter_article_by(
-            filter_element='article:filter_number', filter_text=article['number'])
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_article_by(filter_element='article:filter_number', filter_text=article['number'])  
         self.assertIn(article['number'], result_article.text)
 
         # filter by article unit
         self.article_page.filter_reset()
-        self.article_page.filter_article_by(
-            filter_element='article:filter_unit', filter_text=article['unit'])
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_article_by(filter_element='article:filter_unit', filter_text=article['unit'])
         self.assertIn(article['unit'], result_article.text)
 
         # filter by article created at
         self.article_page.filter_reset()
-        self.article_page.filter_article_by(
-            filter_element='article:filter_created_at', filter_text=article['created_at'])
-        result_article = self.article_page.result_table()[0]
+        result_article =  self.article_page.filter_article_by(filter_element='article:filter_created_at', filter_text=article['created_at'])
         self.assertIn(article['created_at'], result_article.text)
 
         # filter by article material type
         self.article_page.filter_reset()
-        self.article_page.filter_article_by(
-            filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_article_by(filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
         self.assertIn(article['material_type'], result_article.text)
 
         # filter by article changed by
         self.article_page.filter_reset()
-        self.article_page.filter_article_by(
-            filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_article_by(filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
         self.assertIn(article['changed_by'], result_article.text)
 
         # filter by article test plan
         self.article_page.filter_reset()
-        self.article_page.filter_article_by(filter_element='article:filter_test_plan',
-                                            filter_text=self.test_plan.test_plan_name, field_type="drop_down")
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_article_by(filter_element='article:filter_test_plan', filter_text=self.test_plan.test_plan_name, field_type='drop_down')
         self.assertIn(self.test_plan.test_plan_name, result_article.text)
 
+        # finish
+        self.article_page.filter_reset()
+        self.article_page.open_filter_menu()
+
+    def test021_filter_article_by_any_default_filter(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
         # default filters
 
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type=None, full_options=True)
+
         # open the configuration 
-        self.article_page.filter_reset()
         self.article_page.open_filter_menu()
         self.article_page.sleep_tiny()
 
+        ################## [name / number] filters ##################
+
         # turn on the name / number default filters
-        self.article_page.toggle_default_filters(
-            element1='article:default_filter_name', element2='article:default_filter_number')
+        self.article_page.toggle_default_filters(element1='article:default_filter_name', element2='article:default_filter_number')
 
         # filter by article name
-        self.article_page.filter_by(
-            filter_element='article:filter_name', filter_text=article['name'], field_type='text')
-        self.article_page.sleep_small()
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_by(filter_element='article:filter_name', filter_text=article['name'], field_type='text')
         self.assertIn(article['name'], result_article.text)
         # reset the filter
-        self.article_page.filter_by(
-            filter_element='article:filter_name', filter_text='', field_type='text')
+        self.article_page.filter_by(filter_element='article:filter_name', filter_text='', field_type='text')
 
         # filter by article number
-        self.article_page.filter_by(
-            filter_element='article:filter_number', filter_text=article['number'], field_type='text')
-        self.article_page.sleep_small()
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_by(filter_element='article:filter_number', filter_text=article['number'], field_type='text')
         self.assertIn(article['number'], result_article.text)
         # reset the filter
-        self.article_page.filter_by(
-            filter_element='article:filter_number', filter_text='', field_type='text')
+        self.article_page.filter_by(filter_element='article:filter_number', filter_text='', field_type='text')
 
         # turn them off
-        self.article_page.toggle_default_filters(
-            element1='article:default_filter_name', element2='article:default_filter_number')
+        self.article_page.toggle_default_filters(element1='article:default_filter_name', element2='article:default_filter_number')
 
+        ################## [unit / created at] filters ##################
 
         # turn on the created at / unit default filters
-        self.article_page.toggle_default_filters(
-            element1='article:default_filter_created_at', element2='article:default_filter_unit')
+        self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
 
         # filter by article name
-        self.article_page.filter_by(
-            filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
-        self.article_page.sleep_small()
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_by(filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
         self.assertIn(article['created_at'], result_article.text)
         # reset the filter
-        self.article_page.filter_by(
-            filter_element='article:filter_created_at', filter_text='', field_type='text')
+        self.article_page.filter_by(filter_element='article:filter_created_at', filter_text='', field_type='text')
 
         # filter by article number
-        self.article_page.filter_by(
-            filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
-        self.article_page.sleep_small()
-        result_article = self.article_page.result_table()[0]
+        result_article = self.article_page.filter_by(filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
         self.assertIn(article['unit'], result_article.text)
         # reset the filter
-        self.article_page.filter_by(
-            filter_element='article:filter_unit', filter_text='', field_type='text')
+        self.article_page.filter_by(filter_element='article:filter_unit', filter_text='', field_type='text')
 
         # turn them off
-        self.article_page.toggle_default_filters(
-            element1='article:default_filter_created_at', element2='article:default_filter_unit')
-
-        # finish
-        # self.article_page.filter_reset()
-        # self.article_page.open_filter_menu()
+        self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
