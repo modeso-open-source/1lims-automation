@@ -10,8 +10,7 @@ class Contact(Contacts):
     def set_contact_name(self, name=''):
         # case contact name was not provided, it generates random text to be the contact name
         # returns the value of the name in case i generated a random text, so i have the value to be used later
-        if name == '':
-            name = self.generate_random_text()
+        name = name or self.generate_random_text()
         
         self.base_selenium.LOGGER.info('set contact name to be {}', name)
         self.base_selenium.set_text(element="contact:name", value=name)
@@ -22,8 +21,7 @@ class Contact(Contacts):
         # case contact no was not provided, it generates random text to be the contact no
         # returns the value of the name in case i generated a random text, so i have the value to be used later
         # random text function is used in case of number because of a requirement from the client that it should support text
-        if no == '':
-            no = self.generate_random_text()
+        no = nor o self.generate_random_text()
 
         self.base_selenium.LOGGER.info('set contact no to be {}', no)
         self.base_selenium.set_text(element="contact:no", value=no)
