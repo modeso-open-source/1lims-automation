@@ -290,7 +290,8 @@ class ContactsTestCases(BaseTest):
         found = False
         for row in archived_record:
             contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
-            if contact_data['Contact Name'] == contact_name:
+
+            if len(contact_data) > 1 and contact_data['Contact Name'] == contact_name:
                 found = True
         self.assertTrue(found)
 
