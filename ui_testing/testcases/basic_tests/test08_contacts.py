@@ -141,10 +141,11 @@ class ContactsTestCases(BaseTest):
         contact_data = self.contact_page.create_update_contact()
 
         self.base_selenium.LOGGER.info('filter by contact no.: {} to get the record'.format(contact_data['Contact No']))
+        self.base_selenium.refresh()
+        
         contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
-
         self.base_selenium.LOGGER.info('open the record in edit to compare the data')
-        self.base_selenium.find_element(element='contacts:edit_button').click()
+        self.contact_page.open_edit_page(row=contact_record)
 
         contact_data_after_create = self.contact_page.get_full_contact_data()
         self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_create, data_before_save=contact_data))

@@ -381,11 +381,12 @@ class Contact(Contacts):
     def compare_contact_main_data(self, data_before_save, data_after_save):
         self.base_selenium.LOGGER.info('Comparing contact main data')
         for key in data_before_save:
-            if key not in data_after_save:
-                return False
-            self.base_selenium.LOGGER.info('contact {} is {}, and it should be {}'.format(key, data_after_save[key], data_before_save[key]) )        
-            if data_before_save[key] != data_after_save[key]:
+            if key != 'contact_persons':
+                if key not in data_after_save:
                     return False
+                self.base_selenium.LOGGER.info('contact {} is {}, and it should be {}'.format(key, data_after_save[key], data_before_save[key]) )        
+                if data_before_save[key] != data_after_save[key]:
+                        return False
         return True
 
     def compare_contact_persons_data(self, data_before_save, data_after_save):
