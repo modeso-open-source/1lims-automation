@@ -107,7 +107,7 @@ class ContactsTestCases(BaseTest):
         row = self.contact_page.get_random_contact_row()
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         for column in row_data:
-            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[column] == '':
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[column] == '' or row_data[column] == '-':
                 continue
             self.base_selenium.LOGGER.info(' + search for {} : {}'.format(column, row_data[column]))
             search_results = self.article_page.search(row_data[column])
@@ -142,7 +142,7 @@ class ContactsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('filter by contact no.: {} to get the record'.format(contact_data['Contact No']))
         self.base_selenium.refresh()
-        
+
         contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
         self.base_selenium.LOGGER.info('open the record in edit to compare the data')
         self.contact_page.open_edit_page(row=contact_record)
