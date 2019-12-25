@@ -109,6 +109,7 @@ class Article(Articles):
             ' + Filter by {} : {}'.format(filter_element.replace('article:filter_', '').replace('_', ' '), filter_text))
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
+        self.sleep_tiny()
 
     def set_related_article(self):
         self.base_selenium.select_item_from_drop_down(element='article:related_article')
@@ -127,5 +128,17 @@ class Article(Articles):
             if 'text' in label:
                 input_item = self.base_selenium.find_element_in_element(source=item, destination_element='general:input')
                 # send text
+    
+    def toggle_default_filters(self, element1, element2=None):
+        self.open_filter_menu()
+        self.base_selenium.click(element='general:filter_configuration') # open filter configuration
+        self.sleep_small()
+        self.base_selenium.click(element=element1)
+        if element2:
+            self.base_selenium.click(element=element2)
+        self.base_selenium.click(element='article:default_filter_save')
+        self.open_filter_menu()
+        self.sleep_medium()
+
 
 

@@ -469,7 +469,7 @@ class ArticlesTestCases(BaseTest):
 
     def test020_i_can_filter_by_any_field(self):
         """
-        New: Article: Filter Approach: I can filter by any sttic field & and also from the default filter.
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
         LIMS:3595
         :return:
@@ -527,6 +527,7 @@ class ArticlesTestCases(BaseTest):
         self.assertIn(article['changed_by'], result_article.text)
 
         # filter by article test plan
+        self.article_page.filter_reset()
         self.article_page.filter_article_by(filter_element='article:filter_test_plan',
                                             filter_text=self.test_plan.test_plan_name, field_type="drop_down")
         result_article = self.article_page.result_table()[0]
@@ -534,6 +535,68 @@ class ArticlesTestCases(BaseTest):
 
         # default filters
 
-        # finish
+        # open the configuration 
         self.article_page.filter_reset()
         self.article_page.open_filter_menu()
+        self.article_page.sleep_tiny()
+
+        # turn on the name / number default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_name', element2='article:default_filter_number')
+
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_name', filter_text=article['name'], field_type='text')
+        self.article_page.sleep_small()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['name'], result_article.text)
+        # reset the filter
+        self.article_page.filter_by(
+            filter_element='article:filter_name', filter_text='', field_type='text')
+
+        # filter by article number
+        self.article_page.filter_by(
+            filter_element='article:filter_number', filter_text=article['number'], field_type='text')
+        self.article_page.sleep_small()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['number'], result_article.text)
+        # reset the filter
+        self.article_page.filter_by(
+            filter_element='article:filter_number', filter_text='', field_type='text')
+
+        # turn them off
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_name', element2='article:default_filter_number')
+
+
+        # turn on the created at / unit default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_created_at', element2='article:default_filter_unit')
+
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
+        self.article_page.sleep_small()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['created_at'], result_article.text)
+        # reset the filter
+        self.article_page.filter_by(
+            filter_element='article:filter_created_at', filter_text='', field_type='text')
+
+        # filter by article number
+        self.article_page.filter_by(
+            filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
+        self.article_page.sleep_small()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['unit'], result_article.text)
+        # reset the filter
+        self.article_page.filter_by(
+            filter_element='article:filter_unit', filter_text='', field_type='text')
+
+        # turn them off
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_created_at', element2='article:default_filter_unit')
+
+        # finish
+        # self.article_page.filter_reset()
+        # self.article_page.open_filter_menu()
