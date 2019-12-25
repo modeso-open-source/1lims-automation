@@ -115,6 +115,12 @@ elements = {
             'method': 'xpath',
             'value': '//*[@id="tabs"]/li[2]/a'
         },
+        'overview': {'method': 'xpath',
+                     'value': "//span[contains(text(),'Overview')]"},
+        'confirm_overview': {'method': 'xpath',
+                             'value': "//div[contains(@class, 'swal2-actions')]//button[1]"},
+        'cancel_overview': {'method': 'xpath',
+                            'value': "//div[contains(@class, 'swal2-actions')]//button[2]"},
     },
     'login': {
         'username': {'method': 'name',
@@ -388,23 +394,23 @@ elements = {
         'order': {'method': 'id',
                   'value': 'orderTypefield'},
         'material_type': {'method': 'xpath',
-                          'value': '//*[@id="materialTypefield"]'},
-        'article': {'method': 'css_selector',
-                    'value': '#articlefield > div'},
-        'departments': {'method': 'id',
-                        'value': 'departments'},
+                          'value': '//td//*[@id="materialType"]'},
+        'article': {'method': 'xpath',
+                    'value': '//td//*[@id="article"]'},
+        'departments': {'method': 'xpath',
+                        'value': '//td//*[@id="departments"]'},
 
         'auto_fill': {'method': 'xpath', 'value': '//*[@id="field"]/div[2]/div/span'},
         'auto_fill_container': {'method': 'xpath', 'value': '//*[@id="field"]/div[2]'},
 
         'contact': {'method': 'id',
-                    'value': 'contactfield'},
+                    'value': 'contact'},
         'tests': {'method': 'id',
                   'value': 'tests'},
-        'test_plan': {'method': 'id',
-                      'value': 'testPlans'},
-        'test_unit': {'method': 'id',
-                      'value': 'testUnits'},
+        'test_plan': {'method': 'xpath',
+                      'value': '//td//*[@id="testPlans"]'},
+        'test_unit': {'method': 'xpath',
+                      'value': '//td//*[@id="testUnits"]'},
         'test_plan_btn': {'method': 'tag_name',
                           'value': 'span',
                           'order': 0},
@@ -477,5 +483,13 @@ elements = {
             'method': 'id',
             'value': 'nofield'
         }
+    },
+    'contacts': {
+        'new_contact': {'method': 'xpath',
+                        'value': '//span[contains(text(),"New Contact")]'},
+        'contacts_table': {'method': 'id',
+                           'value': 'table'}
+
     }
+
 }
