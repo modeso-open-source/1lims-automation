@@ -1,5 +1,5 @@
 from ui_testing.pages.testplans_page import TestPlans
-
+from selenium.common.exceptions import NoSuchElementException
 
 class TstPlan(TestPlans):
     def get_no(self):
@@ -27,7 +27,7 @@ class TstPlan(TestPlans):
             self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
     def get_material_type(self):
-        return self.base_selenium.get_text(element='test_plans:material_type')
+        return self.base_selenium.get_text(element='test_plan:material_type')
 
     def set_material_type(self, material_type='', random=False):
         if random:
@@ -47,6 +47,7 @@ class TstPlan(TestPlans):
     def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
+        self.sleep_small()
         self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
         self.base_selenium.click('test_plan:add')
         if 'upper' in kwargs:
@@ -144,3 +145,23 @@ class TstPlan(TestPlans):
         self.base_selenium.LOGGER.info('Accepting the changes made')
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
+
+    def delete_all_testunits(self):
+        testunits_still_available = 1
+        while testunits_still_available:
+            try:
+                self.base_selenium.click(element='test_plan:remove_testunit')
+            except:
+                testunits_still_available = 0      
+
+    '''
+    Changes the fields in the testplan after choosing the duplicate option on
+    a specific testplan
+    '''
+    def duplicate_testplan(self, change=[]):
+        for c in change:
+            self.base_selenium.LOGGER.info('Changing the {} field'.format(c))
+            if c == 'name':
+                duplicated_test_plan_name = self.generate_random_text()
+                self.set_test_plan(name=duplicated_test_plan_name)
+        self.save()

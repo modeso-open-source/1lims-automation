@@ -4,6 +4,7 @@ from uuid import uuid4
 from random import randint
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.contact_page import Contact
+from ui_testing.pages.articles_page import Articles
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
@@ -30,6 +31,7 @@ class BaseTest(TestCase):
         self.test_plan = TstPlan()
         self.article_page = Article()
         self.contact_page = Contact()
+        self.articles_page = Articles()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
         self.base_page = BasePages()
@@ -129,6 +131,25 @@ class BaseTest(TestCase):
             data[material_type].append(article['name'])
         return data
 
+    '''
+    Removes the data that was changed in the duplication process in order to compare
+    between the objects to make sure that the duplication was done correcly.
+    '''
+    def remove_unduplicated_data(self, data_changed=[], first_element=[], second_element=[]):
+        for data in data_changed:
+            if data in first_element and data in second_element:
+                if first_element[data] != None:
+                    del first_element[data]
+                if second_element[data] != None:
+                    del second_element[data]
+
+        return first_element, second_element
+
+
+    def get_all_articles(self):
+        articles = self.article_api.get_all_articles().json()['articles']
+        return articles
+        
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
 
