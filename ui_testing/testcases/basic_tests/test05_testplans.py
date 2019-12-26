@@ -473,12 +473,40 @@ class TestPlansTestCases(BaseTest):
         '''
 
         # create a new testplan
-        testplan_name = self.test_plan.create_new_test_plan()
+        # get all articles and choose a random one to take its information
+        articles = self.get_all_articles()
+        article_data = random.choice(articles)
+        self.base_selenium.LOGGER.info(
+            'A random article is chosen, its name: {} and its material type: {}'.format(article_data['name'], article_data['materialType']))
+
+        testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['materialType'], article=article_data['name'])
 
         # create a new order with this testplan
+        self.order_page.get_orders_page()
+        order_data = self.order_page.create_new_order(material_type=article_data['materialType'], article=article_data['name'], test_plans=[testplan_name])
 
         # archive this testplan
+        self.test_plan.get_test_plans_page()
+        self.base_selenium.LOGGER.info('Testplan number: {} will be archived'.format(testplan_name))
+        row = self.test_plan.search(testplan_name)
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.test_plan.click_check_box(source=row[0])
+        self.test_plan.sleep_small()
+
+        self.test_plan.archive_selected_items()
+        self.test_plan.get_archived_items()
 
         # try to delete it
+        archived_row = self.test_plan.search(testplan_name)
+        self.test_plan.sleep_small()
+        # self.base_selenium.LOGGER.info('Checking if testplan number: {} is archived correctly'.format(testplan_number))
+        self.assertIsNotNone(archived_row[0])
+        # self.base_selenium.LOGGER.info('Testplan number: {} is archived correctly'.format(testplan_number))
+
+        # restore and navigate to active table
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.test_plan.click_check_box(source=archived_row[0])
+        self.test_plan.sleep_small()
+        self.test_plan.delete_selected_item()
 
         # check for the error popup that this testplan is used and can't be deleted
