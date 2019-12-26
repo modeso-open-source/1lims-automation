@@ -11,6 +11,15 @@ class ArticlesTestCases(BaseTest):
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.article_page.get_articles_page()
+        self.name_default_filters_flag = False
+
+    def tearDown(self):
+        if self.name_default_filters_flag == True:
+            self.article_page.toggle_default_filters(
+                element1='article:default_filter_name')
+            self.name_default_filters_flag = False
+        return super().tearDown()
+
 
     @parameterized.expand(['save', 'cancel'])
     def test001_cancel_button_edit_unit(self, save):
@@ -513,8 +522,6 @@ class ArticlesTestCases(BaseTest):
         LIMS:3595
         :return:
         """
-        # normal filters
-
         # create new article with full options
         article = self.article_page.create_new_article(material_type=None, full_options=True)
         self.article_page.sleep_small()
@@ -561,10 +568,7 @@ class ArticlesTestCases(BaseTest):
         # filter by article test plan
         result_article = self.article_page.filter_article_by(filter_element='article:filter_test_plan', filter_text=self.test_plan.test_plan_name, field_type='drop_down')
         self.assertIn(self.test_plan.test_plan_name, result_article.text)
-        self.article_page.filter_reset()
 
-        # finish
-        self.article_page.open_filter_menu()
 
     def test029_filter_article_by_any_default_filter(self):
         """
@@ -573,49 +577,62 @@ class ArticlesTestCases(BaseTest):
         LIMS:3595
         :return:
         """
-        # default filters
-
         # create new article with full options
-        article = self.article_page.create_new_article(material_type=None, full_options=True)
-        self.article_page.sleep_tiny()
+        article = self.article_page.create_new_article(
+            material_type=None, full_options=True)
 
-        ################## [name / number] filters ##################
-
-        # turn on the name / number default filters
-        self.article_page.toggle_default_filters(element1='article:default_filter_name', element2='article:default_filter_number')
+        # turn on the name default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_name')
+        self.name_default_filters_flag = True
 
         # filter by article name
-        result_article = self.article_page.filter_by(filter_element='article:filter_name', filter_text=article['name'], field_type='text')
+        self.article_page.filter_by(
+            filter_element='article:filter_name', filter_text=article['name'], field_type='text')
         self.article_page.sleep_medium()
+        result_article = self.article_page.result_table()[0]
         self.assertIn(article['name'], result_article.text)
-        self.article_page.filter_by(filter_element='article:filter_name', filter_text='', field_type='text') # reset the filter
 
-        # filter by article number
-        result_article = self.article_page.filter_by(filter_element='article:filter_number', filter_text=article['number'], field_type='text')
-        self.article_page.sleep_medium()
-        self.assertIn(article['number'], result_article.text)
-        self.article_page.filter_by(filter_element='article:filter_number', filter_text='', field_type='text') # reset the filter
+       
+    # def test030_filter_article_by_any_default_filter(self):
+    #     """
+    #     New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
-        # turn them off
-        self.article_page.toggle_default_filters(element1='article:default_filter_name', element2='article:default_filter_number')
+    #     LIMS:3595
+    #     :return:
+    #     """
+    #     # create new article with full options
+    #     article = self.article_page.create_new_article(material_type=None, full_options=True)
 
-        ################## [unit / created at] filters ##################
+    #     # default filters
+    #     # turn them off
+    #      # filter by article number
+    #     self.article_page.filter_by(filter_element='article:filter_number', filter_text=article['number'], field_type='text')
+    #     self.article_page.sleep_medium()
+    #     result_article = self.article_page.result_table()[0]
+    #     self.assertIn(article['number'], result_article.text)
+    #     self.article_page.filter_by(filter_element='article:filter_number', filter_text='', field_type='text') # reset the filter
 
-        # turn on the created at / unit default filters
-        self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
 
-        # filter by article name
-        result_article = self.article_page.filter_by(filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
-        self.assertIn(article['created_at'], result_article.text)
-        self.article_page.sleep_medium()
-        self.article_page.filter_by(filter_element='article:filter_created_at', filter_text='', field_type='text')  # reset the filter
+    #     self.article_page.toggle_default_filters(element1='article:default_filter_name', element2='article:default_filter_number')
 
-        # filter by article number
-        result_article = self.article_page.filter_by(filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
-        self.assertIn(article['unit'], result_article.text)
-        self.article_page.sleep_medium()
-        self.article_page.filter_by(filter_element='article:filter_unit', filter_text='', field_type='text')  # reset the filter
+    #     ################## [unit / created at] filters ##################
 
-        # turn them off
-        self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
+    #     # turn on the created at / unit default filters
+    #     self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
+
+    #     # filter by article name
+    #     result_article = self.article_page.filter_by(filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
+    #     self.assertIn(article['created_at'], result_article.text)
+    #     self.article_page.sleep_medium()
+    #     self.article_page.filter_by(filter_element='article:filter_created_at', filter_text='', field_type='text')  # reset the filter
+
+    #     # filter by article number
+    #     result_article = self.article_page.filter_by(filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
+    #     self.assertIn(article['unit'], result_article.text)
+    #     self.article_page.sleep_medium()
+    #     self.article_page.filter_by(filter_element='article:filter_unit', filter_text='', field_type='text')  # reset the filter
+
+    #     # turn them off
+    #     self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
         
