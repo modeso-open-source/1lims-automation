@@ -18,7 +18,7 @@ class AuditTrail(BasePages):
 
     def get_random_mapped_audit_trail_data(self):
         # get random row in the table
-        audit_trail_row = self.audit_trail_page.get_random_table_row(table_element='general:table')
+        audit_trail_row = self.get_random_table_row(table_element='general:table')
         # map the header to the row data
         audit_trail_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=audit_trail_row)
         # get each column data from that row

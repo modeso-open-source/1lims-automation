@@ -2,7 +2,6 @@ from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
 
-
 class AuditTrailTestCases(BaseTest):
     def setUp(self):
         super().setUp()
@@ -11,7 +10,6 @@ class AuditTrailTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.audit_trail_page.get_audit_trails_page()
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-6399')
     def test001_download_audit_trail_sheet(self):
         """
         Header: Audit trail: Make sure that you can export all the fields in the active table
@@ -123,7 +121,7 @@ class AuditTrailTestCases(BaseTest):
         # get random row data
         audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
         # search by changed by
-        result = self.audit_trail_page.search(audit_trail['changed_by'])
+        result = self.audit_trail_page.search(audit_trail['changed_by'])[0].text
         self.assertIn(audit_trail['changed_by'], result)
 
     def test008_search_audit_trail_by_action(self):
@@ -136,7 +134,7 @@ class AuditTrailTestCases(BaseTest):
         # get random row data
         audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
         # search by action
-        result = self.audit_trail_page.search(audit_trail['action'])
+        result = self.audit_trail_page.search(audit_trail['action'])[0].text
         self.assertIn(audit_trail['action'], result)
 
     def test009_search_audit_trail_by_entity(self):
@@ -149,7 +147,7 @@ class AuditTrailTestCases(BaseTest):
         # get random row data
         audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
         # search by entity
-        result = self.audit_trail_page.search(audit_trail['entity'])
+        result = self.audit_trail_page.search(audit_trail['entity'])[0].text
         self.assertIn(audit_trail['entity'], result)
 
     def test010_search_audit_trail_by_entity_number(self):
@@ -162,5 +160,5 @@ class AuditTrailTestCases(BaseTest):
         # get random row data
         audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
         # search by entity number
-        result = self.audit_trail_page.search(audit_trail['entity_number'])
+        result = self.audit_trail_page.search(audit_trail['entity_number'])[0].text
         self.assertIn(audit_trail['entity_number'], result)
