@@ -843,27 +843,40 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('testunit type is qualitative, fields shown should be as follow')
         self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
-    def test_029_allow_user_to_change_between_specification_and_quantification(self):
+    @parameterized.expand(['spec', 'quan', 'spec_quan'])
+    def test_029_allow_user_to_change_between_specification_and_quantification(self, specification_type):
         """
         New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
         Allow user to change between the two options specification and limit of quantification from edit mode.
         """
 
-        self.base_selenium.LOGGER.info('search for quantiative testunit')
-        testunit_record = self.test_unit_page.search(value='Quantitative')[0]
+        testunits_request = self.test_unit_api.get_all_test_units(filter='Quantitative').json()
+        self.assertEqual(testunits_request['status'], 1)
+        testunits = testunits_request['testUnits']
+        testunit_name = ''
+        for testunit in testunits:
+            if specification_type == 'spec':
+                if testunit['specifications'] != '' and testunit['quantification'] == '':
+                    testunit_name = testunit['name']
+                    break
+            elif specification_type == 'quan':
+                if testunit['specifications'] == '' and testunit['quantification'] != '':
+                    testunit_name = testunit['name']
+                    break
+            elif specification_type == 'spec_quan':
+                if testunit['specifications'] != '' and testunit['quantification'] != '':
+                    testunit_name = testunit['name']
+                    break
+
+        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
 
         self.test_unit_page.open_edit_page(row=testunit_record)
-        
-        self.base_selenium.LOGGER.info('get the current specification used')
-        specification_or_quantification = self.test_unit_page.get_testunit_specification_type()
         
         self.base_selenium.LOGGER.info('generate random lower/ upper limit')
         random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
         random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
         
-        self.base_selenium.LOGGER.info('current used type is {}'.format(specification_or_quantification))
-        
-        if specification_or_quantification == 'spec':
+        if specification_type == 'spec':
             self.base_selenium.LOGGER.info('switch to quantification')
             self.test_unit_page.switch_from_spec_to_quan(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
             self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
@@ -873,7 +886,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
             self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
 
-        elif specification_or_quantification == 'quan':
+        elif specification_type == 'quan':
             self.base_selenium.LOGGER.info('switch to specification')
             self.test_unit_page.switch_from_quan_to_spec(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
             self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
@@ -883,7 +896,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
             self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
 
-        elif specification_or_quantification == 'spec_quan':
+        elif specification_type == 'spec_quan':
             self.base_selenium.LOGGER.info('set type to specification only and save')
             self.test_unit_page.set_testunit_type(testunit_type='quan')
             spec_upper_limit = self.test_unit_page.get_spec_upper_limit()
@@ -906,8 +919,3 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
             self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
             self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
-
-
-
-
-        

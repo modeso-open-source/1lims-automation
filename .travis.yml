@@ -29,7 +29,7 @@ script:
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/test04_testunits.py --tc-file=config.ini
 #  - export TESTS='test04_testunits.py:TestUnitsTestCases.test010_material_type_approach_1_Quantitative_MiBi'
 #  - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_028_changing_testunit_type_update_fields_accordingly
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_029_allow_user_to_change_between_specification_and_quantification
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_028_changing_testunit_type_update_fields_accordingly
 
 
