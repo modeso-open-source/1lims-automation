@@ -336,7 +336,11 @@ elements = {
         'selected_cons': {'method': 'id',
                           'value': 'selectedConcs'},
         'qualitative_value': {'method': 'id',
-                              'value': 'textValueArrayfield'}
+                              'value': 'textValueArrayfield'},
+       'specification_checkbox': {'method': 'xpath',
+                                   'value': '//label[@id="useSpec"]//input[@type="checkbox"]'},
+       'quantification_checkbox': {'method': 'xpath',
+                                   'value': '//label[@id="useQuantification"]//input[@type="checkbox"]'}
     },
     'orders': {
         'orders_table': {'method': 'id',

@@ -124,7 +124,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.refresh()
         self.test_unit_page.sleep_small()
 
-        self.base_selenium.LOGGER.info('Getting testunit data after referesh')
+        self.base_selenium.LOGGER.info('Getting testunit data after refresh')
         updated_testunit_name = self.test_unit_page.get_testunit_name()
         update_testunit_number = self.test_unit_page.get_testunit_number()
         updated_material_types = self.test_unit_page.get_material_type()
@@ -812,3 +812,102 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
+    def test_028_changing_testunit_type_update_fields_accordingly(self):
+        """
+        New: Test unit: Type Approach: When I change type from edit mode, the values should changed according to this type that selected 
+        When I change type from edit mode, the values should changed according to this type that selected 
+        LIMS-3680
+        """
+
+        self.base_selenium.LOGGER.info('open random testunit')
+
+        testunit_record = self.test_unit_page.get_random_test_units_row()
+        self.test_unit_page.open_edit_page(row=testunit_record)
+
+        self.base_selenium.LOGGER.info('set the type to Quantitative')
+        self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
+        self.test_unit_page.sleep_tiny()
+        self.base_selenium.LOGGER.info('set testunit type to Quantitative, fields should be displayed as the following')
+        self.assertTrue(self.test_unit_page.check_for_quantitative_fields())
+
+        self.base_selenium.LOGGER.info('set the type to Qualitative')
+        self.test_unit_page.set_testunit_type(testunit_type='Qualitative')
+        self.test_unit_page.sleep_tiny()
+        self.base_selenium.LOGGER.info('testunit type is qualitative, fields shown should be as follow')
+        self.assertTrue(self.test_unit_page.check_for_qualitative_fields())
+        
+
+        self.base_selenium.LOGGER.info('set the type to Quantitative MiBi')
+        self.test_unit_page.set_testunit_type(testunit_type='Quantitative MiBi')
+        self.test_unit_page.sleep_tiny()
+        self.base_selenium.LOGGER.info('testunit type is qualitative, fields shown should be as follow')
+        self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
+
+    def test_029_allow_user_to_change_between_specification_and_quantification(self):
+        """
+        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
+        Allow user to change between the two options specification and limit of quantification from edit mode.
+        """
+
+        self.base_selenium.LOGGER.info('search for quantiative testunit')
+        testunit_record = self.test_unit_page.search(value='Quantitative')[0]
+
+        self.test_unit_page.open_edit_page(row=testunit_record)
+        
+        self.base_selenium.LOGGER.info('get the current specification used')
+        specification_or_quantification = self.test_unit_page.get_testunit_specification_type()
+        
+        self.base_selenium.LOGGER.info('generate random lower/ upper limit')
+        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
+        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
+        
+        self.base_selenium.LOGGER.info('current used type is {}'.format(specification_or_quantification))
+        
+        if specification_or_quantification == 'spec':
+            self.base_selenium.LOGGER.info('switch to quantification')
+            self.test_unit_page.switch_from_spec_to_quan(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
+            self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
+            self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
+            self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
+
+        elif specification_or_quantification == 'quan':
+            self.base_selenium.LOGGER.info('switch to specification')
+            self.test_unit_page.switch_from_quan_to_spec(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
+            self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
+            self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
+            self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
+
+        elif specification_or_quantification == 'spec_quan':
+            self.base_selenium.LOGGER.info('set type to specification only and save')
+            self.test_unit_page.set_testunit_type(testunit_type='quan')
+            spec_upper_limit = self.test_unit_page.get_spec_upper_limit()
+            spec_lower_limit = self.test_unit_page.get_spec_lower_limit()
+            self.test_unit_page.sleep_tiny()
+            self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save testunit')
+            self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
+            self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(spec_upper_limit))
+            self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(spec_lower_limit))
+
+            self.base_selenium.LOGGER.info('switch to quantification')
+            self.test_unit_page.switch_from_spec_to_quan(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
+            self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save testunit')
+            self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
+            self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
+            self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
+
+
+
+
+        
