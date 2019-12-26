@@ -10,10 +10,13 @@ class ArticlesTestCases(BaseTest):
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.article_page.get_articles_page()
+        self.archived_optional_fields_flag = False
 
     def tearDown(self):
         if self.archived_optional_fields_flag: # to restore the UI
+            self.article_page.get_articles_page()
             self.article_page.archive_restore_optional_fields(restore=True)
+            self.archived_optional_fields_flag = False
         super().tearDown()
 
     @parameterized.expand(['save', 'cancel'])
@@ -544,6 +547,7 @@ class ArticlesTestCases(BaseTest):
         self.archived_optional_fields_flag = True # to restore the UI in the tearDown
 
         # open create page
+        self.article_page.get_articles_page()
         self.article_page.info('+ Open article create')
         self.base_selenium.click(element='articles:new_article')
         self.article_page.sleep_small()
@@ -569,6 +573,7 @@ class ArticlesTestCases(BaseTest):
         self.archived_optional_fields_flag = True # to restore the UI in the tearDown
 
         # open edit page
+        self.article_page.get_articles_page()
         self.article_page.info('+ Open article edit')
         self.article_page.get_articles_page()
         self.article_page.open_edit_page(row=self.article_page.get_random_article_row())
@@ -585,6 +590,7 @@ class ArticlesTestCases(BaseTest):
     def test025_user_restore_any_optional_field_is_not_affecting_the_table(self):
         # archive then restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
+        self.article_page.get_articles_page()
         self.article_page.archive_restore_optional_fields(restore=True)
 
         # check if the fields still exist in the table after restore
@@ -603,9 +609,11 @@ class ArticlesTestCases(BaseTest):
     def test026_user_restore_any_optional_field_in_create_form(self):
         # archive then restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
+        self.article_page.get_articles_page()
         self.article_page.archive_restore_optional_fields(restore=True)
 
         # open create page after restore
+        self.article_page.get_articles_page()
         self.article_page.info('+ Open article create')
         self.base_selenium.click(element='articles:new_article')
         self.article_page.sleep_small()
@@ -622,9 +630,11 @@ class ArticlesTestCases(BaseTest):
     def test027_user_restore_any_optional_field_in_edit_form(self):
         # archive then restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
+        self.article_page.get_articles_page()
         self.article_page.archive_restore_optional_fields(restore=True)
 
         # open edit page after restore
+        self.article_page.get_articles_page()
         self.article_page.info('+ Open article edit')
         self.article_page.get_articles_page()
         self.article_page.open_edit_page(row=self.article_page.get_random_article_row())
