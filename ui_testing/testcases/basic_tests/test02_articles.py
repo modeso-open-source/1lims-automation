@@ -490,8 +490,23 @@ class ArticlesTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), '{}articles/add'.format(self.base_selenium.url))
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
 
+    def test021_edit_approach_overview_button(self):
+        """
+        Edit: Overview Approach: Make sure after I press on
+        the overview button, it redirects me to the active table
+        LIMS-6202
+        """
+        self.article_page.get_random_article()
+        article_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info('article_url : {}'.format(article_url))
+        # click on Overview, it will redirect you to articles' page
+        self.base_selenium.LOGGER.info('click on Overview')
+        self.base_page.click_overview()
+        self.article_page.sleep_small()
+        self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
+        self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
-    def test021_filter_article_by_any_field(self):
+    def test028_filter_article_by_any_field(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -551,7 +566,7 @@ class ArticlesTestCases(BaseTest):
         # finish
         self.article_page.open_filter_menu()
 
-    def test022_filter_article_by_any_default_filter(self):
+    def test029_filter_article_by_any_default_filter(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
