@@ -56,3 +56,18 @@ class TestPlansTestCases(BaseTest):
         self.assertFalse(deleted_test_unit_found)
 
 
+    def test013_delete_used_testplan(self):
+        '''
+        LIMS-3509
+        If a testplan is used, it can't be deleted
+        '''
+
+        # create a new testplan
+
+        # create a new order with this testplan
+
+        # archive this testplan
+
+        # try to delete it
+
+        # check for the error popup that this testplan is used and can't be deleted
