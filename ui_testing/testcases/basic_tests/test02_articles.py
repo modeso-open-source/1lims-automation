@@ -524,11 +524,6 @@ class ArticlesTestCases(BaseTest):
         """
         # create new article with full options
         article = self.article_page.create_new_article(material_type=None, full_options=True)
-        self.article_page.sleep_small()
-
-        # create new test plan with this article
-        self.test_plan.get_test_plans_page()
-        self.test_plan.create_new_test_plan(material_type=article['material_type'], article=article['name'])
 
         # open article table page and open the filter menu       
         self.article_page.get_articles_page()
@@ -540,37 +535,116 @@ class ArticlesTestCases(BaseTest):
         self.assertIn(article['name'], result_article.text)
         self.article_page.filter_reset()
 
+
+
+    def test029_filter_article_by_any_field(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type=None, full_options=True)
+
+        # open article table page and open the filter menu       
+        self.article_page.get_articles_page()
+        self.article_page.sleep_small()
+        self.article_page.open_filter_menu()
+
         # filter by article number
         result_article = self.article_page.filter_article_by(filter_element='article:filter_number', filter_text=article['number'])  
         self.assertIn(article['number'], result_article.text)
         self.article_page.filter_reset()
+
+
+
+    def test030_filter_article_by_any_field(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type=None, full_options=True)
+
+        # open article table page and open the filter menu       
+        self.article_page.get_articles_page()
+        self.article_page.sleep_small()
+        self.article_page.open_filter_menu()
 
         # filter by article unit
         result_article = self.article_page.filter_article_by(filter_element='article:filter_unit', filter_text=article['unit'])
         self.assertIn(article['unit'], result_article.text)
         self.article_page.filter_reset()
 
+
+
+    def test031_filter_article_by_any_field(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type=None, full_options=True)
+
+        # open article table page and open the filter menu       
+        self.article_page.get_articles_page()
+        self.article_page.sleep_small()
+        self.article_page.open_filter_menu()
+
         # filter by article created at
         result_article =  self.article_page.filter_article_by(filter_element='article:filter_created_at', filter_text=article['created_at'])
         self.assertIn(article['created_at'], result_article.text)
         self.article_page.filter_reset()
+
+
+    def test032_filter_article_by_any_field(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type=None, full_options=True)
+
+        # open article table page and open the filter menu       
+        self.article_page.get_articles_page()
+        self.article_page.sleep_small()
+        self.article_page.open_filter_menu()
 
         # filter by article material type
         result_article = self.article_page.filter_article_by(filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
         self.assertIn(article['material_type'], result_article.text)
         self.article_page.filter_reset()
 
+
+    def test033_filter_article_by_any_field(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type=None, full_options=True)
+
+        # open article table page and open the filter menu       
+        self.article_page.get_articles_page()
+        self.article_page.sleep_small()
+        self.article_page.open_filter_menu()
+
         # filter by article changed by
         result_article = self.article_page.filter_article_by(filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
         self.assertIn(article['changed_by'], result_article.text)
         self.article_page.filter_reset()
 
-        # filter by article test plan
-        result_article = self.article_page.filter_article_by(filter_element='article:filter_test_plan', filter_text=self.test_plan.test_plan_name, field_type='drop_down')
-        self.assertIn(self.test_plan.test_plan_name, result_article.text)
 
-
-    def test029_filter_article_by_any_default_filter(self):
+    def test034_filter_article_by_any_default_filter(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
