@@ -21,7 +21,7 @@ class TestPlansTestCases(BaseTest):
         then refreshes the page and checks if the deletion was done correctly.
         '''
 
-        completed_test_plans = self.test_plan_api.get_completed_testplans()
+        completed_test_plans = self.test_plan_api.get_completed_testplans(limit=500)
         testplan_name = random.choice(completed_test_plans)['testPlanName']
 
         # navigate to the chosen testplan edit page
@@ -99,7 +99,7 @@ class TestPlansTestCases(BaseTest):
         '''
 
         self.base_selenium.LOGGER.info('Searching for test plans with Completed status')
-        completed_testplans = self.test_plan_api.get_completed_testplans()
+        completed_testplans = self.test_plan_api.get_completed_testplans(limit=500)
 
         if completed_testplans is not None:
             self.base_selenium.LOGGER.info('Getting the first testplan')
@@ -154,6 +154,7 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.sleep_small()
         self.base_selenium.LOGGER.info('Checking if testplan number: {} is archived correctly'.format(testplan_number))
         self.assertIsNotNone(archived_row[0])
+
         self.base_selenium.LOGGER.info('Testplan number: {} is archived correctly'.format(testplan_number))
 
         # restore and navigate to active table
@@ -191,7 +192,7 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             'Checking if testplan numbers: {} are archived correctly'.format(testplans_numbers))
 
-        archived_rows = self.test_plan.search_for_multiple_rows(testplans_numbers, 1)
+        archived_rows = self.test_plan.search_for_multiple_rows(testplans_numbers, check=1)
 
         self.assertIsNotNone(archived_rows)
         self.assertEqual(len(archived_rows), len(testplans_numbers))
@@ -314,7 +315,7 @@ class TestPlansTestCases(BaseTest):
         When the testplan status is converted from completed to in progress a new version is created
         '''
         self.base_selenium.LOGGER.info('Searching for test plans with Completed status')
-        completed_testplans = self.test_plan_api.get_completed_testplans()
+        completed_testplans = self.test_plan_api.get_completed_testplans(limit=500)
 
         if completed_testplans is not None:
             self.base_selenium.LOGGER.info('Getting the first testplan')
@@ -350,26 +351,22 @@ class TestPlansTestCases(BaseTest):
         and article, this shouldn't happen
         '''
 
-        # get all articles and choose a random one to take its information
-        articles = self.get_all_articles()
-        random_index = self.generate_random_number(lower=0, upper=len(articles))
-        article_data = articles[random_index]
-        self.base_selenium.LOGGER.info(
-            'A random article is chosen, its name: {} and its material type: {}'.format(article_data['name'],
-                                                                                        article_data['materialType']))
-
-        testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['materialType'],
-                                                            article=article_data['name'])
+        response = self.test_plan_api.get_all_test_plans()
+        testplans = response.json()['testPlans']
+        testplan = random.choice(testplans)
+        
+        testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
+                                                            article=(testplan['article'])[0])
         self.base_selenium.LOGGER.info(
             'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-                testplan_name, article_data['name'], article_data['materialType']))
+                testplan_name, (testplan['article'])[0], testplan['materialType']))
 
         self.base_selenium.LOGGER.info(
             'Attempting to create another testplan with the same data as the previously created one')
 
         # create another testplan with the same data
-        self.test_plan.create_new_test_plan(name=testplan_name, material_type=article_data['materialType'],
-                                            article=article_data['name'])
+        self.test_plan.create_new_test_plan(name=testplan_name, material_type=testplan['materialType'],
+                                            article=(testplan['article'])[0])
 
         self.base_selenium.LOGGER.info(
             'Waiting for the error message to make sure that validation forbids the creation of two testplans having the same name, material type and article')
@@ -387,44 +384,30 @@ class TestPlansTestCases(BaseTest):
         and article. It should be created successfully.
         '''
 
-        # get all articles and choose a random one to take its information
-        articles = self.get_all_articles()
+        response = self.test_plan_api.get_all_test_plans()
+        testplans = response.json()['testPlans']
+        first_testplan = random.choice(testplans)
+        second_testplan = random.choice(testplans)
 
-        first_article_random_index = self.generate_random_number(lower=0, upper=len(articles) - 1)
-        second_article_random_index = self.generate_random_number(lower=0, upper=len(articles) - 1)
-
-        first_article_data = articles[first_article_random_index]
-        second_article_data = articles[second_article_random_index]
-        self.base_selenium.LOGGER.info(
-            'The first random article is chosen, its name: {} and its material type: {}'.format(
-                first_article_data['name'], first_article_data['materialType']))
-        self.base_selenium.LOGGER.info(
-            'The second random article is chosen, its name: {} and its material type: {}'.format(
-                second_article_data['name'], second_article_data['materialType']))
-
-        testplan_name = self.test_plan.create_new_test_plan(material_type=first_article_data['materialType'],
-                                                            article=first_article_data['name'])
+        testplan_name = self.test_plan.create_new_test_plan(material_type=first_testplan['materialType'],
+                                                            article=(first_testplan['article'])[0])
         self.base_selenium.LOGGER.info(
             'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-                testplan_name, first_article_data['name'], first_article_data['materialType']))
+                testplan_name, (first_testplan['article'])[0], first_testplan['materialType']))
 
         self.base_selenium.LOGGER.info(
             'Attempting to create another testplan with the same name as the previously created one, but with different material type and article name')
 
         # create another testplan with the same name, but with the second article's data
-        self.test_plan.create_new_test_plan(name=testplan_name, material_type=second_article_data['materialType'],
-                                            article=second_article_data['name'])
+        self.test_plan.create_new_test_plan(name=testplan_name, material_type=second_testplan['materialType'],
+                                            article=(second_testplan['article'])[0])
         self.base_selenium.LOGGER.info(
             'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-                testplan_name, second_article_data['name'], second_article_data['materialType']))
+                testplan_name, (second_testplan['article'])[0], second_testplan['materialType']))
 
         data = self.test_plan.search(testplan_name)
-        search_length = 0
-        for d in data:
-            if len(d.text) != 0:
-                search_length += 1
-
-        self.assertEqual(search_length, 2)
+        self.assertGreaterEqual(len(data), 2)
+        
 
     def test012_create_testplans_same_name_materialtype_all_article(self):
         '''
@@ -434,27 +417,23 @@ class TestPlansTestCases(BaseTest):
         and the other one all
         '''
 
-        # get all articles and choose a random one to take its information
-        articles = self.get_all_articles()
-        random_index = self.generate_random_number(lower=0, upper=len(articles))
-        article_data = articles[random_index]
-        self.base_selenium.LOGGER.info(
-            'A random article is chosen, its name: {} and its material type: {}'.format(article_data['name'],
-                                                                                        article_data[
-                                                                                            'materialType']))
-
-        testplan_name = self.test_plan.create_new_test_plan(material_type=article_data['materialType'],
-                                                            article=article_data['name'])
+        response = self.test_plan_api.get_all_test_plans()
+        testplans = response.json()['testPlans']
+        testplan = random.choice(testplans)
+        
+        testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
+                                                            article=(testplan['article'])[0])
         self.base_selenium.LOGGER.info(
             'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-                testplan_name, article_data['name'], article_data['materialType']))
+                testplan_name, (testplan['article'])[0], testplan['materialType']))
+
 
         self.base_selenium.LOGGER.info(
             'Attempting to create another testplan with the same name & material type as the previously created one,'
             ' and all articles')
 
         # create another testplan with the same data
-        self.test_plan.create_new_test_plan(name=testplan_name, material_type=article_data['materialType'],
+        self.test_plan.create_new_test_plan(name=testplan_name, material_type=testplan['materialType'],
                                             article='All')
 
         self.base_selenium.LOGGER.info(

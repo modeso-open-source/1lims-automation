@@ -62,6 +62,10 @@ class TestPlans(BasePages):
         latest_testplan_row = (self.result_table()[0])
         return self.base_selenium.get_row_cells_dict_related_to_header(latest_testplan_row)
 
+    '''
+    Searches for multiple rows with the testplans numbers as array of numbers
+    The parameter check is a boolean to either allow selecting those rows or not
+    '''
     def search_for_multiple_rows(self, testplans_numbers, check=0):
         rows = []
         for tp_number in testplans_numbers:

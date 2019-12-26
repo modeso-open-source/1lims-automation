@@ -16,14 +16,28 @@ class TestPlanAPI(BaseAPI):
         self.info('Status code: {}'.format(response.status_code))
         return response
 
-    def get_completed_testplans(self):
-        response = self.get_all_test_plans(limit=150)
+    def get_completed_testplans(self, **kwargs):
+        response = self.get_all_test_plans(**kwargs)
         all_test_plans = response.json()['testPlans']
         completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
         return completed_test_plans
     
-    def get_inprogress_testplans(self):
-        response = self.get_all_test_plans(limit=150)
+    def get_inprogress_testplans(self, **kwargs):
+        response = self.get_all_test_plans(**kwargs)
         all_test_plans = response.json()['testPlans']
         inprogress_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'InProgress']
         return inprogress_test_plans
+
+    def get_testplan_with_quicksearch(self, quickSearchText, **kwargs):
+        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
+        _payload = {"sort_value": "number",
+                    "limit": 20,
+                    "start": 0,
+                    "sort_order": "DESC",
+                    "filter": '{"quickSearch":"'+ quickSearchText + '","columns":["number","name"]}',
+                    "deleted": "0"}
+        payload = self.update_payload(_payload, **kwargs)
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        return response.json()['testPlans']
