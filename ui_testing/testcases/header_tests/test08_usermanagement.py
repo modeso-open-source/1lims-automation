@@ -218,7 +218,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info(' + user_url : {}'.format(user_url))
         self.order_page.sleep_tiny()
         current_email = self.header_page.get_user_name()
-        self.header_page.set_user_email(user_email=(self.header_page.generate_random_email()))
+        self.header_page.set_user_email(user_email='diana.mohamed@modeso.ch')
         new_email = self.header_page.get_user_email()
         if 'save_btn' == save:
             self.header_page.save(save_btn='user_management:save_btn')
