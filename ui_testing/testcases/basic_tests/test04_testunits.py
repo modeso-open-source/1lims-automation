@@ -900,27 +900,27 @@ class TestUnitsTestCases(BaseTest):
 
         elif specification_type == 'spec_quan':
             self.base_selenium.LOGGER.info('set type to specification only and save')
-            self.test_unit_page.use_specification_or_quantification(type_to_use='quan')
-            spec_upper_limit = self.test_unit_page.get_spec_upper_limit()
-            spec_lower_limit = self.test_unit_page.get_spec_lower_limit()
+            self.test_unit_page.use_specification_or_quantification(type_to_use='spec')
+            quan_upper_limit = self.test_unit_page.get_quan_upper_limit()
+            quan_lower_limit = self.test_unit_page.get_quan_lower_limit()
             self.test_unit_page.sleep_tiny()
             self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save testunit')
             self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
             self.base_selenium.refresh()
 
-            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
-            self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(spec_upper_limit))
-            self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(spec_lower_limit))
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
+            self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(quan_upper_limit))
+            self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(quan_lower_limit))
 
             self.base_selenium.LOGGER.info('switch to quantification')
-            self.test_unit_page.switch_from_spec_to_quan(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
+            self.test_unit_page.switch_from_quan_to_spec(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
             self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save testunit')
             self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
             self.base_selenium.refresh()
 
-            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
-            self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
-            self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
+            self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
+            self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
     
     def test030_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
         """
