@@ -205,41 +205,7 @@ class HeaderTestCases(BaseTest):
             self.assertEqual(current_name, user_name)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test010_update_user_email_with_save_cancel_btn(self, save):
-        """
-        User management: I can update user email with save & cancel button
-        LIMS-6397
-        :return:
-        """
-        self.header_page.click_on_user_management_button()
-        # open random user in the edit mode
-        self.header_page.get_random_user()
-        user_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + user_url : {}'.format(user_url))
-        self.order_page.sleep_tiny()
-        current_email = self.header_page.get_user_name()
-        self.header_page.set_user_email()
-        new_email = self.header_page.get_user_email()
-        if 'save_btn' == save:
-            self.header_page.save(save_btn='user_management:save_btn')
-        else:
-            self.header_page.cancel(force=True)
-
-        self.base_selenium.get(
-            url=user_url, sleep=self.base_selenium.TIME_MEDIUM)
-
-        user_email = self.header_page.get_user_email()
-        if 'save_btn' == save:
-            self.base_selenium.LOGGER.info(
-                ' + Assert {} (new_email) == {} (user_email)'.format(new_email, user_email))
-            self.assertEqual(new_email, user_email)
-        else:
-            self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_email) == {} (user_email)'.format(current_email, user_email))
-            self.assertEqual(current_email, user_email)
-
-    @parameterized.expand(['save_btn', 'cancel'])
-    def test011_update_user_role_with_save_cancel_btn(self, save):
+    def test010_update_user_role_with_save_cancel_btn(self, save):
         """
         User management: I can update user role with save & cancel button
         LIMS-6398
