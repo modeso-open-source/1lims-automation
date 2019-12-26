@@ -850,15 +850,5 @@ class TestUnitsTestCases(BaseTest):
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.test_unit_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)
-            self.info(fixed_sheet_row_data)
-            for item in fixed_row_data:
-                if item == 'N/A' or str(item)[-3:] == '...':
-                    continue
-                self.assertIn(item, fixed_sheet_row_data)
-
-
-
-        
-
-
-
+            self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
+            self.assertIn(row_data['Unit'], fixed_sheet_row_data)
