@@ -825,7 +825,8 @@ class TestUnitsTestCases(BaseTest):
         testunit_record = self.test_unit_page.search(value='Quantitative MiBi')[0]
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
         testunit_number = row_data['Test Unit No.']
-        if row_data['Unit'] == '-':
+        initial_unit = row_data['Unit']
+        if initial_unit == '-':
             self.base_selenium.LOGGER.info('unit field has no value, update the record to make sure ')
             self.test_unit_page.open_edit_page(row=testunit_record)
             random_unit = self.test_unit_page.generate_random_text()
@@ -837,9 +838,7 @@ class TestUnitsTestCases(BaseTest):
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
 
         self.base_selenium.LOGGER.info('unit field has value {}'.format(row_data['Unit']))
-        if row_data['Unit'] != '-':
-            self.assertNotEqual(row_data['Unit'], '-')
-        else:
+        if initial_unit == '-':
             self.assertEqual(row_data['Unit'], random_unit)
 
         self.info(' * Download XSLX sheet')
