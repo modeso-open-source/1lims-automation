@@ -328,3 +328,30 @@ class BasePages:
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:duplicate')
         self.sleep_small()
+
+    '''
+    archives this item and tries to delete it
+    returns True if it's deleted and False otherwise
+    '''
+    def delete_selected_item_from_active_table_and_from_archived_table(self, item_name):
+        
+        # archive this item
+        row = self.search(item_name)
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.click_check_box(source=row[0])
+        self.sleep_small()
+        self.archive_selected_items()
+        self.get_archived_items()
+
+        # try to delete it
+        archived_row = self.search(item_name)
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.click_check_box(source=archived_row[0])
+        self.sleep_small()
+        self.delete_selected_item()
+
+        if self.base_selenium.check_element_is_exist(element='general:cant_delete_message'):
+            self.base_selenium.click(element='general:confirm_pop')
+            return False
+        return True

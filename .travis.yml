@@ -22,7 +22,7 @@ install:
 
 script:
 
-  - export TESTS='test05_testplans.py'
+  - export TESTS='test05_testplans.py:TestPlansTestCases.test014_delete_used_testplan'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
