@@ -464,3 +464,8 @@ class Order(Orders):
             else:
                 self.base_selenium.LOGGER.info(' {} is not a header element!'.format(key))
                 self.base_selenium.LOGGER.info(' Header keys : {}'.format(suborder_elements_dict.keys()))
+
+    def get_order_id(self):
+        current_splited_url = self.base_selenium.get_url().split('/')
+        order_id = current_splited_url[(len(current_splited_url)-1)]
+        return order_id
