@@ -796,3 +796,19 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits/add')
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
 
+    def test025_edit_approach_overview_button(self):
+        """
+        Edit: Overview Approach: Make sure after I press on
+        the overview button, it redirects me to the active table
+        LIMS-6202
+        """
+        self.test_unit_page.get_random_test_units()
+        test_units_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info('test_units_url: {}'.format(test_units_url))
+        # click on Overview, it will redirect you to testunits' page
+        self.base_selenium.LOGGER.info('click on Overview')
+        self.base_page.click_overview()
+        self.test_unit_page.sleep_tiny()
+        self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
+        self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+
