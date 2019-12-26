@@ -900,7 +900,7 @@ class TestUnitsTestCases(BaseTest):
 
         elif specification_type == 'spec_quan':
             self.base_selenium.LOGGER.info('set type to specification only and save')
-            self.test_unit_page.set_testunit_type(testunit_type='quan')
+            self.test_unit_page.use_specification_or_quantification(type_to_use='quan')
             spec_upper_limit = self.test_unit_page.get_spec_upper_limit()
             spec_lower_limit = self.test_unit_page.get_spec_lower_limit()
             self.test_unit_page.sleep_tiny()
