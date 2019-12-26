@@ -340,7 +340,9 @@ class BasePages:
         self.base_selenium.LOGGER.info('Selecting the row')
         self.click_check_box(source=row[0])
         self.sleep_small()
+        self.base_selenium.LOGGER.info('Archiving the selected row')
         self.archive_selected_items()
+        self.base_selenium.LOGGER.info('Navigating to the Archived table')
         self.get_archived_items()
 
         # try to delete it
@@ -349,6 +351,7 @@ class BasePages:
         self.base_selenium.LOGGER.info('Selecting the row')
         self.click_check_box(source=archived_row[0])
         self.sleep_small()
+        self.base_selenium.LOGGER.info('Attempting to delete item: {}'.format(item_name))
         self.delete_selected_item()
 
         if self.base_selenium.check_element_is_exist(element='general:cant_delete_message'):
