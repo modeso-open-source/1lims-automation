@@ -500,6 +500,104 @@ elements = {
             'value': 'nofield'
         }
     },
+
+
+
+    'header': {
+        'header_button': {'method': 'xpath',
+                  'value': '//*[@class="m--img-rounded m--marginless m--img-centered"]'},
+        'user_management_button': {'method': 'xpath',
+                  'value': '//*[contains(text(),"User Management")]'},
+        'roles_and_permissions_button': {'method': 'xpath',
+                  'value': '//*[contains(text(),"Role & Permissions")]'},
+        'myprofile_button': {'method': 'xpath',
+                  'value': '//*[contains(text(),"My Profile")]'},
+        'companyprofile_button': {'method': 'xpath',
+                  'value': '//*[contains(text(),"Company Profile")]'},
+
+    },
+   'user_management': {
+       'right_menu': {'method': 'xpath',
+                 'value': '//i[@class="flaticon-grid-menu-v2"]'},
+
+       'archive': {'method': 'link_text',
+                 'value': 'Archive'},
+
+       'archived': {'method': 'link_text',
+                 'value': 'Archived'},
+
+       'restore': {'method': 'link_text',
+                 'value': 'Restore'},
+
+       'active': {'method': 'link_text',
+                 'value': 'Active'},
+
+       'user_table': {'method': 'id',
+                 'value': 'table'},
+
+       'user_name': {'method': 'id',
+                 'value': 'usernamefield'},
+        'user_number': {'method': 'id',
+                 'value': 'userIdfield'},
+
+       'user_role': {'method': 'xpath',
+                     'value': '//*[@class="ng-input"]'},
+       'user_email': {'method': 'id',
+                     'value': 'emailfield'},
+       'user_password': {'method': 'id',
+                     'value': 'password'},
+       'user_confirm_password': {'method': 'id',
+                     'value': 'confirmPassword'},
+       'create_user_button': {'method': 'xpath',
+                     'value': '//*[contains(text(),"New User")]'},
+       'save_btn': {'method': 'id',
+                 'value': 'saveButton'},
+
+       'filter_number': {'method': 'id',
+                 'value':'userIdfield'},
+
+       'filter_contact': {'method': 'xpath',
+                   'value': '//*[@id="supplierfield"]//input'},
+
+       'filter_changed_by': {'method': 'xpath',
+                        'value': '//*[@id="lastModifiedUserfield"]//input'},
+
+       'filter_created_on': {'method': 'id',
+                 'value':'start_createdAt'},
+
+       'filter_name': {'method': 'id',
+                 'value':'usernamefield'},
+       'filter_email': {'method': 'id',
+                 'value':'emailfield'},
+
+       'filter_role': {'method': 'xpath',
+                 'value':'//*[@id="rolefield"]//input'},
+
+       'filter_reset_btn': {'method': 'id',
+                 'value':'reset_btn'},
+       'delete': {'method': 'link_text',
+                 'value': 'Delete'},
+
+
+       'confirm_pop': {'method': 'class_name',
+                        'value': 'btn-success',
+                        'order': 0},
+
+       'alert_confirmation': {'method': 'id',
+                               'value': 'noty_layout__topCenter'},
+
+       'overview_btn': {'method': 'xpath',
+                               'value': '//span[contains(text(),"Overview")]'},
+
+       'cancel': {'method': 'id',
+                        'value': 'cancelButton'},
+    },
+
+    'contacts':{
+        'new_contact': {'method': 'xpath',
+                        'value': '//span[contains(text(),"New Contact")]'},
+    },
+
     'contacts': {
         'contact_archive_button': {'method': 'tag_name',
                                    'value': 'a',
@@ -575,3 +673,4 @@ elements = {
 
     }
 }
+
