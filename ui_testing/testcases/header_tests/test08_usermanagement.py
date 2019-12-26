@@ -120,7 +120,7 @@ class HeaderTestCases(BaseTest):
         """
         self.header_page.click_on_user_management_button()
         #create new user
-        self.header_page.create_new_user(user_email='', user_role='',
+        self.header_page.create_new_user(user_email=(self.header_page.generate_random_email()), user_role='',
                                          user_password='1', user_confirm_password='1')
 
         #make sure when you search you will find it
@@ -136,7 +136,7 @@ class HeaderTestCases(BaseTest):
         """
         self.header_page.click_on_user_management_button()
         # create new user to get it's data
-        user = self.header_page.create_new_user(user_email='', user_role='',
+        user = self.header_page.create_new_user(user_email=(self.header_page.generate_random_email()), user_role='',
                                                 user_password='1', user_confirm_password='1')
         # the filter view will open
         self.header_page.click_on_filter_view()
