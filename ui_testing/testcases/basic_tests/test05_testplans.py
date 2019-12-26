@@ -525,6 +525,7 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Asserting that the iterations of the testunit in the second testplan is the same as the updated iterations')
         self.assertEqual(second_testplan_testunit_iteration, new_iteration)
     
+    @skip('https://modeso.atlassian.net/browse/LIMS-6405')
     def test014_delete_used_testplan(self):
         '''
         LIMS-3509
