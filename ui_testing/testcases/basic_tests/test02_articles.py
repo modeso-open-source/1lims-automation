@@ -3,14 +3,18 @@ from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
 from unittest import skip
-
-
+import inspect
 class ArticlesTestCases(BaseTest):
     def setUp(self):
         super().setUp()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.article_page.get_articles_page()
+
+    def tearDown(self):
+        if self.archived_optional_fields_flag: # to restore the UI
+            self.article_page.archive_restore_optional_fields(restore=True)
+        super().tearDown()
 
     @parameterized.expand(['save', 'cancel'])
     def test001_cancel_button_edit_unit(self, save):
@@ -504,7 +508,7 @@ class ArticlesTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
-    def test022_optional_fields(self):
+    def test022_user_hide_any_optional_field_is_not_affecting_the_table(self):
         """
         New: Articles: Optional fields: User can hide/show any optional field in Edit/Create form
 
@@ -513,6 +517,7 @@ class ArticlesTestCases(BaseTest):
         """
         # archive the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
+        self.archived_optional_fields_flag = True # to restore the UI in the tearDown
 
         # check if the fields still exist in the table
         self.article_page.info('+ Open article table')
@@ -527,7 +532,7 @@ class ArticlesTestCases(BaseTest):
         self.assertIn('Unit', article_headers_text)
         # ignore related article since it shouldn't display in the table anyway
 
-    def test023_optional_fields(self):
+    def test023_user_hide_any_optional_field_in_create_form(self):
         """
         New: Articles: Optional fields: User can hide/show any optional field in Edit/Create form
 
@@ -536,6 +541,7 @@ class ArticlesTestCases(BaseTest):
         """
         # archive the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
+        self.archived_optional_fields_flag = True # to restore the UI in the tearDown
 
         # open create page
         self.article_page.info('+ Open article create')
@@ -551,7 +557,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Related article field existance in create page')
         self.assertFalse(self.base_selenium.check_element_is_exist('article:related_article'))
 
-    def test024_optional_fields(self):
+    def test024_user_hide_any_optional_field_in_edit_form(self):
         """
         New: Articles: Optional fields: User can hide/show any optional field in Edit/Create form
 
@@ -560,6 +566,7 @@ class ArticlesTestCases(BaseTest):
         """
         # archive the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
+        self.archived_optional_fields_flag = True # to restore the UI in the tearDown
 
         # open edit page
         self.article_page.info('+ Open article edit')
@@ -575,10 +582,9 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Related article field existance in edit page')
         self.assertFalse(self.base_selenium.check_element_is_exist('article:related_article'))
 
-    def test025_optional_fields(self):
-        # archive the optional fields
+    def test025_user_restore_any_optional_field_is_not_affecting_the_table(self):
+        # archive then restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
-        # restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=True)
 
         # check if the fields still exist in the table after restore
@@ -594,10 +600,9 @@ class ArticlesTestCases(BaseTest):
         self.assertIn('Unit', article_headers_text)
         # ignore related article since it shouldn't display in the table anyway
 
-    def test026_optional_fields(self):
-        # archive the optional fields
+    def test026_user_restore_any_optional_field_in_create_form(self):
+        # archive then restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
-        # restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=True)
 
         # open create page after restore
@@ -614,10 +619,9 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Related article field existance in create page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
 
-    def test027_optional_fields(self):
-        # archive the optional fields
+    def test027_user_restore_any_optional_field_in_edit_form(self):
+        # archive then restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=False)
-        # restore the optional fields
         self.article_page.archive_restore_optional_fields(restore=True)
 
         # open edit page after restore
@@ -633,5 +637,3 @@ class ArticlesTestCases(BaseTest):
 
         self.article_page.info('+ Check Related article field existance in edit page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
-
-        

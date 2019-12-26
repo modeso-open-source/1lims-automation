@@ -107,15 +107,12 @@ class Article(Articles):
                 input_item = self.base_selenium.find_element_in_element(source=item, destination_element='general:input')
                 # send text
 
-    def tearDown(self):
-        self.base_selenium.quit_driver()
-        self.base_selenium.LOGGER.info('TearDown Article. \t')
-
     def archive_restore_optional_fields(self, restore=False):
-        self.article_page.info('+ Open article configuration')
-        self.article_page.open_configuration()
+        self.sleep_small()
+        self.info('+ Open article configuration')
+        self.open_configuration()
         if restore:
             self.base_selenium.click(element='general:configurations_archived') # open the archived tab
-        self.article_page.toggle_archive_field(field_name='unit', restore=restore)
-        self.article_page.toggle_archive_field(field_name='comment', restore=restore)
-        self.article_page.toggle_archive_field(field_name='related_article', restore=restore)
+        self.toggle_archive_field(field_name='unit', restore=restore)
+        self.toggle_archive_field(field_name='comment', restore=restore)
+        self.toggle_archive_field(field_name='related_article', restore=restore)
