@@ -10,6 +10,7 @@ class AuditTrailTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.audit_trail_page.get_audit_trails_page()
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-6399')
     def test001_download_audit_trail_sheet(self):
         """
         Header: Audit trail: Make sure that you can export all the fields in the active table
