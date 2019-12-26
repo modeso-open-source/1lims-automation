@@ -124,8 +124,10 @@ class BasePages:
             destination_element='general:checkbox', source=source)
         check_box.click()
 
-    def open_edit_page(self, row):
-        row.find_element_by_xpath('//span[@class="mr-auto"]/a').click()
+    def open_edit_page(self, row, xpath=''):
+        if xpath == '':
+            xpath = '//span[@class="mr-auto"]/a'
+        row.find_element_by_xpath(xpath).click()
         self.sleep_small() # sleep for loading
 
     def get_archived_items(self):
@@ -227,6 +229,83 @@ class BasePages:
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
+
+    def generate_random_email(self):
+        name = str(uuid4()).replace("-", "")[:10]
+        server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'
+        
+        return name+server
+
+    def generate_random_website(self):
+        return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
+
+    def open_configure_table(self):
+        self.base_selenium.LOGGER.info('open configure table')
+        configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
+        configure_table_menu.click()
+        self.sleep_small()
+    
+    def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
+        self.open_configure_table()
+        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items', destination_element='general:li')
+        # total_columns = self.base_selenium.find_element_by_xpath(xpath='//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
+        random_indices_arr = index_arr
+        hidden_columns_names = []
+        if random:
+            random_indices_arr = self.generate_random_indices(max_index=len(total_columns)-2, count=count)
+
+        for index in random_indices_arr:
+            if total_columns[index].get_attribute('id') and total_columns[index].get_attribute('id') != 'id' and total_columns[index].get_attribute('id') not in always_hidden_columns:
+                column_name = self.change_column_view(column=total_columns[index], value=False, always_hidden_columns=always_hidden_columns)
+                if column_name != '':
+                    hidden_columns_names.append(column_name)
+
+        
+        self.press_apply_in_configure_table()
+        self.base_selenium.LOGGER.info(hidden_columns_names)
+        return hidden_columns_names
+
+    def change_column_view(self, column, value, always_hidden_columns=[]):
+        if column.get_attribute('id') and column.get_attribute('id') != 'id' and column.get_attribute('id') not in always_hidden_columns  :
+            try:
+                new_checkbox_value = "//li[@id='" + column.get_attribute('id') + "']//input[@type='checkbox']"
+                new_label_xpath = "//li[@id='" + column.get_attribute('id') + "']//label[@class='sortable-label']"
+                new_checkbox_xpath = "//li[@id='" + column.get_attribute('id') + "']//span[@class='checkbox']"
+                column_name = self.base_selenium.find_element_by_xpath(new_label_xpath).text
+                checkbox = self.base_selenium.find_element_by_xpath(new_checkbox_xpath)
+                checkbox_value = self.base_selenium.find_element_by_xpath(new_checkbox_value)
+                if checkbox_value.is_selected() != value:
+                    checkbox.click()
+                    return column_name
+            except Exception as e:
+                self.base_selenium.LOGGER.info("element with the id '{}' doesn't  exit in the configure table".format(column.get_attribute('id')))
+                self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
+                return ''
+
+
+    def generate_random_indices(self, max_index=3, count=3):
+        counter = 0
+        indices_arr = []
+        while counter < count:
+            random_index = self.generate_random_number(lower=0, upper=max_index-1)
+            if random_index not in indices_arr:
+                indices_arr.append(random_index)
+                counter = counter +1
+        
+        return indices_arr
+
+    def press_apply_in_configure_table(self):
+        apply_button = self.base_selenium.find_element(element="general:apply_configure_table")
+        if apply_button:
+            apply_button.click()
+            
+    def set_all_configure_table_columns_to_specific_value(self, value=True, always_hidden_columns=['']):
+        self.open_configure_table()
+        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items', destination_element='general:li')
+        for column in total_columns:
+            self.change_column_view(column=column, value=True, always_hidden_columns=always_hidden_columns)
+        self.press_apply_in_configure_table()
 
     def click_overview(self):
         # click on Overview, this will display an alert to the user

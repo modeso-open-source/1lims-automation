@@ -3,15 +3,18 @@ from ui_testing.pages.base_selenium import BaseSelenium
 from uuid import uuid4
 from random import randint
 from ui_testing.pages.article_page import Article
+from ui_testing.pages.contact_page import Contact
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
 from ui_testing.pages.base_pages import BasePages
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.audit_trail_page import AuditTrail
+from ui_testing.pages.contacts_page import Contacts
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
+from api_testing.apis.orders_api import OrdersAPI
 import datetime, re
 
 
@@ -27,15 +30,17 @@ class BaseTest(TestCase):
         self.login_page = Login()
         self.test_plan = TstPlan()
         self.article_page = Article()
+        self.contact_page = Contact()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
         self.audit_trail_page = AuditTrail()
         self.base_page = BasePages()
-
+        self.contacts_page = Contacts()
         self.article_api = ArticleAPI()
         self.test_plan_api = TestPlanAPI()
         self.test_unit_api = TestUnitAPI()
         self.test_plan_api = TestPlanAPI()
+        self.orders_api = OrdersAPI()
 
     def tearDown(self):
         self.base_selenium.quit_driver()
@@ -54,7 +59,6 @@ class BaseTest(TestCase):
                 if re.search(r'\d{2}.\d{2}.\d{4},\s\d{1,2}:\d{1,2}\s(A|P)M', str(item)):                    
                     tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y, %H:%M %p'))
                 elif re.search(r'\d{2}.\d{2}.\d{4}', str(item)):
-                    # item = item.split(',')[0] # if the string have time, remove the time
                     tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y'))
                 elif "-" == str(item):
                     continue
