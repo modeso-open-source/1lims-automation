@@ -818,6 +818,8 @@ class TestUnitsTestCases(BaseTest):
         
         Make sure the unit displayed in the active table & in the export sheet 
         In case I create test unit with type quantitative MiBi, Unit field opened beside the upper limit & the concentration. 
+
+        LIMS-4162
         """
 
         testunit_record = self.test_unit_page.search(value='Quantitative MiBi')[0]
