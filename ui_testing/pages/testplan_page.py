@@ -92,7 +92,7 @@ class TstPlan(TestPlans):
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
             self.set_test_unit(test_unit=test_unit, **kwargs)
-            self.save(save_btn='test_plan:save')
+            self.save(save_btn='test_plan:save_btn')
         else:
             self.save()
 
@@ -165,3 +165,11 @@ class TstPlan(TestPlans):
                 duplicated_test_plan_name = self.generate_random_text()
                 self.set_test_plan(name=duplicated_test_plan_name)
         self.save()
+        
+    def get_testunit_category_and_iterations(self, testplan_name):
+        self.get_test_plan_edit_page(testplan_name)
+        self.navigate_to_testunits_selection_page()
+        testunit_category = self.base_selenium.get_text(element='test_plan:testunit_category')
+        testunit_iteration = self.base_selenium.get_value(element='test_plan:testunit_iteration')
+        
+        return testunit_category, testunit_iteration

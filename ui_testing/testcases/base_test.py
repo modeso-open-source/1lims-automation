@@ -144,11 +144,14 @@ class BaseTest(TestCase):
                     del second_element[data]
 
         return first_element, second_element
-
-
+        
     def get_all_articles(self):
         articles = self.article_api.get_all_articles().json()['articles']
         return articles
+    
+    def get_all_testunits(self):
+        testunits = self.test_unit_api.get_all_test_units().json()['testUnits']
+        return testunits
         
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
