@@ -111,7 +111,7 @@ class Header(BasePages):
             return user_email
 
     def get_user_email(self):
-        return self.base_selenium.get_value(element="user_management:user_email")
+        return self.base_selenium.get_text(element="user_management:user_email")
 
 
     def set_user_password(self, user_password):
