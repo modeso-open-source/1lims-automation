@@ -529,3 +529,23 @@ class TestPlansTestCases(BaseTest):
 
         # check for the error popup that this testplan is used and can't be deleted
         self.assertFalse(testplan_deleted)
+
+    def test015_archived_testplan_shouldnot_appear_in_order(self):
+        '''
+        LIMS-3708
+        In case a testplan is archived, it shouldn't appear when creating a new order
+        '''
+
+        # choose a random testplan
+
+        # get information, material type and article
+
+        # archive this testplan
+
+        # go to order's section
+
+        # create a new order
+
+        # choose material type and article to be the same as the saved ones
+
+        # assert that the testplan that was chosen isn't in the dropdown menu
