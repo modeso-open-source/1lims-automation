@@ -9,9 +9,7 @@ class Article(Articles):
         self.base_selenium.click(element='articles:new_article')
         time.sleep(self.base_selenium.TIME_SMALL)
         self.article_name = self.generate_random_text()
-        self.article_comment = self.generate_random_text()
         self.set_name(name=self.article_name)
-        self.set_comment(comment=self.article_comment)
         if material_type:
             self.set_material_type(material_type)
         else:
@@ -19,6 +17,8 @@ class Article(Articles):
         self.article_material_type = self.get_material_type()
 
         if full_options:
+            self.article_comment = self.generate_random_text()
+            self.set_comment(comment=self.article_comment)
             self.article_unit = self.generate_random_text()
             self.set_unit(self.article_unit)
             self.set_related_article()
@@ -107,4 +107,12 @@ class Article(Articles):
                 input_item = self.base_selenium.find_element_in_element(source=item, destination_element='general:input')
                 # send text
 
-
+    def archive_restore_optional_fields(self, restore=False):
+        self.sleep_small()
+        self.info('+ Open article configuration')
+        self.open_configuration()
+        if restore:
+            self.base_selenium.click(element='general:configurations_archived') # open the archived tab
+        self.toggle_archive_field(field_name='unit', restore=restore)
+        self.toggle_archive_field(field_name='comment', restore=restore)
+        self.toggle_archive_field(field_name='related_article', restore=restore)

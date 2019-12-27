@@ -812,3 +812,42 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
+    def test030_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
+        """
+        New: Test unit: limit of quantification Approach: Allow the unit field to display when I select quantitative MiBi type & make sure it displayed in the active table & in the export sheet 
+        
+        Make sure the unit displayed in the active table & in the export sheet 
+        In case I create test unit with type quantitative MiBi, Unit field opened beside the upper limit & the concentration. 
+
+        LIMS-4162
+        """
+
+        testunit_record = self.test_unit_page.search(value='Quantitative MiBi')[0]
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
+        testunit_number = row_data['Test Unit No.']
+        initial_unit = row_data['Unit']
+        if initial_unit == '-':
+            self.base_selenium.LOGGER.info('unit field has no value, update the record to make sure ')
+            self.test_unit_page.open_edit_page(row=testunit_record)
+            random_unit = self.test_unit_page.generate_random_text()
+            self.test_unit_page.set_spec_unit(value=random_unit)
+            self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save testunit')
+            self.test_unit_page.get_test_units_page()
+        
+        testunit_record = self.test_unit_page.search(value=testunit_number)[0]
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
+
+        self.base_selenium.LOGGER.info('unit field has value {}'.format(row_data['Unit']))
+        if initial_unit == '-':
+            self.assertEqual(row_data['Unit'], random_unit)
+
+        self.info(' * Download XSLX sheet')
+        self.test_unit_page.download_xslx_sheet()
+        rows_data = self.test_unit_page.get_table_rows_data()
+        for index in range(len(rows_data)-1):
+            self.base_selenium.LOGGER.info(' * Comparing the test units with index : {} '.format(index))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.test_unit_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
+            self.assertIn(row_data['Unit'], fixed_sheet_row_data)

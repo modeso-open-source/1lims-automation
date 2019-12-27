@@ -14,7 +14,9 @@ from ui_testing.pages.contacts_page import Contacts
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
+from ui_testing.pages.header_page import Header
 from api_testing.apis.orders_api import OrdersAPI
+
 import datetime, re
 
 
@@ -34,6 +36,7 @@ class BaseTest(TestCase):
         self.articles_page = Articles()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
+        self.header_page = Header()
         self.base_page = BasePages()
         self.contacts_page = Contacts()
         self.article_api = ArticleAPI()
