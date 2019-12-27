@@ -667,6 +667,10 @@ elements = {
        'delete_person_button': {'method': 'id',
                      'value': 'delete_table_view'}
 
-    }
+    },
+    'company_profile': {
+        'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
+        'country_field_results': {'method': 'xpath', 'value': '//ng-dropdown-panel/div/div[2]'},
+    },
 }
 
