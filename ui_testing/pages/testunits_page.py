@@ -13,7 +13,7 @@ class TstUnits(BasePages):
         self.sleep_small()
 
     def get_random_test_units(self):
-        row = self.base_selenium.get_table_rows(element='test_units:test_units_table')
+        row = self.get_random_test_units_row()
         self.open_edit_page(row=row)
 
     def get_random_test_units_row(self):

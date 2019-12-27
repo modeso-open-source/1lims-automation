@@ -8,5 +8,12 @@ end_points = {
     },
     'test_plan_api': {
         'list_all_test_plans': '/api/testPlans'
+    },
+    'orders_api': {
+        'list_all_orders': '/api/orders',
+        'get_order_by_id': '/api/orderInformation/get/orders/byId/'
+    },
+    'contacts_api': {
+        'list_all_contacts': '/api/contacts'
     }
 }
