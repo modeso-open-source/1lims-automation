@@ -312,6 +312,8 @@ elements = {
                             'order': 0},
     'testunit_iteration': {'method': 'id',
                             'value': 'testunit_iterations_value'},
+    'testunit_unit': {'method': 'id',
+                        'value': 'testunit_unit'}
     },
 
     'test_unit': {
@@ -368,7 +370,9 @@ elements = {
         'selected_cons': {'method': 'id',
                           'value': 'selectedConcs'},
         'qualitative_value': {'method': 'id',
-                              'value': 'textValueArrayfield'}
+                              'value': 'textValueArrayfield'},
+        'unit_display_value': {'method': 'id',
+                                'value': 'unit_display_value'}
     },
     'orders': {
         'orders_table': {'method': 'id',

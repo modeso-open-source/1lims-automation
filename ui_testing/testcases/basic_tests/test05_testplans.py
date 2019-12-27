@@ -559,3 +559,32 @@ class TestPlansTestCases(BaseTest):
         # get the first suborder's testplan and make sure it's an empty string
         suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]
         self.assertEqual(len(suborder_first_testplan), 0)
+
+    def test016_testunit_sub_super_scripts(self):
+        '''
+        LIMS-5796
+        '''
+        testunit_name = self.generate_random_string()
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.create_qualitative_testunit(name=testunit_name, unit='mg[2]{o}', method='a')
+        testunit_materialtype = (self.test_unit_page.get_material_type()[0])[1:]
+        testunit_unit_display = (self.base_selenium.find_element(element='test_unit:unit_display_value')).text
+
+        self.test_unit_page.save()
+
+        self.assertEqual(testunit_unit_display, 'mg2o')
+        self.test_plan.get_test_plans_page()
+
+        active_articles_with_materialtype_dictionary = self.get_active_articles_with_material_type()
+        article = (active_articles_with_materialtype_dictionary[testunit_materialtype])[0]
+        testplan_name = self.test_plan.create_new_test_plan(material_type=testunit_materialtype, article=article, test_unit=testunit_name)
+
+        self.test_plan.get_test_plan_edit_page(testplan_name)
+        self.test_plan.navigate_to_testunits_selection_page()
+
+
+        unit = self.base_selenium.find_element('testplan:testunit_unit').text
+        self.assertEqual(unit, testunit_unit_display)
+        self.test_plan.switch_test_units_to_row_view()
+        unit = self.base_selenium.find_element('testplan:testunit_unit').text
+        self.assertEqual(unit, testunit_unit_display)
