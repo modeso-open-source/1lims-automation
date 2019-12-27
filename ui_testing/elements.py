@@ -208,7 +208,7 @@ elements = {
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
         'testunit_menu': {'method': 'css_selector',
-                          'value': '[class=\"dropdown \"]'},
+                          'value': '[class="dropdown "]'},
         'versions': {'method': 'id',
                      'value': 'main_table_version'},
         'archived': {'method': 'link_text',

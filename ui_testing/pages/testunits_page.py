@@ -60,7 +60,7 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:restore')
         self.confirm_popup()
 
-    def get_active_selected_test_units(self):
+    def get_active_test_units(self):
         self.base_selenium.scroll()
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:active')
