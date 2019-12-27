@@ -537,15 +537,25 @@ class TestPlansTestCases(BaseTest):
         '''
 
         # choose a random testplan
+        main_testplan_data = (self.test_plan.select_random_table_row(element='test_plans:test_plans_table'))[0]
+
+        # get testplan data from an api call
+        testplan_data = (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=str(main_testplan_data['Test Plan No.'])))[0]
 
         # get information, material type and article
+        testplan_name = testplan_data['testPlanName']
+        testplan_materialtype = testplan_data['materialType']
+        testplan_article = (testplan_data['article'])[0]
 
         # archive this testplan
+        self.test_plan.archive_selected_items()
 
         # go to order's section
+        self.order_page.get_orders_page()
 
-        # create a new order
+        # create a new order with material type and article same as the saved ones
+        order_data = self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article, test_plans=[testplan_name])
 
-        # choose material type and article to be the same as the saved ones
-
-        # assert that the testplan that was chosen isn't in the dropdown menu
+        # get the first suborder's testplan and make sure it's an empty string
+        suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]
+        self.assertEqual(len(suborder_first_testplan), 0)

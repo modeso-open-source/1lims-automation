@@ -50,3 +50,17 @@ class TestPlanAPI(BaseAPI):
         response = self.session.get(api, params=payload, headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
         return response.json()['testPlans']
+
+    def get_testplan_with_filter(self, filter_option, filter_text, **kwargs):
+        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
+        _payload = {"sort_value": "number",
+                    "limit": 20,
+                    "start": 0,
+                    "sort_order": "DESC",
+                    "filter": '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}',
+                    "deleted": "0"}
+        payload = self.update_payload(_payload, **kwargs)
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        return response.json()['testPlans']
