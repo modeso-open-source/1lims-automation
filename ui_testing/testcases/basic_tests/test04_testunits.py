@@ -851,3 +851,35 @@ class TestUnitsTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
             self.assertIn(row_data['Unit'], fixed_sheet_row_data)
+
+    @parameterized.expand(['spec', 'quan'])
+    def test032_archived_testunits_should_not_appear_in_testplan_step2(self):
+        """
+        Test unit: Archive Approach: Archived test units shouldn't appear in the analysis step two & in orders in the drop down list of test units when I select it
+        LIMS-3710
+
+        analysis check is postponed until analysis page is created.
+        """
+
+        self.base_selenium.LOGGER.info('archive random testunits')
+        selected_test_units_data = self.test_unit_page.get_random_table_row()
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=selected_test_units_data)
+
+        self.test_unit_page.archive_selected_test_units()
+
+        testunit_name = row_data['Test Unit Name']
+        material_type = row_data['Material Type']
+
+        self.test_unit_page.click_check_box(source=selected_test_units_data)
+        self.test_unit_page.archive_selected_items()
+
+        self.test_plan.get_test_plans_page()
+        self.base_selenium.LOGGER.info('test the scenario in case of create')
+
+        testplan_name = self.test_plan.create_new_test_plan(material_type=material_type, test_unit=testunit_name)
+
+        self.base_selenium.LOGGER.info('check for error msg which means that the testunit was not added')
+        self.test_plan.sleep_tiny()
+        self.assertTrue(self.base_selenium.check_element_is_exist(element='test_plan:add_testunit_error_msg'))
+        
+

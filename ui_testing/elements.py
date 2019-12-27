@@ -299,6 +299,8 @@ elements = {
         'ok': {'method': 'class_name',
                'value': 'swal2-confirm',
                'order': 0},
+        'add_testunit_error_msg': {'method': 'xpath',
+                            'value': '//*[@class="m-form__help"]'}
     },
 
     'test_unit': {
