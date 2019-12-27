@@ -444,7 +444,7 @@ class TestPlansTestCases(BaseTest):
             'Assert the error message to make sure that validation forbids the creation of two testplans having the same name, material type one of any article and the other for all articles? {}'.format(
                 validation_result))
         self.assertTrue(validation_result)
-
+    @skip('')
     def test013_test_unit_update_version_in_testplan(self):
         '''
         LIMS-3703
@@ -453,15 +453,21 @@ class TestPlansTestCases(BaseTest):
         The updates should be only available in the second testplan
         '''
 
-        # Get the completed testplans and choose a random one to 
+        # Get the completed testplans and choose a random one
         completed_test_plans = self.test_plan_api.get_completed_testplans(limit=500)
         first_testplan_data = random.choice(completed_test_plans)
         first_testunit_data_in_first_testplan = (self.test_plan_api.get_testunits_in_testplan(first_testplan_data['id']))[0]
+        self.base_selenium.LOGGER.info("Choosing to change testunit with name: {}, category: {} and iterations = {}".format(
+            first_testunit_data_in_first_testplan['name'], first_testunit_data_in_first_testplan['category'], first_testunit_data_in_first_testplan['iterations']))
     
         # go to testunits active table and search for this testunit
         self.test_unit_page.get_test_units_page()
         self.base_selenium.LOGGER.info('Navigating to testunit {} edit page'.format(first_testunit_data_in_first_testplan['name']))
-        testunit = self.test_unit_page.search(value=first_testunit_data_in_first_testplan['name'])[0]
+        self.test_unit_page.open_filter_menu()
+        self.test_unit_page.filter_by(filter_element='test_unit:no', filter_text=first_testunit_data_in_first_testplan['number'], field_type='text')
+        self.test_unit_page.filter_apply()
+
+        testunit = self.test_unit_page.result_table()[0]
         self.test_unit_page.open_edit_page(row=testunit)
         
         # update the iteration and category
@@ -488,7 +494,7 @@ class TestPlansTestCases(BaseTest):
         second_testplan_name = self.test_plan.create_new_test_plan(material_type=first_testplan_data['materialType'],
                         article=first_testplan_data['article'][0], test_unit=first_testunit_data_in_first_testplan['name'])
         self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(second_testplan_name, 
-                        first_testplan_data['article'], first_testplan_data['materialType']))
+                        first_testplan_data['article'][0], first_testplan_data['materialType']))
         
         second_testplan_data = (self.test_plan_api.get_testplan_with_quicksearch('7ba1d4cdf4'))[0]
         first_testunit_data_in_second_testplan = (self.test_plan_api.get_testunits_in_testplan(second_testplan_data['id']))[0]
