@@ -45,8 +45,8 @@ class Header(BasePages):
 
     def is_user_in_table(self, value):
             """
-                - get_archived_test_units then call me to check if the test unit has been archived.
-                - get_active_test_units then call me to check if the test unit is active.
+                - get_archived_users then call me to check if the user has been archived.
+                - get_active_users then call me to check if the user is active.
             :param value: search value
             :return:
             """
@@ -72,21 +72,29 @@ class Header(BasePages):
             self.sleep_small()
 
 
-    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password=''):
-            self.base_selenium.LOGGER.info(' + Create new user.')
-            self.base_selenium.click(element='user_management:create_user_button')
-            time.sleep(self.base_selenium.TIME_SMALL)
-            self.user_name = self.generate_random_text()
-            self.set_user_name(user_name=self.user_name)
-            self.set_user_email(user_email)
-            self.set_user_role(user_role)
-            self.set_user_password(user_password)
-            self.set_user_confirm_password(user_confirm_password)
+    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name=''):
+        self.base_selenium.LOGGER.info(' + Create new user.')
+        self.base_selenium.click(element='user_management:create_user_button')
+        time.sleep(self.base_selenium.TIME_SMALL)
+        self.user_name = self.generate_random_text()
+        self.set_user_name(self.user_name)
+        self.set_user_email(user_email)
+        self.set_user_role(user_role)
+        self.set_user_password(user_password)
+        self.set_user_confirm_password(user_confirm_password)
 
-            self.save(sleep)
+        user_data = {
+            "user_name":self.get_user_name(),
+            "user_email":self.set_user_email,
+            "user_role": self.get_user_role(),
+            "user_password": self.get_user_password(),
+            "user_confirm_password": self.get_user_confirm_password()
+        }
+        self.save(sleep)
+        return user_data
 
     def set_user_name(self, user_name):
-            self.base_selenium.set_text(element="user_management:user_name", value=user_name)
+            self.base_selenium.set_text(element='user_management:user_name', value=user_name)
 
     def get_user_name(self):
             return self.base_selenium.get_text(element='user_management:user_name').split('\n')[0]
@@ -97,19 +105,26 @@ class Header(BasePages):
     def get_user_number(self):
             return self.base_selenium.get_text(element='user_management:user_number').split('\n')[0]
 
-
-    def set_user_email(self, user_email):
+    def set_user_email(self, user_email=''):
+            self.generate_random_email()
             self.base_selenium.set_text(element="user_management:user_email", value=user_email)
+            return user_email
 
     def get_user_email(self):
-            return self.base_selenium.get_text(element='user_management:user_email').split('\n')[0]
+        return self.base_selenium.get_value(element="user_management:user_email")
 
 
     def set_user_password(self, user_password):
             self.base_selenium.set_text(element="user_management:user_password", value=user_password)
 
+    def get_user_password(self):
+        return self.base_selenium.get_text(element='user_management:user_password').split('\n')[0]
+
     def set_user_confirm_password(self, user_confirm_password):
             self.base_selenium.set_text(element="user_management:user_confirm_password", value=user_confirm_password)
+
+    def get_user_confirm_password(self):
+        return self.base_selenium.get_text(element='user_management:user_confirm_password').split('\n')[0]
 
     def get_user_role(self):
             return self.base_selenium.get_text(element='user_management:user_role').split('\n')[0]
@@ -165,7 +180,7 @@ class Header(BasePages):
 
     def click_create_new_user(self):
             self.base_selenium.LOGGER.info('Press on the create new user button')
-            self.base_selenium.click(element='user_management:create_user')
+            self.base_selenium.click(element='user_management:create_user_button')
             self.sleep_small()
 
     def clear_user_role(self):
@@ -180,9 +195,30 @@ class Header(BasePages):
         self.base_selenium.LOGGER.info('Clear user email')
         self.base_selenium.clear_text(element='user_management:user_email')
 
+    def click_on_the_confirm_message(self):
+        self.base_selenium.LOGGER.info('Press on ok button')
+        self.base_selenium.click(element='general:confirm_pop')
+        self.sleep_small()
 
+    def click_on_delete_button(self):
+        self.base_selenium.LOGGER.info('Press on the delete button')
+        self.base_selenium.click(element='user_management:delete')
+        self.sleep_small()
 
+    def click_on_user_right_menu(self):
+        self.base_selenium.LOGGER.info('Press on the right menu')
+        self.base_selenium.click(element='user_management:right_menu')
+        self.sleep_small()
 
+    def click_on_overview_btn(self):
+        self.base_selenium.LOGGER.info('Press on the overview button button')
+        self.base_selenium.click(element='user_management:overview_btn')
+        self.sleep_small()
+
+    def click_on_clear_all(self):
+        self.base_selenium.LOGGER.info('Press on the overview button')
+        self.base_selenium.click(element='user_management:clear_all')
+        self.sleep_small()
 
 
 
