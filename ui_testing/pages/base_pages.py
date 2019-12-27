@@ -230,13 +230,18 @@ class BasePages:
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
 
+    def open_configuration(self):
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:configurations')
+        self.sleep_medium()
+        
 
     def generate_random_email(self):
         name = str(uuid4()).replace("-", "")[:10]
         server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'
-        
-        return name+server
 
+        return name+server
+      
     def generate_random_website(self):
         return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
 
@@ -306,7 +311,7 @@ class BasePages:
         for column in total_columns:
             self.change_column_view(column=column, value=True, always_hidden_columns=always_hidden_columns)
         self.press_apply_in_configure_table()
-
+        
     def click_overview(self):
         # click on Overview, this will display an alert to the user
         self.base_selenium.LOGGER.info('click on Overview')
@@ -320,3 +325,4 @@ class BasePages:
     def cancel_overview_pop_up(self):
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
+
