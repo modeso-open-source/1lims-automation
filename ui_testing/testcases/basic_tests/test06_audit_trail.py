@@ -1,5 +1,6 @@
 from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
+from unittest import skip
 import re
 
 class AuditTrailTestCases(BaseTest):
