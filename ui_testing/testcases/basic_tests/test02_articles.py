@@ -875,7 +875,7 @@ class ArticlesTestCases(BaseTest):
         result_article = self.article_page.result_table()[0]
         self.assertIn(article['created_at'], result_article.text)
 
-    def test035_filter_article_by_unit_default_filter(self):
+    def test037_filter_article_by_unit_default_filter(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -897,7 +897,7 @@ class ArticlesTestCases(BaseTest):
         result_article = self.article_page.result_table()[0]
         self.assertIn(article['unit'], result_article.text)
 
-    def test036_filter_article_by_material_type_default_filter(self):
+    def test038_filter_article_by_material_type_default_filter(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -919,7 +919,7 @@ class ArticlesTestCases(BaseTest):
         result_article = self.article_page.result_table()[0]
         self.assertIn(article['material_type'], result_article.text)
 
-    def test037_filter_article_by_changed_by_default_filter(self):
+    def test039_filter_article_by_changed_by_default_filter(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -941,7 +941,7 @@ class ArticlesTestCases(BaseTest):
         result_article = self.article_page.result_table()[0]
         self.assertIn(article['changed_by'], result_article.text)
 
-    def test038_filter_article_by_test_plan_default_filter(self):
+    def test040_filter_article_by_test_plan_default_filter(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
