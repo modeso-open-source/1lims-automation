@@ -15,12 +15,8 @@ class companyProfileTestCases(BaseTest):
 
         LIMS-6295
         """
-        country_name = 'Egypt'
-        # open the country field 
-        self.base_selenium.click(element='company_profile:country_field')
-        # search for the country name
-        self.base_selenium.set_text(element='company_profile:country_field', value=country_name)
+        country_name = 'Egypt'    
         # get the results
-        country_field_results = self.base_selenium.find_element('company_profile:country_field_results').text
+        country_field_results = self.base_selenium.get_drop_down_suggestion_list(element='company_profile:country_field', item_text=country_name)
         # check if the country name is in the results
         self.assertIn(country_name, country_field_results)
