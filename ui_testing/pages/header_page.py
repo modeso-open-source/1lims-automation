@@ -7,6 +7,7 @@ class Header(BasePages):
             super().__init__()
             self.base_selenium.wait_until_page_url_has(text='dashboard')
             self.user_url = "{}users".format(self.base_selenium.url)
+            self.role_url = "{}roles".format(self.base_selenium.url)
 
     def get_users_page(self):
             self.base_selenium.LOGGER.info(' + Get users page.')
@@ -220,9 +221,123 @@ class Header(BasePages):
         self.base_selenium.click(element='user_management:clear_all')
         self.sleep_small()
 
+    def archive_selected_roles_and_permissions(self):
+            self.base_selenium.scroll()
+            self.base_selenium.click(element='roles_and_permissions:right_menu')
+            self.base_selenium.click(element='roles_and_permissions:archive')
+            self.confirm_popup()
 
+    def get_archived_roles_and_permissions(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='roles_and_permissions:right_menu')
+        self.base_selenium.click(element='roles_and_permissions:archived')
+        self.sleep_small()
 
+    def is_role_in_table(self, value):
+        """
+            - get_archived_roles then call me to check if the role has been archived.
+            - get_active_roles then call me to check if the role is active.
+        :param value: search value
+        :return:
+        """
+        results = self.search(value=value)
+        if len(results) == 0:
+            return False
+        else:
+            if value in results[0].text:
+                return True
+            else:
+                return False
 
+    def restore_selected_roles(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='roles_and_permissions:right_menu')
+        self.base_selenium.click(element='roles_and_permissions:restore')
+        self.confirm_popup()
+
+    def get_active_roles(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='roles_and_permissions:right_menu')
+        self.base_selenium.click(element='roles_and_permissions:active')
+        self.sleep_small()
+
+    def get_random_role(self):
+        row = self.get_random_user_row()
+        self.open_edit_page(row=row)
+
+    def get_random_role_row(self):
+        return self.get_random_table_row(table_element='roles_and_permissions:user_table')
+
+    def click_on_roles_permissions_button(self):
+        self.base_selenium.LOGGER.info('Press on roles & permissions button')
+        self.base_selenium.click(element='header:roles_and_permissions_button')
+        self.sleep_small()
+
+    def click_create_new_role(self):
+        self.base_selenium.LOGGER.info('Press on create new role button')
+        self.base_selenium.click(element='roles_and_permissions:new_role_btn')
+        self.sleep_small()
+
+    def get_roles_page(self):
+            self.base_selenium.LOGGER.info(' + Get roles page.')
+            self.base_selenium.get(url=self.role_url)
+            self.sleep_small()
+
+    def click_on_role_overview_btn(self):
+        self.base_selenium.LOGGER.info('Press on the overview  button')
+        self.base_selenium.click(element='roles_and_permissions:roles_overview_btn')
+        self.sleep_small()
+
+    def set_role_name(self, role_name):
+
+            self.base_selenium.set_text(element='roles_and_permissions:role_name', value=role_name)
+
+    def get_role_name(self):
+            return self.base_selenium.get_text(element='roles_and_permissions:role_name').split('\n')[0]
+
+    def create_new_role(self, sleep=True, role_name = ''):
+        self.base_selenium.LOGGER.info(' + Create new role.')
+        self.base_selenium.click(element='roles_and_permissions:new_role_btn')
+        time.sleep(self.base_selenium.TIME_SMALL)
+        self.role_name = self.generate_random_text()
+        self.set_role_name(self.role_name)
+
+        role_data = {
+            "role_name":self.get_role_name(),
+        }
+        self.save(sleep)
+        return role_data
+
+    def archive_selected_roles(self):
+            self.base_selenium.scroll()
+            self.base_selenium.click(element='roles_and_permissions:right_menu')
+            self.base_selenium.click(element='roles_and_permissions:archive')
+            self.confirm_popup()
+
+    def get_archived_roles(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='roles_and_permissions:right_menu')
+        self.base_selenium.click(element='roles_and_permissions:archived')
+        self.sleep_small()
+
+    def click_on_role_right_menu(self):
+        self.base_selenium.LOGGER.info('Press on the right menu')
+        self.base_selenium.click(element='roles_and_permissions:right_menu')
+        self.sleep_small()
+
+    def click_on_role_delete_btn(self):
+        self.base_selenium.LOGGER.info('Press on the delete button')
+        self.base_selenium.click(element='roles_and_permissions:delete')
+        self.sleep_small()
+
+    def clear_role_name(self):
+        self.base_selenium.LOGGER.info('Clear role name')
+        self.base_selenium.clear_text(element='roles_and_permissions:role_name')
+
+    def click_on_pagination_page(self):
+        self.base_selenium.LOGGER.info('click on the pagination page')
+        self.base_selenium.click(element='roles_and_permissions:pagination_page')
+        self.sleep_small()
 
 
 

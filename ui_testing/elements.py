@@ -669,8 +669,46 @@ elements = {
        'is_laboratory_checkbox': {'method': 'xpath',
                      'value': '//label[@id="isLaboratory"]//input[@type="checkbox"]'},
        'delete_person_button': {'method': 'id',
-                     'value': 'delete_table_view'}
+                     'value': 'delete_table_view'},
 
-    }
+    },
+   'roles_and_permissions': {
+        'right_menu': {'method': 'xpath',
+                          'value': '//i[@class="flaticon-grid-menu-v2"]'},
+
+        'archive': {'method': 'xpath',
+                 'value': '//modeso-table-filter//a[2]'},
+
+        'archived': {'method': 'link_text',
+                 'value': 'Archived'},
+
+        'restore': {'method': 'link_text',
+                 'value': 'Restore'},
+
+       'active': {'method': 'link_text',
+                 'value': 'Active'},
+
+       'user_table': {'method': 'id',
+                      'value': 'table'},
+
+       'roles_overview_btn': {'method': 'xpath',
+                      'value': '//span[contains(text(),"Overview")]'},
+
+       'new_role_btn': {'method': 'xpath',
+                              'value': '//span[contains(text(),"New Role")]'},
+       'role_name': {'method': 'id',
+                              'value': 'namefield'},
+       'save_btn': {'method': 'xpath',
+                              'value': '//button[@class="btn btn-primary mb-md-0 mr-md-3"]'},
+       'delete': {'method': 'xpath',
+                              'value': '//a[contains(text(),"Delete")]'},
+       'oh_snap_message': {'method': 'id',
+                              'value': 'ohSnapMsg'},
+
+       'pagination_page': {'method': 'xpath',
+                           'value': '//a[contains(text(),"2")]'},
+
+   },
+
 }
 
