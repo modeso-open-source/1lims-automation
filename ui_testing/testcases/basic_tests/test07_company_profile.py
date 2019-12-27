@@ -20,3 +20,11 @@ class companyProfileTestCases(BaseTest):
         country_field_results = self.base_selenium.get_drop_down_suggestion_list(element='company_profile:country_field', item_text=search_text)
         # check if the country name is in the results
         self.assertIn(search_text, country_field_results)
+
+    def test002_user_can_change_any_field_and_cancel(self):
+        """
+        Company profile: Make sure after you edit any data and press on cancel button, nothing occur 
+
+        LIMS-6096
+        """
+        pass
