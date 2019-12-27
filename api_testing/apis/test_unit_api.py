@@ -28,3 +28,7 @@ class TestUnitAPI(BaseAPI):
         response = self.session.get(api, params=payload, headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
         return response
+
+    def get_all_testunits_json(self):
+        testunits = self.get_all_test_units().json()['testUnits']
+        return testunits

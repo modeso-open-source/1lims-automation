@@ -28,6 +28,15 @@ class TestPlanAPI(BaseAPI):
         inprogress_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'InProgress']
         return inprogress_test_plans
 
+    def get_testunits_in_testplan(self, id):
+        api = '{}{}/get/{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'], id)
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        testplan_data = response.json()['testPlan']
+        testunits_data = testplan_data['specifications']
+        return testunits_data
+
     def get_testplan_with_quicksearch(self, quickSearchText, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
         _payload = {"sort_value": "number",

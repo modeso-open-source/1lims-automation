@@ -16,3 +16,7 @@ class ArticleAPI(BaseAPI):
         self.info('Status code: {}'.format(response.status_code))
         return response
 
+    def get_all_articles_json(self):
+        articles = self.get_all_articles().json()['articles']
+        return articles
+
