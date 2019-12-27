@@ -11,7 +11,15 @@ class ArticlesTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.article_page.get_articles_page()
         self.archived_optional_fields_flag = False
-        self.name_default_filters_flag = False
+        self.default_filters_flags = {
+            'name': False,
+            'number': False,
+            'created_at': False,
+            'unit': False,
+            'material_type': False,
+            'changed_by': False,
+            'test_plan': False,
+        }
 
     def tearDown(self):
         if self.archived_optional_fields_flag: # to restore the UI
@@ -19,11 +27,41 @@ class ArticlesTestCases(BaseTest):
             self.article_page.archive_restore_optional_fields(restore=True)
             self.archived_optional_fields_flag = False
 
-        if self.name_default_filters_flag == True:
+        if self.default_filters_flags['name'] == True:
             self.article_page.toggle_default_filters(
                 element1='article:default_filter_name')
-            self.name_default_filters_flag = False
-            
+            self.default_filters_flags['name'] = False
+
+        if self.default_filters_flags['number'] == True:
+            self.article_page.toggle_default_filters(
+                element1='article:default_filter_number')
+            self.default_filters_flags['number'] = False
+
+        if self.default_filters_flags['created_at'] == True:
+            self.article_page.toggle_default_filters(
+                element1='article:default_filter_created_at')
+            self.default_filters_flags['created_at'] = False
+
+        if self.default_filters_flags['unit'] == True:
+            self.article_page.toggle_default_filters(
+                element1='article:default_filter_unit')
+            self.default_filters_flags['unit'] = False
+
+        if self.default_filters_flags['material_type'] == True:
+            self.article_page.toggle_default_filters(
+                element1='article:default_filter_material_type')
+            self.default_filters_flags['material_type'] = False
+
+        if self.default_filters_flags['changed_by'] == True:
+            self.article_page.toggle_default_filters(
+                element1='article:default_filter_changed_by')
+            self.default_filters_flags['changed_by'] = False
+
+        if self.default_filters_flags['test_plan'] == True:
+            self.article_page.toggle_default_filters(
+                element1='article:default_filter_test_plan')
+            self.default_filters_flags['test_plan'] = False
+
         return super().tearDown()
 
     @parameterized.expand(['save', 'cancel'])
@@ -657,7 +695,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Related article field existance in edit page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
 
-    def test028_filter_article_by_any_field(self):
+    def test028_filter_article_by_name(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -665,7 +703,7 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         # create new article with full options
-        article = self.article_page.create_new_article(material_type=None, full_options=True)
+        article = self.article_page.create_new_article(material_type='Raw Material')
 
         # open article table page and open the filter menu       
         self.article_page.get_articles_page()
@@ -675,11 +713,8 @@ class ArticlesTestCases(BaseTest):
         # filter by article name
         result_article = self.article_page.filter_article_by(filter_element='article:filter_name', filter_text=article['name'])
         self.assertIn(article['name'], result_article.text)
-        self.article_page.filter_reset()
 
-
-
-    def test029_filter_article_by_any_field(self):
+    def test029_filter_article_by_number(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -687,7 +722,7 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         # create new article with full options
-        article = self.article_page.create_new_article(material_type=None, full_options=True)
+        article = self.article_page.create_new_article(material_type='Raw Material')
 
         # open article table page and open the filter menu       
         self.article_page.get_articles_page()
@@ -697,11 +732,8 @@ class ArticlesTestCases(BaseTest):
         # filter by article number
         result_article = self.article_page.filter_article_by(filter_element='article:filter_number', filter_text=article['number'])  
         self.assertIn(article['number'], result_article.text)
-        self.article_page.filter_reset()
 
-
-
-    def test030_filter_article_by_any_field(self):
+    def test030_filter_article_by_unit(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -709,7 +741,7 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         # create new article with full options
-        article = self.article_page.create_new_article(material_type=None, full_options=True)
+        article = self.article_page.create_new_article(material_type='Raw Material', full_options=True)
 
         # open article table page and open the filter menu       
         self.article_page.get_articles_page()
@@ -719,11 +751,8 @@ class ArticlesTestCases(BaseTest):
         # filter by article unit
         result_article = self.article_page.filter_article_by(filter_element='article:filter_unit', filter_text=article['unit'])
         self.assertIn(article['unit'], result_article.text)
-        self.article_page.filter_reset()
 
-
-
-    def test031_filter_article_by_any_field(self):
+    def test031_filter_article_by_created_at(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -731,7 +760,7 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         # create new article with full options
-        article = self.article_page.create_new_article(material_type=None, full_options=True)
+        article = self.article_page.create_new_article(material_type='Raw Material')
 
         # open article table page and open the filter menu       
         self.article_page.get_articles_page()
@@ -741,10 +770,8 @@ class ArticlesTestCases(BaseTest):
         # filter by article created at
         result_article =  self.article_page.filter_article_by(filter_element='article:filter_created_at', filter_text=article['created_at'])
         self.assertIn(article['created_at'], result_article.text)
-        self.article_page.filter_reset()
 
-
-    def test032_filter_article_by_any_field(self):
+    def test032_filter_article_by_material_type(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -752,7 +779,7 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         # create new article with full options
-        article = self.article_page.create_new_article(material_type=None, full_options=True)
+        article = self.article_page.create_new_article(material_type=None)
 
         # open article table page and open the filter menu       
         self.article_page.get_articles_page()
@@ -762,10 +789,8 @@ class ArticlesTestCases(BaseTest):
         # filter by article material type
         result_article = self.article_page.filter_article_by(filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
         self.assertIn(article['material_type'], result_article.text)
-        self.article_page.filter_reset()
 
-
-    def test033_filter_article_by_any_field(self):
+    def test033_filter_article_by_changed_by(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -773,7 +798,7 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         # create new article with full options
-        article = self.article_page.create_new_article(material_type=None, full_options=True)
+        article = self.article_page.create_new_article(material_type='Raw Material')
 
         # open article table page and open the filter menu       
         self.article_page.get_articles_page()
@@ -783,10 +808,8 @@ class ArticlesTestCases(BaseTest):
         # filter by article changed by
         result_article = self.article_page.filter_article_by(filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
         self.assertIn(article['changed_by'], result_article.text)
-        self.article_page.filter_reset()
 
-
-    def test034_filter_article_by_any_default_filter(self):
+    def test034_filter_article_by_name_default_filter(self):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
@@ -794,13 +817,12 @@ class ArticlesTestCases(BaseTest):
         :return:
         """
         # create new article with full options
-        article = self.article_page.create_new_article(
-            material_type=None, full_options=True)
+        article = self.article_page.create_new_article(material_type='Raw Material')
 
         # turn on the name default filters
         self.article_page.toggle_default_filters(
             element1='article:default_filter_name')
-        self.name_default_filters_flag = True
+        self.default_filters_flags['name'] = True
 
         # filter by article name
         self.article_page.filter_by(
@@ -809,46 +831,140 @@ class ArticlesTestCases(BaseTest):
         result_article = self.article_page.result_table()[0]
         self.assertIn(article['name'], result_article.text)
 
-       
-    # def test030_filter_article_by_any_default_filter(self):
-    #     """
-    #     New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+    def test035_filter_article_by_number_default_filter(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
-    #     LIMS:3595
-    #     :return:
-    #     """
-    #     # create new article with full options
-    #     article = self.article_page.create_new_article(material_type=None, full_options=True)
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type='Raw Material')
 
-    #     # default filters
-    #     # turn them off
-    #      # filter by article number
-    #     self.article_page.filter_by(filter_element='article:filter_number', filter_text=article['number'], field_type='text')
-    #     self.article_page.sleep_medium()
-    #     result_article = self.article_page.result_table()[0]
-    #     self.assertIn(article['number'], result_article.text)
-    #     self.article_page.filter_by(filter_element='article:filter_number', filter_text='', field_type='text') # reset the filter
+        # turn on the name default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_number')
+        self.default_filters_flags['number'] = True
 
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_number', filter_text=article['number'], field_type='text')
+        self.article_page.sleep_medium()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['number'], result_article.text)
 
-    #     self.article_page.toggle_default_filters(element1='article:default_filter_name', element2='article:default_filter_number')
+    def test036_filter_article_by_created_at_default_filter(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
-    #     ################## [unit / created at] filters ##################
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type='Raw Material')
 
-    #     # turn on the created at / unit default filters
-    #     self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
+        # turn on the name default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_created_at')
+        self.default_filters_flags['created_at'] = True
 
-    #     # filter by article name
-    #     result_article = self.article_page.filter_by(filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
-    #     self.assertIn(article['created_at'], result_article.text)
-    #     self.article_page.sleep_medium()
-    #     self.article_page.filter_by(filter_element='article:filter_created_at', filter_text='', field_type='text')  # reset the filter
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_created_at', filter_text=article['created_at'], field_type='text')
+        self.article_page.sleep_medium()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['created_at'], result_article.text)
 
-    #     # filter by article number
-    #     result_article = self.article_page.filter_by(filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
-    #     self.assertIn(article['unit'], result_article.text)
-    #     self.article_page.sleep_medium()
-    #     self.article_page.filter_by(filter_element='article:filter_unit', filter_text='', field_type='text')  # reset the filter
+    def test035_filter_article_by_unit_default_filter(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
-    #     # turn them off
-    #     self.article_page.toggle_default_filters(element1='article:default_filter_created_at', element2='article:default_filter_unit')
-        
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type='Raw Material', full_options=True)
+
+        # turn on the name default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_unit')
+        self.default_filters_flags['unit'] = True
+
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_unit', filter_text=article['unit'], field_type='text')
+        self.article_page.sleep_medium()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['unit'], result_article.text)
+
+    def test036_filter_article_by_material_type_default_filter(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type=None)
+
+        # turn on the name default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_material_type')
+        self.default_filters_flags['material_type'] = True
+
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
+        self.article_page.sleep_medium()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['material_type'], result_article.text)
+
+    def test037_filter_article_by_changed_by_default_filter(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type='Raw Material')
+
+        # turn on the name default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_changed_by')
+        self.default_filters_flags['changed_by'] = True
+
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
+        self.article_page.sleep_medium()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(article['changed_by'], result_article.text)
+
+    def test038_filter_article_by_test_plan_default_filter(self):
+        """
+        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+
+        LIMS:3595
+        :return:
+        """
+        # create new article with full options
+        article = self.article_page.create_new_article(material_type='Raw Material')
+
+        # create crossponding test plan
+        self.test_plan.get_test_plans_page()
+        self.test_plan.create_new_test_plan(material_type=article['material_type'], article=article['name'])
+        self.article_page.get_articles_page()
+        self.article_page.sleep_small()
+
+        # turn on the name default filters
+        self.article_page.toggle_default_filters(
+            element1='article:default_filter_test_plan')
+        self.default_filters_flags['test_plan'] = True
+
+        # filter by article name
+        self.article_page.filter_by(
+            filter_element='article:filter_test_plan', filter_text=self.test_plan.test_plan_name, field_type='drop_down')
+        self.article_page.sleep_medium()
+        result_article = self.article_page.result_table()[0]
+        self.assertIn(self.test_plan.test_plan_name, result_article.text)
