@@ -408,6 +408,14 @@ elements = {
                                  'value': 'start_shipmentDate'}
     },
 
+    'audit_trail': {
+        'filter_action_date': {'method': 'id', 'value': 'start_createdAt'},
+        'filter_changed_by': {'method': 'id', 'value': 'createdByfield'},
+        'filter_action': {'method': 'id', 'value': 'actionfield'},
+        'filter_entity': {'method': 'id', 'value': 'entityfield'},
+        'filter_entity_number': {'method': 'id', 'value': 'entityNumberfield'},
+    },
+
     'order': {
         'order': {'method': 'id',
                   'value': 'orderTypefield'},
