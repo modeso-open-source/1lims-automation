@@ -354,7 +354,7 @@ class BaseSelenium:
         if element:
             if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
                 self.LOGGER.info(' Drop-down is disabled')
-                return
+                return False
 
         if item_text:
             if element:
@@ -374,7 +374,7 @@ class BaseSelenium:
         if not item_text: #random selection
             if len(items) <= 1:
                 self.LOGGER.info(' There is no drop-down options')
-                return
+                return False
             if avoid_duplicate:
                 items[random.choice(self._unique_index_list(data=items))].click()
             else:
@@ -389,6 +389,7 @@ class BaseSelenium:
                     break
             else:
                 self.LOGGER.info(' There is no {} option in the drop-down'.format(item_text))
+                return False
 
     def is_item_in_drop_down(self, element, item_text, options_element='general:drop_down_options'):
         """

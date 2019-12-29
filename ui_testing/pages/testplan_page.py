@@ -9,11 +9,12 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text(element="test_plan:no", value=no)
 
     def get_article(self):
-        articles = self.base_selenium.get_value(element="test_plan:article")
-        if "×" in articles:
-            return articles.replace("× ", "").split('\n')
-        else:
-            return []
+        articles = self.base_selenium.get_text(element="test_plan:article").split('\n')
+        article_list = []
+        for article in articles:
+            if "×" in article:
+                article_list.append(article.replace("× ", ""))
+        return article_list
 
     def set_article(self, article='', random=False):
         if random:
@@ -27,7 +28,7 @@ class TstPlan(TestPlans):
             self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
     def get_material_type(self):
-        return self.base_selenium.get_text(element='test_plans:material_type')
+        return self.base_selenium.get_text(element='test_plans:material_type').split('\n')[0]
 
     def set_material_type(self, material_type='', random=False):
         if random:
@@ -44,17 +45,19 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text_in_drop_down(ng_select_element='test_plan:test_plan', text=name)
         return name
 
-    def set_test_unit(self, test_unit='', **kwargs):
+    def set_test_unit(self, test_unit='', add_limits=True, **kwargs):
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
-        self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
+        testunit_added_result = self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
+        if testunit_added_result == False:
+            return False
         self.base_selenium.click('test_plan:add')
-        if 'upper' in kwargs:
+        if add_limits and 'upper' in kwargs:
             self.base_selenium.LOGGER.info(' set upper : {}'.format(kwargs['upper']))
             elems = self.base_selenium.find_elements('general:col_6')
             upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
             upper.send_keys(kwargs['upper'])
-        if 'lower' in kwargs:
+        if add_limits and  'lower' in kwargs:
             self.base_selenium.LOGGER.info(' set lower : {}'.format(kwargs['lower']))
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
@@ -67,7 +70,7 @@ class TstPlan(TestPlans):
         lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
         return upper.get_attribute('value'), lower.get_attribute('value')
 
-    def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
+    def create_new_test_plan(self, name='', material_type='', article='', test_unit='', add_limits=True, **kwargs):
         self.base_selenium.LOGGER.info(' Create new test plan')
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
@@ -90,10 +93,9 @@ class TstPlan(TestPlans):
 
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
-            self.set_test_unit(test_unit=test_unit, **kwargs)
-            self.save(save_btn='test_plan:save')
-        else:
-            self.save()
+            self.set_test_unit(test_unit=test_unit,add_limits=add_limits , **kwargs)
+            
+        self.save(save_btn='test_plan:save_btn')
 
         self.base_selenium.LOGGER.info(' Test plan name : {}'.format(self.test_plan_name))
         return self.test_plan_name
