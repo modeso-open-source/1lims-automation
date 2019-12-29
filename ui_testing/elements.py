@@ -238,6 +238,8 @@ elements = {
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
+        'version_table': {'method': 'link_text',
+                        'value': 'Versions'},
         'testunit_menu': {'method': 'css_selector',
                           'value': '[class="dropdown "]'},
         'versions': {'method': 'id',

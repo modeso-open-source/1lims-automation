@@ -1058,3 +1058,89 @@ class TestUnitsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
             self.assertIn(row_data['Unit'], fixed_sheet_row_data)
 
+    def test031_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
+        """
+        New: Test unit: Limits of quantification Approach: Versions:
+        In case I edit any field in the limits of quantification and press on save and create new version,
+        new version should create & display in the active table & versions table
+
+        When I edit any field in limits of quantification and press on save and create new version ..new version created 
+        This version should displayed in the active/archive table 
+        This version should display in the versions table 
+
+        LIMS-4423
+        """
+        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
+        self.assertEqual(testunits_request['status'], 1)
+        testunits = testunits_request['testUnits']
+        self.assertNotEqual(len(testunits), 0)
+
+        testunit_name = ''
+        for testunit in testunits:
+            if testunit['specifications'] == '':
+                testunit_name = testunit['name']
+                break
+        
+        self.base_selenium.LOGGER.info('generate random data to update testunit with')
+        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
+        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
+        random_unit = self.test_unit_page.generate_random_text()
+
+        
+        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
+        testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
+        version_value = int(testunit_data['Version'])
+        self.base_selenium.LOGGER.info('open the testunit in edi form to update it')
+        self.test_unit_page.open_edit_page(row=testunit_record)
+
+        self.base_selenium.LOGGER.info('set upper limit to {}'.format(random_upper_limit))
+        self.test_unit_page.set_quan_upper_limit(value=random_upper_limit)
+        
+        self.base_selenium.LOGGER.info('set lower limit to {}'.format(random_lower_limit))
+        self.test_unit_page.set_quan_lower_limit(value=random_lower_limit)
+        
+        self.base_selenium.LOGGER.info('set unit limit to {}'.format(random_unit))
+        self.test_unit_page.set_quan_unit(value=random_unit)
+        
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save_and_create_new_version()
+        
+        self.base_selenium.LOGGER.info('refresh to make sure that data are saved correctly')
+        self.base_selenium.refresh()
+        
+        self.base_selenium.LOGGER.info('upper limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit)))
+        self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
+        
+        self.base_selenium.LOGGER.info('lower limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit)))
+        self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
+        
+        self.base_selenium.LOGGER.info('unit is {}, and it should be {}'.format(self.test_unit_page.get_quan_unit(), str(random_unit)))
+        self.assertEqual(self.test_unit_page.get_quan_unit(), str(random_unit))
+
+        self.test_unit_page.get_test_units_page()
+
+        testunit_record_after_update = self.test_unit_page.search(value=testunit_name)[0]
+        testunit_data_after_update = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record_after_update)
+
+        self.base_selenium.LOGGER.info('making sure that version is updated successfully')
+        self.base_selenium.LOGGER.info('version is {}, ant it should be {}'.format(testunit_data_after_update['Version'], str(version_value+1)))
+        updated_version = str(version_value+1)
+        self.assertEqual(testunit_data_after_update['Version'], str(updated_version))
+        self.assertEqual(testunit_data_after_update['Quantification Limit'], str(random_lower_limit)+'-'+str(random_upper_limit))
+        self.assertEqual(testunit_data_after_update['Quantification Limit Unit'], random_unit)
+
+        self.test_unit_page.click_check_box(source=testunit_record_after_update)        
+        self.test_unit_page.get_versions_table()
+        testunits_records_versions = self.test_unit_page.result_table()
+
+        version_counter = 1
+        record_counter = 0
+        while record_counter < len(testunits_records_versions)-1:
+            record_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunits_records_versions[record_counter])
+            self.assertEqual(record_data['Version'], str(version_counter))
+
+            if version_counter == updated_version:
+                self.assertEqual(record_data['Quantification Limit'], str(random_lower_limit)+'-'+str(random_upper_limit))
+                self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
+            version_counter = version_counter+1
+            record_counter = record_counter+1
