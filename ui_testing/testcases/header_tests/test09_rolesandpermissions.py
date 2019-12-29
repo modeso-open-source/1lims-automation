@@ -124,7 +124,7 @@ class HeaderTestCases(BaseTest):
 
     def test006_delete_role(self):
         """
-        Roles & Permissions: Make sure that you can delete any role record \
+        Roles & Permissions: Make sure that you can delete any role record,
         If this record not used in other entity
         LIMS-6401
         :return:
