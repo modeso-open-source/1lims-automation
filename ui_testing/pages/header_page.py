@@ -133,9 +133,10 @@ class Header(BasePages):
     def set_user_role(self, user_role='', random=False):
             if random:
                 self.base_selenium.select_item_from_drop_down(element='user_management:user_role', avoid_duplicate=True)
-                return self.get_user_role()
+               
             else:
                 self.base_selenium.select_item_from_drop_down(element='user_management:user_role', item_text=user_role)
+                return self.get_user_role()
 
     def click_on_filter_view(self):
             self.base_selenium.LOGGER.info('Press on the filter view button')
