@@ -91,22 +91,24 @@ class TstUnits(BasePages):
     def get_active_fields_tab(self):
         self.info('get active fields tab')
         self.base_selenium.click(element='configurations_page:active_fields_tab')
+        self.sleep_tiny()
     
     def get_archived_fields_tab(self):
         self.info('get archived fields tab')
         self.base_selenium.click(element='configurations_page:archived_fields_tab')
+        self.sleep_tiny()
     
     
     def archive_quantification_limit_field(self):
         self.base_selenium.LOGGER.info('archive quantification limit field')
         self.get_active_fields_tab()
-        self.sleep_tiny()
         element_exists = self.base_selenium.check_element_is_exist(element='test_unit:configuration_testunit_useQuantification')
         if element_exists == False:
             self.info('quantification already archived')
             return False
-        self.base_selenium.click(element='test_unit:grouped_fields_option_menu')
-        self.base_selenium.click(element='test_unit:archive_field')
+        self.base_selenium.click(element='configurations_page:grouped_fields_option_menu')
+        self.base_selenium.click(element='configurations_page:archive_field')
+        self.confirm_popup()
         self.sleep_tiny()
         return True
     
@@ -118,7 +120,8 @@ class TstUnits(BasePages):
         if element_exists == False:
             self.info('quantification is not archived')
             return False
-        self.base_selenium.click(element='test_unit:grouped_fields_option_menu')
-        self.base_selenium.click(element='test_unit:restore_field')
+        self.base_selenium.click(element='configurations_page:grouped_fields_option_menu')
+        self.base_selenium.click(element='configurations_page:restore_field')
+        self.confirm_popup()
         self.sleep_tiny()
         return True

@@ -230,12 +230,6 @@ class BasePages:
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
 
-    def open_configuration(self):
-        self.base_selenium.click(element='general:right_menu')
-        self.base_selenium.click(element='general:configurations')
-        self.sleep_medium()
-        
-
     def generate_random_email(self):
         name = str(uuid4()).replace("-", "")[:10]
         server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'

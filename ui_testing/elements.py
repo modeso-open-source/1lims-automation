@@ -388,7 +388,7 @@ elements = {
                               'order': 0},
         'configuration_testunit_useQuantification': {'method': 'class_name',
                               'value': 'useQuantification',
-                              'order': 0},
+                              'order': 1},
         'configuration_testunit_qualtitative': {'method': 'class_name',
                               'value': 'textValueArray',
                               'order': 0},
