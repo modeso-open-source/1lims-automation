@@ -1050,7 +1050,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('testunit type is qualitative, fields shown should be as follow')
         self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
-    @parameterized.expand(['spec', 'quan', 'spec_quan'])
+    @parameterized.expand(['spec', 'quan', 'specquan'])
     def test_029_allow_user_to_change_between_specification_and_quantification(self, specification_type):
         """
         New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
@@ -1104,7 +1104,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
             self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
 
-        elif specification_type == 'spec_quan':
+        elif specification_type == 'specquan':
             self.base_selenium.LOGGER.info('set type to specification only and save')
             self.test_unit_page.use_specification_or_quantification(type_to_use='spec')
             quan_upper_limit = self.test_unit_page.get_quan_upper_limit()
