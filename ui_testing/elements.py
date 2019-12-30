@@ -238,6 +238,12 @@ elements = {
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
+        'version_table': {'method': 'link_text',
+                        'value': 'Versions'},
+        'testunit_menu': {'method': 'css_selector',
+                          'value': '[class="dropdown "]'},
+        'versions': {'method': 'id',
+                     'value': 'main_table_version'},
         'archived': {'method': 'link_text',
                      'value': 'Archived'},
         'restore': {'method': 'link_text',
@@ -346,6 +352,8 @@ elements = {
                              'value': 'lowerLimitfield'},
         'spec_unit': {'method': 'id',
                       'value': 'unitfield'},
+        'spec_unit_preview': {'method': 'css_selector',
+                               'value': '[class="form-control field-with-scrips"]'},
         'quan_upper_limit': {'method': 'id',
                              'value': 'quantificationUpperLimitfield'},
         'quan_lower_limit': {'method': 'id',
@@ -400,6 +408,14 @@ elements = {
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
                                  'value': 'start_shipmentDate'}
+    },
+
+    'audit_trail': {
+        'filter_action_date': {'method': 'id', 'value': 'start_createdAt'},
+        'filter_changed_by': {'method': 'id', 'value': 'createdByfield'},
+        'filter_action': {'method': 'id', 'value': 'actionfield'},
+        'filter_entity': {'method': 'id', 'value': 'entityfield'},
+        'filter_entity_number': {'method': 'id', 'value': 'entityNumberfield'},
     },
 
     'order': {
