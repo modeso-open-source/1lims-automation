@@ -693,6 +693,8 @@ elements = {
         'location_field': {'method': 'id', 'value': 'locationfield'},
         'logo_field': {'method': 'id', 'value': 'logo'},
         'cancel_button': {'method': 'id', 'value':'cancelButton'},
+        'username': {'method': 'class_name', 'value': 'm-card-profile__name'},
+        'email': {'method': 'class_name', 'value': 'm-card-profile__email'}
     },
 }
 

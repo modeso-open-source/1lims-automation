@@ -24,7 +24,7 @@ class companyProfileTestCases(BaseTest):
         # check if the country name is in the results
         self.assertIn(search_text, country_field_results)
 
-    @parameterized.extend(['name', 'street_name', 'street_number', 'postal_code', 'location'])
+    @parameterized.expand(['name', 'street_name', 'street_number', 'postal_code', 'location', 'country'])
     def test002_user_can_change_any_field_and_cancel(self, field_name):
         """
         Company profile: Make sure after you edit any data and press on cancel button, nothing occur 
@@ -74,5 +74,13 @@ class companyProfileTestCases(BaseTest):
         self.assertEqual(company_profile['location'], self.company_profile_page.get_field_value('location'))
         self.assertEqual(company_profile['country'], self.company_profile_page.get_field_value(field_name='country', field_type='drop_down'))
 
+    def test004_company_profile_has_username_and_email(self):
+        """
+        Company Profile: Make sure that the user name & email displayed in the profile
 
-        
+        LIMS-6098
+        """
+        username = self.base_selenium.get_text(element='username')
+        email = self.base_selenium.get_text(element='email')
+        self.assertTrue(username)
+        self.assertTrue(email)
