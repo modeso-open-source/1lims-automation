@@ -27,4 +27,23 @@ class companyProfileTestCases(BaseTest):
 
         LIMS-6096
         """
-        pass
+        field_name = 'country'
+        # set field type depanding on name
+        field_type = 'text'
+        if field_name == 'country':
+            field_type = 'drop_down'
+
+        # get the field value before edit
+        field_value_before_edit = self.company_profile_page.get_field_value(field_name, field_type)
+
+        # change the value
+        self.company_profile_page.set_field_value(field_name, field_type)
+
+        # click on cancel
+        self.company_profile_page.click_on_cancel()
+
+        # get the field value after edit 
+        field_value_after_edit = self.company_profile_page.get_field_value(field_name, field_type)
+
+        # compare the before value and the after value
+        self.assertEqual(field_value_before_edit, field_value_after_edit)

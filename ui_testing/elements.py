@@ -670,7 +670,13 @@ elements = {
     },
     'company_profile': {
         'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
-        'country_field_results': {'method': 'xpath', 'value': '//ng-dropdown-panel/div/div[2]'},
+        'name_field': {'method': 'id', 'value': 'namefield'},
+        'street_name_field': {'method': 'id', 'value': 'streetNamefield'},
+        'street_number_field': {'method': 'id', 'value': 'streetNumberfield'},
+        'postal_code_field': {'method': 'id', 'value': 'postalCodefield'},
+        'location_field': {'method': 'id', 'value': 'locationfield'},
+        'logo_field': {'method': 'id', 'value': 'logo'},
+        'cancel_button': {'method': 'id', 'value':'cancelButton'},
     },
 }
 
