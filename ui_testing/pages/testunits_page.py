@@ -44,7 +44,8 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:archived')
         self.sleep_small()
     
-    def get_configurations(self):
+    def open_configurations(self):
+        self.info('open testunits configurations')
         self.base_selenium.scroll()
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:archived')
@@ -85,3 +86,18 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click('orders:duplicate')
         self.save()
+
+
+    def get_active_fields_tab(self):
+        self.info('get active fields tab')
+        self.base_selenium.click(element='configurations_page:active_fields_tab')
+    
+    def get_archived_fields_tab(self):
+        self.info('get archived fields tab')
+        self.base_selenium.click(element='configurations_page:archived_fields_tab')
+    
+    
+    def archive_quantification_limit_field(self):
+        self.get_active_fields_tab()
+        self.sleep_tiny()
+        self.find

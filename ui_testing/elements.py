@@ -723,6 +723,16 @@ elements = {
 
     },
     'configurations_page': {
+        'active_fields_tab': {'method': 'id',
+                                    'value': 'active_tab'},
+        'archived_fields_tab': {'method': 'id',
+                                    'value': 'archived_tab'},
+        'translation_tab': {'method': 'id',
+                                    'value': 'translation_tab'},
+        'order_fields_tab': {'method': 'id',
+                                    'value': 'order_tab'},
+        'analysis_fields_tab': {'method': 'id',
+                                    'value': 'analysis_tab'},
         'static_field_option_menu': {'method': 'id',
                                     'value': 'staticFields_menu_options'},
         'dynamic_field_option_menu': {'method': 'id',

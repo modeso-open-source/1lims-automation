@@ -1145,7 +1145,14 @@ class TestUnitsTestCases(BaseTest):
             version_counter = version_counter+1
             record_counter = record_counter+1
 
-    def test_opening_configurations(self):
-        fields = self.test_unit_page.open_configuration()
-        self.base_selenium.LOGGER.info(fields)
+    def test032_archive_quantifications_limit_field(self):
+        """
+        New: Test unit: Configuration: Limit of quantification Approach: Display the new fields in the configuration section 
+        ( Upper limit & lower limit & unit of  limit of quantification ) and I can archive them. 
+        User can archive the quantification limits field from the configuration section 
+
+        LIMS-4164
+        """
+        self.test_unit_page.open_configuration()
+        
 
