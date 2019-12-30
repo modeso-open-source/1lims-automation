@@ -60,4 +60,21 @@ class companyProfileTestCases(BaseTest):
 
         LIMS-6093
         """
+        # update the profile and get the values before saving
+        company_profile = self.company_profile_page.update_company_profile()
+
+        # refresh the page
+        self.company_profile_page.get_company_profile_page()
+        self.company_profile_page.sleep_small()
+
+        name = self.company_profile_page.get_field_value('name')
+        # check that the values before save are matching the values after refresh.
+        self.assertEqual(company_profile['name'], self.company_profile_page.get_field_value('name'))
+        self.assertEqual(company_profile['street_name'], self.company_profile_page.get_field_value('street_name'))
+        self.assertEqual(company_profile['street_number'], self.company_profile_page.get_field_value('street_number'))
+        self.assertEqual(company_profile['postal_code'], self.company_profile_page.get_field_value('postal_code'))
+        self.assertEqual(company_profile['location'], self.company_profile_page.get_field_value('location'))
+        self.assertEqual(company_profile['country'], self.company_profile_page.get_field_value(field_name='country', field_type='drop_down'))
+
+
         

@@ -20,27 +20,45 @@ class CompanyProfile(BasePages):
         return field_value
 
     def set_field_value(self, field_name, field_type='text', item_text=''):
+        if item_text == '':
+            item_text = self.generate_random_text()
+
         if field_type == 'drop_down':
             self.base_selenium.select_item_from_drop_down(
                 element='company_profile:{}_field'.format(field_name), item_text=item_text)
         else:
             self.base_selenium.set_text(
-                element='company_profile:{}_field'.format(field_name), value=self.generate_random_text())
+                element='company_profile:{}_field'.format(field_name), value=item_text)
 
     def update_company_profile(self):
+        self.base_selenium.LOGGER.info(' + Update the company profile.')
+
+        # the values to be added
+        company_profile= {
+            'name': self.generate_random_text(),
+            'street_name': self.generate_random_text(),
+            'street_number': self.generate_random_text(),
+            'postal_code': self.generate_random_text(),
+            'location': self.generate_random_text(),
+            'country': None,
+        }
+
         # set the fields values
-        self.set_field_value(field_name='name')
-        self.set_field_value(field_name='street_name')
-        self.set_field_value(field_name='street_name')
-        self.set_field_value(field_name='street_number')
-        self.set_field_value(field_name='postal_code')
-        self.set_field_value(field_name='location')
+        self.set_field_value(field_name='name', item_text=company_profile['name'])
+        self.set_field_value(field_name='street_name', item_text=company_profile['street_name'])
+        self.set_field_value(field_name='street_number', item_text=company_profile['street_number'])
+        self.set_field_value(field_name='postal_code', item_text=company_profile['postal_code'])
+        self.set_field_value(field_name='location', item_text=company_profile['location'])
         self.set_field_value(field_name='country', field_type='drop_down')
 
-        company_profile= {
-            'name': self.get_field_value('name'),
-            'street_name': self.get_field_value('street_name')
-        }
+        # store the company profile country 
+        company_profile['country'] = self.get_field_value(field_name='country', field_type='drop_down')
+
+        # save
+        self.save(True)
+        self.base_selenium.LOGGER.info(' + Company name : {}'.format(company_profile['name']))
+
+        return company_profile
 
     def click_on_cancel(self):
         # click on cancel
