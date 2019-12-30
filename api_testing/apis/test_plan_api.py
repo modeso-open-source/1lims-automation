@@ -29,7 +29,7 @@ class TestPlanAPI(BaseAPI):
         return inprogress_test_plans
 
     def get_testunits_in_testplan(self, id):
-        api = '{}{}/get/{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'], id)
+        api = '{}{}{}'.format(self.url, self.END_POINTS['test_plan_api']['get_testunits_in_testplan'], id)
         self.info('GET : {}'.format(api))
         response = self.session.get(api, headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -38,29 +38,36 @@ class TestPlanAPI(BaseAPI):
         return testunits_data
 
     def get_testplan_with_quicksearch(self, quickSearchText, **kwargs):
-        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
-        _payload = {"sort_value": "number",
-                    "limit": 20,
-                    "start": 0,
-                    "sort_order": "DESC",
-                    "filter": '{"quickSearch":"'+ quickSearchText + '","columns":["number","name"]}',
-                    "deleted": "0"}
-        payload = self.update_payload(_payload, **kwargs)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
+        filter = '{"quickSearch":"' + quickSearchText + '","columns":["number","name"]}'
+        response = self.get_all_test_plans(filter=filter, **kwargs)
         return response.json()['testPlans']
+        # api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
+        # _payload = {"sort_value": "number",
+        #             "limit": 20,
+        #             "start": 0,
+        #             "sort_order": "DESC",
+        #             "filter": '{"quickSearch":"'+ quickSearchText + '","columns":["number","name"]}',
+        #             "deleted": "0"}
+        # payload = self.update_payload(_payload, **kwargs)
+        # self.info('GET : {}'.format(api))
+        # response = self.session.get(api, params=payload, headers=self.headers, verify=False)
+        # self.info('Status code: {}'.format(response.status_code))
+        # return response.json()['testPlans']
 
     def get_testplan_with_filter(self, filter_option, filter_text, **kwargs):
-        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
-        _payload = {"sort_value": "number",
-                    "limit": 20,
-                    "start": 0,
-                    "sort_order": "DESC",
-                    "filter": '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}',
-                    "deleted": "0"}
-        payload = self.update_payload(_payload, **kwargs)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
+        filter = '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}'
+        response = self.get_all_test_plans(filter=filter, **kwargs)
         return response.json()['testPlans']
+
+        # api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
+        # _payload = {"sort_value": "number",
+        #             "limit": 20,
+        #             "start": 0,
+        #             "sort_order": "DESC",
+        #             "filter": '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}',
+        #             "deleted": "0"}
+        # payload = self.update_payload(_payload, **kwargs)
+        # self.info('GET : {}'.format(api))
+        # response = self.session.get(api, params=payload, headers=self.headers, verify=False)
+        # self.info('Status code: {}'.format(response.status_code))
+        # return response.json()['testPlans']

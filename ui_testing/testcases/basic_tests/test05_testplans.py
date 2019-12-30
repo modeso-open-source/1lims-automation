@@ -473,7 +473,7 @@ class TestPlansTestCases(BaseTest):
         # update the iteration and category
         new_iteration = str(int(first_testunit_data_in_first_testplan['iterations']) + 1)
         self.test_unit_page.update_testunit(number=None, name=None, category='', iterations=new_iteration, random=False)
-        new_category = self.test_unit_page.get_category()
+        new_category = self.test_unit_page.get_category().lower()
 
         # press save and complete to create a new version
         self.test_unit_page.save_and_create_new_version()
@@ -483,9 +483,10 @@ class TestPlansTestCases(BaseTest):
 
         # Assert the first testplan wasn't affected by the change
         first_testunit_data_in_first_testplan_after_change = (self.test_plan_api.get_testunits_in_testplan(first_testplan_data['id']))[0]
+        print(first_testunit_data_in_first_testplan)
         self.base_selenium.LOGGER.info("Asserting that the category of the testunit in the first testplan didn't change")
-        self.base_selenium.LOGGER.info("Asserting the category was and remained: {}".format(first_testunit_data_in_first_testplan['category']))
-        self.assertEqual(first_testunit_data_in_first_testplan['category'], first_testunit_data_in_first_testplan_after_change['category'])
+        self.base_selenium.LOGGER.info("Asserting the category was and remained: {}".format(first_testunit_data_in_first_testplan['category'].replace('_', ' ')))
+        self.assertEqual(first_testunit_data_in_first_testplan['category'].replace('_', ' '), first_testunit_data_in_first_testplan_after_change['category'].replace('_', ' '))
         self.base_selenium.LOGGER.info("Asserting that the iterations of the testunit in the first testplan didn't change")
         self.base_selenium.LOGGER.info("Asserting the iterations were and remained: {}".format(first_testunit_data_in_first_testplan['iterations']))
         self.assertEqual(first_testunit_data_in_first_testplan['iterations'], first_testunit_data_in_first_testplan_after_change['iterations'])
@@ -496,16 +497,17 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(second_testplan_name, 
                         first_testplan_data['article'][0], first_testplan_data['materialType']))
         
-        second_testplan_data = (self.test_plan_api.get_testplan_with_quicksearch('7ba1d4cdf4'))[0]
-        first_testunit_data_in_second_testplan = (self.test_plan_api.get_testunits_in_testplan(second_testplan_data['id']))[0]
+        second_testplan_data = (self.test_plan_api.get_testplan_with_quicksearch(second_testplan_name))[0]
         
+        first_testunit_data_in_second_testplan = (self.test_plan_api.get_testunits_in_testplan(second_testplan_data['id']))[0]
+        print(first_testunit_data_in_second_testplan)
         # Assert the second testplan is affected by the change
         self.base_selenium.LOGGER.info('Asserting that the category of the testunit in the second testplan is the same as the updated category')
         self.base_selenium.LOGGER.info("Asserting the category of the second testplan is: {}".format(new_category))
-        self.assertEqual(first_testunit_data_in_second_testplan['category'], new_category)
+        self.assertEqual(first_testunit_data_in_second_testplan['category'].replace('_', ' '), new_category)
         self.base_selenium.LOGGER.info('Asserting that the iterations of the testunit in the second testplan is the same as the updated iterations')
         self.base_selenium.LOGGER.info("Asserting the iterations of the second testplan are: {}".format(new_iteration))
-        self.assertEqual(first_testunit_data_in_second_testplan['iterations'], new_iteration)
+        self.assertEqual(first_testunit_data_in_second_testplan['iterations'], int(new_iteration))
     
     @skip('https://modeso.atlassian.net/browse/LIMS-6405')
     def test014_delete_used_testplan(self):

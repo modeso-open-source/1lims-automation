@@ -254,15 +254,15 @@ class TstUnit(TstUnits):
                                                                        source_element='test_unit:qualitative_value')
         qualitative_value.send_keys(value)
 
-    # if random is false, take the arguments that are not None only
-    # if random is true, take all the arguments, check if a value is given, otherwise generate random values
+    # if random is false, take the arguments that are not None only (update only specific data)
+    # if random is true, take all the arguments, check if a value is given take it, otherwise generate random values (updata all data)
     def update_testunit(self, number, name, iterations, category, random=True):
         if not random:
-            if number != None:
+            if number:
                 self.set_testunit_number(number)
-            if name != None:
+            if name:
                 self.set_testunit_name(name)
-            if iterations != None:
+            if iterations:
                 self.set_testunit_iteration(iterations)
-            if category != None:
+            if category:
                 self.set_category(category)

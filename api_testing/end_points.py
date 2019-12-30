@@ -7,7 +7,8 @@ end_points = {
         'report_sheet_get_list_table': '/api/reportSheets/get/list/table/testunits',
     },
     'test_plan_api': {
-        'list_all_test_plans': '/api/testPlans'
+        'list_all_test_plans': '/api/testPlans',
+        'get_testunits_in_testplan': '/api/testPlans/get/'
     },
     'orders_api': {
         'list_all_orders': '/api/orders',
