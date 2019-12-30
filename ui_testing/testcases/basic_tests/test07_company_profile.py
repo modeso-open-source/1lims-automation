@@ -17,7 +17,7 @@ class companyProfileTestCases(BaseTest):
 
         LIMS-6295
         """
-        search_text = 'Egy'
+        search_text = 'Switzerland'
         # get the results
         country_field_results = self.base_selenium.get_drop_down_suggestion_list(
             element='company_profile:country_field', item_text=search_text)
