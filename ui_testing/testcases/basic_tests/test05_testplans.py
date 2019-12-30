@@ -128,10 +128,10 @@ class TestPlansTestCases(BaseTest):
             self.assertGreater(int(inprogress_testplan_version), old_completed_testplan_version)
             self.assertEqual(testplan_row_data_status, 'Completed')
 
-    def test004_archive_restore_test_plan_one_record(self):
+    def test004_archive_test_plan_one_record(self):
         '''
         LIMS-3506 Case 1
-        Archive and restore one record
+        Archive one record
         '''
 
         self.base_selenium.LOGGER.info('Choosing a random testplan table row')
@@ -147,34 +147,52 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.click_check_box(source=row)
         self.test_plan.sleep_small()
 
+        self.base_selenium.LOGGER.info('Archiving the selected item and navigating to the archived items table')
         self.test_plan.archive_selected_items()
         self.test_plan.get_archived_items()
 
-        archived_row = self.test_plan.search(testplan_number)
+        self.test_plan.open_filter_menu()
+        self.test_plan.filter_by_testplan_number(testplan_number)
+        archived_row = self.test_plan.result_table()
         self.test_plan.sleep_small()
         self.base_selenium.LOGGER.info('Checking if testplan number: {} is archived correctly'.format(testplan_number))
-        self.assertIsNotNone(archived_row[0])
-
+        self.assertIsNotNone(archived_row[0].text)
         self.base_selenium.LOGGER.info('Testplan number: {} is archived correctly'.format(testplan_number))
 
-        # restore and navigate to active table
-        self.base_selenium.LOGGER.info('Selecting the row')
-        self.test_plan.click_check_box(source=archived_row[0])
+    def test005_restore_test_plan_one_record(self):
+        '''
+        LIMS-3506 Case 1
+        Restore one record
+        '''
+
+        self.test_plan.get_archived_items()
+
+        self.base_selenium.LOGGER.info('Choosing a random testplan table row')
+        row = self.test_plan.get_random_table_row('test_plans:test_plans_table')
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
+        testplan_number = row_data['Test Plan No.']
         self.test_plan.sleep_small()
 
+        # restore and navigate to active table
+        self.base_selenium.LOGGER.info('Testplan number: {} will be restored'.format(testplan_number))
+        self.base_selenium.LOGGER.info('Restoring the selected item and navigating to the active items table')
         self.test_plan.restore_selected_items()
         self.test_plan.get_active_items()
 
-        restored_row = self.test_plan.search(testplan_number)
+        self.test_plan.open_filter_menu()
+        self.test_plan.filter_by_testplan_number(testplan_number)
+        restored_row = self.test_plan.result_table()
         self.base_selenium.LOGGER.info('Checking if testplan number: {} is restored correctly'.format(testplan_number))
-        self.assertIsNotNone(restored_row[0])
+        self.assertIsNotNone(restored_row[0].text)
         self.base_selenium.LOGGER.info('Testplan number: {} is restored correctly'.format(testplan_number))
 
-    def test005_archive_restore_test_plan_multiple_records(self):
+
+    def test006_archive_test_plan_multiple_records(self):
         '''
         LIMS-3506 Case 2
         Archive and restore multiple records
         '''
+
         self.base_selenium.LOGGER.info('Choosing random multiple testplans table rows')
         rows = self.test_plan.select_random_multiple_table_rows(element='test_plans:test_plans_table')
         testplan_rows = rows[0]
@@ -185,14 +203,14 @@ class TestPlansTestCases(BaseTest):
 
         # archive and navigate to archived table
         self.base_selenium.LOGGER.info('Testplan numbers: {} will be archived'.format(testplans_numbers))
-
+        self.base_selenium.LOGGER.info('Archiving the selected items and navigating to the archived items table')
         self.test_plan.archive_selected_items()
-        self.test_plan.get_archived_items()
 
         self.base_selenium.LOGGER.info(
             'Checking if testplan numbers: {} are archived correctly'.format(testplans_numbers))
 
-        archived_rows = self.test_plan.search_for_multiple_rows(testplans_numbers, check=1)
+        self.test_plan.get_archived_items()
+        archived_rows = self.test_plan.filter_multiple_rows_by_testplans_numbers(testplans_numbers)
 
         self.assertIsNotNone(archived_rows)
         self.assertEqual(len(archived_rows), len(testplans_numbers))
@@ -201,19 +219,35 @@ class TestPlansTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Testplan numbers: {} are archived correctly'.format(testplans_numbers))
 
-        # restore and navigate to active table
-        self.test_plan.restore_selected_items()
-        self.test_plan.get_active_items()
+    def test007_restore_test_plan_multiple_records(self):
+        '''
+        LIMS-3506 Case 2
+        Archive and restore multiple records
+        '''
+        self.test_plan.get_archived_items()
 
+        self.base_selenium.LOGGER.info('Choosing random multiple testplans table rows')
+        rows = self.test_plan.select_random_multiple_table_rows(element='test_plans:test_plans_table')
+        testplan_rows = rows[0]
+        testplans_numbers = []
+        for row in testplan_rows:
+            testplans_numbers.append(row['Test Plan No.'])
+        self.test_plan.sleep_small()
+
+        # archive and navigate to archived table
+        self.base_selenium.LOGGER.info('Testplan numbers: {} will be restored'.format(testplans_numbers))
+        self.test_plan.restore_selected_items()
         self.base_selenium.LOGGER.info(
             'Checking if testplan numbers: {} are restored correctly'.format(testplans_numbers))
+        self.test_plan.get_active_items()
 
-        restored_rows = self.test_plan.search_for_multiple_rows(testplans_numbers)
+        restored_rows = self.test_plan.filter_multiple_rows_by_testplans_numbers(testplans_numbers)
+
         self.assertIsNotNone(restored_rows)
         self.assertEqual(len(restored_rows), len(testplans_numbers))
         self.base_selenium.LOGGER.info('Testplan numbers: {} are restored correctly'.format(testplans_numbers))
 
-    def test006_exporting_test_plan_one_record(self):
+    def test008_exporting_test_plan_one_record(self):
         '''
         LIMS-3508 Case 1
         Exporting one record
@@ -240,7 +274,7 @@ class TestPlansTestCases(BaseTest):
             if item != '' and item != '-':
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test007_exporting_test_plan_multiple_records(self):
+    def test009_exporting_test_plan_multiple_records(self):
         '''
         LIMS-3508 Case 2
         Exporting multiple records
@@ -272,7 +306,7 @@ class TestPlansTestCases(BaseTest):
                 if item != '' and item != '-':
                     self.assertIn(item, fixed_sheet_row_data)
 
-    def test008_test_plan_duplicate(self):
+    def test010_test_plan_duplicate(self):
         '''
         LIMS-3679
         Duplicate a test plan
@@ -288,6 +322,8 @@ class TestPlansTestCases(BaseTest):
         main_testplan_data = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
         testplan_number = main_testplan_data['Test Plan No.']
         self.base_selenium.LOGGER.info('Testplan number: {} will be duplicated'.format(testplan_number))
+        
+        self.test_plan.open_filter_menu()
         self.test_plan.filter_by_testplan_number(testplan_number)
 
         self.base_selenium.LOGGER.info('Saving the child data of the main testplan')
@@ -310,7 +346,7 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(main_testplan_childtable_data, duplicated_testplan_childtable_data)
         self.assertEqual(main_testplan_data, duplicated_testplan_data)
 
-    def test009_test_plan_completed_to_inprogress(self):
+    def test011_test_plan_completed_to_inprogress(self):
         '''
         LIMS-3503
         When the testplan status is converted from completed to in progress a new version is created
@@ -345,7 +381,7 @@ class TestPlansTestCases(BaseTest):
             self.assertEqual(old_completed_testplan_version + 1, int(inprogress_testplan_version))
             self.assertEqual(testplan_row_data_status, 'In Progress')
 
-    def test010_create_testplans_same_name_article_materialtype(self):
+    def test012_create_testplans_same_name_article_materialtype(self):
         '''
         LIMS-3499
         Testing the creation of two testplans with the same name, material type
@@ -378,7 +414,7 @@ class TestPlansTestCases(BaseTest):
                 validation_result))
         self.assertTrue(validation_result)
 
-    def test011_create_testplans_same_name_different_materialtype(self):
+    def test013_create_testplans_same_name_different_materialtype(self):
         '''
         LIMS-3498
         Testing the creation of two testplans with the same name, but different material type
@@ -409,8 +445,7 @@ class TestPlansTestCases(BaseTest):
         data = self.test_plan.search(testplan_name)
         self.assertGreaterEqual(len(data), 2)
         
-
-    def test012_create_testplans_same_name_materialtype_all_article(self):
+    def test014_create_testplans_same_name_materialtype_all_article(self):
         '''
         LIMS-3500
         New: Test plan: Creation Approach: I can't create two test plans
@@ -445,8 +480,9 @@ class TestPlansTestCases(BaseTest):
             'Assert the error message to make sure that validation forbids the creation of two testplans having the same name, material type one of any article and the other for all articles? {}'.format(
                 validation_result))
         self.assertTrue(validation_result)
+    
     @skip('')
-    def test013_test_unit_update_version_in_testplan(self):
+    def test015_test_unit_update_version_in_testplan(self):
         '''
         LIMS-3703
         Create two testplans the first one with the testunit before updating its version, while
@@ -511,7 +547,7 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(first_testunit_data_in_second_testplan['iterations'], int(new_iteration))
     
     @skip('https://modeso.atlassian.net/browse/LIMS-6405')
-    def test014_delete_used_testplan(self):
+    def test016_delete_used_testplan(self):
         '''
         LIMS-3509
         If a testplan is used, it can't be deleted
@@ -533,7 +569,7 @@ class TestPlansTestCases(BaseTest):
         # check for the error popup that this testplan is used and can't be deleted
         self.assertFalse(testplan_deleted)
 
-    def test015_archived_testplan_shouldnot_appear_in_order(self):
+    def test017_archived_testplan_shouldnot_appear_in_order(self):
         '''
         LIMS-3708
         In case a testplan is archived, it shouldn't appear when creating a new order
@@ -563,7 +599,7 @@ class TestPlansTestCases(BaseTest):
         suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]
         self.assertEqual(len(suborder_first_testplan), 0)
 
-    def test016_testunit_sub_super_scripts(self):
+    def test018_testunit_sub_super_scripts(self):
         '''
         LIMS-5796
         '''
