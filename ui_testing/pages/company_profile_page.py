@@ -1,10 +1,12 @@
 from ui_testing.pages.base_pages import BasePages
 
+
 class CompanyProfile(BasePages):
     def __init__(self):
         super().__init__()
         self.base_selenium.wait_until_page_url_has(text='dashboard')
-        self.company_profile_url = "{}settings#companyProfile".format(self.base_selenium.url)
+        self.company_profile_url = "{}settings#companyProfile".format(
+            self.base_selenium.url)
 
     def get_company_profile_page(self):
         self.base_selenium.get(url=self.company_profile_url)
@@ -24,6 +26,21 @@ class CompanyProfile(BasePages):
         else:
             self.base_selenium.set_text(
                 element='company_profile:{}_field'.format(field_name), value=self.generate_random_text())
+
+    def update_company_profile(self):
+        # set the fields values
+        self.set_field_value(field_name='name')
+        self.set_field_value(field_name='street_name')
+        self.set_field_value(field_name='street_name')
+        self.set_field_value(field_name='street_number')
+        self.set_field_value(field_name='postal_code')
+        self.set_field_value(field_name='location')
+        self.set_field_value(field_name='country', field_type='drop_down')
+
+        company_profile= {
+            'name': self.get_field_value('name'),
+            'street_name': self.get_field_value('street_name')
+        }
 
     def click_on_cancel(self):
         # click on cancel
