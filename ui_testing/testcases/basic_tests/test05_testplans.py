@@ -186,7 +186,6 @@ class TestPlansTestCases(BaseTest):
         self.assertIsNotNone(restored_row[0].text)
         self.base_selenium.LOGGER.info('Testplan number: {} is restored correctly'.format(testplan_number))
 
-
     def test006_archive_test_plan_multiple_records(self):
         '''
         LIMS-3506 Case 2
@@ -247,6 +246,7 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(len(restored_rows), len(testplans_numbers))
         self.base_selenium.LOGGER.info('Testplan numbers: {} are restored correctly'.format(testplans_numbers))
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-6403')
     def test008_exporting_test_plan_one_record(self):
         '''
         LIMS-3508 Case 1
@@ -274,6 +274,7 @@ class TestPlansTestCases(BaseTest):
             if item != '' and item != '-':
                 self.assertIn(item, fixed_sheet_row_data)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-6403')
     def test009_exporting_test_plan_multiple_records(self):
         '''
         LIMS-3508 Case 2
@@ -576,7 +577,7 @@ class TestPlansTestCases(BaseTest):
         '''
 
         # choose a random testplan
-        main_testplan_data = (self.test_plan.select_random_table_row(element='test_plans:test_plans_table'))[0]
+        main_testplan_data = (self.test_plan.select_random_table_row(element='test_plans:test_plans_table'))
 
         # get testplan data from an api call
         testplan_data = (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=str(main_testplan_data['Test Plan No.'])))[0]
@@ -605,8 +606,13 @@ class TestPlansTestCases(BaseTest):
         '''
         testunit_name = self.generate_random_string()
         self.test_unit_page.get_test_units_page()
-        self.test_unit_page.create_qualitative_testunit(name=testunit_name, unit='mg[2]{o}', method='a')
-        testunit_materialtype = (self.test_unit_page.get_material_type()[0])[1:]
+
+        active_articles_with_materialtype_dictionary = self.get_active_articles_with_material_type()
+        random_materialtype = random.choice(list(active_articles_with_materialtype_dictionary.keys()))
+        articles_with_chosen_materialtype = active_articles_with_materialtype_dictionary[random_materialtype]
+        random_article = random.choice(articles_with_chosen_materialtype)
+
+        self.test_unit_page.create_qualitative_testunit(name=testunit_name, unit='mg[2]{o}', method='a', material_type=random_materialtype)
         testunit_unit_display = (self.base_selenium.find_element(element='test_unit:unit_display_value')).text
 
         self.test_unit_page.save()
@@ -614,9 +620,7 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(testunit_unit_display, 'mg2o')
         self.test_plan.get_test_plans_page()
 
-        active_articles_with_materialtype_dictionary = self.get_active_articles_with_material_type()
-        article = (active_articles_with_materialtype_dictionary[testunit_materialtype])[0]
-        testplan_name = self.test_plan.create_new_test_plan(material_type=testunit_materialtype, article=article, test_unit=testunit_name)
+        testplan_name = self.test_plan.create_new_test_plan(material_type=random_materialtype, article=random_article, test_unit=testunit_name)
 
         self.test_plan.get_test_plan_edit_page(testplan_name)
         self.test_plan.navigate_to_testunits_selection_page()
