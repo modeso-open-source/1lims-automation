@@ -29,6 +29,7 @@ class Article(Articles):
             "created_at": self.article_create_date,
             "changed_at": self.article_create_date,
             "changed_by": self.article_create_user,
+            "test_plan": None,
         }
 
         if full_options:
@@ -47,7 +48,8 @@ class Article(Articles):
                 "comment": self.article_comment,
                 "created_at": self.article_create_date,
                 "changed_at": self.article_create_date,
-                "changed_by": self.article_create_user,
+                "changed_by": self.article_create_user,            
+                "test_plan": None,
             }
 
         self.save(sleep)
