@@ -1024,13 +1024,13 @@ class TestUnitsTestCases(BaseTest):
         New: Test unit: Type Approach: When I change type from edit mode, the values should changed according to this type that selected 
         When I change type from edit mode, the values should changed according to this type that selected 
         LIMS-3680
+
+        comment: this case will be handled in create
         """
 
-        self.base_selenium.LOGGER.info('open random testunit')
-
-        testunit_record = self.test_unit_page.get_random_test_units_row()
-        self.test_unit_page.open_edit_page(row=testunit_record)
-
+        self.base_selenium.LOGGER.info('open testunits in create')
+        self.test_unit_page.click_create_new_testunit()
+        
         self.base_selenium.LOGGER.info('set the type to Quantitative')
         self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
         self.test_unit_page.sleep_tiny()
