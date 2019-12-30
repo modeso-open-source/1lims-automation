@@ -799,7 +799,7 @@ class ArticlesTestCases(BaseTest):
 
         # create new article with full options
         article = self.article_page.create_new_article(
-            material_type='Raw Material', full_options=full_options)
+            material_type=material_type, full_options=full_options)
 
         # open article table page and open the filter menu
         self.article_page.get_articles_page()
@@ -838,7 +838,7 @@ class ArticlesTestCases(BaseTest):
 
         # create new article with full options
         article = self.article_page.create_new_article(
-            material_type='Raw Material', full_options=full_options)
+            material_type=material_type, full_options=full_options)
 
         # create crossponding test plan
         if filter_name == 'test_plan':
