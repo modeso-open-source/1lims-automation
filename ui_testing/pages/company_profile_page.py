@@ -21,7 +21,7 @@ class CompanyProfile(BasePages):
         return field_value
 
     def set_field_value(self, field_name, field_type='text', item_text=''):
-        if item_text == '':
+        if item_text == '' and field_type == 'text':
             item_text = self.generate_random_text()
 
         if field_type == 'drop_down':

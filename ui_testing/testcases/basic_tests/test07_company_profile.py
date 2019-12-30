@@ -24,13 +24,13 @@ class companyProfileTestCases(BaseTest):
         # check if the country name is in the results
         self.assertIn(search_text, country_field_results)
 
-    def test002_user_can_change_any_field_and_cancel(self):
+    @parameterized.extend(['name', 'street_name', 'street_number', 'postal_code', 'location'])
+    def test002_user_can_change_any_field_and_cancel(self, field_name):
         """
         Company profile: Make sure after you edit any data and press on cancel button, nothing occur 
 
         LIMS-6096
         """
-        field_name = 'name'
         # set field type depanding on name
         field_type = 'text'
         if field_name == 'country':
