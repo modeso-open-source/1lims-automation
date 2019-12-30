@@ -219,7 +219,7 @@ elements = {
         'filter_actions': {'method': 'class_name',
                            'value': 'actions',
                            'order': 0},
-        'default_filter_name': {'method': 'xpath', 'value': '//*[@id="name"]//label'},
+        'default_filter_name': {'method': 'xpath', 'value': '//label[contains(text()," Name")]'},
         'default_filter_material_type': {'method': 'xpath', 'value': '//*[@id="materialType"]//label'},
         'default_filter_number': {'method': 'xpath', 'value': '//*[@id="number"]//label'},
         'default_filter_changed_by': {'method': 'xpath', 'value': '//*[@id="modifiedBy"]//label'},
