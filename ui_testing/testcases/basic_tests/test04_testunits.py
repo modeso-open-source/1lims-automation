@@ -1154,7 +1154,7 @@ class TestUnitsTestCases(BaseTest):
         LIMS-4164
         """
         self.test_unit_page.open_configuration()
-        self.test_unit_page.archive_quantification_limit_field()
+        self.assertTrue(self.test_unit_page.archive_quantification_limit_field())
         if self.base_selenium.check_element_is_exist(element='configurations_page:error_msg'):
             self.base_selenium.LOGGER.info('this field is used in another testunit, you need to delete all testunits with quantification option to archive this field')
         else:
@@ -1162,7 +1162,3 @@ class TestUnitsTestCases(BaseTest):
             self.test_unit_page.get_archived_fields_tab()
             self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
             
-
-
-        
-

@@ -99,6 +99,8 @@ elements = {
                    'value': 'Delete'},
         'xslx': {'method': 'link_text',
                  'value': 'XSLX'},
+        'configurations': {'method': 'link_text',
+                 'value': 'Configurations'},
         'table_info': {'method': 'id',
                        'value': 'table_info'},
         'filter_btn': {'method': 'id',
