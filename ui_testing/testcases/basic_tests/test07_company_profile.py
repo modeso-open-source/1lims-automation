@@ -80,7 +80,7 @@ class companyProfileTestCases(BaseTest):
 
         LIMS-6098
         """
-        username = self.base_selenium.get_text(element='username')
-        email = self.base_selenium.get_text(element='email')
+        username = self.base_selenium.get_text(element='company_profile:username')
+        email = self.base_selenium.get_text(element='company_profile:email')
         self.assertTrue(username)
         self.assertTrue(email)
