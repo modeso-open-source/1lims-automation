@@ -9,6 +9,7 @@ from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
 from ui_testing.pages.base_pages import BasePages
 from ui_testing.pages.order_page import Order
+from ui_testing.pages.audit_trail_page import AuditTrail
 from ui_testing.pages.contacts_page import Contacts
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
@@ -33,6 +34,7 @@ class BaseTest(TestCase):
         self.contact_page = Contact()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
+        self.audit_trail_page = AuditTrail()
         self.header_page = Header()
         self.base_page = BasePages()
         self.contacts_page = Contacts()
@@ -56,7 +58,9 @@ class BaseTest(TestCase):
         tmp = []
         for item in data_list:
             if len(str(item)) > 0:
-                if re.search(r'\d{2}\.\d{2}\.\d{4}', str(item)):
+                if re.search(r'\d{2}.\d{2}.\d{4},\s\d{1,2}:\d{1,2}\s(A|P)M', str(item)):                    
+                    tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y, %H:%M %p'))
+                elif re.search(r'\d{2}.\d{2}.\d{4}', str(item)):
                     tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y'))
                 elif "-" == str(item):
                     continue
