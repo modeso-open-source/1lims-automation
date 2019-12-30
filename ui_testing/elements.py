@@ -240,6 +240,8 @@ elements = {
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
+        'version_table': {'method': 'link_text',
+                        'value': 'Versions'},
         'testunit_menu': {'method': 'css_selector',
                           'value': '[class="dropdown "]'},
         'versions': {'method': 'id',
@@ -409,6 +411,14 @@ elements = {
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
                                  'value': 'start_shipmentDate'}
+    },
+
+    'audit_trail': {
+        'filter_action_date': {'method': 'id', 'value': 'start_createdAt'},
+        'filter_changed_by': {'method': 'id', 'value': 'createdByfield'},
+        'filter_action': {'method': 'id', 'value': 'actionfield'},
+        'filter_entity': {'method': 'id', 'value': 'entityfield'},
+        'filter_entity_number': {'method': 'id', 'value': 'entityNumberfield'},
     },
 
     'order': {

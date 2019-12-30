@@ -24,6 +24,12 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:archive')
         self.confirm_popup()
+    
+    def get_versions_table(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='test_units:right_menu')
+        self.base_selenium.click(element='test_units:version_table')
+        self.sleep_small()
 
     def get_versions_of_selected_test_units(self):
         self.base_selenium.scroll()
@@ -37,6 +43,7 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:archived')
         self.sleep_small()
+
 
     def is_test_unit_in_table(self, value):
         """
