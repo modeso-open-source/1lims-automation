@@ -30,7 +30,7 @@ class companyProfileTestCases(BaseTest):
 
         LIMS-6096
         """
-        field_name = 'country'
+        field_name = 'name'
         # set field type depanding on name
         field_type = 'text'
         if field_name == 'country':

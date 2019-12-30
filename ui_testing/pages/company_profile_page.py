@@ -13,7 +13,7 @@ class CompanyProfile(BasePages):
         self.sleep_small()
 
     def get_field_value(self, field_name, field_type='text'):
-        field_value = self.base_selenium.get_text(
+        field_value = self.base_selenium.get_value(
             element='company_profile:{}_field'.format(field_name))
         if field_type == 'drop_down':
             field_value = field_value.split('\n')[0]
