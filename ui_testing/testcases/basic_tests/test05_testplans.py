@@ -489,28 +489,18 @@ class TestPlansTestCases(BaseTest):
         the second is after updating the version (category and iteration)
         The updates should be only available in the second testplan
         '''
-        # connect to database and change the searchable field to 'name and number'
+        # connect to database and change the searchable field to 'name,number'
         db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
         cursor = db.cursor()
 
-        update_query_testplans = ("UPDATE `field_data` SET `searchable`= 'name,type' WHERE componentId = 5 AND name = 'testUnits'")
-        cursor.execute(update_query_testplans)
+        testunits_select_query_from_testplans = ("SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(testunits_select_query_from_testplans)
+        old_testunits_searchable_from_testplans = str(cursor.fetchone()[0])
 
-        select_query_from_testplans = ("SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
-        cursor.execute(select_query_from_testplans)
-        old_searchable_from_testplans = str(cursor.fetchone()[0])
-        # select_query_from_testunits = ("SELECT searchable FROM `field_data` WHERE componentId = 4 AND name = 'name'")
-        # cursor.execute(select_query_from_testunits)
-        # old_searchable_from_testunits = str(cursor.fetchone()[0]) 
-        print('The old searchable value is: {}'.format(old_searchable_from_testplans))
-
-        update_query_testplans = ("UPDATE `field_data` SET `searchable`= 'name,number' WHERE componentId = 5 AND name = 'testUnits'")
-        cursor.execute(update_query_testplans)
-        # update_query_testunits = ("UPDATE `field_data` SET `searchable`= 'name,number' WHERE componentId = 4 AND name = 'name'")
-        # cursor.execute(update_query_testunits)
-        # db.close()
-
-
+        testunits_searchable_update_query_in_testplans = ("UPDATE `field_data` SET `searchable`= 'name,number' WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(testunits_searchable_update_query_in_testplans)
+        db.commit()
+    
         # Get the completed testplans and choose a random one
         completed_test_plans = self.test_plan_api.get_completed_testplans(limit=500)
         first_testplan_data = random.choice(completed_test_plans)
@@ -530,6 +520,7 @@ class TestPlansTestCases(BaseTest):
         self.test_unit_page.open_edit_page(row=testunit)
         
         # update the iteration and category
+        article = 'All' if first_testplan_data['article'][0] == 'all' else first_testplan_data['article'][0]
         new_iteration = str(int(first_testunit_data_in_first_testplan['iterations']) + 1)
         self.test_unit_page.update_testunit(number=None, name=None, category='', iterations=new_iteration, random=False)
         new_category = self.test_unit_page.get_category().lower()
@@ -542,23 +533,21 @@ class TestPlansTestCases(BaseTest):
 
         # create new testplan with this testunit after creating the new version
         second_testplan_name = self.test_plan.create_new_test_plan(material_type=first_testplan_data['materialType'],
-                        article=first_testplan_data['article'][0], test_unit=str(testunit_number))
+                        article=article, test_unit=str(testunit_number))
+
         self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(second_testplan_name, 
-                        first_testplan_data['article'][0], first_testplan_data['materialType']))
+                        article, first_testplan_data['materialType']))
         
         second_testplan_data = (self.test_plan_api.get_testplan_with_quicksearch(second_testplan_name))[0]
         
         first_testunit_data_in_second_testplan = (self.test_plan_api.get_testunits_in_testplan(second_testplan_data['id']))[0]
 
-        update_query_testplans = ("UPDATE `field_data` SET `searchable`= '" + old_searchable_from_testplans + "' WHERE componentId = 5 AND name = 'testUnits'")
+        # return the database as it was for upcoming test cases
+        update_query_testplans = ("UPDATE `field_data` SET `searchable`= '" + old_testunits_searchable_from_testplans + "' WHERE componentId = 5 AND name = 'testUnits'")
         cursor.execute(update_query_testplans)
-
-        # update_query_testunits = ("UPDATE `field_data` SET `searchable`= " + old_searchable_from_testunits + " WHERE componentId = 4 AND name = 'name'")
-        # cursor.execute(update_query_testunits)
-
+        db.commit()
         db.close()
-        
-        
+    
         # Assert the first testplan wasn't affected by the change
         first_testunit_data_in_first_testplan_after_change = (self.test_plan_api.get_testunits_in_testplan(first_testplan_data['id']))[0]
         self.base_selenium.LOGGER.info("Asserting that the category of the testunit in the first testplan didn't change")
