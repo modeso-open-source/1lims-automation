@@ -603,6 +603,8 @@ elements = {
 
        'cancel': {'method': 'id',
                         'value': 'cancelButton'},
+        'contact_field': {'method': 'id',
+                            'value': 'supplierfield'}
     },
 
     'contacts':{
