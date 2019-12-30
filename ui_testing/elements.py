@@ -365,7 +365,7 @@ elements = {
         'selected_cons': {'method': 'id',
                           'value': 'selectedConcs'},
         'qualitative_value': {'method': 'id',
-                              'value': 'textValueArrayfield'}
+                              'value': 'textValueArrayfield'},
         'configuration_testunit_no': {'method': 'class_name',
                               'value': 'number',
                               'order': 0},
@@ -755,6 +755,11 @@ elements = {
                                     'value': 'Mark as Required'},
         'mark_as_unique': {'method': 'link_text',
                                     'value': 'Mark as Unique'},
+        'quantifications_options_menu': {'method': 'xpath',
+                        'value': '//ul[@class="dropdown-menu show"]'},
+        'error_msg': {'method': 'class_name',
+                    'value': 'm-form__help error-display',
+                    'order': 0}
     }
 }
 

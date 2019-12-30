@@ -98,6 +98,17 @@ class TstUnits(BasePages):
     
     
     def archive_quantification_limit_field(self):
+        self.base_selenium.LOGGER.info('archive quantification limit field')
         self.get_active_fields_tab()
         self.sleep_tiny()
-        self.find
+        self.base_selenium.click(element='test_unit:grouped_fields_option_menu')
+        self.base_selenium.click(element='test_unit:archive_field')
+        self.sleep_tiny()
+    
+    def restore_quantification_limit_field(self):
+        self.base_selenium.LOGGER.info('restore quantification limit field')
+        self.get_archived_items()
+        self.sleep_tiny()
+        self.base_selenium.click(element='test_unit:grouped_fields_option_menu')
+        self.base_selenium.click(element='test_unit:restore_field')
+        self.sleep_tiny()
