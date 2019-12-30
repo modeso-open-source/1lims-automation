@@ -3,7 +3,7 @@ from unittest import skip
 from parameterized import parameterized
 import re, random
 from selenium.common.exceptions import NoSuchElementException
-import MySQLdb
+import pymysql
 
 class TestPlansTestCases(BaseTest):
 
@@ -482,7 +482,6 @@ class TestPlansTestCases(BaseTest):
                 validation_result))
         self.assertTrue(validation_result)
 
-    @skip('')
     def test015_test_unit_update_version_in_testplan(self):
         '''
         LIMS-3703
@@ -490,11 +489,33 @@ class TestPlansTestCases(BaseTest):
         the second is after updating the version (category and iteration)
         The updates should be only available in the second testplan
         '''
+        # connect to database and change the searchable field to 'name and number'
+        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
+        cursor = db.cursor()
+
+        update_query_testplans = ("UPDATE `field_data` SET `searchable`= 'name,type' WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(update_query_testplans)
+
+        select_query_from_testplans = ("SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(select_query_from_testplans)
+        old_searchable_from_testplans = str(cursor.fetchone()[0])
+        # select_query_from_testunits = ("SELECT searchable FROM `field_data` WHERE componentId = 4 AND name = 'name'")
+        # cursor.execute(select_query_from_testunits)
+        # old_searchable_from_testunits = str(cursor.fetchone()[0]) 
+        print('The old searchable value is: {}'.format(old_searchable_from_testplans))
+
+        update_query_testplans = ("UPDATE `field_data` SET `searchable`= 'name,number' WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(update_query_testplans)
+        # update_query_testunits = ("UPDATE `field_data` SET `searchable`= 'name,number' WHERE componentId = 4 AND name = 'name'")
+        # cursor.execute(update_query_testunits)
+        # db.close()
+
 
         # Get the completed testplans and choose a random one
         completed_test_plans = self.test_plan_api.get_completed_testplans(limit=500)
         first_testplan_data = random.choice(completed_test_plans)
         first_testunit_data_in_first_testplan = (self.test_plan_api.get_testunits_in_testplan(first_testplan_data['id']))[0]
+        testunit_number = first_testunit_data_in_first_testplan['number']
         self.base_selenium.LOGGER.info("Choosing to change testunit with name: {}, category: {} and iterations = {}".format(
             first_testunit_data_in_first_testplan['name'], first_testunit_data_in_first_testplan['category'], first_testunit_data_in_first_testplan['iterations']))
     
@@ -502,7 +523,7 @@ class TestPlansTestCases(BaseTest):
         self.test_unit_page.get_test_units_page()
         self.base_selenium.LOGGER.info('Navigating to testunit {} edit page'.format(first_testunit_data_in_first_testplan['name']))
         self.test_unit_page.open_filter_menu()
-        self.test_unit_page.filter_by(filter_element='test_unit:no', filter_text=first_testunit_data_in_first_testplan['number'], field_type='text')
+        self.test_unit_page.filter_by(filter_element='test_unit:no', filter_text=testunit_number, field_type='text')
         self.test_unit_page.filter_apply()
 
         testunit = self.test_unit_page.result_table()[0]
@@ -519,9 +540,27 @@ class TestPlansTestCases(BaseTest):
         # go back to testplans active table
         self.test_plan.get_test_plans_page()
 
+        # create new testplan with this testunit after creating the new version
+        second_testplan_name = self.test_plan.create_new_test_plan(material_type=first_testplan_data['materialType'],
+                        article=first_testplan_data['article'][0], test_unit=str(testunit_number))
+        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(second_testplan_name, 
+                        first_testplan_data['article'][0], first_testplan_data['materialType']))
+        
+        second_testplan_data = (self.test_plan_api.get_testplan_with_quicksearch(second_testplan_name))[0]
+        
+        first_testunit_data_in_second_testplan = (self.test_plan_api.get_testunits_in_testplan(second_testplan_data['id']))[0]
+
+        update_query_testplans = ("UPDATE `field_data` SET `searchable`= '" + old_searchable_from_testplans + "' WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(update_query_testplans)
+
+        # update_query_testunits = ("UPDATE `field_data` SET `searchable`= " + old_searchable_from_testunits + " WHERE componentId = 4 AND name = 'name'")
+        # cursor.execute(update_query_testunits)
+
+        db.close()
+        
+        
         # Assert the first testplan wasn't affected by the change
         first_testunit_data_in_first_testplan_after_change = (self.test_plan_api.get_testunits_in_testplan(first_testplan_data['id']))[0]
-        print(first_testunit_data_in_first_testplan)
         self.base_selenium.LOGGER.info("Asserting that the category of the testunit in the first testplan didn't change")
         self.base_selenium.LOGGER.info("Asserting the category was and remained: {}".format(first_testunit_data_in_first_testplan['category'].replace('_', ' ')))
         self.assertEqual(first_testunit_data_in_first_testplan['category'].replace('_', ' '), first_testunit_data_in_first_testplan_after_change['category'].replace('_', ' '))
@@ -529,16 +568,7 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info("Asserting the iterations were and remained: {}".format(first_testunit_data_in_first_testplan['iterations']))
         self.assertEqual(first_testunit_data_in_first_testplan['iterations'], first_testunit_data_in_first_testplan_after_change['iterations'])
 
-        # create new testplan with this testunit after creating the new version
-        second_testplan_name = self.test_plan.create_new_test_plan(material_type=first_testplan_data['materialType'],
-                        article=first_testplan_data['article'][0], test_unit=first_testunit_data_in_first_testplan['name'])
-        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(second_testplan_name, 
-                        first_testplan_data['article'][0], first_testplan_data['materialType']))
-        
-        second_testplan_data = (self.test_plan_api.get_testplan_with_quicksearch(second_testplan_name))[0]
-        
-        first_testunit_data_in_second_testplan = (self.test_plan_api.get_testunits_in_testplan(second_testplan_data['id']))[0]
-        print(first_testunit_data_in_second_testplan)
+
         # Assert the second testplan is affected by the change
         self.base_selenium.LOGGER.info('Asserting that the category of the testunit in the second testplan is the same as the updated category')
         self.base_selenium.LOGGER.info("Asserting the category of the second testplan is: {}".format(new_category))
