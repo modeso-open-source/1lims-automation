@@ -31,12 +31,8 @@ script:
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
 #  - export TESTS='test04_testunits.py:TestUnitsTestCases.test010_material_type_approach_1_Quantitative_MiBi'
 #  - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_name
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_number
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test030_filter_article_by_unit
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test031_filter_article_by_created_at
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test032_filter_article_by_material_type
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test033_filter_article_by_changed_by
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test010_create_article_with_test_plan_filter_by_test_plan
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_any_field
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test034_filter_article_by_name_default_filter
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test035_filter_article_by_number_default_filter
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test036_filter_article_by_created_at_default_filter

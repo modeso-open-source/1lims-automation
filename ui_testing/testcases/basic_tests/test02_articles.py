@@ -695,119 +695,40 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('+ Check Related article field existance in edit page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
 
-    def test028_filter_article_by_name(self):
+    @parameterized.expand(['name', 'number', 'unit', 'created_at', 'material_type', 'changed_by'])
+    def test028_filter_article_by_any_field(self, filter_name):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
         LIMS:3595
         :return:
         """
-        # create new article with full options
-        article = self.article_page.create_new_article(material_type='Raw Material')
 
-        # open article table page and open the filter menu       
+        # set default material type and field type
+        material_type = 'Raw Material'
+        field_type = 'text'
+
+        # set the material type to None in case of material type filter to test with random material type name
+        if filter_name == 'material_type':
+            material_type = None
+
+        # change the field type for drop down fields
+        if filter_name == 'material_type' or filter_name == 'changed_by':
+            field_type = 'drop_down'
+
+        # create new article with full options
+        article = self.article_page.create_new_article(
+            material_type='Raw Material')
+
+        # open article table page and open the filter menu
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
         self.article_page.open_filter_menu()
 
         # filter by article name
-        result_article = self.article_page.filter_article_by(filter_element='article:filter_name', filter_text=article['name'])
-        self.assertIn(article['name'], result_article.text)
-
-    def test029_filter_article_by_number(self):
-        """
-        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
-
-        LIMS:3595
-        :return:
-        """
-        # create new article with full options
-        article = self.article_page.create_new_article(material_type='Raw Material')
-
-        # open article table page and open the filter menu       
-        self.article_page.get_articles_page()
-        self.article_page.sleep_small()
-        self.article_page.open_filter_menu()
-
-        # filter by article number
-        result_article = self.article_page.filter_article_by(filter_element='article:filter_number', filter_text=article['number'])  
-        self.assertIn(article['number'], result_article.text)
-
-    def test030_filter_article_by_unit(self):
-        """
-        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
-
-        LIMS:3595
-        :return:
-        """
-        # create new article with full options
-        article = self.article_page.create_new_article(material_type='Raw Material', full_options=True)
-
-        # open article table page and open the filter menu       
-        self.article_page.get_articles_page()
-        self.article_page.sleep_small()
-        self.article_page.open_filter_menu()
-
-        # filter by article unit
-        result_article = self.article_page.filter_article_by(filter_element='article:filter_unit', filter_text=article['unit'])
-        self.assertIn(article['unit'], result_article.text)
-
-    def test031_filter_article_by_created_at(self):
-        """
-        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
-
-        LIMS:3595
-        :return:
-        """
-        # create new article with full options
-        article = self.article_page.create_new_article(material_type='Raw Material')
-
-        # open article table page and open the filter menu       
-        self.article_page.get_articles_page()
-        self.article_page.sleep_small()
-        self.article_page.open_filter_menu()
-
-        # filter by article created at
-        result_article =  self.article_page.filter_article_by(filter_element='article:filter_created_at', filter_text=article['created_at'])
-        self.assertIn(article['created_at'], result_article.text)
-
-    def test032_filter_article_by_material_type(self):
-        """
-        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
-
-        LIMS:3595
-        :return:
-        """
-        # create new article with full options
-        article = self.article_page.create_new_article(material_type=None)
-
-        # open article table page and open the filter menu       
-        self.article_page.get_articles_page()
-        self.article_page.sleep_small()
-        self.article_page.open_filter_menu()
-
-        # filter by article material type
-        result_article = self.article_page.filter_article_by(filter_element='article:filter_material_type', filter_text=article['material_type'], field_type='drop_down')
-        self.assertIn(article['material_type'], result_article.text)
-
-    def test033_filter_article_by_changed_by(self):
-        """
-        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
-
-        LIMS:3595
-        :return:
-        """
-        # create new article with full options
-        article = self.article_page.create_new_article(material_type='Raw Material')
-
-        # open article table page and open the filter menu       
-        self.article_page.get_articles_page()
-        self.article_page.sleep_small()
-        self.article_page.open_filter_menu()
-
-        # filter by article changed by
-        result_article = self.article_page.filter_article_by(filter_element='article:filter_changed_by', filter_text=article['changed_by'], field_type='drop_down')
-        self.assertIn(article['changed_by'], result_article.text)
+        result_article = self.article_page.filter_article_by(filter_element='article:filter_{}'.format(
+            filter_name), filter_text=article[filter_name], field_type=field_type)
+        self.assertIn(article[filter_name], result_article.text)
 
     def test034_filter_article_by_name_default_filter(self):
         """
