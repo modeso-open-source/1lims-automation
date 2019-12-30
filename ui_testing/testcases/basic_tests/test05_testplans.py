@@ -3,7 +3,7 @@ from unittest import skip
 from parameterized import parameterized
 import re, random
 from selenium.common.exceptions import NoSuchElementException
-
+import MySQLdb
 
 class TestPlansTestCases(BaseTest):
 
@@ -481,7 +481,7 @@ class TestPlansTestCases(BaseTest):
             'Assert the error message to make sure that validation forbids the creation of two testplans having the same name, material type one of any article and the other for all articles? {}'.format(
                 validation_result))
         self.assertTrue(validation_result)
-    
+
     @skip('')
     def test015_test_unit_update_version_in_testplan(self):
         '''
@@ -546,7 +546,7 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Asserting that the iterations of the testunit in the second testplan is the same as the updated iterations')
         self.base_selenium.LOGGER.info("Asserting the iterations of the second testplan are: {}".format(new_iteration))
         self.assertEqual(first_testunit_data_in_second_testplan['iterations'], int(new_iteration))
-    
+
     @skip('https://modeso.atlassian.net/browse/LIMS-6405')
     def test016_delete_used_testplan(self):
         '''
