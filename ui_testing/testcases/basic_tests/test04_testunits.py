@@ -1058,3 +1058,57 @@ class TestUnitsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
             self.assertIn(row_data['Unit'], fixed_sheet_row_data)
 
+    def test032_edit_category_edits_category_label_in_testplan_step_two(self):
+        """
+
+        New: Test unit: Category Approach: Any update in test unit category should reflect in the test plan ( step two ) in this test unit
+
+        LIMS-3687
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All', unit='',
+                                                        category=new_random_category)
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        active_testplan_data = self.get_active_article_with_tst_plan()
+        self.test_plan.get_test_plans_page()
+        self.base_selenium.LOGGER.info('Create new testPlan to use the newly created testunit')
+        new_random_testplan_name = self.test_plan.create_new_test_plan(test_unit=new_random_name,
+                                                                       material_type=
+                                                                       active_testplan_data['Material Type'],
+                                                                       article=
+                                                                       active_testplan_data['Article Name'])
+        self.base_page.sleep_tiny()
+        self.test_plan.get_test_plan_edit_page(new_random_testplan_name)
+        random_category_before_edit = self.test_plan.get_test_unit_category()
+
+        self.test_unit_page.get_test_units_page()
+        new_random_category_edit = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('edit newly created testunit with qualitative and random generated data')
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+        self.test_unit_page.get_random_test_units()
+        self.test_unit_page.set_category(new_random_category_edit)
+        self.test_unit_page.save_and_return_overview()
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(new_random_testplan_name)
+        self.base_page.sleep_tiny()
+        random_category_after_edit = self.test_plan.get_test_unit_category()
+
+        self.assertEquals(random_category_before_edit.strip(), new_random_category.strip())
+        self.assertEquals(random_category_after_edit.strip(), new_random_category_edit.strip())
+
+
+
+
+

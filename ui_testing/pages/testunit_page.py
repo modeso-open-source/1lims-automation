@@ -154,6 +154,12 @@ class TstUnit(TstUnits):
         self.confirm_popup(force=confirm)
         self.sleep_small()
 
+    def save_and_return_overview(self):
+        self.save(save_btn='general:save_form', logger_msg='Save And update the current version')
+        self.sleep_small()
+        self.click_overview()
+        self.sleep_small()
+
     def set_testunit_type(self, testunit_type=''):
         self.base_selenium.LOGGER.info('Set testunit type to be {}'.format(testunit_type))
         if testunit_type:

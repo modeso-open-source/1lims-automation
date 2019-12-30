@@ -1,3 +1,5 @@
+from selenium.webdriver.common.keys import Keys
+
 from ui_testing.pages.testplans_page import TestPlans
 
 
@@ -27,7 +29,7 @@ class TstPlan(TestPlans):
             self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
     def get_material_type(self):
-        return self.base_selenium.get_text(element='test_plans:material_type')
+        return self.base_selenium.get_text(element='test_plan:material_type')
 
     def set_material_type(self, material_type='', random=False):
         if random:
@@ -67,6 +69,12 @@ class TstPlan(TestPlans):
         lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
         return upper.get_attribute('value'), lower.get_attribute('value')
 
+    def get_test_unit_category(self):
+        self.base_selenium.click('test_plan:next')
+        self.sleep_small()
+        category_label_test_unit = self.base_selenium.find_element('test_plan:category-label')
+        return category_label_test_unit.get_attribute('textContent')
+
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
         self.base_selenium.LOGGER.info(' Create new test plan')
         self.test_plan_name = name or self.generate_random_text()
@@ -91,7 +99,7 @@ class TstPlan(TestPlans):
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
             self.set_test_unit(test_unit=test_unit, **kwargs)
-            self.save(save_btn='test_plan:save')
+            self.save(save_btn='test_plan:save_btn')
         else:
             self.save()
 

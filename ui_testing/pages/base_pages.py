@@ -130,6 +130,12 @@ class BasePages:
         row.find_element_by_xpath(xpath).click()
         self.sleep_small() # sleep for loading
 
+    def open_edit_page_by_css_selector(self, row, css_selector=''):
+        if css_selector == '':
+            css_selector = '[title="Edit details"]'
+        row.find_element_by_css_selector(css_selector).click()
+        self.sleep_small() # sleep for loading
+
     def get_archived_items(self):
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
@@ -315,7 +321,7 @@ class BasePages:
     def click_overview(self):
         # click on Overview, this will display an alert to the user
         self.base_selenium.LOGGER.info('click on Overview')
-        self.base_selenium.click(element='general:overview')
+        self.base_selenium.click_by_script(element='general:overview')
         self.sleep_tiny()
 
     def confirm_overview_pop_up(self):
