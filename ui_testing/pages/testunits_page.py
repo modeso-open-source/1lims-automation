@@ -43,6 +43,12 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:archived')
         self.sleep_small()
+    
+    def get_configurations(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='test_units:right_menu')
+        self.base_selenium.click(element='test_units:archived')
+        self.sleep_small()
 
 
     def is_test_unit_in_table(self, value):
