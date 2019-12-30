@@ -224,6 +224,10 @@ class TstUnit(TstUnits):
         self.base_selenium.LOGGER.info('Get testunit specification unit')
         return self.base_selenium.get_value(element='test_unit:spec_unit').split('\n')[0]
 
+    def get_spec_unit_preview(self):
+        self.base_selenium.LOGGER.info('Get testunit specification unit preview')
+        return self.base_selenium.get_attribute(element='test_unit:spec_unit_preview',attribute='textContent').split('\n')[0]
+
     def get_quan_upper_limit(self):
         self.base_selenium.LOGGER.info('Get testunit quantification upper limit')
         return self.base_selenium.get_value(element='test_unit:quan_upper_limit').split('\n')[0]

@@ -740,7 +740,8 @@ class TestUnitsTestCases(BaseTest):
                                  logger_msg='save {} qualitative test unit'.format(test_unit_name))
 
         self.test_unit_page.create_quantitative_mibi_testunit(name=test_unit_name, method=new_random_method,
-                                                              upper_limit=1000, material_type=material_type, category=category)
+                                                              upper_limit=1000, material_type=material_type,
+                                                              category=category)
         self.test_unit_page.save(save_btn='general:save_form',
                                  logger_msg='save {} quantitative_mibi test unit'.format(test_unit_name))
 
@@ -754,7 +755,8 @@ class TestUnitsTestCases(BaseTest):
         self.test_plan.open_edit_page(test_plan)
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
-        test_units = self.base_selenium.get_drop_down_suggestion_list(element='test_plan:test_units', item_text=test_unit_name)
+        test_units = self.base_selenium.get_drop_down_suggestion_list(element='test_plan:test_units',
+                                                                      item_text=test_unit_name)
 
         self.info('assert that all test units are in the suggestions list')
         self.assertEqual(len(test_units), 3)
@@ -773,6 +775,209 @@ class TestUnitsTestCases(BaseTest):
         new_test_units = len(self.test_unit_page.search(test_unit_name))
         self.info('assert there is a new test unit')
         self.assertGreater(new_test_units, old_test_units)
+
+
+    @parameterized.expand(['unitsub', 'unitsuper'])
+    def test029_qualitative_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self,
+                                                                                           unit_with_sub_or_super):
+        """
+        New: Test unit: Export: Sub & Super scripts Approach: Allow user to see the sub & super scripts in the export file
+
+        LIMS-5795
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        if unit_with_sub_or_super == 'unitsub':
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            material_type='All',
+                                                            unit=unit_with_sub_or_super.replace('sub', '[sub]'),
+                                                            category=new_random_category)
+        else:
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            material_type='All',
+                                                            unit=unit_with_sub_or_super.replace('super', '{super}'),
+                                                            category=new_random_category)
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+        self.test_unit_page.download_xslx_sheet()
+        rows_data = self.test_unit_page.get_table_rows_data()
+        for index in range(len(rows_data) - 1):
+            self.base_selenium.LOGGER.info(' * Comparing the unit name no. {} '.format(index))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.test_unit_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                if item == unit_with_sub_or_super:
+                    self.assertIn(item, fixed_sheet_row_data)
+
+    @parameterized.expand(['unitsub', 'unitsuper'])
+    def test031_create_qualitative_test_unit_with_sub_and_super_scripts(self, unit_with_sub_or_super):
+        """
+
+        Test unit : Unit: Subscript and superscript scripts Approach: Allow the unit filed to accept sub and super scripts in the test unit form
+
+        LIMS-5784
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        if unit_with_sub_or_super == 'unitsub':
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            material_type='All',
+                                                            unit=unit_with_sub_or_super.replace('sub', '[sub]'),
+                                                            category=new_random_category)
+        else:
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            material_type='All',
+                                                            unit=unit_with_sub_or_super.replace('super', '{super}'),
+                                                            category=new_random_category)
+
+        self.test_unit_page.sleep_tiny()
+        inserted_unit = self.test_unit_page.get_spec_unit()
+        preview_unit = self.test_unit_page.get_spec_unit_preview()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+        rows_data = self.test_unit_page.get_table_rows_data()
+        self.base_selenium.LOGGER.info(' * Comparing the unit name')
+        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
+        self.assertIn(preview_unit, fixed_row_data)
+        self.assertNotIn(inserted_unit, fixed_row_data)
+
+    @parameterized.expand(['unitsub', 'unitsuper'])
+    def test026_create_quantitative_test_unit_with_sub_and_super_scripts(self, unit_with_sub_or_super):
+        """
+
+        Test unit form: Unit accepts subscript and superscript characters in case of quantitative type with limit of quantification unit
+
+        LIMS-5785
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
+        if unit_with_sub_or_super == 'unitsub':
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit=unit_with_sub_or_super.replace('sub', '[sub]'),
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+        else:
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit=unit_with_sub_or_super.replace('super', '{super}'),
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+
+        self.test_unit_page.sleep_tiny()
+        inserted_unit = self.test_unit_page.get_spec_unit()
+        preview_unit = self.test_unit_page.get_spec_unit_preview()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+        rows_data = self.test_unit_page.get_table_rows_data()
+        self.base_selenium.LOGGER.info(' * Comparing the unit name')
+        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
+        self.assertIn(preview_unit, fixed_row_data)
+        self.assertNotIn(inserted_unit, fixed_row_data)
+
+    @parameterized.expand(['unitsub', 'unitsuper'])
+    def test027_quantitative_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self,
+                                                                                            unit_with_sub_or_super):
+        """
+        Test unit: Export: Sub & Super scripts Approach:  Allow user to see the sub & super scripts in the export file
+
+        LIMS-5809
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
+        if unit_with_sub_or_super == 'unitsub':
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit=unit_with_sub_or_super.replace('sub', '[sub]'),
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+        else:
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit=unit_with_sub_or_super.replace('super', '{super}'),
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+        self.test_unit_page.download_xslx_sheet()
+        rows_data = self.test_unit_page.get_table_rows_data()
+        for index in range(len(rows_data) - 1):
+            self.base_selenium.LOGGER.info(' * Comparing the unit name no. {} '.format(index))
+            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
+            values = self.test_unit_page.sheet.iloc[index].values
+            fixed_sheet_row_data = self.fix_data_format(values)
+            for item in fixed_row_data:
+                if item == unit_with_sub_or_super:
+                    self.assertIn(item, fixed_sheet_row_data)
+
+    @parameterized.expand(['quantitative', 'qualitative'])
+    def test028_create_test_unit_appears_in_version_table(self, unit_type):
+        """
+
+        New: Test unit: Versions Approach: After you create new record, all the columns should display in the version table
+
+        LIMS-5289
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+
+        if unit_type == 'quantitative':
+            self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
+            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
+                                                             material_type='All', upper_limit='33',
+                                                             unit='',
+                                                             category=new_random_category, lower_limit='22',
+                                                             spec_or_quan='spec')
+        else:
+            self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            material_type='All',
+                                                            unit='',
+                                                            category=new_random_category)
+
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+
+        self.base_selenium.LOGGER.info('Open Versions for the newly created test unit')
+        self.test_unit_page.get_versions_of_selected_test_units()
+        rows_data = self.test_unit_page.get_table_rows_data()
+        self.base_selenium.LOGGER.info(' * Comparing the unit name and method')
+        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
+        self.assertIn(new_random_name, fixed_row_data)
+        self.assertIn(new_random_method, fixed_row_data)
 
     @parameterized.expand(['ok', 'cancel'])
     def test024_create_approach_overview_button(self, ok):
@@ -795,6 +1000,7 @@ class TestUnitsTestCases(BaseTest):
             self.base_page.cancel_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits/add')
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
+
 
     def test025_edit_approach_overview_button(self):
         """
@@ -851,3 +1057,90 @@ class TestUnitsTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
             self.assertIn(row_data['Unit'], fixed_sheet_row_data)
+
+    def test031_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
+        """
+        New: Test unit: Limits of quantification Approach: Versions:
+        In case I edit any field in the limits of quantification and press on save and create new version,
+        new version should create & display in the active table & versions table
+
+        When I edit any field in limits of quantification and press on save and create new version ..new version created 
+        This version should displayed in the active/archive table 
+        This version should display in the versions table 
+
+        LIMS-4423
+        """
+        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
+        self.assertEqual(testunits_request['status'], 1)
+        testunits = testunits_request['testUnits']
+        self.assertNotEqual(len(testunits), 0)
+
+        testunit_name = ''
+        for testunit in testunits:
+            if testunit['specifications'] == '':
+                testunit_name = testunit['name']
+                break
+        
+        self.base_selenium.LOGGER.info('generate random data to update testunit with')
+        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
+        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
+        random_unit = self.test_unit_page.generate_random_text()
+
+        
+        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
+        testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
+        version_value = int(testunit_data['Version'])
+        self.base_selenium.LOGGER.info('open the testunit in edi form to update it')
+        self.test_unit_page.open_edit_page(row=testunit_record)
+
+        self.base_selenium.LOGGER.info('set upper limit to {}'.format(random_upper_limit))
+        self.test_unit_page.set_quan_upper_limit(value=random_upper_limit)
+        
+        self.base_selenium.LOGGER.info('set lower limit to {}'.format(random_lower_limit))
+        self.test_unit_page.set_quan_lower_limit(value=random_lower_limit)
+        
+        self.base_selenium.LOGGER.info('set unit limit to {}'.format(random_unit))
+        self.test_unit_page.set_quan_unit(value=random_unit)
+        
+        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.save_and_create_new_version()
+        
+        self.base_selenium.LOGGER.info('refresh to make sure that data are saved correctly')
+        self.base_selenium.refresh()
+        
+        self.base_selenium.LOGGER.info('upper limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit)))
+        self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
+        
+        self.base_selenium.LOGGER.info('lower limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit)))
+        self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
+        
+        self.base_selenium.LOGGER.info('unit is {}, and it should be {}'.format(self.test_unit_page.get_quan_unit(), str(random_unit)))
+        self.assertEqual(self.test_unit_page.get_quan_unit(), str(random_unit))
+
+        self.test_unit_page.get_test_units_page()
+
+        testunit_record_after_update = self.test_unit_page.search(value=testunit_name)[0]
+        testunit_data_after_update = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record_after_update)
+
+        self.base_selenium.LOGGER.info('making sure that version is updated successfully')
+        self.base_selenium.LOGGER.info('version is {}, ant it should be {}'.format(testunit_data_after_update['Version'], str(version_value+1)))
+        updated_version = str(version_value+1)
+        self.assertEqual(testunit_data_after_update['Version'], str(updated_version))
+        self.assertEqual(testunit_data_after_update['Quantification Limit'], str(random_lower_limit)+'-'+str(random_upper_limit))
+        self.assertEqual(testunit_data_after_update['Quantification Limit Unit'], random_unit)
+
+        self.test_unit_page.click_check_box(source=testunit_record_after_update)        
+        self.test_unit_page.get_versions_table()
+        testunits_records_versions = self.test_unit_page.result_table()
+
+        version_counter = 1
+        record_counter = 0
+        while record_counter < len(testunits_records_versions)-1:
+            record_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunits_records_versions[record_counter])
+            self.assertEqual(record_data['Version'], str(version_counter))
+
+            if version_counter == updated_version:
+                self.assertEqual(record_data['Quantification Limit'], str(random_lower_limit)+'-'+str(random_upper_limit))
+                self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
+            version_counter = version_counter+1
+            record_counter = record_counter+1
