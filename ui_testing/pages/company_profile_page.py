@@ -16,7 +16,8 @@ class CompanyProfile(BasePages):
         field_value = self.base_selenium.get_value(
             element='company_profile:{}_field'.format(field_name))
         if field_type == 'drop_down':
-            field_value = field_value.split('\n')[0]
+            field_value = self.base_selenium.get_text(
+                element='company_profile:{}_field'.format(field_name)).split('\n')[0]
         return field_value
 
     def set_field_value(self, field_name, field_type='text', item_text=''):
@@ -37,8 +38,8 @@ class CompanyProfile(BasePages):
         company_profile= {
             'name': self.generate_random_text(),
             'street_name': self.generate_random_text(),
-            'street_number': self.generate_random_text(),
-            'postal_code': self.generate_random_text(),
+            'street_number': self.generate_random_number(),
+            'postal_code': self.generate_random_number(),
             'location': self.generate_random_text(),
             'country': None,
         }
@@ -51,8 +52,10 @@ class CompanyProfile(BasePages):
         self.set_field_value(field_name='location', item_text=company_profile['location'])
         self.set_field_value(field_name='country', field_type='drop_down')
 
-        # store the company profile country 
+        # get the values from the form to get the form format for (drop down / number) fields 
         company_profile['country'] = self.get_field_value(field_name='country', field_type='drop_down')
+        company_profile['street_number'] = self.get_field_value(field_name='street_number', field_type='text')
+        company_profile['postal_code'] = self.get_field_value(field_name='postal_code', field_type='text')
 
         # save
         self.save(True)

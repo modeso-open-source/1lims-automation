@@ -65,9 +65,7 @@ class companyProfileTestCases(BaseTest):
 
         # refresh the page
         self.company_profile_page.get_company_profile_page()
-        self.company_profile_page.sleep_small()
 
-        name = self.company_profile_page.get_field_value('name')
         # check that the values before save are matching the values after refresh.
         self.assertEqual(company_profile['name'], self.company_profile_page.get_field_value('name'))
         self.assertEqual(company_profile['street_name'], self.company_profile_page.get_field_value('street_name'))
