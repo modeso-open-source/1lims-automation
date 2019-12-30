@@ -1144,3 +1144,8 @@ class TestUnitsTestCases(BaseTest):
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
             version_counter = version_counter+1
             record_counter = record_counter+1
+
+    def test_opening_configurations(self):
+        fields = self.test_unit_page.open_configuration()
+        self.base_selenium.LOGGER.info(fields)
+
