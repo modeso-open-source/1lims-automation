@@ -76,4 +76,4 @@ class TestPlans(BasePages):
                 self.base_selenium.LOGGER.info('Clicking the checkbox for testplan number: {}'.format(tp_number))
                 self.click_check_box(row[0])
         return rows
-
+        

@@ -119,7 +119,7 @@ class BasePages:
             if not row_text:
                 continue
             self.click_check_box(source=row)
-            return self.base_selenium.get_row_cells_dict_related_to_header(row), row_index
+            return self.base_selenium.get_row_cells_dict_related_to_header(row)
 
     def click_check_box(self, source):
         check_box = self.base_selenium.find_element_in_element(

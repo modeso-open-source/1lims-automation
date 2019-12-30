@@ -285,12 +285,13 @@ class TestPlansTestCases(BaseTest):
             'The duplicated testplan should have the number: {}'.format(duplicated_test_plan_number))
 
         self.base_selenium.LOGGER.info('Choosing a random testplan table row')
-        main_testplan_data, row_index = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
+        main_testplan_data = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
         testplan_number = main_testplan_data['Test Plan No.']
         self.base_selenium.LOGGER.info('Testplan number: {} will be duplicated'.format(testplan_number))
+        self.test_plan.filter_by_testplan_number(testplan_number)
 
         self.base_selenium.LOGGER.info('Saving the child data of the main testplan')
-        main_testplan_childtable_data = self.test_plan.get_child_table_data(index=row_index)
+        main_testplan_childtable_data = self.test_plan.get_child_table_data()
 
         self.base_selenium.LOGGER.info('Duplicating testplan number: {}'.format(testplan_number))
         self.test_plan.duplicate_selected_item()
