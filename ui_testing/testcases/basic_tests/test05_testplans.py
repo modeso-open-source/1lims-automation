@@ -579,8 +579,8 @@ class TestPlansTestCases(BaseTest):
         article = (active_articles_with_materialtype_dictionary[testunit_materialtype])[0]
         testplan_name = self.test_plan.create_new_test_plan(material_type=testunit_materialtype, article=article, test_unit=testunit_name)
 
-        self.test_plan.get_test_plan_edit_page()
-        self.test_plan.navigate_to_testunits_selection_page(testplan_name)
+        self.test_plan.get_test_plan_edit_page(testplan_name)
+        self.test_plan.navigate_to_testunits_selection_page()
 
 
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
