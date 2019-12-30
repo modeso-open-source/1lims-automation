@@ -1145,7 +1145,7 @@ class TestUnitsTestCases(BaseTest):
             version_counter = version_counter+1
             record_counter = record_counter+1
 
-def test032_archived_testunits_should_not_appear_in_testplan_step2(self):
+    def test032_archived_testunits_should_not_appear_in_testplan_step2(self):
         """
         Test unit: Archive Approach: Archived test units shouldn't appear in the analysis step two & in orders in the drop down list of test units when I select it
         LIMS-3710
