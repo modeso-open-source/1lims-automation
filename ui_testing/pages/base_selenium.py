@@ -101,7 +101,7 @@ class BaseSelenium:
             element_value = self.driver.find_element(getattr(By, method), value)
         elif method in ['CLASS_NAME', 'NAME', 'TAG_NAME']:
             elements_value = self.driver.find_elements(getattr(By, method), value)
-            if order == -1: #this should change to not order instead of order == -1
+            if order == -1:
                 element_value = elements_value
             else:
                 element_value = elements_value[order]
