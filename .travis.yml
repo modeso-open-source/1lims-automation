@@ -21,9 +21,21 @@ install:
   - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
 
 script:
-  - export TESTS='test08_usermanagement.py:'
+  - export TESTS='test05_contacts.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test015_filte_by_contact_name
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test016_filte_by_contact_departments
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test017_filte_by_contact_skype
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test018_filte_by_contact_number
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test019_filte_by_contact_email
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test020_filte_by_contact_postalcode
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test021_filte_by_contact_changed_by
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test022_filte_by_contact_website
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test023_filte_by_contact_created_on
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test024_filte_by_contact_address
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test025_filte_by_contact_type
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test026_filte_by_contact_phone
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test027_filte_by_contact_location

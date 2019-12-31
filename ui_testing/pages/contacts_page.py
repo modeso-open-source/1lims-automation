@@ -98,4 +98,14 @@ class Contacts(BasePages):
             confirmation_button.click()
             return True
 
+    def check_for_hidden_table_fields(self, fields, hidden_fields=['fax', 'id']):
+        self.base_selenium.LOGGER.info('check that all fields are shown')
+        for field in fields:
+            if field['isShownInTable'] == False and field['fieldData']['name'] not in hidden_fields:
+                return True
+
+        return False
+
+
+
     

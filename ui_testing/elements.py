@@ -681,7 +681,16 @@ elements = {
        'is_laboratory_checkbox': {'method': 'xpath',
                      'value': '//label[@id="isLaboratory"]//input[@type="checkbox"]'},
        'delete_person_button': {'method': 'id',
-                     'value': 'delete_table_view'}
+                     'value': 'delete_table_view'},
+        'last_modified_user_field': {'method': 'id',
+                                    'value': 'lastModifiedUserfield'},
+        'created_on_field': {'method': 'id',
+                            'value': 'start_createdAt'},
+        'country_filter': {'method': 'id',
+                            'value': 'countryfield'},
+        'type_filter': {'method': 'id',
+                        'value': 'typefield'}
+                            
 
     }
 }

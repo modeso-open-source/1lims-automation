@@ -14,6 +14,7 @@ end_points = {
         'get_order_by_id': '/api/orderInformation/get/orders/byId/'
     },
     'contacts_api': {
-        'list_all_contacts': '/api/contacts'
+        'list_all_contacts': '/api/contacts',
+        'get_table_fields': '/api/custom_field_data/'
     }
 }

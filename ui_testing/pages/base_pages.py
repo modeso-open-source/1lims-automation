@@ -81,6 +81,12 @@ class BasePages:
         self.base_selenium.click(element='general:filter_btn')
         time.sleep(self.base_selenium.TIME_SMALL)
 
+    def apply_filter_scenario(self, filter_element, filter_text, field_type='drop_down'):
+        self.open_filter_menu()
+        self.base_selenium.wait_element(element=filter_element)
+        self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
+        self.filter_apply()
+
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')
         self.base_selenium.click(element='general:filter_reset_btn')
@@ -326,3 +332,8 @@ class BasePages:
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
 
+    def convert_to_dot_date_format(self, date):
+        date_in_days = date[0:10]
+        date_parameters = date_in_days.split('-')
+        date_parameters.reverse()
+        return '.'.join(date_parameters)
