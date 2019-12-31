@@ -93,7 +93,7 @@ class MyProfileTestCases(BaseTest):
         """
         My Profile: Language Approach: Make sure that you can change language
 
-        LIMS-6089 ( https://modeso.atlassian.net/browse/LIMS-6089 )
+        LIMS-6089
         """
         # change the language
         self.base_selenium.select_item_from_drop_down(element='my_profile:language_field', item_text=lang)
