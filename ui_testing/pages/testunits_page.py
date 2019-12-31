@@ -109,6 +109,7 @@ class TstUnits(BasePages):
         self.confirm_popup()
         self.sleep_tiny()
         return True
+        
     def restore_quantification_limit_field(self):
         self.base_selenium.LOGGER.info('restore quantification limit field')
         self.get_archived_items()
