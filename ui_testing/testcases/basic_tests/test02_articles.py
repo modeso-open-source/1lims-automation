@@ -647,3 +647,25 @@ class ArticlesTestCases(BaseTest):
 
         self.article_page.info('+ Check Related article field existance in edit page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
+
+    def test02_article_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        articles = self.get_all_articles()
+        article_name = random.choice(articles)['name']
+        search_results = self.article_page.search(article_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Article Name'] == article_name:
+                break
+        self.assertEqual(article_name, search_data['Article Name'])
+        # click on Overview, it will redirect you to articles' page
+        self.base_selenium.LOGGER.info('navigate to test plans page')
+        self.test_plan.get_test_plans_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+
+
