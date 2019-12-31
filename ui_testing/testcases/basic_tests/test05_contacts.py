@@ -518,7 +518,7 @@ class ContactsTestCases(BaseTest):
     
     def test020_filter_by_contact_postalcode(self):
         """
-        Contacts: Filter Approach: Make sure you can filter by postal code
+        Contacts: Filter Approach: Make sure you can filter by postal code 
         LIMS-6419
         """
         
