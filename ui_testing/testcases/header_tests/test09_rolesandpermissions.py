@@ -188,4 +188,28 @@ class HeaderTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
+    
+    @parameterized.expand(['10', '20', '25', '50', '100'])
+    def test009_testing_table_pagination(self, pagination_limit):
+        """
+        Header: Active table: Pagination Approach; Make sure that I can set the pagination to display 10/20/25/50/100 records in each page 
+        """
+        
+        self.header_page.click_on_roles_permissions_button()
+        
+        self.header_page.set_page_limit(limit=pagination_limit)
+        table_info = self.header_page.get_table_info_data()
+
+        self.base_selenium.LOGGER.info('get current table records count')
+        table_records_count = str(len(self.header_page.result_table()) -1)
+
+        self.base_selenium.LOGGER.info('table records count is {}, and it should be {}'.format(table_records_count, table_info['page_limit']))
+        self.assertEqual(table_records_count, table_info['page_limit'])
+
+        self.base_selenium.LOGGER.info('current page limit is {}, and it should be {}'.format(table_info['pagination_limit'], pagination_limit))
+        self.assertEqual(table_info['pagination_limit'], pagination_limit)
+
+        if int(table_info['pagination_limit']) <= int(table_info['count']):
+            self.assertEqual(table_info['pagination_limit'], table_records_count)
+
 
