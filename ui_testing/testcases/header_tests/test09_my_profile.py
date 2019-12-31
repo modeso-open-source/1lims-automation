@@ -50,3 +50,16 @@ class MyProfileTestCases(BaseTest):
             failed_to_login = True
         finally:
             self.assertTrue(failed_to_login)
+
+    def test002_my_profile_should_show_username_and_email(self):
+        """
+        My Profile: Make sure that the user name & email displayed above the language
+
+        LIMS-6090
+        """
+        username = self.base_selenium.get_text(element='my_profile:username')
+        email = self.base_selenium.get_text(element='my_profile:email')
+        self.assertTrue(username)
+        self.assertTrue(email) 
+
+    
