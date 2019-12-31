@@ -663,7 +663,7 @@ class TestPlansTestCases(BaseTest):
         old_quantification_upper_limit = self.test_unit_page.get_quan_upper_limit
         old_quantification_lower_limit = self.test_unit_page.get_quan_lower_limit
         testunit_display_name = testunit_name + ' Type: Quantitative () V: 1'
-        testunit_display_quantification_limit = old_quantification_upper_limit + '-' + old_quantification_lower_limit
+        testunit_display_quantification_limit = str(old_quantification_upper_limit) + '-' + str(old_quantification_lower_limit)
         self.test_unit_page.save()
     
         # create new testplan
