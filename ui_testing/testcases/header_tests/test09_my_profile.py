@@ -14,13 +14,22 @@ class MyProfileTestCases(BaseTest):
         self.current_password = self.base_selenium.password
         self.new_password = None
         self.reset_original_password = False
+        self.reset_language = False
 
     def tearDown(self):
         # reset the original password
         if self.reset_original_password:
             self.login_page.login(username=self.base_selenium.username, password=self.new_password)
+            self.base_selenium.wait_until_page_url_has(text='dashboard')
             self.my_profile_page.get_my_profile_page()
             self.my_profile_page.change_password(self.new_password, self.current_password, True)
+            self.reset_original_password = False
+
+        # reset the english language
+        if self.reset_language:
+            self.base_selenium.select_item_from_drop_down(element='my_profile:language_field', item_text='EN')
+            self.my_profile_page.sleep_large()
+            self.reset_language = False
         return super().tearDown()
 
 
@@ -97,9 +106,12 @@ class MyProfileTestCases(BaseTest):
         """
         # change the language
         self.base_selenium.select_item_from_drop_down(element='my_profile:language_field', item_text=lang)
-
         # wait till the page reloads
         self.my_profile_page.sleep_large()
+
+        # to restore the language
+        if lang == 'DE':
+            self.reset_language = True
         
         # get page name
         page_name = self.base_selenium.get_text('my_profile:page_name')
