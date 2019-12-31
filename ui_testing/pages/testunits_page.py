@@ -43,6 +43,13 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:archived')
         self.sleep_small()
+    
+    def open_configurations(self):
+        self.info('open testunits configurations')
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='test_units:right_menu')
+        self.base_selenium.click(element='test_units:configurations')
+        self.sleep_small()
 
 
     def is_test_unit_in_table(self, value):
@@ -79,3 +86,42 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click('orders:duplicate')
         self.save()
+
+
+    def get_active_fields_tab(self):
+        self.info('get active fields tab')
+        self.base_selenium.click(element='configurations_page:active_fields_tab')
+        self.sleep_tiny()
+    
+    def get_archived_fields_tab(self):
+        self.info('get archived fields tab')
+        self.base_selenium.click(element='configurations_page:archived_fields_tab')
+        self.sleep_tiny()
+    
+    
+    def archive_quantification_limit_field(self):
+        self.base_selenium.LOGGER.info('archive quantification limit field')
+        self.get_active_fields_tab()
+        element_exists = self.base_selenium.check_element_is_exist(element='test_unit:configuration_testunit_useQuantification')
+        if element_exists == False:
+            self.info('quantification already archived')
+            return False
+        self.base_selenium.click(element='configurations_page:grouped_fields_option_menu')
+        self.base_selenium.click(element='configurations_page:archive_field')
+        self.confirm_popup()
+        self.sleep_tiny()
+        return True
+    
+    def restore_quantification_limit_field(self):
+        self.base_selenium.LOGGER.info('restore quantification limit field')
+        self.get_archived_items()
+        self.sleep_tiny()
+        element_exists = self.base_selenium.check_element_is_exist(element='test_unit:configuration_testunit_useQuantification')
+        if element_exists == False:
+            self.info('quantification is not archived')
+            return False
+        self.base_selenium.click(element='configurations_page:grouped_fields_option_menu')
+        self.base_selenium.click(element='configurations_page:restore_field')
+        self.confirm_popup()
+        self.sleep_tiny()
+        return True
