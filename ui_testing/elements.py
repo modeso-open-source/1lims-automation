@@ -689,7 +689,9 @@ elements = {
         'country_filter': {'method': 'id',
                             'value': 'countryfield'},
         'type_filter': {'method': 'id',
-                        'value': 'typefield'}
+                        'value': 'typefield'},
+        'postalcode_filter': {'method': 'id',
+                            'value': 'postal_codefield'}
                             
 
     }
