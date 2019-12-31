@@ -611,6 +611,8 @@ class TestPlansTestCases(BaseTest):
     def test018_testunit_sub_super_scripts(self):
         '''
         LIMS-5796
+        Create a testunit with sub/super scripts, use this testunit to create a testplan
+        and check the sub/super scripts in the card view
         '''
         testunit_name = self.generate_random_string()
         self.test_unit_page.get_test_units_page()
