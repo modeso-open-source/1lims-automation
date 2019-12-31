@@ -526,6 +526,10 @@ elements = {
                   'value': '//*[contains(text(),"My Profile")]'},
         'companyprofile_button': {'method': 'xpath',
                   'value': '//*[contains(text(),"Company Profile")]'},
+        'logout_button' : {
+            'method': 'xpath',
+            'value': '//*[contains(text(),"logout")]'
+        }
 
     },
    'user_management': {
