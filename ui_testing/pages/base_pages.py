@@ -2,6 +2,7 @@ from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
 import time, pyperclip
 from random import randint
+import pymysql
 
 
 class BasePages:
@@ -363,3 +364,11 @@ class BasePages:
             self.base_selenium.click(element='general:confirm_pop')
             return False
         return True
+
+    def open_connection_with_database(self):
+        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
+        cursor = db.cursor()
+        return cursor, db
+
+    def close_connection_with_database(self, db):
+        db.close()

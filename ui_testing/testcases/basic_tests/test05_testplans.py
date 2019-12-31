@@ -3,7 +3,6 @@ from unittest import skip
 from parameterized import parameterized
 import re, random
 from selenium.common.exceptions import NoSuchElementException
-import pymysql
 
 class TestPlansTestCases(BaseTest):
 
@@ -489,17 +488,10 @@ class TestPlansTestCases(BaseTest):
         the second is after updating the version (category and iteration)
         The updates should be only available in the second testplan
         '''
-        # connect to database and change the searchable field to 'name,number'
-        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
-        cursor = db.cursor()
 
-        testunits_select_query_from_testplans = ("SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
-        cursor.execute(testunits_select_query_from_testplans)
-        old_testunits_searchable_from_testplans = str(cursor.fetchone()[0])
-
-        testunits_searchable_update_query_in_testplans = ("UPDATE `field_data` SET `searchable`= 'name,number' WHERE componentId = 5 AND name = 'testUnits'")
-        cursor.execute(testunits_searchable_update_query_in_testplans)
-        db.commit()
+        # connect to database and change the testunits dropdown field to view 'name,number'
+        cursor, db = self.base_page.open_connection_with_database()
+        old_testunits_searchable_from_testplans = self.test_plan.get_and_update_testunits_dropdown_field(cursor, db, 'name,number')
     
         # Get the completed testplans and choose a random one
         completed_test_plans = self.test_plan_api.get_completed_testplans(limit=500)
@@ -542,11 +534,9 @@ class TestPlansTestCases(BaseTest):
         
         first_testunit_data_in_second_testplan = (self.test_plan_api.get_testunits_in_testplan(second_testplan_data['id']))[0]
 
-        # return the database as it was for upcoming test cases
-        update_query_testplans = ("UPDATE `field_data` SET `searchable`= '" + old_testunits_searchable_from_testplans + "' WHERE componentId = 5 AND name = 'testUnits'")
-        cursor.execute(update_query_testplans)
-        db.commit()
-        db.close()
+        # return the database as it was for the upcoming test cases
+        self.test_plan.get_and_update_testunits_dropdown_field(cursor, db, old_testunits_searchable_from_testplans)
+        self.base_page.close_connection_with_database(db)
     
         # Assert the first testplan wasn't affected by the change
         first_testunit_data_in_first_testplan_after_change = (self.test_plan_api.get_testunits_in_testplan(first_testplan_data['id']))[0]
@@ -556,7 +546,6 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info("Asserting that the iterations of the testunit in the first testplan didn't change")
         self.base_selenium.LOGGER.info("Asserting the iterations were and remained: {}".format(first_testunit_data_in_first_testplan['iterations']))
         self.assertEqual(first_testunit_data_in_first_testplan['iterations'], first_testunit_data_in_first_testplan_after_change['iterations'])
-
 
         # Assert the second testplan is affected by the change
         self.base_selenium.LOGGER.info('Asserting that the category of the testunit in the second testplan is the same as the updated category')

@@ -173,3 +173,17 @@ class TstPlan(TestPlans):
         testunit_iteration = self.base_selenium.get_value(element='test_plan:testunit_iteration')
         
         return testunit_category, testunit_iteration
+
+    '''
+    Update the testunits field searchable in the database
+    '''
+    def get_and_update_testunits_dropdown_field(self, cursor, db, searchable):
+        testunits_select_query_from_testplans = ("SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(testunits_select_query_from_testplans)
+        old_testunits_searchable_from_testplans = str(cursor.fetchone()[0])
+
+        testunits_searchable_update_query_in_testplans = ("UPDATE `field_data` SET `searchable`= '" + searchable + "' WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(testunits_searchable_update_query_in_testplans)
+        db.commit()
+
+        return old_testunits_searchable_from_testplans
