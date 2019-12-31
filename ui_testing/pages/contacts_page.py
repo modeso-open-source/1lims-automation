@@ -106,6 +106,11 @@ class Contacts(BasePages):
 
         return False
 
+    def get_mapped_contact_type(self, contact_type):
+        types = {'supplier': 'Contact',
+                        'client': 'Client',
+                        'laboratory': 'Laboratory'}
+        return types[contact_type]
 
 
     

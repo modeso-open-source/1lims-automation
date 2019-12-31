@@ -461,7 +461,8 @@ class ContactsTestCases(BaseTest):
         counter = 0
         while counter < (len(table_records) -1):
             row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
-            self.assertEqual(row_data['Departments'], data_to_filter_with)
+            contact_departments = row_data['Departments'].split(', ')
+            self.assertIn(data_to_filter_with, contact_departments)
             counter = counter +1
     
     def test017_filte_by_contact_skype(self):
@@ -609,14 +610,16 @@ class ContactsTestCases(BaseTest):
         
         data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='type')
         self.assertNotEqual(data_to_filter_with, False)
-        data_to_filter_with = data_to_filter_with[0]
+        data_to_filter_with = self.contact_page.get_mapped_contact_type(contact_type=data_to_filter_with[0])
+        
         self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
         self.contact_page.apply_filter_scenario(filter_element='contact:type_filter', filter_text=data_to_filter_with)
         table_records = self.contact_page.result_table()
         counter = 0
         while counter < (len(table_records) -1):
             row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
-            self.assertEqual(row_data['Type'], data_to_filter_with)
+            contact_type = row_data['Type'].split(', ')
+            self.assertIn(data_to_filter_with, contact_type)
             counter = counter +1
    
     def test026_filte_by_contact_phone(self):
