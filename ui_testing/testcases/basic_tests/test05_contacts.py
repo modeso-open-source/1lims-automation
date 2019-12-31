@@ -442,6 +442,8 @@ class ContactsTestCases(BaseTest):
             search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
             if search_data['Contact Name'] == contact_name:
                 break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
         self.assertEqual(contact_name, search_data['Contact Name'])
         # Navigate to test plan page
         self.base_selenium.LOGGER.info('navigate to test plans page')

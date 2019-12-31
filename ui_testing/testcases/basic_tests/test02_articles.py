@@ -663,6 +663,8 @@ class ArticlesTestCases(BaseTest):
             search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
             if search_data['Article Name'] == article_name:
                 break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
         self.assertEqual(article_name, search_data['Article Name'])
         # Navigate to test plan page
         self.base_selenium.LOGGER.info('navigate to test plans page')
