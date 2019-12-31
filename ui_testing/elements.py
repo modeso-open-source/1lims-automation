@@ -192,6 +192,14 @@ elements = {
         'related_article_field_options': {'method': 'xpath', 'value': '//*[@id="18_field"]//a'},
         'related_article_field_archive': {'method': 'xpath', 'value': '//*[@id="18_field"]//li[1]/a'},
         'related_article_field_restore': {'method': 'xpath', 'value': '//*[@id="18_field"]//li[2]/a'},
+        'pagination_menu': {'method': 'xpath',
+                            'value': '//div[@class="dropdown-menu open show"]'},
+        'pagination_button': {'method': 'class_name',
+                            'value': 'dropdown-toggle',
+                            'order': 2},
+        'table_info_data': {'method': 'id',
+                            'value': 'table_info'}
+
     },
     'article': {
         'unit': {'method': 'id',
