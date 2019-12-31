@@ -44,7 +44,8 @@ class companyProfileTestCases(BaseTest):
         self.company_profile_page.set_field_value(field_name, field_type)
 
         # click on cancel
-        self.company_profile_page.click_on_cancel()
+        self.company_profile_page.cancel(force=True)
+        self.company_profile_page.get_company_profile_page()
 
         # get the field value after edit
         field_value_after_edit = self.company_profile_page.get_field_value(

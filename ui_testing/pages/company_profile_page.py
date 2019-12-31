@@ -62,13 +62,3 @@ class CompanyProfile(BasePages):
         self.base_selenium.LOGGER.info(' + Company name : {}'.format(company_profile['name']))
 
         return company_profile
-
-    def click_on_cancel(self):
-        # click on cancel
-        self.base_selenium.click(element='company_profile:cancel_button')
-        # confirm the pop up message
-        self.confirm_popup()
-        # wait till the browser redirect
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
-        # go back to the company profile
-        self.get_company_profile_page()
