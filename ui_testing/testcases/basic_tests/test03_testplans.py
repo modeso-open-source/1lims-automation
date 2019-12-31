@@ -1,5 +1,6 @@
 from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
+import random
 
 class TestPlansTestCases(BaseTest):
     def setUp(self):
@@ -39,4 +40,26 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.sleep_tiny()
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+
+    def test003_testplans_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        testplans = self.get_all_test_plans()
+        testplan_name = random.choice(testplans)['testPlanName']
+        search_results = self.test_plan.search(testplan_name)
+        self.base_selenium.LOGGER.info(search_results)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['TestPlan Name'] == testplan_name:
+                break
+        self.assertEqual(testplan_name, search_data['TestPlan Name'])
+        # Navigate to articles page
+        self.base_selenium.LOGGER.info('navigate to articles page')
+        self.article_page.get_article_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
+
 

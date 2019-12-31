@@ -1144,3 +1144,24 @@ class TestUnitsTestCases(BaseTest):
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
             version_counter = version_counter+1
             record_counter = record_counter+1
+
+    def test032_testunits_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        testunits = self.get_all_test_units()
+        testunit_name = random.choice(testunits)['name']
+        search_results = self.test_unit_page.search(testunit_name)
+        self.base_selenium.LOGGER.info(search_results)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['TestUnit Name'] == testunit_name:
+                break
+        self.assertEqual(testunit_name, search_data['TestUnit Name'])
+        # Navigate to articles page
+        self.base_selenium.LOGGER.info('navigate to article page')
+        self.article_page.get_article_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
