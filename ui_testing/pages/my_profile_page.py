@@ -13,6 +13,8 @@ class MyProfile(BasePages):
         self.sleep_small()
 
     def change_password(self, current_password, new_password, save=False):
+        self.base_selenium.LOGGER.info(' + Change the password')
+        
         # change the password value
         self.base_selenium.set_text(
             'my_profile:current_password_field', current_password)
@@ -22,6 +24,8 @@ class MyProfile(BasePages):
             'my_profile:confirm_password_field', new_password)
 
         if save:
-            self.my_profile_page.save(True)
+            self.save(True)
+            self.base_selenium.LOGGER.info(' + New password saved')
         else:
-            self.my_profile_page.cancel(force=True)
+            self.cancel(force=True)
+            self.base_selenium.LOGGER.info(' + New password Canceled')

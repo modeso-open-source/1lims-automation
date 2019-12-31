@@ -18,6 +18,8 @@ class MyProfileTestCases(BaseTest):
     def tearDown(self):
         # reset the original password
         if self.reset_original_password:
+            self.login_page.login(username=self.base_selenium.username, password=self.new_password)
+            self.my_profile_page.get_my_profile_page()
             self.my_profile_page.change_password(self.new_password, self.current_password, True)
         return super().tearDown()
 
@@ -43,7 +45,7 @@ class MyProfileTestCases(BaseTest):
         # try to authorize with the new password
         try:
             baseAPI = BaseAPI()
-            baseAPI._get_authorized_session(username=self.base_selenium.username, password=new_password, reset_token=True)
+            baseAPI._get_authorized_session(username=self.base_selenium.username, password=self.new_password, reset_token=True)
         except:
             failed_to_login = True
         finally:
@@ -72,16 +74,16 @@ class MyProfileTestCases(BaseTest):
 
         # change password
         self.my_profile_page.change_password(self.current_password, self.new_password, True)
+
+        # reset the original password flag
+        self.reset_original_password = True
         
         # logout
         self.header_page.logout()
 
         # Authorize
         baseAPI = BaseAPI()
-        auth_token = baseAPI._get_authorized_session(username=self.base_selenium.username, password=new_password)
+        auth_token = baseAPI._get_authorized_session(username=self.base_selenium.username, password=self.new_password)
         
-        # reset the original password flag
-        self.reset_original_password = True
-
         # check if the auth token has value
         self.assertTrue(auth_token)
