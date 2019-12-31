@@ -700,6 +700,7 @@ elements = {
         'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
         'password_tab': {'method': 'xpath', 'value': '//*[@data-wizard-target="#m_wizard_form_step_1"]'},
         'signature_tab': {'method': 'xpath', 'value': '//*[@data-wizard-target="#m_wizard_form_step_2"]'},
+        'page_name': {'method':'class_name', 'value':'m-subheader__title', 'order': 0},
     },
 }
 

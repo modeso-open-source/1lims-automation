@@ -87,3 +87,24 @@ class MyProfileTestCases(BaseTest):
         
         # check if the auth token has value
         self.assertTrue(auth_token)
+
+    @parameterized.expand(['EN', 'DE'])
+    def test004_user_can_change_the_language(self, lang):
+        """
+        My Profile: Language Approach: Make sure that you can change language
+
+        LIMS-6089 ( https://modeso.atlassian.net/browse/LIMS-6089 )
+        """
+        # change the language
+        self.base_selenium.select_item_from_drop_down(element='my_profile:language_field', item_text=lang)
+
+        # wait till the page reloads
+        self.my_profile_page.sleep_large()
+        
+        # get page name
+        page_name = self.base_selenium.get_text('my_profile:page_name')
+
+        if lang == 'EN':
+            self.assertEqual(page_name, 'My Profile') 
+        else:
+            self.assertEqual(page_name, 'Mein profil')
