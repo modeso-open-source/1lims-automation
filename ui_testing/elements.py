@@ -667,6 +667,19 @@ elements = {
        'delete_person_button': {'method': 'id',
                      'value': 'delete_table_view'}
 
-    }
+    },
+    'my_profile': {
+        'current_password_field': {'method': 'id', 'value': 'currentPassword'},
+        'new_password_field': {'method': 'id', 'value': 'password'},
+        'confirm_password_field': {'method': 'id', 'value': 'confirmPassword'},
+        'language_field': {'method': 'id', 'value': 'languagefield'},
+        'signature_field': {'method': 'id', 'value': 'signiture'},
+        'cancel_button': {'method': 'id', 'value': 'cancelButton'},
+        'save_button': {'method': 'id', 'value': 'saveButton'},
+        'username': {'method': 'class', 'value': 'm-card-profile__name', 'order': 0},
+        'email': {'method': 'class', 'value': 'm-card-profile__email', 'order': 0},
+        'password_tab': {'method': 'xpath', 'value': '//*[@data-wizard-target="#m_wizard_form_step_1"]'},
+        'signature_tab': {'method': 'xpath', 'value': '//*[@data-wizard-target="#m_wizard_form_step_2"]'},
+    },
 }
 
