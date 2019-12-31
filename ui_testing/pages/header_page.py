@@ -26,6 +26,12 @@ class Header(BasePages):
             self.base_selenium.click(element='header:header_button')
             self.sleep_small()
 
+    def logout(self):
+        self.click_on_header_button()
+        self.base_selenium.click(element='header:logout_button')
+        self.base_selenium.LOGGER.info('+ Logout')
+        self.sleep_medium()
+
     def click_on_user_management_button(self):
             self.base_selenium.LOGGER.info('Press on the user management button')
             self.base_selenium.click(element='header:user_management_button')
