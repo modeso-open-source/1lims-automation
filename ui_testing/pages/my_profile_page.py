@@ -29,3 +29,10 @@ class MyProfile(BasePages):
         else:
             self.cancel(force=True)
             self.base_selenium.LOGGER.info(' + New password Canceled')
+
+    def chang_lang(self, lang):
+        self.base_selenium.LOGGER.info(' + Change language to {}'.format(lang))
+        # change the language
+        self.base_selenium.select_item_from_drop_down(element='my_profile:language_field', item_text=lang)
+        # wait till the page reloads
+        self.my_profile_page.sleep_large()

@@ -27,8 +27,7 @@ class MyProfileTestCases(BaseTest):
 
         # reset the english language
         if self.reset_language:
-            self.base_selenium.select_item_from_drop_down(element='my_profile:language_field', item_text='EN')
-            self.my_profile_page.sleep_large()
+            self.my_profile_page.chang_lang('EN')
             self.reset_language = False
         return super().tearDown()
 
@@ -104,10 +103,8 @@ class MyProfileTestCases(BaseTest):
 
         LIMS-6089
         """
-        # change the language
-        self.base_selenium.select_item_from_drop_down(element='my_profile:language_field', item_text=lang)
-        # wait till the page reloads
-        self.my_profile_page.sleep_large()
+        # change language
+        self.my_profile_page.chang_lang(lang)
 
         # to restore the language
         if lang == 'DE':
@@ -119,4 +116,4 @@ class MyProfileTestCases(BaseTest):
         if lang == 'EN':
             self.assertEqual(page_name, 'My Profile') 
         else:
-            self.assertEqual(page_name, 'Mein profil')
+            self.assertEqual(page_name, 'Mein Profil')
