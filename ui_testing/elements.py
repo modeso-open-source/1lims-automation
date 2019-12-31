@@ -262,7 +262,7 @@ elements = {
     },
 
     'test_plan': {
-    'no': {'method': 'id',
+        'no': {'method': 'id',
             'value': 'numberfield'},
     'test_plan': {'method': 'id',
                     'value': 'testPlan'},
@@ -319,7 +319,15 @@ elements = {
     'testunit_iteration': {'method': 'id',
                             'value': 'testunit_iterations_value'},
     'testunit_unit': {'method': 'id',
-                        'value': 'testunit_unit'}
+                        'value': 'testunit_unit'},
+    'testunit_quantification_upper_limit': {
+        'method': 'id',
+        'value': 'quantification_upper_limit'
+    },
+    'testunit_quantification_lower_limit': {
+        'method': 'id',
+        'value': 'quantification_lower_limit'
+    }
     },
 
     'test_unit': {
@@ -527,10 +535,11 @@ elements = {
         'filter_analysis_no': {
             'method': 'id',
             'value': 'nofield'
-        }
+        },
+    'analysis_tab': {'method': 'xpath',
+                    'value': '//span[@class="m-wizard__step-label"][contains(text(),"Analysis")]'
+                        }
     },
-
-
 
     'header': {
         'header_button': {'method': 'xpath',
@@ -700,6 +709,30 @@ elements = {
        'delete_person_button': {'method': 'id',
                      'value': 'delete_table_view'}
 
+    },
+    'analysis_page': {
+        'all_rows': {
+            'method': 'class_name',
+            'value': 'm-accordion__item',
+            'order': -1
+        },
+        'accordion_item': {
+            'method': 'tag_name',
+            'value': 'td',
+            'order': 1
+        },
+        'table': {
+            'method': 'xpath',
+            'value': "//div[@id='headers']//table[@class='header']"
+        },
+        'first_accordion_item': {
+            'method': 'xpath',
+            'value': "//div[@id='m_accordion_7_item_head_0']//td[2]"
+        },
+        'testunits_table': {
+            'method': 'id',
+            'value': 'table-with-add'
+        },
     }
 }
 

@@ -187,3 +187,14 @@ class TstPlan(TestPlans):
         db.commit()
 
         return old_testunits_searchable_from_testplans
+
+    def update_upper_lower_limits_of_testunit(self, old_upper, old_lower):
+        self.base_selenium.set_text('test_plan:testunit_quantification_upper_limit', str(old_upper + 5))
+        self.base_selenium.set_text('test_plan:testunit_quantification_lower_limit', str(old_lower + 5))
+        self.sleep_small()
+
+    def get_testunit_quantification_limit(self, testunits, testunit_display_name):
+        for testunit in testunits:
+            if (testunit['Test Unit Name'] == testunit_display_name):
+                quantification_limit = testunit['Quantification Limit']
+                return quantification_limit
