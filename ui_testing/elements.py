@@ -590,6 +590,9 @@ elements = {
                  'value':'reset_btn'},
        'delete': {'method': 'link_text',
                  'value': 'Delete'},
+       
+       'overview_btn': {'method': 'xpath',
+                               'value': '//span[contains(text(),"Overview")]'},
 
    },
     'contacts':{
