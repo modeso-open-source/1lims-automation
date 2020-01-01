@@ -344,9 +344,13 @@ class HeaderTestCases(BaseTest):
         time.sleep(15)
 
         # make sure that all the master data pages appear(articles & test units & test plans & contacts)
+        self.base_selenium.LOGGER.info('get the test unit url')
         self.assertTrue('Test Units', self.test_unit_page.get_test_units_page())
+        self.base_selenium.LOGGER.info('get the articles url')
         self.assertTrue('Articles', self.article_page.get_articles_page())
+        self.base_selenium.LOGGER.info('get the test plan url')
         self.assertTrue('Test Plans', self.test_plan.get_test_plans_page())
+        self.base_selenium.LOGGER.info('get the contacts url')
         self.assertTrue('Contacts', self.contacts_page.get_contacts_page())
 
     def test014_create_role_with_sample_management_permissions_then_create_user_by_it(self):
@@ -379,11 +383,9 @@ class HeaderTestCases(BaseTest):
         time.sleep(15)
 
         # make sure that all the master data pages appear(articles & test units & test plans & contacts)
-        self.base_selenium.LOGGER.info(
-            'get the order url')
+        self.base_selenium.LOGGER.info('get the order url')
         self.assertTrue('Sample Management', self.order_page.get_orders_page())
-        self.base_selenium.LOGGER.info(
-            'get the analysis url')
+        self.base_selenium.LOGGER.info( 'get the analysis url')
         self.assertTrue('Sample Management', self.analysis_page.get_analysis_page())
 
 
