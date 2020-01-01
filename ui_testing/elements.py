@@ -584,7 +584,7 @@ elements = {
                  'value':'emailfield'},
 
        'filter_role': {'method': 'xpath',
-                 'value':'//*[@id="rolefield"]//input'},
+                 'value':'//ng-select[@id="rolefield"]//input'},
 
        'filter_reset_btn': {'method': 'id',
                  'value':'reset_btn'},
@@ -593,6 +593,14 @@ elements = {
        
        'overview_btn': {'method': 'xpath',
                                'value': '//span[contains(text(),"Overview")]'},
+       'filter_configuration_btn': {'method': 'id',
+                               'value': 'settings'},
+       'switch_name_btn': {'method': 'xpath',
+                               'value': '//div[@id="name"]//label[@class="switch"]'},
+       'filter_configuration_save_btn': {'method': 'xpath',
+                               'value': '//div[@id="filterConfig"]//button[@class="btn btn-primary"][contains(text(),"Save")]'},
+       'content': {'method': 'xpath',
+                              'value': '//div[@class="m-accordion__item-content"]'},
 
    },
     'contacts':{

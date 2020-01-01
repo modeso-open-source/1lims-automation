@@ -71,8 +71,7 @@ class Header(BasePages):
             self.base_selenium.click(element='user_management:active')
             self.sleep_small()
 
-    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='',
-                        user_name=''):
+    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='',  user_name=''):
         self.base_selenium.LOGGER.info(' + Create new user.')
         self.base_selenium.click(element='user_management:create_user_button')
         time.sleep(self.base_selenium.TIME_SMALL)
@@ -155,6 +154,12 @@ class Header(BasePages):
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
 
+    def filter_user(self, filter_element, filter_text, field_type='drop_down'):
+        self.base_selenium.LOGGER.info(
+            ' + Filter by {} : {}'.format(filter_element.replace('user:filter_', '').replace('_', ' '), filter_text))
+        self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
+        self.filter_apply()
+
 
 
     def get_created_on_filter(self):
@@ -224,13 +229,32 @@ class Header(BasePages):
         self.base_selenium.click(element='login:logout_btn')
         self.sleep_small()
 
-
     def login_with_created_user(self, username, password):
-            self.base_selenium.LOGGER.info('Login {} : {}.'.format(username, password))
-            self.base_selenium.get(url=self.base_selenium.url)
-            self.base_selenium.set_text(element='login:username', value=username)
-            self.base_selenium.set_text(element='login:password', value=password)
-            self.base_selenium.click(element='login:login_btn')
+        self.base_selenium.LOGGER.info('Login {} : {}.'.format(username, password))
+        self.base_selenium.get(url=self.base_selenium.url)
+        self.base_selenium.set_text(element='login:username', value=username)
+        self.base_selenium.set_text(element='login:password', value=password)
+        self.base_selenium.click(element='login:login_btn')
+
+    def click_on_filter_configuration_btn(self):
+        self.base_selenium.LOGGER.info('Press on the filter configuration button')
+        self.base_selenium.click(element='user_management:filter_configuration_btn')
+        self.sleep_small()
+
+    def display_name_field_in_filter_configuration(self):
+        self.base_selenium.LOGGER.info('Press on the filter configuration button')
+        self.base_selenium.click(element='user_management:switch_name_btn')
+        self.sleep_small()
+
+    def click_on_filter_configuration_save_btn(self):
+        self.base_selenium.LOGGER.info('Press on the save button of the filter configuration')
+        self.base_selenium.click(element='user_management:filter_configuration_save_btn')
+        self.sleep_small()
+
+
+
+
+
 
 
 
