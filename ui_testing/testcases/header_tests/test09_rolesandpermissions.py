@@ -2,6 +2,7 @@ from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
 from unittest import skip
+import time
 
 class HeaderTestCases(BaseTest):
 
@@ -211,5 +212,179 @@ class HeaderTestCases(BaseTest):
 
         if int(table_info['pagination_limit']) <= int(table_info['count']):
             self.assertEqual(table_info['pagination_limit'], table_records_count)
+
+    def test010_delete_role_used_in_other_entity(self):
+        """
+        Roles & Permissions: Make sure that you can't delete any role record If this record used in other entity
+        LIMS-6437
+        :return:
+        """
+        self.header_page.click_on_roles_permissions_button()
+        # create new role with random data
+        role_random_name = self.generate_random_string()
+        self.header_page.create_new_role(role_name = role_random_name)
+        self.base_selenium.LOGGER.info(
+            'search to make sure that the role created '.format(role_random_name))
+        created_role = self.header_page.search(role_random_name)[0]
+        role_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_role)
+
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_user_management_button()
+
+        # use this role in any other entity so update the user role field with it
+        self.header_page.get_random_user()
+        self.header_page.set_user_role(user_role=role_random_name)
+        self.header_page.save(save_btn='roles_and_permissions:save_btn')
+
+        # navigate to the role page to delete it
+        self.header_page.get_roles_page()
+        self.header_page.search(value =role_random_name)
+
+
+        self.header_page.select_all_records()
+        # navigate to the archived table to delete it
+        self.header_page.archive_selected_roles()
+        self.header_page.get_archived_roles()
+
+        self.header_page.select_all_records()
+        self.header_page.click_on_role_right_menu()
+
+        # make sure when you press on the delete button. message appear to confirm that I want to delete
+        self.header_page.click_on_role_delete_btn()
+        self.header_page.confirm_popup()
+        self.base_selenium.LOGGER.info(
+            'message will appear this user related to some data & cant delete it')
+        self.header_page.confirm_popup()
+
+        self.base_selenium.LOGGER.info(
+            'search to make sure this user found in the active table '.format(role_random_name))
+        result = self.header_page.search(value=role_random_name)
+        self.assertTrue(result, role_data)
+
+    def test011_archived_role_not_displayed_in_the_user_role_drop_down(self):
+        """
+        Roles& Permissions: Archived roles shouldn't display in the user role drop down.l
+        LIMS-6438
+        :return:
+        """
+        self.header_page.click_on_roles_permissions_button()
+        # create new user with random data
+        role_random_name = self.generate_random_string()
+        self.header_page.create_new_role(role_name = role_random_name)
+
+        self.base_selenium.LOGGER.info(
+            'search to make sure that the role created '.format(role_random_name))
+        created_role = self.header_page.search(role_random_name)[0]
+        role_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_role)
+        self.assertTrue(created_role, role_data)
+
+        # archive the role that you created
+        self.header_page.select_all_records()
+        self.header_page.archive_selected_roles()
+        self.header_page.get_archived_roles()
+
+        # go to the user entity to search by it in the user drop down list
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_user_management_button()
+        self.header_page.get_random_user()
+        result = self.header_page.set_user_role(user_role=role_random_name)
+        self.assertFalse(result, 'no results found ')
+
+    def test012_cant_create_two_roles_with_the_same_name(self):
+        """
+        Roles & Permissions: you can't create two roles with the same name
+        LIMS-6439
+        :return:
+        """
+        self.header_page.click_on_roles_permissions_button()
+        # create new user with random data
+        role_random_name = self.generate_random_string()
+        self.header_page.create_new_role(role_name = role_random_name)
+
+        self.base_selenium.LOGGER.info(
+            'search to make sure that the role created '.format(role_random_name))
+        created_role = self.header_page.search(role_random_name)[0]
+        role_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_role)
+        self.assertTrue(created_role, role_data)
+
+        # create role with the same name
+        created_role = self.header_page.create_new_role(role_name=role_random_name)
+        self.base_selenium.LOGGER.info(
+            'red border will display that the name already exit'.format(role_random_name))
+        self.assertTrue(created_role, 'Name already exit')
+
+    def test013_create_role_with_master_data_permissions_then_create_user_by_it(self):
+        """
+        Roles & Permissions: when I create user with master data permissions then create user wit it
+        when I login with this user the master data only should appear in the menu
+        LIMS-6440
+        :return:
+        """
+        self.header_page.click_on_roles_permissions_button()
+        # create role with random name with master data permissions
+        random_role_name = self.generate_random_string()
+        self.header_page.create_role_with_mater_data_permissions(role_name = random_role_name)
+
+        # go to the user section to create user with this role
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_user_management_button()
+
+        # go to the user section to create user with this role
+        random_user_name = self.generate_random_string()
+        self.header_page.create_new_user(user_name=random_user_name,
+                                         user_email=(self.header_page.generate_random_email()),
+                                         user_role=random_role_name, user_password='1',
+                                         user_confirm_password='1')
+
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_logout_button()
+
+        # login with role & user that you created to make sure from the permissions
+        self.header_page.login_with_created_user(username=random_user_name, password='1')
+        time.sleep(15)
+
+        # make sure that all the master data pages appear(articles & test units & test plans & contacts)
+        self.assertTrue('Test Units', self.test_unit_page.get_test_units_page())
+        self.assertTrue('Articles', self.article_page.get_articles_page())
+        self.assertTrue('Test Plans', self.test_plan.get_test_plans_page())
+        self.assertTrue('Contacts', self.contacts_page.get_contacts_page())
+
+    def test014_create_role_with_sample_management_permissions_then_create_user_by_it(self):
+        """
+
+        LIMS-6441
+        :return:
+        """
+        self.header_page.click_on_roles_permissions_button()
+        # create role with random name with sample management permissions
+        random_role_name = self.generate_random_string()
+        self.header_page.create_role_with_sample_management_permissions(role_name = random_role_name)
+
+        # go to the user section to create user with this role
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_user_management_button()
+
+        # go to the user section to create user with this role
+        random_user_name = self.generate_random_string()
+        self.header_page.create_new_user(user_name=random_user_name,
+                                         user_email=(self.header_page.generate_random_email()),
+                                         user_role=random_role_name, user_password='1',
+                                         user_confirm_password='1')
+
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_logout_button()
+
+        # login with role & user that you created to make sure from the permissions
+        self.header_page.login_with_created_user(username=random_user_name, password='1')
+        time.sleep(15)
+
+        # make sure that all the master data pages appear(articles & test units & test plans & contacts)
+        self.base_selenium.LOGGER.info(
+            'get the order url')
+        self.assertTrue('Sample Management', self.order_page.get_orders_page())
+        self.base_selenium.LOGGER.info(
+            'get the analysis url')
+        self.assertTrue('Sample Management', self.analysis_page.get_analysis_page())
+
 
 

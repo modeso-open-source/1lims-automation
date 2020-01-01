@@ -152,7 +152,9 @@ elements = {
         'login_btn': {'method': 'id',
                       'value': 'm_login_signin_submit'},
         'refresh': {'method': 'xpath',
-                    'value': '/html/body/div[3]/div/div[2]/div[2]/button'}
+                    'value': '/html/body/div[3]/div/div[2]/div[2]/button'},
+        'logout_btn': {'method': 'xpath',
+                       'value': '//a[@class="btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder"]'},
     },
 
     'articles': {
@@ -701,25 +703,18 @@ elements = {
    'roles_and_permissions': {
         'right_menu': {'method': 'xpath',
                           'value': '//i[@class="flaticon-grid-menu-v2"]'},
-
         'archive': {'method': 'xpath',
                  'value': '//modeso-table-filter//a[2]'},
-
         'archived': {'method': 'link_text',
                  'value': 'Archived'},
-
         'restore': {'method': 'link_text',
                  'value': 'Restore'},
-
        'active': {'method': 'link_text',
                  'value': 'Active'},
-
        'user_table': {'method': 'id',
                       'value': 'table'},
-
        'roles_overview_btn': {'method': 'xpath',
                       'value': '//span[contains(text(),"Overview")]'},
-
        'new_role_btn': {'method': 'xpath',
                               'value': '//span[contains(text(),"New Role")]'},
        'role_name': {'method': 'id',
@@ -730,11 +725,23 @@ elements = {
                               'value': '//a[contains(text(),"Delete")]'},
        'oh_snap_message': {'method': 'id',
                               'value': 'ohSnapMsg'},
-
        'pagination_page': {'method': 'xpath',
                            'value': '//a[contains(text(),"2")]'},
+       'master_data_view_permissions': {'method': 'xpath',
+                              'value': '//div[@id="permissionsTable"]//div[2]//div[2]//span[1]//label[1]'},
+       'master_data_edit_permissions': {'method': 'xpath',
+                              'value':'//div[@id="permissionsTable"]//div[2]//div[3]//span[1]//label[1]'},
+       'order_view_permissions': {'method': 'xpath',
+                              'value': '//div[@id="permissionsTable"]//div[7]//div[2]//span[1]//label[1]'},
+       'order_edit_permissions': {'method': 'xpath',
+                              'value':'//div[@id="permissionsTable"]//div[7]//div[3]//span[1]//label[1]'},
+       'analysis_view_permissions': {'method': 'xpath',
+                              'value': '//div[@id="permissionsTable"]//div[9]//div[2]//span[1]//label[1]'},
+       'analysis_edit_permissions': {'method': 'xpath',
+                              'value':'//div[@id="permissionsTable"]//div[9]//div[3]//span[1]//label[1]'},
 
    },
-
 }
+
+
 

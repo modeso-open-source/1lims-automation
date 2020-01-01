@@ -144,3 +144,4 @@ class TstPlan(TestPlans):
         self.base_selenium.LOGGER.info('Accepting the changes made')
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
+
