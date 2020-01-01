@@ -2,6 +2,7 @@ from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
 from unittest import skip
+import time
 
 class HeaderTestCases(BaseTest):
 
@@ -289,3 +290,63 @@ class HeaderTestCases(BaseTest):
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
         self.base_selenium.LOGGER.info('Assert error msg')
         self.assertEqual(validation_result, True)
+
+    def test013_delete_user_not_used_in_other_entity(self):
+        """
+        User management: Make sure that you can't delete any user record If this record used in other entity
+        LIMS-6407
+        :return:
+        """
+        self.header_page.click_on_user_management_button()
+        # create new user with random data
+        user_random_name = self.generate_random_string()
+        self.header_page.create_new_user(user_name=user_random_name,
+                                         user_email=(self.header_page.generate_random_email()),
+                                         user_role='Admin', user_password='1',
+                                         user_confirm_password='1')
+
+        self.base_selenium.LOGGER.info(
+            'search to make sure that the user created '.format(user_random_name))
+        created_user = self.header_page.search(user_random_name)[0]
+        user_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_user)
+
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_logout_button()
+
+        # use this user in any other entity so you can login with it
+        self.header_page.login_with_created_user(username=user_random_name, password='1')
+
+        # make sure that I can login with the user that I created it
+        time.sleep(15)
+        self.assertIn('dashboard', self.login_page.base_selenium.get_url())
+
+        self.header_page.click_on_header_button()
+        self.header_page.click_on_user_management_button()
+
+        self.base_selenium.LOGGER.info(
+            'search to make sure after I login the user found in the active tabele '
+                .format(user_random_name))
+        self.header_page.search(value=user_random_name)
+
+        self.header_page.select_all_records()
+        # navigate to the archived table to delete it
+        self.header_page.archive_selected_users()
+        self.header_page.get_archived_users()
+
+        self.header_page.select_all_records()
+        self.header_page.click_on_user_right_menu()
+
+        # make sure when you press on the delete button. message appear to confirm thaT I want to delete
+        self.header_page.click_on_delete_button()
+        self.header_page.confirm_popup()
+        self.base_selenium.LOGGER.info(
+            'message will appear this user related to some data & cant delete it')
+        self.header_page.confirm_popup()
+
+        self.base_selenium.LOGGER.info(
+            'search to make sure this user found in the active table '.format(user_random_name))
+        result = self.header_page.search(value=user_random_name)
+        self.assertTrue(result, user_data)
+
+
+
