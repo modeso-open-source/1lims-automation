@@ -379,9 +379,9 @@ class HeaderTestCases(BaseTest):
         self.header_page.click_on_user_management_button()
         random_user_name = self.generate_random_string()
 
-        self.header_page.create_new_user(user_name=random_user_name, user_email=(self.header_page.generate_random_email()),
+        self.header_page.create_new_user(user_name=random_user_name,
+                                         user_email=(self.header_page.generate_random_email()),
                                          user_role='Admin', user_password='1', user_confirm_password='1')
-
 
         self.header_page.click_on_filter_view()
 
@@ -394,6 +394,69 @@ class HeaderTestCases(BaseTest):
         result_user = self.header_page.result_table()[0]
         self.assertTrue(result_user, user_filter)
         self.header_page.filter_reset_btn()
+
+    def test016_filter_changed_by(self):
+        """
+        User management Approach: I can filter by changed by successfully
+        LIMS-6487
+        :return:
+        """
+        self.header_page.click_on_user_management_button()
+        user_data = self.header_page.get_data_from_row()
+
+        self.header_page.click_on_filter_view()
+
+
+        user_filter = self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by', filter_text=user_data['changed_by'])
+
+        self.assertIn(user_data['changed_by'], user_filter)
+        self.header_page.filter_reset_btn()
+
+    def test017_filter_no(self):
+        """
+        User management Approach: I can filter by no successfully
+        LIMS-6488
+        :return:
+        """
+        self.header_page.click_on_user_management_button()
+        user_data = self.header_page.get_data_from_row()
+
+
+        self.header_page.click_on_filter_view()
+
+        user_filter = self.header_page.filter_user_by(filter_element='user_management:filter_number',
+                                                             filter_text=user_data['number'])
+
+        self.assertTrue(user_data['number'], user_filter)
+        self.header_page.filter_reset_btn()
+
+    def test018_filter_created_on(self):
+        """
+        User management Approach: I can filter by created on successfully
+        LIMS-64
+        :return:
+        """
+        self.header_page.click_on_user_management_button()
+        user_data = self.header_page.get_data_from_row()
+
+
+        self.header_page.click_on_filter_view()
+
+        user_filter = self.header_page.filter_user_by(filter_element='user_management:filter_created_on',
+                                                             filter_text=user_data['created_on'])
+
+        self.assertTrue(user_data['created_on'], user_filter)
+        self.header_page.filter_reset_btn()
+
+
+
+
+
+
+
+
+
+
 
 
 

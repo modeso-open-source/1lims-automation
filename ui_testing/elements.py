@@ -561,6 +561,9 @@ elements = {
                      'value': 'password'},
        'user_confirm_password': {'method': 'id',
                      'value': 'confirmPassword'},
+       'user_contact': {'method': 'id',
+                     'value': 'supplierfield'},
+
        'create_user_button': {'method': 'xpath',
                      'value': '//*[contains(text(),"New User")]'},
        'save_btn': {'method': 'id',
@@ -569,11 +572,11 @@ elements = {
        'filter_number': {'method': 'id',
                  'value':'userIdfield'},
 
-       'filter_contact': {'method': 'xpath',
-                   'value': '//*[@id="supplierfield"]//input'},
+       'filter_contact': {'method': 'id',
+                   'value': 'supplierfield'},
 
-       'filter_changed_by': {'method': 'xpath',
-                        'value': '//*[@id="lastModifiedUserfield"]//input'},
+       'filter_changed_by': {'method': 'id',
+                        'value': 'lastModifiedUserfield'},
 
        'filter_created_on': {'method': 'id',
                  'value':'start_createdAt'},

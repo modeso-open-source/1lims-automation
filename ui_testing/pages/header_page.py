@@ -86,7 +86,8 @@ class Header(BasePages):
             "user_email": user_email,
             "user_role": user_role,
             "user_password": user_password,
-            "user_confirm_password": user_confirm_password
+            "user_confirm_password": user_confirm_password,
+
         }
         self.save(sleep)
         return user_data
@@ -154,13 +155,25 @@ class Header(BasePages):
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
 
-    def filter_user(self, filter_element, filter_text, field_type='drop_down'):
-        self.base_selenium.LOGGER.info(
-            ' + Filter by {} : {}'.format(filter_element.replace('user:filter_', '').replace('_', ' '), filter_text))
-        self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
+    def filter_user_drop_down(self, filter_name, filter_text, field_type='drop_down'):
+        self.base_selenium.LOGGER.info(' + Filter by user : {}'.format(filter_text))
+        self.filter_by(filter_element=filter_name, filter_text=filter_text)
         self.filter_apply()
+        self.sleep_tiny()
+        return self.get_table_rows_data()[0]
 
 
+    def get_data_from_row(self):
+
+        user_row = self.get_random_table_row(table_element='general:table')
+        user_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=user_row)
+        return {
+            'created_on': user_row_data['Created On'].split(',')[0],
+            'changed_by': user_row_data['Changed By'],
+            'number': user_row_data['No'],
+            'role': user_row_data['Role'],
+            'email': user_row_data['Email'],
+        }
 
     def get_created_on_filter(self):
         return self.base_selenium.get_value(element='order:test_date')
@@ -175,12 +188,6 @@ class Header(BasePages):
             self.base_selenium.LOGGER.info('Press on the filter reset button button')
             self.base_selenium.click(element='user_management:filter_reset_btn')
             self.sleep_small()
-
-    def filter_by(self, filter_element, filter_text, field_type='drop_down'):
-        if field_type == 'drop_down':
-            self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
-        else:
-            self.base_selenium.set_text(element=filter_element, value=filter_text)
 
     def click_create_new_user(self):
             self.base_selenium.LOGGER.info('Press on the create new user button')
@@ -250,15 +257,4 @@ class Header(BasePages):
         self.base_selenium.LOGGER.info('Press on the save button of the filter configuration')
         self.base_selenium.click(element='user_management:filter_configuration_save_btn')
         self.sleep_small()
-
-
-
-
-
-
-
-
-
-
-
 
