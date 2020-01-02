@@ -583,3 +583,16 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.filter_by_testplan_number(random_testplan['number'])
         testplan_found = self.test_plan.result_table()
         self.assertIn(str(random_testplan['number']), testplan_found[0].text)
+
+    def test021_filter_by_testplan_name(self):
+        '''
+        LIMS-6470
+        User can filter with testplan name
+        '''
+
+        testplans = self.test_plan_api.get_all_test_plans_json()
+        random_testplan = random.choice(testplans)
+
+        self.test_plan.filter_by_element_and_get_results('Testplan Name', 'test_plans:testplan_name_filter', random_testplan['testPlanName'], 'drop_down')
+        testplan_found = self.test_plan.result_table()
+        self.assertIn(str(random_testplan['testPlanName']), testplan_found[0].text)

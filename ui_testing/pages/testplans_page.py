@@ -77,3 +77,9 @@ class TestPlans(BasePages):
                 self.base_selenium.LOGGER.info('Clicking the checkbox for testplan number: {}'.format(tp_number))
                 self.click_check_box(row[0])
         return rows
+
+    def filter_by_element_and_get_results(self, fieldName, element, filter_text, fieldType):
+        self.open_filter_menu()
+        self.filter(fieldName, element, filter_text, fieldType)
+        results_found = self.result_table()
+        return results_found

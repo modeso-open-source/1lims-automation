@@ -234,6 +234,26 @@ elements = {
                           
         'testplan_number_filter': {'method': 'id',
                              'value': 'numberfield'},
+        'testplan_name_filter': {
+            'method': 'id',
+            'value': 'testPlanNamefield'
+        },
+        'material_type_filter': {
+            'method': 'id',
+            'value': 'materialTypefield'
+        },
+        'changed_by_filter': {
+            'method': 'id',
+            'value': 'lastModifiedUserfield'
+        },
+        'status': {
+            'method': 'id',
+            'value': 'statusfield'
+        },
+        'articles': {
+            'method': 'id',
+            'value': 'articlefield'
+        },
     },
 
     'test_units': {
