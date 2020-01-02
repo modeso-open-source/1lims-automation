@@ -518,7 +518,7 @@ class TestPlansTestCases(BaseTest):
         # update the iteration and category
         article = 'All' if first_testplan_data['article'][0] == 'all' else first_testplan_data['article'][0]
         new_iteration = str(int(first_testunit_data_in_first_testplan['iterations']) + 1)
-        self.test_unit_page.update_testunit(iterations=new_iteration, random=False)
+        self.test_unit_page.set_testunit_iteration(new_iteration)
         new_category = self.test_unit_page.get_category().lower()
 
         # press save and complete to create a new version
@@ -647,7 +647,7 @@ class TestPlansTestCases(BaseTest):
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
         self.assertEqual(unit, testunit_unit_display)
 
-    @skip('')
+        @skip('')
     def test019_test_plan_effect_on_analysis(self):
         '''
         LIMS-4422
@@ -665,11 +665,11 @@ class TestPlansTestCases(BaseTest):
         articles_with_chosen_materialtype = active_articles_with_materialtype_dictionary[random_materialtype]
         random_article = random.choice(articles_with_chosen_materialtype)
 
-        self.test_unit_page.create_quantitative_testunit(name=testunit_name, method='a', material_type=random_materialtype, spec_or_quan='quan')
+        self.test_unit_page.create_quantitative_testunit(name=testunit_name, method='a', material_type=random_materialtype, spec_or_quan='quan', upper_limit=100, lower_limit=50)
         old_quantification_upper_limit = self.test_unit_page.get_quan_upper_limit
         old_quantification_lower_limit = self.test_unit_page.get_quan_lower_limit
         testunit_display_name = testunit_name + ' Type: Quantitative () V: 1'
-        testunit_display_quantification_limit = str(old_quantification_upper_limit) + '-' + str(old_quantification_lower_limit)
+        testunit_display_quantification_limit = str(old_quantification_lower_limit) + '-' + str(old_quantification_upper_limit)
         self.test_unit_page.save()
     
         # create new testplan
@@ -680,7 +680,6 @@ class TestPlansTestCases(BaseTest):
         self.order_page.get_orders_page()
         self.order_page.create_new_order(material_type=random_materialtype, test_plans=[testplan_name])
         self.order_page.save()
-        self.order_page.sleep_small()
         
         # go to analysis section        
         self.order_page.navigate_to_analysis_tab()
@@ -693,17 +692,16 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(quantification_limit, testunit_display_quantification_limit)
 
         self.test_plan.get_test_plans_page()
-        self.test_plan.get_test_plan_edit_page(testplan_name)
+        self.test_plan.get_test_plan_edit_page(testunit_display_name)
         self.test_plan.navigate_to_testunits_selection_page()
         self.test_plan.update_upper_lower_limits_of_testunit(old_quantification_upper_limit, old_quantification_lower_limit)
         self.test_plan.save()
+        self.test_plan.confirm_popup()
 
         self.base_selenium.get(analysis_url)
         required_row = self.single_analysis_page.open_accordion_for_analysis_index()
         testunits = self.single_analysis_page.get_testunits_in_analysis(required_row)
         quantification_limit = self.test_plan.get_testunit_quantification_limit(testunits, testunit_display_name)
         self.assertEqual(quantification_limit, testunit_display_quantification_limit)
-
-        self.order_page.sleep_large()
 
         return

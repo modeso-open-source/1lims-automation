@@ -472,3 +472,4 @@ class Order(Orders):
 
     def navigate_to_analysis_tab(self):
         self.base_selenium.click('order:analysis_tab')
+        self.sleep_small()

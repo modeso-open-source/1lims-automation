@@ -537,7 +537,7 @@ elements = {
             'value': 'nofield'
         },
     'analysis_tab': {'method': 'xpath',
-                    'value': '//span[@class="m-wizard__step-label"][contains(text(),"Analysis")]'
+                    'value': "//span[@class='m-wizard__step-label'][contains(text(),'Analysis')]"
                         }
     },
 

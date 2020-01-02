@@ -195,6 +195,6 @@ class TstPlan(TestPlans):
 
     def get_testunit_quantification_limit(self, testunits, testunit_display_name):
         for testunit in testunits:
-            if (testunit['Test Unit Name'] == testunit_display_name):
+            if (testunit_display_name in testunit['Test Unit Name']):
                 quantification_limit = testunit['Quantification Limit']
                 return quantification_limit
