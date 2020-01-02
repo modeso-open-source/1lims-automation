@@ -38,11 +38,11 @@ class TestPlanAPI(BaseAPI):
         return testunits_data
 
     def get_testplan_with_quicksearch(self, quickSearchText, **kwargs):
-        filter = '{"quickSearch":"' + quickSearchText + '","columns":["number","name"]}'
-        response = self.get_all_test_plans(filter=filter, **kwargs)
+        filter_text = '{"quickSearch":"' + quickSearchText + '","columns":["number","name"]}'
+        response = self.get_all_test_plans(filter=filter_text, **kwargs)
         return response.json()['testPlans']
 
     def get_testplan_with_filter(self, filter_option, filter_text, **kwargs):
-        filter = '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}'
-        response = self.get_all_test_plans(filter=filter, **kwargs)
+        filter_text = '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}'
+        response = self.get_all_test_plans(filter=filter_text, start=0, **kwargs)
         return response.json()['testPlans']

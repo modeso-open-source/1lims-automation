@@ -123,7 +123,6 @@ class TestPlansTestCases(BaseTest):
             inprogress_testplan_version, testplan_row_data_status = self.test_plan.get_testplan_version_and_status(
                 search_text=old_completed_testplan_name)
 
-            # self.assertEqual(old_completed_testplan_version + 1, int(inprogress_testplan_version))
             self.assertGreater(int(inprogress_testplan_version), old_completed_testplan_version)
             self.assertEqual(testplan_row_data_status, 'Completed')
 
@@ -155,7 +154,7 @@ class TestPlansTestCases(BaseTest):
         archived_row = self.test_plan.result_table()
         self.test_plan.sleep_small()
         self.base_selenium.LOGGER.info('Checking if testplan number: {} is archived correctly'.format(testplan_number))
-        self.assertIsNotNone(archived_row[0].text)
+        self.assertIn(row_data['Test Plan Name'], archived_row[0].text)
         self.base_selenium.LOGGER.info('Testplan number: {} is archived correctly'.format(testplan_number))
 
     def test005_restore_test_plan_one_record(self):
@@ -174,6 +173,11 @@ class TestPlansTestCases(BaseTest):
 
         # restore and navigate to active table
         self.base_selenium.LOGGER.info('Testplan number: {} will be restored'.format(testplan_number))
+
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.test_plan.click_check_box(source=row)
+        self.test_plan.sleep_small()
+
         self.base_selenium.LOGGER.info('Restoring the selected item and navigating to the active items table')
         self.test_plan.restore_selected_items()
         self.test_plan.get_active_items()
@@ -182,7 +186,7 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.filter_by_testplan_number(testplan_number)
         restored_row = self.test_plan.result_table()
         self.base_selenium.LOGGER.info('Checking if testplan number: {} is restored correctly'.format(testplan_number))
-        self.assertIsNotNone(restored_row[0].text)
+        self.assertIn(row_data['Test Plan Name'], restored_row[0].text)
         self.base_selenium.LOGGER.info('Testplan number: {} is restored correctly'.format(testplan_number))
 
     def test006_archive_test_plan_multiple_records(self):
@@ -514,7 +518,7 @@ class TestPlansTestCases(BaseTest):
         # update the iteration and category
         article = 'All' if first_testplan_data['article'][0] == 'all' else first_testplan_data['article'][0]
         new_iteration = str(int(first_testunit_data_in_first_testplan['iterations']) + 1)
-        self.test_unit_page.update_testunit(number=None, name=None, category='', iterations=new_iteration, random=False)
+        self.test_unit_page.update_testunit(iterations=new_iteration, random=False)
         new_category = self.test_unit_page.get_category().lower()
 
         # press save and complete to create a new version
@@ -596,6 +600,7 @@ class TestPlansTestCases(BaseTest):
         testplan_article = (testplan_data['article'])[0]
 
         # archive this testplan
+        self.base_selenium.LOGGER.info('Archiving test plan: {}'.format(testplan_name))
         self.test_plan.archive_selected_items()
 
         # go to order's section
@@ -603,7 +608,7 @@ class TestPlansTestCases(BaseTest):
 
         # create a new order with material type and article same as the saved ones
         order_data = self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article, test_plans=[testplan_name])
-
+       
         # get the first suborder's testplan and make sure it's an empty string
         suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]
         self.assertEqual(len(suborder_first_testplan), 0)
@@ -642,6 +647,7 @@ class TestPlansTestCases(BaseTest):
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
         self.assertEqual(unit, testunit_unit_display)
 
+    @skip('')
     def test019_test_plan_effect_on_analysis(self):
         '''
         LIMS-4422
