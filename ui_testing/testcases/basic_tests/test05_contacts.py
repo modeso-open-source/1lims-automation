@@ -426,3 +426,45 @@ class ContactsTestCases(BaseTest):
         self.article_page.sleep_small()
         self.assertEqual(self.base_selenium.get_url(), '{}contacts'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+
+    def test015_create_user_with_role_contact(self):
+        """
+        New: Contact: User management: All the contacts created should be found when I create new user with role contact 
+        All the contacts created should be found when I create new user with role contact 
+        
+        LIMS-3569
+        """
+
+        contact_request = self.contacts_api.get_all_contacts().json()
+        self.assertEqual(contact_request['status'], 1)
+        self.assertNotEqual(contact_request['count'], 0)
+        contacts_records = contact_request['contacts']
+        
+        contact_name = contacts_records[0]['name']
+        
+        self.header_page.get_users_page()
+
+        user_name = self.header_page.generate_random_text()
+        self.base_selenium.LOGGER.info('random username generate is {}'.format(user_name))
+        
+        user_pw = self.header_page.generate_random_text()
+        self.base_selenium.LOGGER.info('random user password generate is {}'.format(user_pw))
+        
+        user_mail = self.header_page.generate_random_email()
+        self.base_selenium.LOGGER.info('random user email generate is {}'.format(user_mail))
+        
+        self.base_selenium.LOGGER.info('contact that user will be created with is {}'.format(contact_name))
+
+        
+        self.base_selenium.LOGGER.info('create new user with the randomly generated data')
+        self.header_page.create_new_user(user_role='Contact', user_password=user_pw, user_confirm_password=user_pw, user_email=user_mail, user_name=user_name, user_contact=contact_name)
+
+        self.base_selenium.LOGGER.info('search with the user name to make sure that it was created with the correct data')
+        user_record = self.header_page.search(user_name)[0]
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=user_record)
+
+        self.base_selenium.LOGGER.info('compare the user data with the randomly generated data')
+        self.assertEqual(user_name, row_data['Name'])
+        self.assertEqual(contact_name, row_data['Contact'])
+
+
