@@ -189,7 +189,7 @@ class HeaderTestCases(BaseTest):
             self.assertEqual(current_name, user_name)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test019_update_user_role_with_save_cancel_btn(self, save):
+    def test009_update_user_role_with_save_cancel_btn(self, save):
         """
         User management: I can update user role with save & cancel button
         LIMS-6398
