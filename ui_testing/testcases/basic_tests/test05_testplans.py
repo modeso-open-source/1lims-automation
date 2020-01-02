@@ -569,3 +569,17 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.switch_test_units_to_row_view()
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
         self.assertEqual(unit, testunit_unit_display)
+
+    def test020_filter_by_testplan_number(self):
+        '''
+        LIMS-6473
+        User can filter with testplan number
+        '''
+
+        testplans = self.test_plan_api.get_all_test_plans_json()
+        random_testplan = random.choice(testplans)
+
+        self.test_plan.open_filter_menu()
+        self.test_plan.filter_by_testplan_number(random_testplan['number'])
+        testplan_found = self.test_plan.result_table()
+        self.assertIn(str(random_testplan['number']), testplan_found[0].text)
