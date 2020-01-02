@@ -82,4 +82,5 @@ class TestPlans(BasePages):
         self.open_filter_menu()
         self.filter(fieldName, element, filter_text, fieldType)
         results_found = self.result_table()
+        self.open_filter_menu() # close filter menu
         return results_found
