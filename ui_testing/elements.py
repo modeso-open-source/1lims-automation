@@ -780,6 +780,9 @@ elements = {
                         'order': 1},
         'cancel_button': {'method': 'class_name',
                           'value': 'btn-primary',
-                          'order': 2}
+                          'order': 2},
+        'confirm_button': {'method': 'class_name',
+                           'value': 'btn-success',
+                           'order': 0}
     }
 }
