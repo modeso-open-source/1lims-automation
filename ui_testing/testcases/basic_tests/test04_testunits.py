@@ -1240,6 +1240,8 @@ class TestUnitsTestCases(BaseTest):
         row = self.test_unit_page.search(value=new_random_name)[0]
         new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
                                                                                            column_value='Test Unit No.')
+
+        new_auto_generated_number = new_auto_generated_number.replace("'", '')
         self.base_selenium.LOGGER.info('get the newly created testunit number of {}'.format(new_auto_generated_number))
 
         self.test_plan.get_test_plans_page()
@@ -1310,6 +1312,8 @@ class TestUnitsTestCases(BaseTest):
         row = self.test_unit_page.search(value=new_random_name)[0]
         new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
                                                                                            column_value='Test Unit No.')
+
+        new_auto_generated_number = new_auto_generated_number.replace("'", '')
         self.base_selenium.LOGGER.info('get the newly created testunit number of {}'.format(new_auto_generated_number))
 
         self.test_plan.get_test_plans_page()
@@ -1372,3 +1376,92 @@ class TestUnitsTestCases(BaseTest):
 
         self.assertEquals(multiple_lines_properties['textOverflow'],'clip')
         self.assertEquals(multiple_lines_properties['lineBreak'], 'auto')
+
+    @parameterized.expand([('name', 'type'),
+                           ('name', 'method'),
+                           ('name', 'number'),
+                           ('type', 'method'),
+                           ('type', 'number'),
+                           ('method', 'number')
+                           ])
+    def test039_test_unit_name_allow_user_to_search_with_selected_two_options_testplan(self, search_view_option1,
+                                                                                       search_view_option2):
+        """
+
+        New: Test Unit: Configuration: Test unit Name Approach: Allow user to search with ( name, number, type, method ) in the drop down list of the analysis for
+
+        LIMS- 6426
+        :return:
+        """
+
+        self.base_selenium.LOGGER.info('Generate random data for update')
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=[search_view_option1,search_view_option2])
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
+        row = self.test_unit_page.search(value=new_random_name)[0]
+        new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
+                                                                                           column_value='Test Unit No.')
+        new_auto_generated_number = new_auto_generated_number.replace("'", '')
+        self.base_selenium.LOGGER.info('get the newly created testunit number of {}'.format(new_auto_generated_number))
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(name='in progress')
+        is_name_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_name)
+        is_number_exist = self.test_plan.search_test_unit_not_set(test_unit=new_auto_generated_number)
+        is_type_exist = self.test_plan.search_test_unit_not_set(test_unit='Qualitative')
+        is_method_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_method)
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = old_values.split('\n×')
+
+        self.test_unit_page.select_option_to_view_search_with(view_search_options=old_values)
+
+        if search_view_option1 == 'name' and search_view_option2 == 'type':
+            self.assertTrue(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertTrue(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option1 == 'name' and search_view_option2 == 'method':
+            self.assertTrue(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertTrue(is_method_exist)
+        elif search_view_option1 == 'name' and search_view_option2 == 'number':
+            self.assertTrue(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option1 == 'type' and search_view_option2 == 'method':
+            self.assertFalse(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertTrue(is_type_exist)
+            self.assertTrue(is_method_exist)
+        elif search_view_option1 == 'type' and search_view_option2 == 'number':
+            self.assertFalse(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertTrue(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option1 == 'method' and search_view_option2 == 'number':
+            self.assertFalse(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertTrue(is_method_exist)
