@@ -392,8 +392,7 @@ class TestPlansTestCases(BaseTest):
         and article, this shouldn't happen
         '''
 
-        response = self.test_plan_api.get_all_test_plans()
-        testplans = response.json()['testPlans']
+        testplans = self.test_plan_api.get_all_test_plans_json()
         testplan = random.choice(testplans)
         
         testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
@@ -425,8 +424,7 @@ class TestPlansTestCases(BaseTest):
         and article. It should be created successfully.
         '''
 
-        response = self.test_plan_api.get_all_test_plans()
-        testplans = response.json()['testPlans']
+        testplans = self.test_plan_api.get_all_test_plans_json()
         first_testplan = random.choice(testplans)
         second_testplan = random.choice(testplans)
 
@@ -457,8 +455,7 @@ class TestPlansTestCases(BaseTest):
         and the other one all
         '''
 
-        response = self.test_plan_api.get_all_test_plans()
-        testplans = response.json()['testPlans']
+        testplans = self.test_plan_api.get_all_test_plans_json()
         testplan = random.choice(testplans)
         
         testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],

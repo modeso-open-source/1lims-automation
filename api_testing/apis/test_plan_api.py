@@ -46,3 +46,7 @@ class TestPlanAPI(BaseAPI):
         filter_text = '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}'
         response = self.get_all_test_plans(filter=filter_text, start=0, **kwargs)
         return response.json()['testPlans']
+    
+    def get_all_test_plans_json(self, **kwargs):
+        testplans_response = self.get_all_test_plans(**kwargs)
+        return testplans_response.json()['testPlans']
