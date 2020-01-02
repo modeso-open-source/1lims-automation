@@ -73,6 +73,24 @@ class TstPlan(TestPlans):
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
             lower.send_keys(kwargs['lower'])
 
+    def get_testunit_in_testplan_title_multiple_line_properties(self):
+        dom_element = self.base_selenium.find_element(element='test_plan:testunit_title')
+        multiple_line_properties = dict()
+        multiple_line_properties['textOverflow'] = self.base_selenium.driver.execute_script( 'return '
+                                                                                             'window'
+                                                                                             '.getComputedStyle('
+                                                                                             'arguments[0], '
+                                                                                             '"None").textOverflow',
+                                                                                             dom_element)
+        multiple_line_properties['lineBreak'] = self.base_selenium.driver.execute_script('return '
+                                                                                            'window'
+                                                                                            '.getComputedStyle('
+                                                                                            'arguments[0], '
+                                                                                            '"None").lineBreak',
+                                                                                            dom_element)
+
+        return multiple_line_properties
+
 
     def get_test_unit_limits(self):
         self.base_selenium.click('test_plan:next')

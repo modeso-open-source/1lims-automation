@@ -278,9 +278,9 @@ elements = {
                  'value': 'Next'},
         'test_units': {'method': 'id',
                        'value': 'selectedTestUnitsfield'},
-        # 'add': {'method': 'class_name',
-        #         'value': 'btn-primary',
-        #         'order': 0},
+        'add': {'method': 'class_name',
+                'value': 'btn-primary',
+                'order': 0},
         'save_btn': {'method': 'id',
                      'value': 'save_btn'},
         'add_test_units': {'method': 'id',
@@ -313,7 +313,10 @@ elements = {
                                 'value': 'btn-secondary',
                                 'order': 1},
         'back_button': {'method': 'id',
-                        'value': 'back_btn'}
+                        'value': 'back_btn'},
+        'testunit_title': {'method': 'css_selector',
+                           'value': '[class="m-portlet__head-text m--font-success"]'
+                           }
     },
 
     'test_unit': {
@@ -784,5 +787,6 @@ elements = {
         'confirm_button': {'method': 'class_name',
                            'value': 'btn-success',
                            'order': 0}
+
     }
 }

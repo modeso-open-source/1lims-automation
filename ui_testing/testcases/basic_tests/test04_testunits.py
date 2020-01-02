@@ -1331,3 +1331,44 @@ class TestUnitsTestCases(BaseTest):
         self.assertFalse(is_number_exist)
         self.assertTrue(is_type_exist)
         self.assertFalse(is_method_exist)
+
+    def test038_test_unit_name_view_method_option_multiple_line_in_testplan(self):
+        """
+
+        New: Test Unit: Configuration: Test unit Name Approach: In case you select the method to display and you entered long text in it, the method should display into multiple lines (test plan )
+
+        LIMS- 6424
+        :return:
+        """
+
+        self.base_selenium.LOGGER.info('Generate random data for update')
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string() + self.generate_random_string() + self.generate_random_string()
+
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=['method'])
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(name='in progress')
+        is_method_exist = self.test_plan.set_test_unit(test_unit=new_random_method)
+        multiple_lines_properties = self.test_plan.get_testunit_in_testplan_title_multiple_line_properties()
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = old_values.split('\n×')
+
+        self.test_unit_page.select_option_to_view_search_with(view_search_options=old_values)
+
+        self.assertEquals(multiple_lines_properties['textOverflow'],'clip')
+        self.assertEquals(multiple_lines_properties['lineBreak'], 'auto')
