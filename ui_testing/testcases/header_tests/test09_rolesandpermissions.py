@@ -131,24 +131,31 @@ class HeaderTestCases(BaseTest):
         :return:
             """
         self.header_page.click_on_roles_permissions_button()
-        # create new role record
-        self.header_page.create_new_role(role_name = self.header_page.generate_random_text())
+        random_role_name = self.generate_random_string()
+        self.header_page.create_new_role(role_name =random_role_name)
+
         self.base_selenium.LOGGER.info('make sure that that the user record created in the active table')
-        active_role = self.header_page.search(value=self.header_page.role_name)[0].text
-        self.assertIn(self.header_page.role_name, active_role)
+        created_role = self.header_page.search(random_role_name)[0]
+        role_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_role)
+        self.assertTrue(created_role, role_data)
+
         self.header_page.select_all_records()
         self.header_page.archive_selected_roles()
         self.header_page.get_archived_roles()
+
         self.base_selenium.LOGGER.info('make sure that that the user record navigate to the archive table')
-        archive_role = self.header_page.search(value=self.header_page.role_name)[0].text
-        self.assertIn(self.header_page.role_name, archive_role)
+        created_role = self.header_page.search(random_role_name)[0]
+        role_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_role)
+        self.assertTrue(created_role, role_data)
+
         self.header_page.select_all_records()
         self.header_page.click_on_role_right_menu()
         self.header_page.click_on_role_delete_btn()
         self.header_page.confirm_popup()
-        result = self.header_page.search(value=self.header_page.role_name)[0].text
+
+        result = self.header_page.search(value=random_role_name)
         self.base_selenium.LOGGER.info('deleted successfully')
-        self.assertFalse(result, 'deleted successfully')
+        self.assertTrue(result, 'No records found')
 
 
     def test007_validation_role_name_field(self):
