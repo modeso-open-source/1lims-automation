@@ -397,12 +397,3 @@ class HeaderTestCases(BaseTest):
 
 
 
-
-
-
-
-
-
-
-
-
