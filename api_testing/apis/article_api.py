@@ -65,4 +65,3 @@ class ArticleAPI(BaseAPI):
             return self.delete_archived_article(id=id)
         else:
             return False
-
