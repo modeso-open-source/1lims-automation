@@ -22,6 +22,23 @@ class TestPlanAPI(BaseAPI):
         completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
         return completed_test_plans
 
+    def get_testplan_testunits(self, id=1):
+        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_testplan_testunits'])
+        _payload = {"sort_value": "id",
+                    "limit": 100,
+                    "start": 1,
+                    "sort_order": "DESC",
+                    "filter": '{"id": '+str(id)+'}'}
+        
+        # payload = self.update_payload(_payload, **kwargs)
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params=_payload, headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        if data['status'] == 1:
+            return data['specifications']
+        return response.json()
+
     def get_testplan_form_data(self, id=1):
         api = '{}{}{}'.format(self.url, self.END_POINTS['test_plan_api']['form_data'], str(id)) 
         self.info('GET : {}'.format(api))

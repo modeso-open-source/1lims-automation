@@ -16,6 +16,7 @@ end_points = {
     },
     'test_plan_api': {
         'list_all_test_plans': '/api/testPlans',
+        'list_testplan_testunits': '/api/testPlans/get/list/specifications',
         'form_data': '/api/testPlans/get/',
         'archive_testplans': '/api/testPlans/',
         'restore_testplans': '/api/testPlans/',
