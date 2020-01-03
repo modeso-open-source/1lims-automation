@@ -1,6 +1,10 @@
 end_points = {
     'article_api': {
-        'list_all_articles': '/api/articles'
+        'list_all_articles': '/api/articles',
+        'form_data': '/api/articles/get/',
+        'archive_articles': '/api/articles/',
+        'restore_articles': '/api/articles/',
+        'delete_article': '/api/articles/'
     },
     'test_unit_api': {
         'list_all_test_units': '/api/testUnits',
