@@ -1071,10 +1071,6 @@ class TestUnitsTestCases(BaseTest):
                 if testunit['specifications'] == '' and testunit['quantification'] != '':
                     testunit_name = testunit['name']
                     break
-            elif specification_type == 'spec_quan':
-                if testunit['specifications'] != '' and testunit['quantification'] != '':
-                    testunit_name = testunit['name']
-                    break
 
         testunit_record = self.test_unit_page.search(value=testunit_name)[0]
 
