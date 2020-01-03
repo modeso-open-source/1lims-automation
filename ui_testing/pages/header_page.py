@@ -72,23 +72,26 @@ class Header(BasePages):
             self.sleep_small()
 
 
-    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name=''):
+    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name='', user_contact=''):
         self.base_selenium.LOGGER.info(' + Create new user.')
         self.base_selenium.click(element='user_management:create_user_button')
         time.sleep(self.base_selenium.TIME_SMALL)
-        self.user_name = self.generate_random_text()
-        self.set_user_name(self.user_name)
+        self.set_user_name(user_name)
         self.set_user_email(user_email)
         self.set_user_role(user_role)
         self.set_user_password(user_password)
         self.set_user_confirm_password(user_confirm_password)
+        created_user_contact=''
+        if user_role == 'Contact':
+            created_user_contact=self.set_contact(contact=user_contact)
 
         user_data = {
             "user_name":self.get_user_name(),
             "user_email":self.set_user_email,
             "user_role": self.get_user_role(),
             "user_password": self.get_user_password(),
-            "user_confirm_password": self.get_user_confirm_password()
+            "user_confirm_password": self.get_user_confirm_password(),
+            "user_contact": created_user_contact
         }
         self.save(sleep)
         return user_data
@@ -219,6 +222,21 @@ class Header(BasePages):
         self.base_selenium.LOGGER.info('Press on the overview button')
         self.base_selenium.click(element='user_management:clear_all')
         self.sleep_small()
+
+    def set_contact(self, contact=''):
+        self.base_selenium.LOGGER.info(
+            'Set contact to be "{}", if it is empty, then it will be random'.format(contact))
+        if contact:
+            self.base_selenium.select_item_from_drop_down(
+                element='user_management:contact_field', item_text=contact)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='user_management:contact_field')
+        return self.get_contact()
+
+    def get_contact(self):
+        self.base_selenium.LOGGER.info('Get user contact')
+        return self.base_selenium.get_text(element='user_management:contact_field').split('\n')[0]
 
 
 
