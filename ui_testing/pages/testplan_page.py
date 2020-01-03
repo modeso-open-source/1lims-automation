@@ -70,7 +70,7 @@ class TstPlan(TestPlans):
         lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
         return upper.get_attribute('value'), lower.get_attribute('value')
 
-    def create_new_test_plan(self, name='', material_type='', article='', test_unit='', add_limits=True, **kwargs):
+    def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
         self.base_selenium.LOGGER.info(' Create new test plan')
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
@@ -93,7 +93,7 @@ class TstPlan(TestPlans):
 
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
-            self.set_test_unit(test_unit=test_unit,add_limits=add_limits , **kwargs)
+            self.set_test_unit(test_unit=test_unit, **kwargs)
             
         self.save(save_btn='test_plan:save_btn')
 
