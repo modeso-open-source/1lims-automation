@@ -5,6 +5,10 @@ end_points = {
     'test_unit_api': {
         'list_all_test_units': '/api/testUnits',
         'report_sheet_get_list_table': '/api/reportSheets/get/list/table/testunits',
+        'form_data': '/api/testUnits/get/',
+        'archive_testunits': '/api/testUnits/',
+        'restore_testunits': '/api/testUnits/',
+        'delete_testunits': '/api/testUnits/'
     },
     'test_plan_api': {
         'list_all_test_plans': '/api/testPlans'
