@@ -39,4 +39,11 @@ end_points = {
         'restore_users': '/api/users/',
         'delete_user': '/api/users/'
     },
+    'roles_api': {
+        'list_all_roles': '/api/roles',
+        'form_data': '/api/roles/',
+        'archive_roles': '/api/roles/',
+        'restore_roles': '/api/roles/',
+        'delete_role': '/api/roles/'
+    },
 }
