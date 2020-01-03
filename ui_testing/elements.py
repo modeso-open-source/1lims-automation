@@ -765,7 +765,7 @@ elements = {
         'error_msg': {'method': 'class_name',
                     'value': 'm-form__help error-display',
                     'order': 0}
-    }
+    },
     'company_profile': {
         'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
         'name_field': {'method': 'id', 'value': 'namefield'},
