@@ -8,10 +8,14 @@ end_points = {
         'form_data': '/api/testUnits/get/',
         'archive_testunits': '/api/testUnits/',
         'restore_testunits': '/api/testUnits/',
-        'delete_testunits': '/api/testUnits/'
+        'delete_testunit': '/api/testUnits/'
     },
     'test_plan_api': {
-        'list_all_test_plans': '/api/testPlans'
+        'list_all_test_plans': '/api/testPlans',
+        'form_data': '/api/testPlans/get/',
+        'archive_testplans': '/api/testPlans/',
+        'restore_testplans': '/api/testPlans/',
+        'delete_testplan': '/api/testPlans/'
     },
     'orders_api': {
         'list_all_orders': '/api/orders',

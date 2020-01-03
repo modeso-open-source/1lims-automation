@@ -63,7 +63,7 @@ class TestUnitAPI(BaseAPI):
             return False
     
     def delete_archived_testunit(self, id=1):
-        api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['delete_testunits'], str(id)) 
+        api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['delete_testunit'], str(id)) 
         self.info('DELETE : {}'.format(api))
         response = self.session.delete(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -75,14 +75,6 @@ class TestUnitAPI(BaseAPI):
 
     def delete_active_testunit(self, id=1):
         if self.archive_testunits(ids=[str(id)]):
-            api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['delete_testunits'], str(id)) 
-            self.info('DELETE : {}'.format(api))
-            response = self.session.delete(api, params='', headers=self.headers, verify=False)
-            self.info('Status code: {}'.format(response.status_code))
-            data = response.json()
-            if data['status'] == 1 and data['message']=='hard_delete_success':
-                return True
-            else:
-                return False
+            return self.delete_archived_testunit(id=id)
         else:
             return False
