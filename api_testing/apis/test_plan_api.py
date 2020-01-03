@@ -85,6 +85,10 @@ class TestPlanAPI(BaseAPI):
 
     def delete_active_testplan(self, id=1):
         if self.archive_testplans(ids=[str(id)]):
-            return self.delete_archived_testplan(id=id)
+            if self.delete_archived_testplan(id=id):
+                return True
+            else:
+                self.restore_testplans(ids=[id])
+                return False
         else:
             return False

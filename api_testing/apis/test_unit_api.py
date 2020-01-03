@@ -75,6 +75,10 @@ class TestUnitAPI(BaseAPI):
 
     def delete_active_testunit(self, id=1):
         if self.archive_testunits(ids=[str(id)]):
-            return self.delete_archived_testunit(id=id)
+            if self.delete_archived_testunit(id=id):
+                return True
+            else:
+                self.restore_testunits(ids=[id])
+                return False
         else:
             return False

@@ -62,6 +62,10 @@ class UsersAPI(BaseAPI):
 
     def delete_active_user(self, id=1):
         if self.archive_users(ids=[str(id)]):
-            return self.delete_archived_user(id=id)
+            if self.delete_archived_user(id=id):
+                return True
+            else:
+                self.restore_users(ids=[id])
+                return False
         else:
             return False

@@ -62,6 +62,10 @@ class ContactsAPI(BaseAPI):
 
     def delete_active_contact(self, id=1):
         if self.archive_contacts(ids=[str(id)]):
-            return self.delete_archived_contact(id=id)
+            if self.delete_archived_contact(id=id):
+                return True
+            else:
+                self.restore_contacts(ids=[id])
+                return False
         else:
             return False

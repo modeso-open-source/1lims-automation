@@ -62,6 +62,10 @@ class ArticleAPI(BaseAPI):
 
     def delete_active_article(self, id=1):
         if self.archive_articles(ids=[str(id)]):
-            return self.delete_archived_article(id=id)
+            if self.delete_archived_article(id=id):
+                return True
+            else:
+                self.restore_articles(ids=[id])
+                return False
         else:
             return False
