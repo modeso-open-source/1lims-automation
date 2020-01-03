@@ -28,7 +28,7 @@ class TstPlan(TestPlans):
             self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
     def get_material_type(self):
-        return self.base_selenium.get_text(element='test_plans:material_type').split('\n')[0]
+        return self.base_selenium.get_text(element='test_plan:material_type').split('\n')[0]
 
     def set_material_type(self, material_type='', random=False):
         if random:
