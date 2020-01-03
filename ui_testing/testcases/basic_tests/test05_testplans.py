@@ -584,36 +584,3 @@ class TestPlansTestCases(BaseTest):
         testplan_found = self.test_plan.result_table()
         self.assertIn(str(random_testplan['number']), testplan_found[0].text)
         self.base_selenium.LOGGER.info('Filtering by number was done successfully')
-
-    def test021_filter_by_testplan_name(self):
-        '''
-        LIMS-6470
-        User can filter with testplan name
-        '''
-
-        testplans = self.test_plan_api.get_all_test_plans_json()
-        random_testplan = random.choice(testplans)
-
-        self.test_plan.filter_by_element_and_get_results('Testplan Name', 'test_plans:testplan_name_filter', random_testplan['testPlanName'], 'drop_down')
-        testplan_found = self.test_plan.result_table()
-        self.assertIn(str(random_testplan['testPlanName']), testplan_found[0].text)
-        self.base_selenium.LOGGER.info('Filtering by name was done successfully')
-
-    def test022_filter_by_testplan_status(self):
-        '''
-        LIMS-6474
-        User can filter with status
-        '''
-
-        self.test_plan.filter_by_element_and_get_results('Status-Completed', 'test_plans:testplan_status_filter', 'Completed', 'drop_down')
-        testplan_found = self.test_plan.result_table()
-        self.assertIn('Completed', testplan_found[0].text)
-        self.base_selenium.LOGGER.info('Filtering by status completed was done successfully')
-
-        self.test_plan.sleep_small()
-
-        self.test_plan.filter_by_element_and_get_results('Status-In Progress', 'test_plans:testplan_status_filter', 'In Progress', 'drop_down')
-        testplan_found = self.test_plan.result_table()
-        self.assertIn('In Progress', testplan_found[0].text)
-        self.base_selenium.LOGGER.info('Filtering by status in progress was done successfully')
-

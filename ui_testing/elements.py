@@ -755,7 +755,7 @@ elements = {
             'method': 'id',
             'value': 'table-with-add'
         },
-    }
+    },
     'company_profile': {
         'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
         'name_field': {'method': 'id', 'value': 'namefield'},
