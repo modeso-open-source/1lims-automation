@@ -18,6 +18,7 @@ from api_testing.apis.test_plan_api import TestPlanAPI
 from ui_testing.pages.header_page import Header
 from api_testing.apis.orders_api import OrdersAPI
 from api_testing.apis.contacts_api import ContactsAPI
+from api_testing.apis.users_api import UsersAPI
 
 import datetime, re
 
@@ -48,6 +49,7 @@ class BaseTest(TestCase):
         self.test_plan_api = TestPlanAPI()
         self.orders_api = OrdersAPI()
         self.contacts_api = ContactsAPI()
+        self.users_api = UsersAPI()
 
     def tearDown(self):
         self.base_selenium.quit_driver()
