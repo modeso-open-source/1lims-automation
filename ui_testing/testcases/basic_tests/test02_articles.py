@@ -667,5 +667,3 @@ class ArticlesTestCases(BaseTest):
 
         apply_button = self.base_selenium.find_element(element="general:apply_configure_table")
         self.assertFalse(apply_button)
-
-        self.article_page.press_apply_in_configure_table()
