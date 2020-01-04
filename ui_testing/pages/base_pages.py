@@ -250,6 +250,7 @@ class BasePages:
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
         configure_table_menu.click()
         self.sleep_small()
+
     
     def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
         self.open_configure_table()
