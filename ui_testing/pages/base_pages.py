@@ -312,7 +312,24 @@ class BasePages:
         for column in total_columns:
             self.change_column_view(column=column, value=True, always_hidden_columns=always_hidden_columns)
         self.press_apply_in_configure_table()
-        
+
+    def deselect_all_configurations(self):
+        self.open_configure_table()
+        active_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items',
+                                                                     destination_element='general:li')
+        for column in active_columns:
+            if column.text:
+                self.change_column_view(column=column, value=False)
+
+        archived_coloums = self.base_selenium.find_elements_in_element(
+            source_element='general:configure_table_archive_items',
+            destination_element='general:li')
+        for column in archived_coloums:
+            if column.text:
+                self.change_column_view(column=column, value=False)
+
+        return self.base_selenium.element_is_displayed(element="general:apply_configure_table")
+
     def click_overview(self):
         # click on Overview, this will display an alert to the user
         self.base_selenium.LOGGER.info('click on Overview')

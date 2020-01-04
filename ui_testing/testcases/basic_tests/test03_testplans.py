@@ -40,3 +40,11 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
+    def test003_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
+

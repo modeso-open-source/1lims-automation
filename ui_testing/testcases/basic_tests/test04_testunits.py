@@ -1144,3 +1144,11 @@ class TestUnitsTestCases(BaseTest):
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
             version_counter = version_counter+1
             record_counter = record_counter+1
+
+    def test032_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
