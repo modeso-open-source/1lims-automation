@@ -80,38 +80,12 @@ class Header(BasePages):
         user_password = self.set_user_password(user_password)
         user_confirm_password = self.set_user_confirm_password(user_confirm_password)
 
-
         user_data = {
             "user_name": user_name,
             "user_email": user_email,
             "user_role": user_role,
             "user_password": user_password,
             "user_confirm_password": user_confirm_password,
-        }
-        self.save(sleep)
-        return user_data
-
-    def create_new_user11(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name='', user_contact=''):
-        self.base_selenium.LOGGER.info(' + Create new user.')
-        self.base_selenium.click(element='user_management:create_user_button')
-        time.sleep(self.base_selenium.TIME_SMALL)
-        self.set_user_name(user_name)
-        self.set_user_email(user_email)
-        self.set_user_role(user_role)
-        self.set_user_password(user_password)
-        self.set_user_confirm_password(user_confirm_password)
-        created_user_contact=''
-        if user_role == 'Contact':
-            created_user_contact=self.set_contact(contact=user_contact)
-
-        user_data = {
-            "user_name":self.get_user_name(),
-            "user_email":self.set_user_email,
-            "user_role": self.get_user_role(),
-            "user_password": self.get_user_password(),
-            "user_confirm_password": self.get_user_confirm_password(),
-            "user_contact": created_user_contact
-
         }
         self.save(sleep)
         return user_data
