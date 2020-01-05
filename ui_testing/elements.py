@@ -135,6 +135,10 @@ elements = {
                              'value': "//div[contains(@class, 'swal2-actions')]//button[1]"},
         'cancel_overview': {'method': 'xpath',
                             'value': "//div[contains(@class, 'swal2-actions')]//button[2]"},
+        'next_page': {
+            'method': 'id',
+            'value': 'table_next'
+        }
     },
     'login': {
         'username': {'method': 'name',
