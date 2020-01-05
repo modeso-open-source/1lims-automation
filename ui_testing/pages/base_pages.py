@@ -372,3 +372,10 @@ class BasePages:
 
     def close_connection_with_database(self, db):
         db.close()
+
+    def is_next_page_button_enabled(self, element='general:next_page'):
+        _class = self.base_selenium.get_attribute('general:next_page', 'class')
+        if 'disabled' in _class:
+            return False
+        else:
+            return True
