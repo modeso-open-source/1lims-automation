@@ -20,8 +20,10 @@ class HeaderTestCases(BaseTest):
         """
         self.header_page.click_on_roles_permissions_button()
         selected_roles_and_permissions_data, _ = self.header_page.select_random_multiple_table_rows()
-        self.header_page.archive_selected_roles_and_permissions()
-        self.header_page.get_archived_roles_and_permissions()
+        self.header_page.archive_entity(menu_element='roles_and_permissions:right_menu',
+                                        archive_element='roles_and_permissions:archive')
+        self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
+                                               archived_element='roles_and_permissions:archived')
         for role in selected_roles_and_permissions_data:
             role_name = role['Name']
             self.base_selenium.LOGGER.info(' + {} role should be activated.'.format(role_name))
@@ -40,8 +42,10 @@ class HeaderTestCases(BaseTest):
         for role in selected_role_data:
             role_names.append(role['Name'])
 
-        self.header_page.restore_selected_roles()
-        self.header_page.get_active_roles()
+        self.header_page.restore_entity(menu_element='roles_and_permissions:right_menu',
+                                        restre_element='roles_and_permissions:restore')
+        self.header_page.get_active_entities(menu_element='roles_and_permissions:right_menu',
+                                            active_element='roles_and_permissions:active')
         for role_name in role_names:
             self.assertTrue(self.header_page.is_role_in_table(value=role_name))
 
@@ -75,8 +79,10 @@ class HeaderTestCases(BaseTest):
         """
         # from the create mode it will redirect me to the active table
         self.header_page.click_on_roles_permissions_button()
-        self.header_page.click_create_new_role()
-        self.header_page.click_on_role_overview_btn()
+        self.base_selenium.LOGGER.info('Press on create new role button')
+        self.base_selenium.click(element='roles_and_permissions:new_role_btn')
+        self.base_selenium.LOGGER.info('Press on the overview  button')
+        self.base_selenium.click(element='roles_and_permissions:roles_overview_btn')
         self.header_page.confirm_popup()
         self.base_selenium.LOGGER.info('it will redirect me to the active table')
         self.header_page.get_roles_page()
@@ -84,7 +90,8 @@ class HeaderTestCases(BaseTest):
 
         # from the edit mode it will redirect me to the active table
         self.header_page.get_random_role()
-        self.header_page.click_on_role_overview_btn()
+        self.base_selenium.LOGGER.info('Press on the overview  button')
+        self.base_selenium.click(element='roles_and_permissions:roles_overview_btn')
         self.base_selenium.LOGGER.info('it will redirect me to the active table')
         self.header_page.get_roles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}roles'.format(self.base_selenium.url))
@@ -140,8 +147,10 @@ class HeaderTestCases(BaseTest):
         self.assertTrue(created_role, role_data)
 
         self.header_page.select_all_records()
-        self.header_page.archive_selected_roles()
-        self.header_page.get_archived_roles()
+        self.header_page.archive_entity(menu_element='roles_and_permissions:right_menu',
+                                        archive_element='roles_and_permissions:archive')
+        self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
+                                               archived_element='roles_and_permissions:archived')
 
         self.base_selenium.LOGGER.info('make sure that that the user record navigate to the archive table')
         created_role = self.header_page.search(random_role_name)[0]
@@ -149,8 +158,10 @@ class HeaderTestCases(BaseTest):
         self.assertTrue(created_role, role_data)
 
         self.header_page.select_all_records()
-        self.header_page.click_on_role_right_menu()
-        self.header_page.click_on_role_delete_btn()
+        self.base_selenium.LOGGER.info('Press on the right menu')
+        self.base_selenium.click(element='roles_and_permissions:right_menu')
+        self.base_selenium.LOGGER.info('Press on the delete button')
+        self.base_selenium.click(element='roles_and_permissions:delete')
         self.header_page.confirm_popup()
 
         result = self.header_page.search(value=random_role_name)
@@ -250,14 +261,17 @@ class HeaderTestCases(BaseTest):
 
         self.header_page.select_all_records()
         # navigate to the archived table to delete it
-        self.header_page.archive_selected_roles()
-        self.header_page.get_archived_roles()
-
+        self.header_page.archive_entity(menu_element='roles_and_permissions:right_menu',
+                                        archive_element='roles_and_permissions:archive')
+        self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
+                                               archived_element='roles_and_permissions:archived')
         self.header_page.select_all_records()
-        self.header_page.click_on_role_right_menu()
+        self.base_selenium.LOGGER.info('Press on the right menu')
+        self.base_selenium.click(element='roles_and_permissions:right_menu')
 
         # make sure when you press on the delete button. message appear to confirm that I want to delete
-        self.header_page.click_on_role_delete_btn()
+        self.base_selenium.LOGGER.info('Press on the delete button')
+        self.base_selenium.click(element='roles_and_permissions:delete')
         self.header_page.confirm_popup()
         self.base_selenium.LOGGER.info(
             'message will appear this user related to some data & cant delete it')
@@ -287,9 +301,10 @@ class HeaderTestCases(BaseTest):
 
         # archive the role that you created
         self.header_page.select_all_records()
-        self.header_page.archive_selected_roles()
-        self.header_page.get_archived_roles()
-
+        self.header_page.archive_entity(menu_element='roles_and_permissions:right_menu',
+                                        archive_element='roles_and_permissions:archive')
+        self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
+                                               archived_element='roles_and_permissions:archived')
         # go to the user entity to search by it in the user drop down list
         self.header_page.click_on_header_button()
         self.header_page.click_on_user_management_button()
@@ -344,7 +359,8 @@ class HeaderTestCases(BaseTest):
                                          user_confirm_password='1')
 
         self.header_page.click_on_header_button()
-        self.header_page.click_on_logout_button()
+        self.base_selenium.LOGGER.info('Press on logout button')
+        self.base_selenium.click(element='login:logout_btn')
 
         # login with role & user that you created to make sure from the permissions
         self.header_page.login_with_created_user(username=random_user_name, password='1')
@@ -383,7 +399,8 @@ class HeaderTestCases(BaseTest):
                                          user_confirm_password='1')
 
         self.header_page.click_on_header_button()
-        self.header_page.click_on_logout_button()
+        self.base_selenium.LOGGER.info('Press on logout button')
+        self.base_selenium.click(element='login:logout_btn')
 
         # login with role & user that you created to make sure from the permissions
         self.header_page.login_with_created_user(username=random_user_name, password='1')

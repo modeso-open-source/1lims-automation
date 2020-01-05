@@ -139,7 +139,7 @@ elements = {
                             'value': 'dropdown-toggle',
                             'order': 0},
         'loading_msg': {'method': 'class_name',
-                            'value': 'm-page--loading-non-block'}
+                            'value': 'm-page--loading-non-block'},
 
     },
     'login': {
@@ -521,8 +521,7 @@ elements = {
         },
         'filter_analysis_no': {
             'method': 'id',
-            'value': 'nofield'
-        },
+            'value': 'nofield'},
     },
 
     'header': {
@@ -531,7 +530,7 @@ elements = {
         'user_management_button': {'method': 'xpath',
                   'value': '//*[contains(text(),"User Management")]'},
         'roles_and_permissions_button': {'method': 'xpath',
-                  'value': '//*[contains(text(),"Role & Permissions")]'},
+                  'value': '//span[@class="m-menu__link-text"][contains(text(),"Role & Permissions")]'},
         'myprofile_button': {'method': 'xpath',
                   'value': '//*[contains(text(),"My Profile")]'},
         'companyprofile_button': {'method': 'xpath',
@@ -570,6 +569,9 @@ elements = {
                      'value': 'password'},
        'user_confirm_password': {'method': 'id',
                      'value': 'confirmPassword'},
+       'user_contact': {'method': 'id',
+                     'value': 'supplierfield'},
+
        'create_user_button': {'method': 'xpath',
                      'value': '//*[contains(text(),"New User")]'},
        'save_btn': {'method': 'id',
@@ -578,11 +580,11 @@ elements = {
        'filter_number': {'method': 'id',
                  'value':'userIdfield'},
 
-       'filter_contact': {'method': 'xpath',
-                   'value': '//*[@id="supplierfield"]//input'},
+       'filter_contact': {'method': 'id',
+                   'value': 'supplierfield'},
 
-       'filter_changed_by': {'method': 'xpath',
-                        'value': '//*[@id="lastModifiedUserfield"]//input'},
+       'filter_changed_by': {'method': 'id',
+                        'value': 'lastModifiedUserfield'},
 
        'filter_created_on': {'method': 'id',
                  'value':'start_createdAt'},
@@ -593,12 +595,23 @@ elements = {
                  'value':'emailfield'},
 
        'filter_role': {'method': 'xpath',
-                 'value':'//*[@id="rolefield"]//input'},
+                 'value':'//ng-select[@id="rolefield"]//input'},
 
        'filter_reset_btn': {'method': 'id',
                  'value':'reset_btn'},
        'delete': {'method': 'link_text',
                  'value': 'Delete'},
+       
+       'overview_btn': {'method': 'xpath',
+                               'value': '//span[contains(text(),"Overview")]'},
+       'filter_configuration_btn': {'method': 'id',
+                               'value': 'settings'},
+       'switch_name_btn': {'method': 'xpath',
+                               'value': '//div[@id="name"]//label[@class="switch"]'},
+       'filter_configuration_save_btn': {'method': 'xpath',
+                               'value': '//div[@id="filterConfig"]//button[@class="btn btn-primary"][contains(text(),"Save")]'},
+       'content': {'method': 'xpath',
+                              'value': '//div[@class="m-accordion__item-content"]'},
 
    },
     'contacts':{
@@ -742,8 +755,8 @@ elements = {
                               'value': '//div[@id="permissionsTable"]//div[9]//div[2]//span[1]//label[1]'},
        'analysis_edit_permissions': {'method': 'xpath',
                               'value':'//div[@id="permissionsTable"]//div[9]//div[3]//span[1]//label[1]'},
-
    },
+
     'company_profile': {
         'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
         'name_field': {'method': 'id', 'value': 'namefield'},
@@ -753,10 +766,10 @@ elements = {
         'location_field': {'method': 'id', 'value': 'locationfield'},
         'logo_field': {'method': 'id', 'value': 'logo'},
         'username': {'method': 'class_name', 'value': 'm-card-profile__name', 'order': 0},
-        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0}
-    },
-
+        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
+    }
 }
+
 
 
 

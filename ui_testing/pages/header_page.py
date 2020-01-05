@@ -29,21 +29,17 @@ class Header(BasePages):
             self.base_selenium.click(element='header:header_button')
             self.sleep_small()
 
-    def click_on_user_management_button(self):
-            self.base_selenium.LOGGER.info('Press on the user management button')
-            self.base_selenium.click(element='header:user_management_button')
-            self.sleep_small()
-
-    def archive_selected_users(self):
+    def archive_entity(self, menu_element, archive_element):
             self.base_selenium.scroll()
-            self.base_selenium.click(element='user_management:right_menu')
-            self.base_selenium.click(element='user_management:archive')
+            self.base_selenium.click(element=menu_element)
+            self.base_selenium.click(element=archive_element)
             self.confirm_popup()
 
-    def get_archived_users(self):
+
+    def get_archived_entities(self, menu_element, archived_element):
             self.base_selenium.scroll()
-            self.base_selenium.click(element='user_management:right_menu')
-            self.base_selenium.click(element='user_management:archived')
+            self.base_selenium.click(element=menu_element)
+            self.base_selenium.click(element=archived_element)
             self.sleep_small()
 
     def is_user_in_table(self, value):
@@ -62,19 +58,19 @@ class Header(BasePages):
                 else:
                     return False
 
-    def restore_selected_user(self):
+    def restore_entity(self, menu_element, restore_element):
             self.base_selenium.scroll()
-            self.base_selenium.click(element='user_management:right_menu')
-            self.base_selenium.click(element='user_management:restore')
+            self.base_selenium.click(element=menu_element)
+            self.base_selenium.click(element=restore_element)
             self.confirm_popup()
 
-    def get_active_users(self):
+    def get_active_entities(self, menu_element, active_element):
             self.base_selenium.scroll()
-            self.base_selenium.click(element='user_management:right_menu')
-            self.base_selenium.click(element='user_management:active')
+            self.base_selenium.click(element=menu_element)
+            self.base_selenium.click(element=active_element)
             self.sleep_small()
 
-    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name=''):
+    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='',  user_name=''):
         self.base_selenium.LOGGER.info(' + Create new user.')
         self.base_selenium.click(element='user_management:create_user_button')
         time.sleep(self.base_selenium.TIME_SMALL)
@@ -84,6 +80,7 @@ class Header(BasePages):
         user_password = self.set_user_password(user_password)
         user_confirm_password = self.set_user_confirm_password(user_confirm_password)
 
+
         user_data = {
             "user_name": user_name,
             "user_email": user_email,
@@ -91,9 +88,10 @@ class Header(BasePages):
             "user_password": user_password,
             "user_confirm_password": user_confirm_password,
         }
+        self.save(sleep)
         return user_data
 
-    def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name='', user_contact=''):
+    def create_new_user11(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='', user_name='', user_contact=''):
         self.base_selenium.LOGGER.info(' + Create new user.')
         self.base_selenium.click(element='user_management:create_user_button')
         time.sleep(self.base_selenium.TIME_SMALL)
@@ -113,6 +111,7 @@ class Header(BasePages):
             "user_password": self.get_user_password(),
             "user_confirm_password": self.get_user_confirm_password(),
             "user_contact": created_user_contact
+
         }
         self.save(sleep)
         return user_data
@@ -161,16 +160,6 @@ class Header(BasePages):
                 self.base_selenium.select_item_from_drop_down(element='user_management:user_role', item_text=user_role)
                 return self.get_user_role()
 
-    def click_on_filter_view(self):
-            self.base_selenium.LOGGER.info('Press on the filter view button')
-            self.base_selenium.click(element='general:menu_filter_view')
-            self.sleep_small()
-
-    def click_on_filter_user_name(self):
-            self.base_selenium.LOGGER.info('Enter user name in the filter field')
-            self.base_selenium.click(element='user_management:filter_')
-            self.sleep_small()
-
     def get_user_edit_page(self, name):
             user = self.search(value=name)[0]
             self.open_edit_page(row=user)
@@ -181,7 +170,24 @@ class Header(BasePages):
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
 
+    def filter_user_drop_down(self, filter_name, filter_text, field_type='drop_down'):
+        self.base_selenium.LOGGER.info(' + Filter by user : {}'.format(filter_text))
+        self.filter_by(filter_element=filter_name, filter_text=filter_text)
+        self.filter_apply()
+        self.sleep_tiny()
+        return self.get_table_rows_data()[0]
 
+    def get_data_from_row(self):
+
+        user_row = self.get_random_table_row(table_element='general:table')
+        user_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=user_row)
+        return {
+            'created_on': user_row_data['Created On'].split(',')[0],
+            'changed_by': user_row_data['Changed By'],
+            'number': user_row_data['No'],
+            'role': user_row_data['Role'],
+            'email': user_row_data['Email'],
+        }
 
     def get_created_on_filter(self):
         return self.base_selenium.get_value(element='order:test_date')
@@ -191,22 +197,6 @@ class Header(BasePages):
             date = self.get_random_date()
         self.base_selenium.set_text(element='user_management:user_created_on', value=date)
         return date
-
-    def filter_reset_btn(self):
-            self.base_selenium.LOGGER.info('Press on the filter reset button button')
-            self.base_selenium.click(element='user_management:filter_reset_btn')
-            self.sleep_small()
-
-    def filter_by(self, filter_element, filter_text, field_type='drop_down'):
-        if field_type == 'drop_down':
-            self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
-        else:
-            self.base_selenium.set_text(element=filter_element, value=filter_text)
-
-    def click_create_new_user(self):
-            self.base_selenium.LOGGER.info('Press on the create new user button')
-            self.base_selenium.click(element='user_management:create_user_button')
-            self.sleep_small()
 
     def clear_user_role(self):
         self.base_selenium.LOGGER.info('Clear selected role')
@@ -225,37 +215,11 @@ class Header(BasePages):
         self.base_selenium.click(element='general:confirm_pop')
         self.sleep_small()
 
-    def click_on_delete_button(self):
-        self.base_selenium.LOGGER.info('Press on the delete button')
-        self.base_selenium.click(element='user_management:delete')
-        self.sleep_small()
-
-    def click_on_user_right_menu(self):
-        self.base_selenium.LOGGER.info('Press on the right menu')
-        self.base_selenium.click(element='user_management:right_menu')
-        self.sleep_small()
-
-    def click_on_overview_btn(self):
-        self.base_selenium.LOGGER.info('Press on the overview button button')
-        self.base_selenium.click(element='user_management:overview_btn')
-        self.sleep_small()
-
     def click_on_clear_all(self):
         self.base_selenium.LOGGER.info('Press on the overview button')
         self.base_selenium.click(element='user_management:clear_all')
         self.sleep_small()
 
-    def archive_selected_roles_and_permissions(self):
-            self.base_selenium.scroll()
-            self.base_selenium.click(element='roles_and_permissions:right_menu')
-            self.base_selenium.click(element='roles_and_permissions:archive')
-            self.confirm_popup()
-
-    def get_archived_roles_and_permissions(self):
-        self.base_selenium.scroll()
-        self.base_selenium.click(element='roles_and_permissions:right_menu')
-        self.base_selenium.click(element='roles_and_permissions:archived')
-        self.sleep_small()
 
     def is_role_in_table(self, value):
         """
@@ -273,18 +237,6 @@ class Header(BasePages):
             else:
                 return False
 
-    def restore_selected_roles(self):
-        self.base_selenium.scroll()
-        self.base_selenium.click(element='roles_and_permissions:right_menu')
-        self.base_selenium.click(element='roles_and_permissions:restore')
-        self.confirm_popup()
-
-    def get_active_roles(self):
-        self.base_selenium.scroll()
-        self.base_selenium.click(element='roles_and_permissions:right_menu')
-        self.base_selenium.click(element='roles_and_permissions:active')
-        self.sleep_small()
-
     def get_random_role(self):
         row = self.get_random_user_row()
         self.open_edit_page(row=row)
@@ -292,25 +244,10 @@ class Header(BasePages):
     def get_random_role_row(self):
         return self.get_random_table_row(table_element='roles_and_permissions:user_table')
 
-    def click_on_roles_permissions_button(self):
-        self.base_selenium.LOGGER.info('Press on roles & permissions button')
-        self.base_selenium.click(element='header:roles_and_permissions_button')
-        self.sleep_small()
-
-    def click_create_new_role(self):
-        self.base_selenium.LOGGER.info('Press on create new role button')
-        self.base_selenium.click(element='roles_and_permissions:new_role_btn')
-        self.sleep_small()
-
     def get_roles_page(self):
             self.base_selenium.LOGGER.info(' + Get roles page.')
             self.base_selenium.get(url=self.role_url)
             self.sleep_small()
-
-    def click_on_role_overview_btn(self):
-        self.base_selenium.LOGGER.info('Press on the overview  button')
-        self.base_selenium.click(element='roles_and_permissions:roles_overview_btn')
-        self.sleep_small()
 
     def set_role_name(self, role_name):
 
@@ -330,28 +267,6 @@ class Header(BasePages):
         }
         self.save(sleep)
         return role_data
-
-    def archive_selected_roles(self):
-            self.base_selenium.scroll()
-            self.base_selenium.click(element='roles_and_permissions:right_menu')
-            self.base_selenium.click(element='roles_and_permissions:archive')
-            self.confirm_popup()
-
-    def get_archived_roles(self):
-        self.base_selenium.scroll()
-        self.base_selenium.click(element='roles_and_permissions:right_menu')
-        self.base_selenium.click(element='roles_and_permissions:archived')
-        self.sleep_small()
-
-    def click_on_role_right_menu(self):
-        self.base_selenium.LOGGER.info('Press on the right menu')
-        self.base_selenium.click(element='roles_and_permissions:right_menu')
-        self.sleep_small()
-
-    def click_on_role_delete_btn(self):
-        self.base_selenium.LOGGER.info('Press on the delete button')
-        self.base_selenium.click(element='roles_and_permissions:delete')
-        self.sleep_small()
 
     def clear_role_name(self):
         self.base_selenium.LOGGER.info('Clear role name')
@@ -382,18 +297,12 @@ class Header(BasePages):
         self.save(sleep)
         return role_data
 
-    def click_on_logout_button(self):
-        self.base_selenium.LOGGER.info('Press on logout button')
-        self.base_selenium.click(element='login:logout_btn')
-        self.sleep_small()
-
     def login_with_created_user(self, username, password):
         self.base_selenium.LOGGER.info('Login {} : {}.'.format(username, password))
         self.base_selenium.get(url=self.base_selenium.url)
         self.base_selenium.set_text(element='login:username', value=username)
         self.base_selenium.set_text(element='login:password', value=password)
         self.base_selenium.click(element='login:login_btn')
-
 
     def click_on_sample_management_permissions(self):
         self.base_selenium.LOGGER.info('Press on logout button')
@@ -431,13 +340,3 @@ class Header(BasePages):
     def get_contact(self):
         self.base_selenium.LOGGER.info('Get user contact')
         return self.base_selenium.get_text(element='user_management:contact_field').split('\n')[0]
-
-
-
-
-
-
-
-
-
-
