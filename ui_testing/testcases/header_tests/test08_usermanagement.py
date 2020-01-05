@@ -238,22 +238,7 @@ class HeaderTestCases(BaseTest):
                 ' + Assert {} (current_role) == {} (user_role)'.format(current_role, user_role))
             self.assertEqual(current_role, user_role)
 
-    # this test case just to test the draggable method in the base page
-    def test020_draggable(self):
-        """
-        User management Approach: I can filter by created on successfully
-        LIMS-64
-        :return:
-        """
-        self.header_page.click_on_user_management_button()
-        
-        self.base_page.sleep_tiny()
-        draggable = self.base_page.draggable_configure_table(
-            configure_table_button='user_management:configure',
-            source_element='user_management:configure_table_changed_by',
-            destination_element='user_management:configure_table_name',
-            apply_button='user_management:apply_btn')
-        self.assertTrue(draggable, 'the field is dragged')
+
 
 
 

@@ -21,19 +21,10 @@ install:
   - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
 
 script:
-
-
-  - export TESTS='test08_usermanagement.py:'
-  #- export TESTS='test04_testunits.py:TestUnitsTestCases.test011_create_test_unit_with_random_category'
-
+  - export TESTS='test07_company_profile.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
-  #- echo $TESTS
+  - echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
- # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/test05_contacts.py --tc-file=config.ini
-#  - export TESTS='test04_testunits.py:TestUnitsTestCases.test010_material_type_approach_1_Quantitative_MiBi'
-  # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
-#  - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/test05_contacts.py --tc-file=config.ini
 #  - export TESTS='test04_testunits.py:TestUnitsTestCases.test010_material_type_approach_1_Quantitative_MiBi'
 #  - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test030_allow_unit_field_to_be_displayed_in_case_of_mibi
-
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test015_create_user_with_role_contact
