@@ -571,6 +571,16 @@ elements = {
                  'value':'reset_btn'},
        'delete': {'method': 'link_text',
                  'value': 'Delete'},
+       'configure': {'method': 'id',
+                  'value': 'config'},
+      'configure_table_changed_by': {'method': 'id',
+                  'value': 'modifiedBy'},
+     'configure_table_name': {'method': 'id',
+                  'value': 'name'},
+    'apply_btn': {'method': 'xpath',
+                  'value': '//span[contains(text(),"Apply")]'},
+
+
 
    },
     'contacts':{
