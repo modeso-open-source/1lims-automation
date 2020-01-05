@@ -617,6 +617,8 @@ elements = {
 
        'cancel': {'method': 'id',
                         'value': 'cancelButton'},
+        'contact_field': {'method': 'id',
+                            'value': 'supplierfield'}
     },
 
     'contacts':{
@@ -700,6 +702,7 @@ elements = {
                      'value': 'delete_table_view'},
 
     },
+
    'roles_and_permissions': {
         'right_menu': {'method': 'xpath',
                           'value': '//i[@class="flaticon-grid-menu-v2"]'},
@@ -741,6 +744,18 @@ elements = {
                               'value':'//div[@id="permissionsTable"]//div[9]//div[3]//span[1]//label[1]'},
 
    },
+    'company_profile': {
+        'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
+        'name_field': {'method': 'id', 'value': 'namefield'},
+        'street_name_field': {'method': 'id', 'value': 'streetNamefield'},
+        'street_number_field': {'method': 'id', 'value': 'streetNumberfield'},
+        'postal_code_field': {'method': 'id', 'value': 'postalCodefield'},
+        'location_field': {'method': 'id', 'value': 'locationfield'},
+        'logo_field': {'method': 'id', 'value': 'logo'},
+        'username': {'method': 'class_name', 'value': 'm-card-profile__name', 'order': 0},
+        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0}
+    },
+
 }
 
 
