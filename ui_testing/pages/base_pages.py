@@ -244,7 +244,12 @@ class BasePages:
       
     def generate_random_website(self):
         return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
-
+    
+    def open_configuration(self):
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:configurations')
+        self.sleep_medium()
+        
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
