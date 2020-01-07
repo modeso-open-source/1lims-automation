@@ -1,6 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
+import random
 from unittest import skip
 
 
@@ -427,6 +428,28 @@ class ContactsTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}contacts'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
+    def test015_contacts_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        contacts = self.get_all_contacts()
+        contact_name = random.choice(contacts)['name']
+        search_results = self.contact_page.search(contact_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Contact Name'] == contact_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(contact_name, search_data['Contact Name'])
+        # Navigate to test plan page
+        self.base_selenium.LOGGER.info('navigate to test plans page')
+        self.test_plan.get_test_plans_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+
     def test015_create_user_with_role_contact(self):
         """
         New: Contact: User management: All the contacts created should be found when I create new user with role contact 
@@ -466,5 +489,4 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('compare the user data with the randomly generated data')
         self.assertEqual(user_name, row_data['Name'])
         self.assertEqual(contact_name, row_data['Contact'])
-
 
