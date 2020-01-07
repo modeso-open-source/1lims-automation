@@ -241,7 +241,7 @@ class Header(BasePages):
         self.base_selenium.LOGGER.info('Clear role name')
         self.base_selenium.clear_text(element='roles_and_permissions:role_name')
         
-    def click_on_roles_and_permissions_button(self):
+    def click_on_roles_permissions_button(self):
             self.base_selenium.LOGGER.info('Press on the roles and permissions button')
             self.base_selenium.click(element='header:roles_and_permissions_button')
             self.sleep_small()
