@@ -528,7 +528,7 @@ elements = {
         'header_button': {'method': 'xpath',
                   'value': '//*[@class="m--img-rounded m--marginless m--img-centered"]'},
         'user_management_button': {'method': 'xpath',
-                  'value': '//*[contains(text(),"User Management")]'},
+                  'value': '//span[contains(text(),"User Management")]'},
         'roles_and_permissions_button': {'method': 'xpath',
                   'value': '//span[@class="m-menu__link-text"][contains(text(),"Role & Permissions")]'},
         'myprofile_button': {'method': 'xpath',

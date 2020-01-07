@@ -18,7 +18,9 @@ class HeaderTestCases(BaseTest):
         LIMS-6400
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+
+        self.base_selenium.click(element='header:roles_and_permissions_button')
+        self.header_page.sleep_small()
         selected_roles_and_permissions_data, _ = self.header_page.select_random_multiple_table_rows()
         self.header_page.archive_entity(menu_element='roles_and_permissions:right_menu',
                                         archive_element='roles_and_permissions:archive')
@@ -35,15 +37,15 @@ class HeaderTestCases(BaseTest):
         LIMS-6104
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         role_names = []
-        self.header_page.get_archived_roles_and_permissions()
+        self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
+                                               archived_element='roles_and_permissions:archived')
         selected_role_data, _ = self.header_page.select_random_multiple_table_rows()
         for role in selected_role_data:
             role_names.append(role['Name'])
-
         self.header_page.restore_entity(menu_element='roles_and_permissions:right_menu',
-                                        restre_element='roles_and_permissions:restore')
+                                        restore_element='roles_and_permissions:restore')
         self.header_page.get_active_entities(menu_element='roles_and_permissions:right_menu',
                                             active_element='roles_and_permissions:active')
         for role_name in role_names:
@@ -55,7 +57,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6083
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         row = self.header_page.get_random_role_row()
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         for column in row_data:
@@ -78,7 +80,7 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         # from the create mode it will redirect me to the active table
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         self.base_selenium.LOGGER.info('Press on create new role button')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
         self.base_selenium.LOGGER.info('Press on the overview  button')
@@ -103,14 +105,15 @@ class HeaderTestCases(BaseTest):
         LIMS-6108
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         # open random user in the edit mode
         self.header_page.get_random_role()
         role_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + role_url : {}'.format(role_url))
         self.order_page.sleep_tiny()
         current_name = self.header_page.get_role_name()
-        self.header_page.set_role_name(role_name='text')
+        random_name = self.generate_random_string()
+        self.header_page.set_role_name(role_name=random_name)
         new_name = self.header_page.get_role_name()
         if 'save_btn' == save:
             self.header_page.save(save_btn='roles_and_permissions:save_btn')
@@ -130,14 +133,14 @@ class HeaderTestCases(BaseTest):
                 ' + Assert {} (current_role) == {} (user_role)'.format(current_name, user_name))
             self.assertEqual(current_name, user_name)
 
-    def test006_delete_role(self):
+    def test006_delete_role_not_used_in_other_entity(self):
         """
         Roles & Permissions: Make sure that you can delete any role record,
         If this record not used in other entity
         LIMS-6401
         :return:
             """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         random_role_name = self.generate_random_string()
         self.header_page.create_new_role(role_name =random_role_name)
 
@@ -168,7 +171,6 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info('deleted successfully')
         self.assertTrue(result, 'No records found')
 
-
     def test007_validation_role_name_field(self):
         """
         Roles & Permissions: Overview button Approach: Make sure after you press on the overview button,
@@ -176,8 +178,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6404
         :return:
         """
-        # from the create mode it will redirect me to the active table
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         self.header_page.get_random_role()
         self.header_page.clear_role_name()
         self.header_page.sleep_medium()
@@ -196,7 +197,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6107
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         self.base_selenium.LOGGER.info(' * Download XSLX sheet')
         self.header_page.download_xslx_sheet()
         rows_data = self.header_page.get_table_rows_data()
@@ -237,7 +238,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6437
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         # create new role with random data
         role_random_name = self.generate_random_string()
         self.header_page.create_new_role(role_name = role_random_name)
@@ -247,7 +248,7 @@ class HeaderTestCases(BaseTest):
         role_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_role)
 
         self.header_page.click_on_header_button()
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
 
         # use this role in any other entity so update the user role field with it
         self.header_page.get_random_user()
@@ -257,7 +258,6 @@ class HeaderTestCases(BaseTest):
         # navigate to the role page to delete it
         self.header_page.get_roles_page()
         self.header_page.search(value =role_random_name)
-
 
         self.header_page.select_all_records()
         # navigate to the archived table to delete it
@@ -288,7 +288,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6438
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         # create new user with random data
         role_random_name = self.generate_random_string()
         self.header_page.create_new_role(role_name = role_random_name)
@@ -307,7 +307,8 @@ class HeaderTestCases(BaseTest):
                                                archived_element='roles_and_permissions:archived')
         # go to the user entity to search by it in the user drop down list
         self.header_page.click_on_header_button()
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
+
         self.header_page.get_random_user()
         result = self.header_page.set_user_role(user_role=role_random_name)
         self.assertFalse(result, 'no results found ')
@@ -318,7 +319,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6439
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         # create new user with random data
         role_random_name = self.generate_random_string()
         self.header_page.create_new_role(role_name = role_random_name)
@@ -342,19 +343,20 @@ class HeaderTestCases(BaseTest):
         LIMS-6440
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         # create role with random name with master data permissions
         random_role_name = self.generate_random_string()
         self.header_page.create_role_with_mater_data_permissions(role_name = random_role_name)
 
         # go to the user section to create user with this role
         self.header_page.click_on_header_button()
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
 
         # go to the user section to create user with this role
         random_user_name = self.generate_random_string()
+        random_user_email = self.base_page.generate_random_email()
         self.header_page.create_new_user(user_name=random_user_name,
-                                         user_email=(self.header_page.generate_random_email()),
+                                         user_email=random_user_email,
                                          user_role=random_role_name, user_password='1',
                                          user_confirm_password='1')
 
@@ -363,7 +365,8 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='login:logout_btn')
 
         # login with role & user that you created to make sure from the permissions
-        self.header_page.login_with_created_user(username=random_user_name, password='1')
+        self.login_page.login(username=random_user_name, password='1')
+        #self.header_page.login_with_created_user(username=random_user_name, password='1')
         time.sleep(15)
 
         # make sure that all the master data pages appear(articles & test units & test plans & contacts)
@@ -382,19 +385,20 @@ class HeaderTestCases(BaseTest):
         LIMS-6441
         :return:
         """
-        self.header_page.click_on_roles_permissions_button()
+        self.base_selenium.click(element='header:roles_and_permissions_button')
         # create role with random name with sample management permissions
         random_role_name = self.generate_random_string()
         self.header_page.create_role_with_sample_management_permissions(role_name = random_role_name)
 
         # go to the user section to create user with this role
         self.header_page.click_on_header_button()
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
 
         # go to the user section to create user with this role
         random_user_name = self.generate_random_string()
+        random_user_email = self.base_page.generate_random_email()
         self.header_page.create_new_user(user_name=random_user_name,
-                                         user_email=(self.header_page.generate_random_email()),
+                                         user_email=random_user_email,
                                          user_role=random_role_name, user_password='1',
                                          user_confirm_password='1')
 
@@ -403,7 +407,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='login:logout_btn')
 
         # login with role & user that you created to make sure from the permissions
-        self.header_page.login_with_created_user(username=random_user_name, password='1')
+        self.login_page.login(username=random_user_name, password='1')
         time.sleep(15)
 
         # make sure that all the master data pages appear(articles & test units & test plans & contacts)

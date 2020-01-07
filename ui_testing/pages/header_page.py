@@ -9,8 +9,6 @@ class Header(BasePages):
             self.user_url = "{}users".format(self.base_selenium.url)
             self.role_url = "{}roles".format(self.base_selenium.url)
 
-
-
     def get_users_page(self):
             self.base_selenium.LOGGER.info(' + Get users page.')
             self.base_selenium.get(url=self.user_url)
@@ -23,7 +21,6 @@ class Header(BasePages):
     def get_random_user_row(self):
             return self.get_random_table_row(table_element='user_management:user_table')
 
-
     def click_on_header_button(self):
             self.base_selenium.LOGGER.info('Press on the header button')
             self.base_selenium.click(element='header:header_button')
@@ -34,7 +31,6 @@ class Header(BasePages):
             self.base_selenium.click(element=menu_element)
             self.base_selenium.click(element=archive_element)
             self.confirm_popup()
-
 
     def get_archived_entities(self, menu_element, archived_element):
             self.base_selenium.scroll()
@@ -260,7 +256,7 @@ class Header(BasePages):
     def create_role_with_mater_data_permissions(self, sleep=True, role_name=''):
         self.base_selenium.LOGGER.info(' + Create new role.')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        self.sleep_small()
         role_name = self.set_role_name(role_name)
         self.click_on_master_data_permissions()
 
@@ -270,13 +266,6 @@ class Header(BasePages):
         }
         self.save(sleep)
         return role_data
-
-    def login_with_created_user(self, username, password):
-        self.base_selenium.LOGGER.info('Login {} : {}.'.format(username, password))
-        self.base_selenium.get(url=self.base_selenium.url)
-        self.base_selenium.set_text(element='login:username', value=username)
-        self.base_selenium.set_text(element='login:password', value=password)
-        self.base_selenium.click(element='login:login_btn')
 
     def click_on_sample_management_permissions(self):
         self.base_selenium.LOGGER.info('Press on logout button')
@@ -289,7 +278,7 @@ class Header(BasePages):
     def create_role_with_sample_management_permissions(self, sleep=True, role_name=''):
         self.base_selenium.LOGGER.info(' + Create new role.')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        self.sleep_small()
         role_name = self.set_role_name(role_name)
         self.click_on_sample_management_permissions()
 
