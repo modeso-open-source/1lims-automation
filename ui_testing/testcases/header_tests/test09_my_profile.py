@@ -48,7 +48,7 @@ class MyProfileTestCases(BaseTest):
         self.my_profile_page.change_password(self.current_password, self.new_password)
 
         # logout
-        self.header_page.logout()
+        self.login_page.logout()
 
         # try to authorize with the new password
         try:
@@ -56,6 +56,8 @@ class MyProfileTestCases(BaseTest):
             baseAPI._get_authorized_session(username=self.base_selenium.username, password=self.new_password, reset_token=True)
         except:
             failed_to_login = True
+        else:
+            raise Exception('The user was able to authorize with an unsaved password')
         finally:
             self.assertTrue(failed_to_login)
 
@@ -67,7 +69,7 @@ class MyProfileTestCases(BaseTest):
         """
         username = self.base_selenium.get_text(element='my_profile:username')
         email = self.base_selenium.get_text(element='my_profile:email')
-        self.assertTrue(username)
+        self.assertEqual(username, self.base_selenium.username)
         self.assertTrue(email) 
 
     def test003_user_can_change_password_and_login_successfully(self):
@@ -87,7 +89,7 @@ class MyProfileTestCases(BaseTest):
         self.reset_original_password = True
         
         # logout
-        self.header_page.logout()
+        self.login_page.logout()
 
         # Authorize
         baseAPI = BaseAPI()

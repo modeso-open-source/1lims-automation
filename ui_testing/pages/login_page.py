@@ -16,3 +16,9 @@ class Login:
         except ElementClickInterceptedException:
             self.base_selenium.click(element='login:refresh')
             self.login(username, password)
+
+    def logout(self):
+        self.click_on_header_button()
+        self.base_selenium.click(element='header:logout_button')
+        self.base_selenium.LOGGER.info('+ Logout')
+        self.sleep_medium()
