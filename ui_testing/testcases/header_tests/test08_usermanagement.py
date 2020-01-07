@@ -78,7 +78,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6101
         :return:
         """
-        self.base_selenium.click(element='header:user_management_button')
+        self.header_page.click_on_user_management_button()
         self.base_selenium.LOGGER.info(' * Download XSLX sheet')
         self.header_page.download_xslx_sheet()
         rows_data = self.header_page.get_table_rows_data()

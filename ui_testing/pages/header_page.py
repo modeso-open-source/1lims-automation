@@ -213,5 +213,10 @@ class Header(BasePages):
     def get_role_name(self):
         return self.base_selenium.get_text(element='roles_and_permissions:role_name').split('\n')[0]
 
+    def click_on_user_management_button(self):
+        self.base_selenium.LOGGER.info('Press on the user management button')
+        self.base_selenium.click(element='header:user_management_button')
+        self.sleep_small()
+
 
 
