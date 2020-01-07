@@ -2,7 +2,6 @@ from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
 from unittest import skip
-import time
 
 class HeaderTestCases(BaseTest):
 
@@ -91,12 +90,6 @@ class HeaderTestCases(BaseTest):
                 self.assertIn(item, fixed_sheet_row_data)
 
     def test005_delete_user(self):
-        """
-        User management : Delete Approach: Make sure that you an delete any record successfully
-        if this user not used in other entities
-        LIMS-6381
-        :return:
-            """
         self.base_selenium.click(element='header:user_management_button')
         # create new user
         random_user_name = self.generate_random_string()
@@ -419,7 +412,7 @@ class HeaderTestCases(BaseTest):
         self.assertTrue(result_user, user_filter)
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test017_filter_no(self):
+    def test016_filter_no(self):
         """
         User management Approach: I can filter by no successfully
         LIMS-6488
@@ -467,7 +460,7 @@ class HeaderTestCases(BaseTest):
         self.assertTrue(user_data['created_on'], user_filter)
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test020_cant_create_two_users_with_the_same_name(self):
+    def test019_cant_create_two_users_with_the_same_name(self):
         """
         User management: Can't create two users with the same name
         LIMS-6503
@@ -493,6 +486,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             'red border will display that the name already exit'.format(random_user_name))
         self.assertTrue(created_user, 'username already exit')
+
 
 
 

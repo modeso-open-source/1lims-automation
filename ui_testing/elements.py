@@ -133,6 +133,14 @@ elements = {
                              'value': "//div[contains(@class, 'swal2-actions')]//button[1]"},
         'cancel_overview': {'method': 'xpath',
                             'value': "//div[contains(@class, 'swal2-actions')]//button[2]"},
+        'pagination_menu': {'method': 'xpath',
+                            'value': '//ul[@class="dropdown-menu inner"]'},
+        'pagination_button': {'method': 'class_name',
+                            'value': 'dropdown-toggle',
+                            'order': 0},
+        'loading_msg': {'method': 'class_name',
+                            'value': 'm-page--loading-non-block'},
+
     },
     'login': {
         'username': {'method': 'name',
@@ -146,8 +154,7 @@ elements = {
         'refresh': {'method': 'xpath',
                     'value': '/html/body/div[3]/div/div[2]/div[2]/button'},
         'logout_btn': {'method': 'xpath',
-                    'value': '//a[@class="btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder"]'},
-
+                       'value': '//a[@class="btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder"]'},
     },
 
     'articles': {
@@ -195,6 +202,8 @@ elements = {
         'related_article_field_options': {'method': 'xpath', 'value': '//*[@id="18_field"]//a'},
         'related_article_field_archive': {'method': 'xpath', 'value': '//*[@id="18_field"]//li[1]/a'},
         'related_article_field_restore': {'method': 'xpath', 'value': '//*[@id="18_field"]//li[2]/a'},
+        
+
     },
     'article': {
         'unit': {'method': 'id',
@@ -512,17 +521,16 @@ elements = {
         },
         'filter_analysis_no': {
             'method': 'id',
-            'value': 'nofield'
-        },
+            'value': 'nofield'},
     },
 
     'header': {
         'header_button': {'method': 'xpath',
                   'value': '//*[@class="m--img-rounded m--marginless m--img-centered"]'},
         'user_management_button': {'method': 'xpath',
-                  'value': '//*[contains(text(),"User Management")]'},
+                  'value': '//span[contains(text(),"User Management")]'},
         'roles_and_permissions_button': {'method': 'xpath',
-                  'value': '//*[contains(text(),"Role & Permissions")]'},
+                  'value': '//span[@class="m-menu__link-text"][contains(text(),"Role & Permissions")]'},
         'myprofile_button': {'method': 'xpath',
                   'value': '//*[contains(text(),"My Profile")]'},
         'companyprofile_button': {'method': 'xpath',
@@ -624,6 +632,8 @@ elements = {
 
        'cancel': {'method': 'id',
                         'value': 'cancelButton'},
+        'contact_field': {'method': 'id',
+                            'value': 'supplierfield'}
     },
 
     'contacts':{
@@ -706,7 +716,7 @@ elements = {
        'delete_person_button': {'method': 'id',
                      'value': 'delete_table_view'},
     },
-       'roles_and_permissions': {
+   'roles_and_permissions': {
         'right_menu': {'method': 'xpath',
                           'value': '//i[@class="flaticon-grid-menu-v2"]'},
         'archive': {'method': 'xpath',
@@ -729,7 +739,37 @@ elements = {
                               'value': '//button[@class="btn btn-primary mb-md-0 mr-md-3"]'},
        'delete': {'method': 'xpath',
                               'value': '//a[contains(text(),"Delete")]'},
+       'oh_snap_message': {'method': 'id',
+                              'value': 'ohSnapMsg'},
+       'pagination_page': {'method': 'xpath',
+                           'value': '//a[contains(text(),"2")]'},
+       'master_data_view_permissions': {'method': 'xpath',
+                              'value': '//div[@id="permissionsTable"]//div[2]//div[2]//span[1]//label[1]'},
+       'master_data_edit_permissions': {'method': 'xpath',
+                              'value':'//div[@id="permissionsTable"]//div[2]//div[3]//span[1]//label[1]'},
+       'order_view_permissions': {'method': 'xpath',
+                              'value': '//div[@id="permissionsTable"]//div[7]//div[2]//span[1]//label[1]'},
+       'order_edit_permissions': {'method': 'xpath',
+                              'value':'//div[@id="permissionsTable"]//div[7]//div[3]//span[1]//label[1]'},
+       'analysis_view_permissions': {'method': 'xpath',
+                              'value': '//div[@id="permissionsTable"]//div[9]//div[2]//span[1]//label[1]'},
+       'analysis_edit_permissions': {'method': 'xpath',
+                              'value':'//div[@id="permissionsTable"]//div[9]//div[3]//span[1]//label[1]'},
+   },
 
+    'company_profile': {
+        'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
+        'name_field': {'method': 'id', 'value': 'namefield'},
+        'street_name_field': {'method': 'id', 'value': 'streetNamefield'},
+        'street_number_field': {'method': 'id', 'value': 'streetNumberfield'},
+        'postal_code_field': {'method': 'id', 'value': 'postalCodefield'},
+        'location_field': {'method': 'id', 'value': 'locationfield'},
+        'logo_field': {'method': 'id', 'value': 'logo'},
+        'username': {'method': 'class_name', 'value': 'm-card-profile__name', 'order': 0},
+        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
     }
 }
+
+
+
 

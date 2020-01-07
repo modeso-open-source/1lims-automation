@@ -7,6 +7,7 @@ class Header(BasePages):
             super().__init__()
             self.base_selenium.wait_until_page_url_has(text='dashboard')
             self.user_url = "{}users".format(self.base_selenium.url)
+            self.role_url = "{}roles".format(self.base_selenium.url)
 
     def get_users_page(self):
             self.base_selenium.LOGGER.info(' + Get users page.')
@@ -36,7 +37,7 @@ class Header(BasePages):
         self.base_selenium.click(element=menu_element)
         self.base_selenium.click(element=archived_element)
         self.sleep_small()
-
+          
     def is_user_in_table(self, value):
             """
                 - get_archived_users then call me to check if the user has been archived.
@@ -54,6 +55,7 @@ class Header(BasePages):
                     return False
 
     def restore_entity(self, menu_element, restore_element):
+
         self.base_selenium.scroll()
         self.base_selenium.click(element=menu_element)
         self.base_selenium.click(element=restore_element)
@@ -81,7 +83,6 @@ class Header(BasePages):
             "user_role": user_role,
             "user_password": user_password,
             "user_confirm_password": user_confirm_password,
-
         }
         self.save(sleep)
         return user_data
@@ -125,10 +126,11 @@ class Header(BasePages):
     def set_user_role(self, user_role='', random=False):
             if random:
                 self.base_selenium.select_item_from_drop_down(element='user_management:user_role', avoid_duplicate=True)
-                return self.get_user_role()
+               
             else:
                 self.base_selenium.select_item_from_drop_down(element='user_management:user_role', item_text=user_role)
-
+                return self.get_user_role()
+              
     def get_user_edit_page(self, name):
             user = self.search(value=name)[0]
             self.open_edit_page(row=user)
@@ -193,30 +195,120 @@ class Header(BasePages):
         self.base_selenium.LOGGER.info('Press on the create new user button')
         self.base_selenium.click(element='user_management:create_user_button')
         self.sleep_small()
+        
+    def is_role_in_table(self, value):
+        """
+            - get_archived_roles then call me to check if the role has been archived.
+            - get_active_roles then call me to check if the role is active.
+        :param value: search value
+        :return:
+        """
+        results = self.search(value=value)
+        if len(results) == 0:
+            return False
+        else:
+            if value in results[0].text:
+                return True
+            else:
+                return False
 
-    def create_new_role(self, sleep=True, role_name=''):
+    def get_random_role(self):
+        row = self.get_random_user_row()
+        self.open_edit_page(row=row)
+
+    def get_random_role_row(self):
+        return self.get_random_table_row(table_element='roles_and_permissions:user_table')
+
+    def get_roles_page(self):
+            self.base_selenium.LOGGER.info(' + Get roles page.')
+            self.base_selenium.get(url=self.role_url)
+            self.sleep_small()
+
+    def set_role_name(self, role_name):
+            self.base_selenium.set_text(element='roles_and_permissions:role_name', value=role_name)
+
+    def get_role_name(self):
+            return self.base_selenium.get_text(element='roles_and_permissions:role_name').split('\n')[0]
+
+    def create_new_role(self, sleep=True, role_name = ''):
         self.base_selenium.LOGGER.info(' + Create new role.')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
-        self.sleep_small()
+        time.sleep(self.base_selenium.TIME_SMALL)
         role_name = self.set_role_name(role_name)
 
         role_data = {
-            "role_name": role_name,
+            "role_name":role_name,
         }
         self.save(sleep)
         return role_data
 
-    def set_role_name(self, role_name):
+    def clear_role_name(self):
+        self.base_selenium.LOGGER.info('Clear role name')
+        self.base_selenium.clear_text(element='roles_and_permissions:role_name')
 
-        self.base_selenium.set_text(element='roles_and_permissions:role_name', value=role_name)
+    def click_on_pagination_page(self):
+        self.base_selenium.LOGGER.info('click on the pagination page')
+        self.base_selenium.click(element='roles_and_permissions:pagination_page')
+        self.sleep_small()
 
-    def get_role_name(self):
-        return self.base_selenium.get_text(element='roles_and_permissions:role_name').split('\n')[0]
+    def click_on_master_data_permissions(self):
+        self.base_selenium.LOGGER.info('checked master data permissions')
+        self.base_selenium.click(element='roles_and_permissions:master_data_view_permissions')
+        self.base_selenium.click(element='roles_and_permissions:master_data_edit_permissions')
+        self.sleep_small()
+
+    def create_role_with_mater_data_permissions(self, sleep=True, role_name=''):
+        self.base_selenium.LOGGER.info(' + Create new role.')
+        self.base_selenium.click(element='roles_and_permissions:new_role_btn')
+        self.sleep_small()
+        role_name = self.set_role_name(role_name)
+        self.click_on_master_data_permissions()
+
+        role_data = {
+            "role_name": role_name,
+
+        }
+        self.save(sleep)
+        return role_data
 
     def click_on_user_management_button(self):
         self.base_selenium.LOGGER.info('Press on the user management button')
         self.base_selenium.click(element='header:user_management_button')
         self.sleep_small()
 
+    def click_on_sample_management_permissions(self):
+        self.base_selenium.LOGGER.info('Press on logout button')
+        self.base_selenium.click(element='roles_and_permissions:order_view_permissions')
+        self.base_selenium.click(element='roles_and_permissions:order_edit_permissions')
+        self.base_selenium.click(element='roles_and_permissions:analysis_view_permissions')
+        self.base_selenium.click(element='roles_and_permissions:analysis_edit_permissions')
+        self.sleep_small()
 
+    def create_role_with_sample_management_permissions(self, sleep=True, role_name=''):
+        self.base_selenium.LOGGER.info(' + Create new role.')
+        self.base_selenium.click(element='roles_and_permissions:new_role_btn')
+        self.sleep_small()
+        role_name = self.set_role_name(role_name)
+        self.click_on_sample_management_permissions()
 
+        role_data = {
+            "role_name": role_name,
+
+        }
+        self.save(sleep)
+        return role_data
+
+    def set_contact(self, contact=''):
+        self.base_selenium.LOGGER.info(
+            'Set contact to be "{}", if it is empty, then it will be random'.format(contact))
+        if contact:
+            self.base_selenium.select_item_from_drop_down(
+                element='user_management:contact_field', item_text=contact)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='user_management:contact_field')
+        return self.get_contact()
+
+    def get_contact(self):
+        self.base_selenium.LOGGER.info('Get user contact')
+        return self.base_selenium.get_text(element='user_management:contact_field').split('\n')[0]
