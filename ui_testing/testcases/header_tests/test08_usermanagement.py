@@ -90,7 +90,7 @@ class HeaderTestCases(BaseTest):
                 self.assertIn(item, fixed_sheet_row_data)
 
     def test005_delete_user(self):
-       self.base_selenium.click(element='header:user_management_button')
+        self.base_selenium.click(element='header:user_management_button')
         # create new user
         random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
