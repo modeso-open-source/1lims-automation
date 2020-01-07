@@ -190,7 +190,6 @@ class Header(BasePages):
         self.base_selenium.click(element='user_management:clear_all')
         self.sleep_small()
 
-
     def is_role_in_table(self, value):
         """
             - get_archived_roles then call me to check if the role has been archived.
