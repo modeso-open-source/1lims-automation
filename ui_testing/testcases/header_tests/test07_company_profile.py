@@ -85,3 +85,17 @@ class companyProfileTestCases(BaseTest):
         email = self.base_selenium.get_text(element='company_profile:email')
         self.assertTrue(username)
         self.assertTrue(email)
+
+    def test005_company_profile_fields_validation(self):
+        """
+        Compeny profile: Make sure that when you didn't enter any field then press on save button, 
+        red border display on all fields
+
+        LIMS-6506
+        """
+        self.company_profile_page.set_field_value(field_name='name', empty=True)
+        self.company_profile_page.save()
+        self.company_profile_page.sleep_small()
+        validation_error = self.base_selenium.check_element_is_exist(element='company_profile:validation_error')
+        self.assertTrue(validation_error)
+
