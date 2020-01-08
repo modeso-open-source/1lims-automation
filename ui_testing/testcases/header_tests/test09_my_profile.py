@@ -11,7 +11,9 @@ class MyProfileTestCases(BaseTest):
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.my_profile_page.get_my_profile_page()
+        self.username = self.base_selenium.username
         self.current_password = self.base_selenium.password
+        self.email = None
         self.new_password = None
         self.reset_original_password = False
         self.reset_language = False
@@ -69,7 +71,7 @@ class MyProfileTestCases(BaseTest):
         """
         username = self.base_selenium.get_text(element='my_profile:username')
         email = self.base_selenium.get_text(element='my_profile:email')
-        self.assertEqual(username, self.base_selenium.username)
+        self.assertEqual(username.lower(), self.username.lower())
         self.assertTrue(email) 
 
     def test003_user_can_change_password_and_login_successfully(self):
