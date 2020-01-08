@@ -2,6 +2,7 @@ from ui_testing.pages.contacts_page import Contacts
 from random import randint
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from ui_testing.countries import countries
 import time
 
 
@@ -423,3 +424,6 @@ class Contact(Contacts):
         self.sleep_tiny()
         self.save(save_btn='contact:save')
         return self.get_contact_departments()
+
+    def get_country_data(self, id):
+        return list(filter(lambda x: x['id'] == id, countries))[0]

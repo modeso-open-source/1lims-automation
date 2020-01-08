@@ -1,4 +1,5 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.articles_page import Articles
 from unittest import skip
 from parameterized import parameterized
 import re, random
@@ -7,6 +8,7 @@ import re, random
 class TestUnitsTestCases(BaseTest):
     def setUp(self):
         super().setUp()
+        self.articles_page = Articles()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_unit_page.get_test_units_page()
@@ -1152,6 +1154,7 @@ class TestUnitsTestCases(BaseTest):
             version_counter = version_counter + 1
             record_counter = record_counter + 1
 
+
     @skip('waiting for API deleting')
     def test033_archive_quantifications_limit_field(self):
         """
@@ -1465,3 +1468,25 @@ class TestUnitsTestCases(BaseTest):
             self.assertTrue(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
+
+    def test032_testunits_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+        """
+        testunits = self.get_all_test_units()
+        testunit_name = random.choice(testunits)['name']
+        search_results = self.test_unit_page.search(testunit_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Test Unit Name'] == testunit_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(testunit_name, search_data['Test Unit Name'])
+        # Navigate to articles page
+        self.info('navigate to articles page')
+        self.articles_page.get_articles_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
+
