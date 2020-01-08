@@ -366,7 +366,6 @@ class HeaderTestCases(BaseTest):
 
         # login with role & user that you created to make sure from the permissions
         self.login_page.login(username=random_user_name, password='1')
-        #self.header_page.login_with_created_user(username=random_user_name, password='1')
         time.sleep(15)
 
         # make sure that all the master data pages appear(articles & test units & test plans & contacts)
