@@ -1018,8 +1018,8 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
-
-    def test_028_changing_testunit_type_update_fields_accordingly(self):
+    @parameterized.expand(['Quantitative', 'Qualitative', 'MiBi'])
+    def test_028_changing_testunit_type_update_fields_accordingly(self, testunit_type):
         """
         New: Test unit: Type Approach: When I change type from edit mode, the values should changed according to this type that selected 
         When I change type from edit mode, the values should changed according to this type that selected 
@@ -1028,26 +1028,21 @@ class TestUnitsTestCases(BaseTest):
         comment: this case will be handled in create
         """
 
+        if testunit_type == 'MiBi':
+            testunit_type = 'Quantitative MiBi'
+            
         self.base_selenium.LOGGER.info('open testunits in create')
         self.test_unit_page.click_create_new_testunit()
         
-        self.base_selenium.LOGGER.info('set the type to Quantitative')
-        self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
+        self.base_selenium.LOGGER.info('set the type to {}'.format(testunit_type))
+        self.test_unit_page.set_testunit_type(testunit_type=testunit_type)
         self.test_unit_page.sleep_tiny()
-        self.base_selenium.LOGGER.info('set testunit type to Quantitative, fields should be displayed as the following')
-        self.assertTrue(self.test_unit_page.check_for_quantitative_fields())
-
-        self.base_selenium.LOGGER.info('set the type to Qualitative')
-        self.test_unit_page.set_testunit_type(testunit_type='Qualitative')
-        self.test_unit_page.sleep_tiny()
-        self.base_selenium.LOGGER.info('testunit type is qualitative, fields shown should be as follow')
-        self.assertTrue(self.test_unit_page.check_for_qualitative_fields())
-        
-
-        self.base_selenium.LOGGER.info('set the type to Quantitative MiBi')
-        self.test_unit_page.set_testunit_type(testunit_type='Quantitative MiBi')
-        self.test_unit_page.sleep_tiny()
-        self.base_selenium.LOGGER.info('testunit type is qualitative, fields shown should be as follow')
+        self.base_selenium.LOGGER.info('set testunit type to {}, fields should be displayed as the following'.format(testunit_type))
+        if testunit_type == 'Quantitative':
+            self.assertTrue(self.test_unit_page.check_for_quantitative_fields())
+        elif testunit_type == 'Qualitative':
+            self.assertTrue(self.test_unit_page.check_for_qualitative_fields())
+        elif testunit_type == 'Quantitative MiBi':
         self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
     
