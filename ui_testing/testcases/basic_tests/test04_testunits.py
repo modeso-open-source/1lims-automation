@@ -1,4 +1,5 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.articles_page import Articles
 from unittest import skip
 from parameterized import parameterized
 import re, random
@@ -7,6 +8,7 @@ import re, random
 class TestUnitsTestCases(BaseTest):
     def setUp(self):
         super().setUp()
+        self.articles_page = Articles()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_unit_page.get_test_units_page()
@@ -776,7 +778,6 @@ class TestUnitsTestCases(BaseTest):
         self.info('assert there is a new test unit')
         self.assertGreater(new_test_units, old_test_units)
 
-
     @parameterized.expand(['unitsub', 'unitsuper'])
     def test029_qualitative_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self,
                                                                                            unit_with_sub_or_super):
@@ -1001,7 +1002,6 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits/add')
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
 
-
     def test025_edit_approach_overview_button(self):
         """
         Edit: Overview Approach: Make sure after I press on
@@ -1039,7 +1039,7 @@ class TestUnitsTestCases(BaseTest):
             self.test_unit_page.set_spec_unit(value=random_unit)
             self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save testunit')
             self.test_unit_page.get_test_units_page()
-        
+
         testunit_record = self.test_unit_page.search(value=testunit_number)[0]
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
 
@@ -1050,7 +1050,7 @@ class TestUnitsTestCases(BaseTest):
         self.info(' * Download XSLX sheet')
         self.test_unit_page.download_xslx_sheet()
         rows_data = self.test_unit_page.get_table_rows_data()
-        for index in range(len(rows_data)-1):
+        for index in range(len(rows_data) - 1):
             self.base_selenium.LOGGER.info(' * Comparing the test units with index : {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.test_unit_page.sheet.iloc[index].values
@@ -1080,13 +1080,12 @@ class TestUnitsTestCases(BaseTest):
             if testunit['specifications'] == '':
                 testunit_name = testunit['name']
                 break
-        
+
         self.base_selenium.LOGGER.info('generate random data to update testunit with')
         random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
         random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
         random_unit = self.test_unit_page.generate_random_text()
 
-        
         testunit_record = self.test_unit_page.search(value=testunit_name)[0]
         testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
         version_value = int(testunit_data['Version'])
@@ -1095,52 +1094,83 @@ class TestUnitsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('set upper limit to {}'.format(random_upper_limit))
         self.test_unit_page.set_quan_upper_limit(value=random_upper_limit)
-        
+
         self.base_selenium.LOGGER.info('set lower limit to {}'.format(random_lower_limit))
         self.test_unit_page.set_quan_lower_limit(value=random_lower_limit)
-        
+
         self.base_selenium.LOGGER.info('set unit limit to {}'.format(random_unit))
         self.test_unit_page.set_quan_unit(value=random_unit)
-        
+
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save_and_create_new_version()
-        
+
         self.base_selenium.LOGGER.info('refresh to make sure that data are saved correctly')
         self.base_selenium.refresh()
-        
-        self.base_selenium.LOGGER.info('upper limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit)))
+
+        self.base_selenium.LOGGER.info(
+            'upper limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_upper_limit(),
+                                                            str(random_upper_limit)))
         self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
-        
-        self.base_selenium.LOGGER.info('lower limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit)))
+
+        self.base_selenium.LOGGER.info(
+            'lower limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_lower_limit(),
+                                                            str(random_lower_limit)))
         self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
-        
-        self.base_selenium.LOGGER.info('unit is {}, and it should be {}'.format(self.test_unit_page.get_quan_unit(), str(random_unit)))
+
+        self.base_selenium.LOGGER.info(
+            'unit is {}, and it should be {}'.format(self.test_unit_page.get_quan_unit(), str(random_unit)))
         self.assertEqual(self.test_unit_page.get_quan_unit(), str(random_unit))
 
         self.test_unit_page.get_test_units_page()
 
         testunit_record_after_update = self.test_unit_page.search(value=testunit_name)[0]
-        testunit_data_after_update = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record_after_update)
+        testunit_data_after_update = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=testunit_record_after_update)
 
         self.base_selenium.LOGGER.info('making sure that version is updated successfully')
-        self.base_selenium.LOGGER.info('version is {}, ant it should be {}'.format(testunit_data_after_update['Version'], str(version_value+1)))
-        updated_version = str(version_value+1)
+        self.base_selenium.LOGGER.info(
+            'version is {}, ant it should be {}'.format(testunit_data_after_update['Version'], str(version_value + 1)))
+        updated_version = str(version_value + 1)
         self.assertEqual(testunit_data_after_update['Version'], str(updated_version))
-        self.assertEqual(testunit_data_after_update['Quantification Limit'], str(random_lower_limit)+'-'+str(random_upper_limit))
+        self.assertEqual(testunit_data_after_update['Quantification Limit'],
+                         str(random_lower_limit) + '-' + str(random_upper_limit))
         self.assertEqual(testunit_data_after_update['Quantification Limit Unit'], random_unit)
 
-        self.test_unit_page.click_check_box(source=testunit_record_after_update)        
+        self.test_unit_page.click_check_box(source=testunit_record_after_update)
         self.test_unit_page.get_versions_table()
         testunits_records_versions = self.test_unit_page.result_table()
 
         version_counter = 1
         record_counter = 0
-        while record_counter < len(testunits_records_versions)-1:
-            record_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunits_records_versions[record_counter])
+        while record_counter < len(testunits_records_versions) - 1:
+            record_data = self.base_selenium.get_row_cells_dict_related_to_header(
+                row=testunits_records_versions[record_counter])
             self.assertEqual(record_data['Version'], str(version_counter))
 
             if version_counter == updated_version:
-                self.assertEqual(record_data['Quantification Limit'], str(random_lower_limit)+'-'+str(random_upper_limit))
+                self.assertEqual(record_data['Quantification Limit'],
+                                 str(random_lower_limit) + '-' + str(random_upper_limit))
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
-            version_counter = version_counter+1
-            record_counter = record_counter+1
+            version_counter = version_counter + 1
+            record_counter = record_counter + 1
+
+    def test032_testunits_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+        """
+        testunits = self.get_all_test_units()
+        testunit_name = random.choice(testunits)['name']
+        search_results = self.test_unit_page.search(testunit_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Test Unit Name'] == testunit_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(testunit_name, search_data['Test Unit Name'])
+        # Navigate to articles page
+        self.info('navigate to articles page')
+        self.articles_page.get_articles_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))

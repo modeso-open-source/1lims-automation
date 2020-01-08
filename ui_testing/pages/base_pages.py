@@ -27,7 +27,8 @@ class BasePages:
         return self.result_table()
 
     def result_table(self, element='general:table'):
-        return self.base_selenium.get_table_rows(element=element)
+        table=self.base_selenium.get_table_rows(element=element)
+        return table
 
     def clear_text(self, element):
         self.base_selenium.clear_element_text(element= element)
