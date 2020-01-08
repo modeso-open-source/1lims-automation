@@ -339,14 +339,14 @@ class BasePages:
 
         # remove the current file and save
         if remove_current_file:
-            self.base_selenium.LOGGER.info("- Remove current file")
+            self.base_selenium.LOGGER.info("Remove current file")
             is_the_file_exist = self.base_selenium.check_element_is_exist(
             element='general:file_upload_success_flag')
             if is_the_file_exist:
                 self.base_selenium.click('general:remove_file')
                 self.save()      
             else:
-                self.base_selenium.LOGGER.info("- There is no current file")
+                self.base_selenium.LOGGER.info("There is no current file")
 
         # get the absolute path of the file
         file_path = os.path.abspath('ui_testing/assets/{}'.format(file_name))
@@ -357,7 +357,7 @@ class BasePages:
                 "The file you are trying to upload doesn't exist localy")
         else:
             self.base_selenium.LOGGER.info(
-                "- The {} file is ready for upload".format(file_name))
+                "The {} file is ready for upload".format(file_name))
 
         # silence the click event of file input to prevent the opening of (Open  Files) Window
         self.base_selenium.driver.execute_script(
@@ -381,14 +381,14 @@ class BasePages:
         # send the path of the file to the input tag
         file_field.send_keys(file_path)
 
-        self.base_selenium.LOGGER.info("- Uploading {}".format(file_name))
+        self.base_selenium.LOGGER.info("Uploading {}".format(file_name))
 
         # wait until the file uploads
         self.base_selenium.wait_until_element_located(
             element='general:file_upload_success_flag')
 
         self.base_selenium.LOGGER.info(
-            "- {} file is uploaded successfully".format(file_name))
+            "{} file is uploaded successfully".format(file_name))
 
         # save the form or cancel
         if save:
