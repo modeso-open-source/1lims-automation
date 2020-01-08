@@ -1,6 +1,6 @@
 from ui_testing.pages.base_selenium import BaseSelenium
 from selenium.common.exceptions import ElementClickInterceptedException
-
+import time
 
 class Login:
     def __init__(self):
@@ -18,7 +18,8 @@ class Login:
             self.login(username, password)
 
     def logout(self):
-        self.click_on_header_button()
+        self.base_selenium.click(element='header:header_button')
+        time.sleep(self.base_selenium.TIME_SMALL)
         self.base_selenium.click(element='header:logout_button')
         self.base_selenium.LOGGER.info('+ Logout')
-        self.sleep_medium()
+        time.sleep(self.base_selenium.TIME_MEDIUM)

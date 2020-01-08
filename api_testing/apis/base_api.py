@@ -32,10 +32,8 @@ class BaseAPI:
         self._get_authorized_session()
 
     def _get_authorized_session(self, username=None, password=None, reset_token=False):
-        if not username:
-            username = self.username
-        if not password:
-            password = self.password
+        username = username or self.username
+        password = password or self.password
         if reset_token == True:
             BaseAPI.AUTHORIZATION = None
             self.headers['Authorization'] = None
