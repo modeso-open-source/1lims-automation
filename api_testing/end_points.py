@@ -13,7 +13,11 @@ end_points = {
         'form_data': '/api/testUnits/get/',
         'archive_testunits': '/api/testUnits/',
         'restore_testunits': '/api/testUnits/',
-        'delete_testunit': '/api/testUnits/'
+        'delete_testunit': '/api/testUnits/',
+        'create_testunit': '/api/testUnits',
+        'list_testunit_types': '/api/testUnits/list/types',
+        'list_testunit_concentrations': '/api/testUnits/list/concentrations',
+        'list_testunit_categories': '/api/testUnits/list/categories',
     },
     'test_plan_api': {
         'list_all_test_plans': '/api/testPlans',
