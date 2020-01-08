@@ -69,3 +69,23 @@ class ArticleAPI(BaseAPI):
                 return False
         else:
             return False
+
+    def create_article(self, **kwargs):
+        request_body = {}
+        request_body['selectedArticles'] = []
+        request_body['selectedArticlesNos'] = []
+        request_body['dynamicFieldsValues'] = []
+        for key in kwargs:
+            request_body[key] = kwargs[key]
+
+        api = '{}{}'.format(self.url, self.END_POINTS['article_api']['create_article']) 
+        self.info('POST : {}'.format(api))
+        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        
+        if data['status'] == 1:
+            return data['article']
+        else:
+            return data['message']

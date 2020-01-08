@@ -4,7 +4,8 @@ end_points = {
         'form_data': '/api/articles/get/',
         'archive_articles': '/api/articles/',
         'restore_articles': '/api/articles/',
-        'delete_article': '/api/articles/'
+        'delete_article': '/api/articles/',
+        'create_article': '/api/articles'
     },
     'test_unit_api': {
         'list_all_test_units': '/api/testUnits',
@@ -53,5 +54,8 @@ end_points = {
     },
     'components': {
         'list_components': '/api/components'
+    },
+    'materialTypes': {
+        'list_material_types': '/api/materialTypes'
     }
 }
