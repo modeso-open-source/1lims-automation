@@ -160,6 +160,27 @@ class BaseTest(TestCase):
 
         return first_element, second_element
         
+
+    def get_all_articles(self):
+        articles_response = self.article_api.get_all_articles()
+        articles=articles_response.json()['articles']
+        return articles
+
+    def get_all_test_plans(self):
+        test_plans_response = self.test_plan_api.get_all_test_plans()
+        test_plans = test_plans_response.json()['testPlans']
+        return test_plans
+
+    def get_all_test_units(self):
+        test_units_response = self.test_unit_api.get_all_test_units()
+        test_units = test_units_response.json()['testUnits']
+        return test_units
+
+    def get_all_contacts(self):
+        contacts_response=self.contacts_api.get_all_contacts()
+        contacts= contacts_response.json()['contacts']
+        return contacts
+
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
 
