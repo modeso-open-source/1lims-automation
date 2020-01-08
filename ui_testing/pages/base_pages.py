@@ -1,6 +1,6 @@
 from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
-import time, pyperclip
+import time, pyperclip, os
 from random import randint
 
 
@@ -327,3 +327,66 @@ class BasePages:
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
 
+    def upload_file(self, file_name, drop_zone_element, save=True, remove_current_file=False):
+        """
+        Upload single file to a page that only have 1 drop zone
+
+        :param file_name: name of the file to be uploaded
+        :param drop_zone_element: the dropZone element 
+        :return:
+        """
+        self.base_selenium.LOGGER.info("+ Uploading file")
+
+        # remove the current file and save
+        if remove_current_file:
+            self.base_selenium.LOGGER.info("+ Remove current file")
+            self.base_selenium.click('general:remove_file')
+            self.save()
+
+        # get the absolute path of the file
+        file_path = os.path.abspath('ui_testing/assets/{}'.format(file_name))
+
+        # check if the file exist
+        if os.path.exists(file_path) == False:
+            raise Exception(
+                "The file you are trying to upload doesn't exist localy")
+        else:
+            self.base_selenium.LOGGER.info(
+                "- The {} file is ready for upload".format(file_name))
+
+        # silence the click event of file input to prevent the opening of (Open  Files) Window
+        self.base_selenium.driver.execute_script(
+            """
+            HTMLInputElement.prototype.click = function() {
+                if(this.type !== 'file') 
+                {
+                    HTMLElement.prototype.click.call(this); 
+                }
+            }
+            """)
+
+        # click on the dropZone component
+        self.base_selenium.click(element=drop_zone_element)
+
+        # the input tag will be appended to the HTML by dropZone after the click
+        # find the <input type="file"> tag
+        file_field = self.base_selenium.find_element(
+            element='general:file_input_field')
+
+        # send the path of the file to the input tag
+        file_field.send_keys(file_path)
+
+        self.base_selenium.LOGGER.info("- Uploading {}".format(file_name))
+
+        # wait until the file uploads
+        self.base_selenium.wait_until_element_located(
+            element='general:file_upload_success_flag')
+
+        self.base_selenium.LOGGER.info(
+            "- {} file is uploaded successfully".format(file_name))
+
+        # save the form or cancel
+        if save:
+            self.save()
+        else:
+            self.cancel(True)
