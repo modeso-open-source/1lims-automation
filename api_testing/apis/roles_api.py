@@ -1,4 +1,5 @@
 from api_testing.apis.base_api import BaseAPI
+import json
 
 
 class RolesAPI(BaseAPI):
@@ -69,3 +70,50 @@ class RolesAPI(BaseAPI):
                 return False
         else:
             return False
+
+    def list_all_permissions(self):
+        api = '{}{}'.format(self.url, self.END_POINTS['components']['list_components']) 
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params='', headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        if data['status'] == 1:
+            permissions_list = []
+            components = data['components']
+            for component in components:
+                permissions_list.append(self.map_component_to_permission(component=component))
+                for item in component['items']:
+                    permissions_list.append(self.map_component_to_permission(component=item))
+            return permissions_list
+        return []
+
+    def map_component_to_permission(self, component):
+        return {
+            'id': component['id'],
+            'name': component['name'],
+            'view': False,
+            'modify': False
+        }
+
+    def create_or_update_role(self, role_name='', permissions=[], id=''):
+        request_body = {
+            'name': role_name,
+            'permissions': permissions
+        }
+        if id == '' :
+            api = '{}{}'.format(self.url, self.END_POINTS['roles_api']['create_role']) 
+            self.info('POST : {}'.format(api))
+            response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+        else:
+            request_body['id']=str(id)
+            api = '{}{}'.format(self.url, self.END_POINTS['roles_api']['update_role']) 
+            self.info('PUT : {}'.format(api))
+            response = self.session.put(api, json=request_body, params='', headers=self.headers, verify=False)
+
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        
+        if data['status'] == 1:
+            return data['message']
+        else:
+            return data

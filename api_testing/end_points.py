@@ -45,6 +45,11 @@ end_points = {
         'form_data': '/api/roles/',
         'archive_roles': '/api/roles/',
         'restore_roles': '/api/roles/',
-        'delete_role': '/api/roles/'
+        'delete_role': '/api/roles/',
+        'create_role': '/api/roles',
+        'update_role': '/api/roles'
     },
+    'components': {
+        'list_components': '/api/components'
+    }
 }

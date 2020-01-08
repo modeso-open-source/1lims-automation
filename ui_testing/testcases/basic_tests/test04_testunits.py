@@ -1144,3 +1144,19 @@ class TestUnitsTestCases(BaseTest):
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
             version_counter = version_counter+1
             record_counter = record_counter+1
+
+
+    def test_api(self):
+        random_role_name = self.test_unit_page.generate_random_text()
+        permissons_list = self.roles_api.list_all_permissions()
+        self.base_selenium.LOGGER.info(permissons_list)
+        permissions = []
+        for permission in permissons_list:
+            permissions.append({
+                'name': permission['name'],
+                'id': permission['id'],
+                'view': True,
+                'modify': True
+            })
+        
+        self.base_selenium.LOGGER.info(self.roles_api.create_or_update_role(role_name=random_role_name, permissions=permissions))
