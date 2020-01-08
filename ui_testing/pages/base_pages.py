@@ -339,6 +339,8 @@ class BasePages:
         pagination_elements = self.base_selenium.find_elements_in_element(source_element='general:pagination_menu', destination_element='general:li')
         if limit_index >= 0:
             pagination_elements[limit_index].click()
+        time.sleep(self.base_selenium.TIME_MEDIUM)
+        
         
 
     def get_current_pagination_limit(self):
