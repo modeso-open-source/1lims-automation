@@ -85,3 +85,16 @@ class companyProfileTestCases(BaseTest):
         email = self.base_selenium.get_text(element='company_profile:email')
         self.assertTrue(username)
         self.assertTrue(email)
+
+    def test006_company_profile_upload_file_then_cancel_should_not_save(self):
+        """
+        Company profile: Make sure after you edit any data and press on cancel button, nothing occur
+
+        LIMS-6096
+        """
+        self.company_profile_page.upload_file(
+            file_name='logo.png', drop_zone_element='company_profile:logo_field', save=False, remove_current_file=True)
+        self.company_profile_page.get_company_profile_page()
+        is_the_file_exist = self.base_selenium.check_element_is_exist(
+            element='general:file_upload_success_flag')
+        self.assertFalse(is_the_file_exist)
