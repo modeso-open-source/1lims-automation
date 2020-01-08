@@ -31,7 +31,9 @@ end_points = {
         'form_data': '/api/contacts/get/',
         'archive_contacts': '/api/contacts/archive/',
         'restore_contacts': '/api/contacts/restore/',
-        'delete_contact': '/api/contacts/'
+        'delete_contact': '/api/contacts/',
+        'create_contact': '/api/contacts',
+        'update_contact': '/api/contacts'
     },
     'users_api': {
         'list_all_users': '/api/users',

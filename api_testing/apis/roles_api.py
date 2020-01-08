@@ -95,7 +95,8 @@ class RolesAPI(BaseAPI):
             'modify': False
         }
 
-    def create_or_update_role(self, role_name='', permissions=[], id=''):
+    # 
+    def create_role(self, role_name='', permissions=[], id=''):
         request_body = {
             'name': role_name,
             'permissions': permissions
