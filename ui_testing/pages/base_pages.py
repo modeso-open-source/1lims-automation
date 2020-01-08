@@ -339,17 +339,25 @@ class BasePages:
 
         # remove the current file and save
         if remove_current_file:
+            self.base_selenium.LOGGER.info("- Remove current file")
             is_the_file_exist = self.base_selenium.check_element_is_exist(
             element='general:file_upload_success_flag')
             if is_the_file_exist:
-                self.base_selenium.LOGGER.info("- Remove current file")
                 self.base_selenium.click('general:remove_file')
-                self.save()
+                self.save()      
             else:
                 self.base_selenium.LOGGER.info("- There is no current file")
 
         # get the absolute path of the file
         file_path = os.path.abspath('ui_testing/assets/{}'.format(file_name))
+
+        # check if the file exist
+        if os.path.exists(file_path) == False:
+            raise Exception(
+                "The file you are trying to upload doesn't exist localy")
+        else:
+            self.base_selenium.LOGGER.info(
+                "- The {} file is ready for upload".format(file_name))
 
         # silence the click event of file input to prevent the opening of (Open  Files) Window
         self.base_selenium.driver.execute_script(
