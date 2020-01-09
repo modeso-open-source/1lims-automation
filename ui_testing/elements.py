@@ -134,8 +134,9 @@ elements = {
         'cancel_overview': {'method': 'xpath',
                             'value': "//div[contains(@class, 'swal2-actions')]//button[2]"},
         'file_input_field': {'method':'css_selector', 'value':'[type="file"]'},
-        'file_upload_success_flag': {'method':'class_name', 'value': 'dz-success', 'order': 0},
+        'file_upload_success_flag': {'method':'class_name', 'value': 'dz-complete', 'order': 0},
         'remove_file': {'method': 'class_name', 'value': 'dz-remove', 'order': 0},
+        'uploaded_file_name': {'method': 'xpath', 'value': '//span[@data-dz-name="" and last()]'},
     },
     'login': {
         'username': {'method': 'name',

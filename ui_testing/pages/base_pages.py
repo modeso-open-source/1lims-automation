@@ -393,5 +393,11 @@ class BasePages:
         # save the form or cancel
         if save:
             self.save()
+            # show the file name
+            self.base_selenium.driver.execute_script("document.querySelector('.dz-details').style.opacity = 'initial';")
+            # get the file name
+            uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name')
+            return uploaded_file_name
         else:
             self.cancel(True)
+            return True
