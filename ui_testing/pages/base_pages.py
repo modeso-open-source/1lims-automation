@@ -1,6 +1,6 @@
 from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
-import time, pyperclip
+import time, pyperclip, os
 from random import randint
 
 
@@ -251,6 +251,7 @@ class BasePages:
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
         configure_table_menu.click()
         self.sleep_small()
+
     
     def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
         self.open_configure_table()
@@ -312,7 +313,24 @@ class BasePages:
         for column in total_columns:
             self.change_column_view(column=column, value=True, always_hidden_columns=always_hidden_columns)
         self.press_apply_in_configure_table()
-        
+
+    def deselect_all_configurations(self):
+        self.open_configure_table()
+        active_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items',
+                                                                     destination_element='general:li')
+        for column in active_columns:
+            if column.text:
+                self.change_column_view(column=column, value=False)
+
+        archived_coloums = self.base_selenium.find_elements_in_element(
+            source_element='general:configure_table_archive_items',
+            destination_element='general:li')
+        for column in archived_coloums:
+            if column.text:
+                self.change_column_view(column=column, value=False)
+
+        return self.base_selenium.element_is_displayed(element="general:apply_configure_table")
+
     def click_overview(self):
         # click on Overview, this will display an alert to the user
         self.base_selenium.LOGGER.info('click on Overview')
@@ -327,3 +345,77 @@ class BasePages:
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
 
+    def upload_file(self, file_name, drop_zone_element, save=True, remove_current_file=False):
+        """
+        Upload single file to a page that only have 1 drop zone
+
+        :param file_name: name of the file to be uploaded
+        :param drop_zone_element: the dropZone element 
+        :return:
+        """
+        self.base_selenium.LOGGER.info("+ Uploading file")
+
+        # remove the current file and save
+        if remove_current_file:
+            self.base_selenium.LOGGER.info("Remove current file")
+            is_the_file_exist = self.base_selenium.check_element_is_exist(
+            element='general:file_upload_success_flag')
+            if is_the_file_exist:
+                self.base_selenium.click('general:remove_file')
+                self.save()      
+            else:
+                self.base_selenium.LOGGER.info("There is no current file")
+
+        # get the absolute path of the file
+        file_path = os.path.abspath('ui_testing/assets/{}'.format(file_name))
+
+        # check if the file exist
+        if os.path.exists(file_path) == False:
+            raise Exception(
+                "The file you are trying to upload doesn't exist localy")
+        else:
+            self.base_selenium.LOGGER.info(
+                "The {} file is ready for upload".format(file_name))
+
+        # silence the click event of file input to prevent the opening of (Open  Files) Window
+        self.base_selenium.driver.execute_script(
+            """
+            HTMLInputElement.prototype.click = function() {
+                if(this.type !== 'file') 
+                {
+                    HTMLElement.prototype.click.call(this); 
+                }
+            }
+            """)
+
+        # click on the dropZone component
+        self.base_selenium.click(element=drop_zone_element)
+
+        # the input tag will be appended to the HTML by dropZone after the click
+        # find the <input type="file"> tag
+        file_field = self.base_selenium.find_element(
+            element='general:file_input_field')
+
+        # send the path of the file to the input tag
+        file_field.send_keys(file_path)
+
+        self.base_selenium.LOGGER.info("Uploading {}".format(file_name))
+
+        # wait until the file uploads
+        self.base_selenium.wait_until_element_located(
+            element='general:file_upload_success_flag')
+
+        self.base_selenium.LOGGER.info(
+            "{} file is uploaded successfully".format(file_name))
+
+        # save the form or cancel
+        if save:
+            self.save()
+            # show the file name
+            self.base_selenium.driver.execute_script("document.querySelector('.dz-details').style.opacity = 'initial';")
+            # get the file name
+            uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name').text
+            return uploaded_file_name
+        else:
+            self.cancel(True)
+            return True
