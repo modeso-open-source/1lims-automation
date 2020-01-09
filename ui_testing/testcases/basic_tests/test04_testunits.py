@@ -1504,12 +1504,12 @@ class TestUnitsTestCases(BaseTest):
         material_type = self.general_utilities_api.list_all_material_types()[0]
         testunit = self.test_unit_api.get_all_test_units().json()['testUnits'][0]
         testunit_form_data = self.test_unit_api.get_testunit_form_data(id=int(testunit['id']))
-        self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
+        testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
 
-        # testplan_name = self.test_unit_page.generate_random_text()
-        # testplan_number = self.test_unit_page.generate_random_number()
-        # testplan_object = {
-        #     'text': testplan_name,
-        #     'id': 'new'
-        # }
-        # self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article]))
+        testplan_name = self.test_unit_page.generate_random_text()
+        testplan_number = self.test_unit_page.generate_random_number()
+        testplan_object = {
+            'text': testplan_name,
+            'id': 'new'
+        }
+        self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article], testUnits=[testunit]))
