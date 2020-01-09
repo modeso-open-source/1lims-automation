@@ -165,6 +165,7 @@ class TstUnit(TstUnits):
 
     def use_specification_or_quantification(self, type_to_use='spec'):
         self.base_selenium.LOGGER.info('Check to use {}'.format(type_to_use))
+        self.sleep_tiny()
         if type_to_use == 'spec':
             spec = self.base_selenium.find_element_in_element(destination_element='general:span',
                                                               source_element='test_unit:use_specification')
