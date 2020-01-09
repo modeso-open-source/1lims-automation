@@ -1491,10 +1491,21 @@ class TestUnitsTestCases(BaseTest):
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
- def test041_hide_all_table_configurations(self):
+    def test041_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
 
         LIMS-6288
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
+
+    def test_testplan_creation_api(self):
+        article = self.article_api.list_articles_by_materialtype(materialtype_id=1)[0]
+        material_type = self.general_utilities_api.list_all_material_types()[0]
+        testplan_name = self.test_unit_page.generate_random_text()
+        testplan_number = self.test_unit_page.generate_random_number()
+        testplan_object = {
+            'text': testplan_name,
+            'id': 'new'
+        }
+        self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article]))
