@@ -671,4 +671,10 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.get_test_plans_page()
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
 
+     def test029_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
 
+        LIMS-6288
+        """
+        assert (self.article_page.deselect_all_configurations(), False)

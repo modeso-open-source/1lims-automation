@@ -1107,12 +1107,7 @@ class TestUnitsTestCases(BaseTest):
 
         self.assertEquals(random_category_before_edit.strip(), new_random_category.strip())
         self.assertEquals(random_category_after_edit.strip(), new_random_category_edit.strip())
-
-
-
-
-
-
+        
     def test031_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
         """
         New: Test unit: Limits of quantification Approach: Versions:
@@ -1543,7 +1538,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
 
-    def test032_testunits_search_then_navigate(self):
+    def test040_testunits_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
         LIMS-6201
@@ -1564,3 +1559,10 @@ class TestUnitsTestCases(BaseTest):
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
+ def test041_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
