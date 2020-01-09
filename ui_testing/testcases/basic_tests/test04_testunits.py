@@ -1061,10 +1061,13 @@ class TestUnitsTestCases(BaseTest):
         testunit_name = ''
         for testunit in testunits:
             if testunit['specifications'] != '' and testunit['quantification'] == '':
-                testunit_name = testunit['name']
+                testunit_name = testunit['number']
                 break
             
-
+        if testunit_name == '':
+            self.base_selenium.LOGGER.info('there is no testunit with specification only value')
+            self.assertTrue(False)
+        
         testunit_record = self.test_unit_page.search(value=testunit_name)[0]
 
         self.test_unit_page.open_edit_page(row=testunit_record)
@@ -1100,6 +1103,10 @@ class TestUnitsTestCases(BaseTest):
             if testunit['specifications'] == '' and testunit['quantification'] != '':
                 testunit_name = testunit['name']
                 break
+
+        if testunit_name == '':
+            self.base_selenium.LOGGER.info('there is no testunit with quantification only value')
+            self.assertTrue(False)
 
         testunit_record = self.test_unit_page.search(value=testunit_name)[0]
 
