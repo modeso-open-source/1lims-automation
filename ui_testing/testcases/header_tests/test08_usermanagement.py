@@ -233,7 +233,7 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.base_selenium.click(element='header:user_management_button')
-        # open random user in the edit mode
+         # open random user in the edit mode
         self.header_page.get_random_user()
         user_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + user_url : {}'.format(user_url))
