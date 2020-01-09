@@ -1,9 +1,10 @@
 from ui_testing.testcases.base_test import BaseTest
-
 from parameterized import parameterized
 import re
 from unittest import skip
+import random
 import inspect
+
 class ArticlesTestCases(BaseTest):
     def setUp(self):
         super().setUp()
@@ -647,3 +648,33 @@ class ArticlesTestCases(BaseTest):
 
         self.article_page.info('+ Check Related article field existance in edit page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
+
+    def test028_article_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        articles = self.get_all_articles()
+        article_name = random.choice(articles)['name']
+        search_results = self.article_page.search(article_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Article Name'] == article_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(article_name, search_data['Article Name'])
+        # Navigate to test plan page
+        self.base_selenium.LOGGER.info('navigate to test plans page')
+        self.test_plan.get_test_plans_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+
+     def test029_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.article_page.deselect_all_configurations(), False)

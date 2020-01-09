@@ -377,8 +377,10 @@ class BaseSelenium:
                 return False
             if avoid_duplicate:
                 items[random.choice(self._unique_index_list(data=items))].click()
+                return True
             else:
                 items[random.randint(0, len(items) - 1)].click()
+                return True
         else:
             if item_text not in [item.text for item in items]:
                 time.sleep(self.TIME_TINY)
@@ -386,7 +388,7 @@ class BaseSelenium:
             for item in items:
                 if item_text in item.text:
                     item.click()
-                    break
+                    return True
             else:
                 self.LOGGER.info(' There is no {} option in the drop-down'.format(item_text))
                 return False
