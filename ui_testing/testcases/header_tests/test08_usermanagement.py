@@ -2,6 +2,7 @@ from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
 from unittest import skip
+import time
 
 class HeaderTestCases(BaseTest):
 
