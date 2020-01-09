@@ -1,12 +1,12 @@
 from api_testing.apis.base_api import BaseAPI
 
 
-class ArticleAPI(BaseAPI):
-    def get_all_articles(self, **kwargs):
-        api = '{}{}'.format(self.url, self.END_POINTS['article_api']['list_all_articles'])
-        _payload = {"sort_value": "number",
-                    "limit": 100,
-                    "start": 1,
+class UsersAPI(BaseAPI):
+    def get_all_users(self, **kwargs):
+        api = '{}{}'.format(self.url, self.END_POINTS['users_api']['list_all_users'])
+        _payload = {"sort_value": "userId",
+                    "limit": 1000,
+                    "start": 0,
                     "sort_order": "DESC",
                     "filter": "{}",
                     "deleted": "0"}
@@ -16,19 +16,19 @@ class ArticleAPI(BaseAPI):
         self.info('Status code: {}'.format(response.status_code))
         return response
 
-    def get_article_form_data(self, id=1):
-        api = '{}{}{}'.format(self.url, self.END_POINTS['article_api']['form_data'], str(id)) 
+    def get_user_form_data(self, id=1):
+        api = '{}{}{}'.format(self.url, self.END_POINTS['users_api']['form_data'], str(id)) 
         self.info('GET : {}'.format(api))
         response = self.session.get(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
         if data['status'] == 1:
-            return data['article']
+            return data['user']
         else:
             return False
     
-    def archive_articles(self, ids=['1']):
-        api = '{}{}{}/archive'.format(self.url, self.END_POINTS['article_api']['archive_articles'], ','.join(ids)) 
+    def archive_users(self, ids=['1']):
+        api = '{}{}{}/archive'.format(self.url, self.END_POINTS['users_api']['archive_users'], ','.join(ids)) 
         self.info('PUT : {}'.format(api))
         response = self.session.put(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -38,8 +38,8 @@ class ArticleAPI(BaseAPI):
         else:
             return False
     
-    def restore_articles(self, ids=['1']):
-        api = '{}{}{}/restore'.format(self.url, self.END_POINTS['article_api']['restore_articles'], ','.join(ids)) 
+    def restore_users(self, ids=['1']):
+        api = '{}{}{}/restore'.format(self.url, self.END_POINTS['users_api']['restore_users'], ','.join(ids)) 
         self.info('PUT : {}'.format(api))
         response = self.session.put(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -49,8 +49,8 @@ class ArticleAPI(BaseAPI):
         else:
             return False
     
-    def delete_archived_article(self, id=1):
-        api = '{}{}{}'.format(self.url, self.END_POINTS['article_api']['delete_article'], str(id)) 
+    def delete_archived_user(self, id=1):
+        api = '{}{}{}'.format(self.url, self.END_POINTS['users_api']['delete_user'], str(id)) 
         self.info('DELETE : {}'.format(api))
         response = self.session.delete(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -60,32 +60,12 @@ class ArticleAPI(BaseAPI):
         else:
             return False
 
-    def delete_active_article(self, id=1):
-        if self.archive_articles(ids=[str(id)]):
-            if self.delete_archived_article(id=id):
+    def delete_active_user(self, id=1):
+        if self.archive_users(ids=[str(id)]):
+            if self.delete_archived_user(id=id):
                 return True
             else:
-                self.restore_articles(ids=[id])
+                self.restore_users(ids=[id])
                 return False
         else:
             return False
-
-    def create_article(self, **kwargs):
-        request_body = {}
-        request_body['selectedArticles'] = []
-        request_body['selectedArticlesNos'] = []
-        request_body['dynamicFieldsValues'] = []
-        for key in kwargs:
-            request_body[key] = kwargs[key]
-
-        api = '{}{}'.format(self.url, self.END_POINTS['article_api']['create_article']) 
-        self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
-
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        
-        if data['status'] == 1:
-            return data['article']
-        else:
-            return data['message']
