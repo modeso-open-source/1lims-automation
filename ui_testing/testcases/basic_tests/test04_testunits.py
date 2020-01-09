@@ -126,7 +126,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.refresh()
         self.test_unit_page.sleep_small()
 
-        self.base_selenium.LOGGER.info('Getting testunit data after referesh')
+        self.base_selenium.LOGGER.info('Getting testunit data after refresh')
         updated_testunit_name = self.test_unit_page.get_testunit_name()
         update_testunit_number = self.test_unit_page.get_testunit_number()
         updated_material_types = self.test_unit_page.get_material_type()
@@ -1018,7 +1018,114 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
-    def test030_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
+    @parameterized.expand(['Quantitative', 'Qualitative', 'MiBi'])
+    def test_028_changing_testunit_type_update_fields_accordingly(self, testunit_type):
+        """
+        New: Test unit: Type Approach: When I change type from edit mode, the values should changed according to this type that selected 
+        When I change type from edit mode, the values should changed according to this type that selected 
+        LIMS-3680
+
+        comment: this case will be handled in create
+        """
+
+        if testunit_type == 'MiBi':
+            testunit_type = 'Quantitative MiBi'
+            
+        self.base_selenium.LOGGER.info('open testunits in create')
+        self.test_unit_page.click_create_new_testunit()
+        
+        self.base_selenium.LOGGER.info('set the type to {}'.format(testunit_type))
+        self.test_unit_page.set_testunit_type(testunit_type=testunit_type)
+        self.test_unit_page.sleep_tiny()
+        self.base_selenium.LOGGER.info('set testunit type to {}, fields should be displayed as the following'.format(testunit_type))
+        
+        if testunit_type == 'Quantitative':
+            self.assertTrue(self.test_unit_page.check_for_quantitative_fields())
+        elif testunit_type == 'Qualitative':
+            self.assertTrue(self.test_unit_page.check_for_qualitative_fields())
+        elif testunit_type == 'Quantitative MiBi':
+            self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
+
+    
+    def test_029_allow_user_to_change_between_specification_and_quantification(self):
+        """
+        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
+        Allow user to change between the two options specification and limit of quantification from edit mode.
+        specification to quantifications
+        """
+
+        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
+        self.assertEqual(testunits_request['status'], 1)
+        testunits = testunits_request['testUnits']
+        self.assertNotEqual(len(testunits), 0)
+        testunit_name = ''
+        for testunit in testunits:
+            if testunit['specifications'] != '' and testunit['quantification'] == '':
+                testunit_name = testunit['number']
+                break
+            
+        if testunit_name == '':
+            self.base_selenium.LOGGER.info('there is no testunit with specification only value')
+            self.assertTrue(False)
+        
+        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
+
+        self.test_unit_page.open_edit_page(row=testunit_record)
+        
+        self.base_selenium.LOGGER.info('generate random lower/ upper limit')
+        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
+        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
+
+        self.base_selenium.LOGGER.info('switch to quantification')
+        self.test_unit_page.switch_from_spec_to_quan(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
+        self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
+        self.base_selenium.refresh()
+
+        self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
+        self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
+        self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
+    
+    
+    def test_030_allow_user_to_change_between_specification_and_quantification(self):
+        """
+        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
+        Allow user to change between the two options specification and limit of quantification from edit mode.
+
+        quantifications to specifications
+        """
+
+        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
+        self.assertEqual(testunits_request['status'], 1)
+        testunits = testunits_request['testUnits']
+        self.assertNotEqual(len(testunits), 0)
+        testunit_name = ''
+        for testunit in testunits:
+            if testunit['specifications'] == '' and testunit['quantification'] != '':
+                testunit_name = testunit['name']
+                break
+
+        if testunit_name == '':
+            self.base_selenium.LOGGER.info('there is no testunit with quantification only value')
+            self.assertTrue(False)
+
+        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
+
+        self.test_unit_page.open_edit_page(row=testunit_record)
+        
+        self.base_selenium.LOGGER.info('generate random lower/ upper limit')
+        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
+        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
+        
+        self.base_selenium.LOGGER.info('switch to specification')
+        self.test_unit_page.switch_from_quan_to_spec(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
+        self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
+        self.base_selenium.refresh()
+
+        self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
+        self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
+        self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
+    
+    def test031_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
         """
         New: Test unit: limit of quantification Approach: Allow the unit field to display when I select quantitative MiBi type & make sure it displayed in the active table & in the export sheet 
         
@@ -1058,7 +1165,7 @@ class TestUnitsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
             self.assertIn(row_data['Unit'], fixed_sheet_row_data)
 
-    def test031_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
+    def test032_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
         """
         New: Test unit: Limits of quantification Approach: Versions:
         In case I edit any field in the limits of quantification and press on save and create new version,
@@ -1151,10 +1258,326 @@ class TestUnitsTestCases(BaseTest):
                 self.assertEqual(record_data['Quantification Limit'],
                                  str(random_lower_limit) + '-' + str(random_upper_limit))
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
+
             version_counter = version_counter + 1
             record_counter = record_counter + 1
 
-    def test032_testunits_search_then_navigate(self):
+
+    @skip('waiting for API deleting')
+    def test033_archive_quantifications_limit_field(self):
+        """
+        New: Test unit: Configuration: Limit of quantification Approach: Display the new fields in the configuration section 
+        ( Upper limit & lower limit & unit of  limit of quantification ) and I can archive them. 
+        User can archive the quantification limits field from the configuration section 
+        "Archive-allowed"
+        LIMS-4164
+        """
+        self.test_unit_page.open_configurations()
+        self.assertTrue(self.test_unit_page.archive_quantification_limit_field())
+        self.assertFalse(
+            self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
+        self.test_unit_page.get_archived_fields_tab()
+        self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.click_create_new_testunit()
+        self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
+        self.assertFalse(self.base_selenium.check_element_is_exist(element='test_unit:use_quantification'))
+
+    @skip('waiting for API deleting')
+    def test034_restore_quantifications_limit_field(self):
+        """
+        New: Test unit: Configuration: Limit of quantification Approach: Display the new fields in the configuration section 
+        ( Upper limit & lower limit & unit of  limit of quantification ) and I can archive them. 
+        User can archive the quantification limits field from the configuration section 
+        "Restore"
+        LIMS-4164
+        """
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.get_archived_fields_tab()
+        self.assertTrue(self.test_unit_page.restore_quantification_limit_field())
+        self.assertFalse(
+            self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
+        self.test_unit_page.get_active_fields_tab()
+        self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.click_create_new_testunit()
+        self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
+        self.assertTrue(self.base_selenium.check_element_is_exist(element='test_unit:use_quantification'))
+
+    def test035_test_unit_name_is_mandatory(self):
+        """
+
+        New: Test unit: Configuration: Test unit Name Approach: Make the test units field as as mandatory field (This mean you can't remove it )
+
+        LIMS- 5651
+        :return:
+        """
+
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+
+        self.assertTrue(self.test_unit_page.check_all_options_of_search_view_menu())
+
+    @parameterized.expand(['name', 'method', 'type', 'number'])
+    def test036_test_unit_name_allow_user_to_search_with_selected_options_testplan(self, search_view_option):
+        """
+
+        New: Test Unit: Configuration: Test unit Name Approach: Allow user to search with ( name, number, type, method ) in the drop down list of the analysis for
+
+        LIMS- 6422
+        :return:
+        """
+
+        self.base_selenium.LOGGER.info('Generate random data for update')
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=[search_view_option])
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
+        row = self.test_unit_page.search(value=new_random_name)[0]
+        new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
+                                                                                           column_value='Test Unit No.')
+
+        new_auto_generated_number = new_auto_generated_number.replace("'", '')
+        self.base_selenium.LOGGER.info('get the newly created testunit number of {}'.format(new_auto_generated_number))
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(name='in progress')
+        is_name_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_name)
+        is_number_exist = self.test_plan.search_test_unit_not_set(test_unit=new_auto_generated_number)
+        is_type_exist = self.test_plan.search_test_unit_not_set(test_unit='Qualitative')
+        is_method_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_method)
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = old_values.split('\n×')
+
+        self.test_unit_page.select_option_to_view_search_with(view_search_options=old_values)
+
+        if search_view_option == 'name':
+            self.assertTrue(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option == 'type':
+            self.assertFalse(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertTrue(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option == 'method':
+            self.assertFalse(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertTrue(is_method_exist)
+        elif search_view_option == 'number':
+            self.assertFalse(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+
+    def test037_test_unit_name_search_default_options_name_type_in_testplan(self):
+        """
+
+        New: Test unit: Configuration: Test units field Approach: Allow name & type to display by default in the test plan form In case I select them from the test unit configuration
+
+        LIMS- 6423
+        :return:
+        """
+
+        self.base_selenium.LOGGER.info('Generate random data for update')
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = self.test_unit_page.deselect_all_options_to_view_search_with()
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
+        row = self.test_unit_page.search(value=new_random_name)[0]
+        new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
+                                                                                           column_value='Test Unit No.')
+
+        new_auto_generated_number = new_auto_generated_number.replace("'", '')
+        self.base_selenium.LOGGER.info('get the newly created testunit number of {}'.format(new_auto_generated_number))
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(name='in progress')
+        is_name_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_name)
+        is_number_exist = self.test_plan.search_test_unit_not_set(test_unit=new_auto_generated_number)
+        is_type_exist = self.test_plan.search_test_unit_not_set(test_unit='Qualitative')
+        is_method_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_method)
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = old_values.split('\n×')
+
+        self.test_unit_page.select_option_to_view_search_with(view_search_options=old_values)
+
+        self.assertTrue(is_name_exist)
+        self.assertFalse(is_number_exist)
+        self.assertTrue(is_type_exist)
+        self.assertFalse(is_method_exist)
+
+    def test038_test_unit_name_view_method_option_multiple_line_in_testplan(self):
+        """
+
+        New: Test Unit: Configuration: Test unit Name Approach: In case you select the method to display and you entered long text in it, the method should display into multiple lines (test plan )
+
+        LIMS- 6424
+        :return:
+        """
+
+        self.base_selenium.LOGGER.info('Generate random data for update')
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string() + self.generate_random_string() + self.generate_random_string()
+
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=['method'])
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(name='in progress')
+        is_method_exist = self.test_plan.set_test_unit(test_unit=new_random_method)
+        multiple_lines_properties = self.test_plan.get_testunit_in_testplan_title_multiple_line_properties()
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = old_values.split('\n×')
+
+        self.test_unit_page.select_option_to_view_search_with(view_search_options=old_values)
+
+        self.assertEquals(multiple_lines_properties['textOverflow'],'clip')
+        self.assertEquals(multiple_lines_properties['lineBreak'], 'auto')
+
+    @parameterized.expand([('name', 'type'),
+                           ('name', 'method'),
+                           ('name', 'number'),
+                           ('type', 'method'),
+                           ('type', 'number'),
+                           ('method', 'number')
+                           ])
+    def test039_test_unit_name_allow_user_to_search_with_selected_two_options_testplan(self, search_view_option1,
+                                                                                       search_view_option2):
+        """
+
+        New: Test Unit: Configuration: Test unit Name Approach: Allow user to search with ( name, number, type, method ) in the drop down list of the analysis for
+
+        LIMS- 6426
+        :return:
+        """
+
+        self.base_selenium.LOGGER.info('Generate random data for update')
+        new_random_name = self.generate_random_string()
+        new_random_method = self.generate_random_string()
+
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=[search_view_option1,search_view_option2])
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                        material_type='All')
+        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+
+        self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
+        row = self.test_unit_page.search(value=new_random_name)[0]
+        new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
+                                                                                           column_value='Test Unit No.')
+        new_auto_generated_number = new_auto_generated_number.replace("'", '')
+        self.base_selenium.LOGGER.info('get the newly created testunit number of {}'.format(new_auto_generated_number))
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(name='in progress')
+        is_name_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_name)
+        is_number_exist = self.test_plan.search_test_unit_not_set(test_unit=new_auto_generated_number)
+        is_type_exist = self.test_plan.search_test_unit_not_set(test_unit='Qualitative')
+        is_method_exist = self.test_plan.search_test_unit_not_set(test_unit=new_random_method)
+
+        self.base_selenium.LOGGER.info('Get testunits page')
+        self.test_unit_page.get_test_units_page()
+        self.test_unit_page.open_configurations()
+        self.test_unit_page.open_testunit_name_configurations_options()
+        old_values = old_values.split('\n×')
+
+        self.test_unit_page.select_option_to_view_search_with(view_search_options=old_values)
+
+        if search_view_option1 == 'name' and search_view_option2 == 'type':
+            self.assertTrue(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertTrue(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option1 == 'name' and search_view_option2 == 'method':
+            self.assertTrue(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertTrue(is_method_exist)
+        elif search_view_option1 == 'name' and search_view_option2 == 'number':
+            self.assertTrue(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option1 == 'type' and search_view_option2 == 'method':
+            self.assertFalse(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertTrue(is_type_exist)
+            self.assertTrue(is_method_exist)
+        elif search_view_option1 == 'type' and search_view_option2 == 'number':
+            self.assertFalse(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertTrue(is_type_exist)
+            self.assertFalse(is_method_exist)
+        elif search_view_option1 == 'method' and search_view_option2 == 'number':
+            self.assertFalse(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertTrue(is_method_exist)
+
+    def test040_testunits_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
         LIMS-6201
@@ -1174,3 +1597,11 @@ class TestUnitsTestCases(BaseTest):
         self.info('navigate to articles page')
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
+
+    def test041_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
