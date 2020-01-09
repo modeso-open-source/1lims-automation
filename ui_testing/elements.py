@@ -799,6 +799,9 @@ elements = {
         'location_field': {'method': 'id', 'value': 'locationfield'},
         'logo_field': {'method': 'id', 'value': 'logo'},
         'username': {'method': 'class_name', 'value': 'm-card-profile__name', 'order': 0},
-        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0}
+        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
     },
+  }
 }
+
+    
