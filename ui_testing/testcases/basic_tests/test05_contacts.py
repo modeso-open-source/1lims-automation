@@ -1,6 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
+import random
 from unittest import skip
 
 
@@ -430,7 +431,77 @@ class ContactsTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}contacts'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
-    def test015_filter_by_contact_name(self):
+    def test015_contacts_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        contacts = self.get_all_contacts()
+        contact_name = random.choice(contacts)['name']
+        search_results = self.contact_page.search(contact_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Contact Name'] == contact_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(contact_name, search_data['Contact Name'])
+        # Navigate to test plan page
+        self.base_selenium.LOGGER.info('navigate to test plans page')
+        self.test_plan.get_test_plans_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+
+    def test016_create_user_with_role_contact(self):
+        """
+        New: Contact: User management: All the contacts created should be found when I create new user with role contact 
+        All the contacts created should be found when I create new user with role contact 
+        
+        LIMS-3569
+        """
+
+        contact_request = self.contacts_api.get_all_contacts().json()
+        self.assertEqual(contact_request['status'], 1)
+        self.assertNotEqual(contact_request['count'], 0)
+        contacts_records = contact_request['contacts']
+        
+        contact_name = contacts_records[0]['name']
+        
+        self.header_page.get_users_page()
+
+        user_name = self.header_page.generate_random_text()
+        self.base_selenium.LOGGER.info('random username generate is {}'.format(user_name))
+        
+        user_pw = self.header_page.generate_random_text()
+        self.base_selenium.LOGGER.info('random user password generate is {}'.format(user_pw))
+        
+        user_mail = self.header_page.generate_random_email()
+        self.base_selenium.LOGGER.info('random user email generate is {}'.format(user_mail))
+        
+        self.base_selenium.LOGGER.info('contact that user will be created with is {}'.format(contact_name))
+
+        
+        self.base_selenium.LOGGER.info('create new user with the randomly generated data')
+        self.header_page.create_new_user(user_role='Contact', user_password=user_pw, user_confirm_password=user_pw, user_email=user_mail, user_name=user_name, user_contact=contact_name)
+
+        self.base_selenium.LOGGER.info('search with the user name to make sure that it was created with the correct data')
+        user_record = self.header_page.search(user_name)[0]
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=user_record)
+
+        self.base_selenium.LOGGER.info('compare the user data with the randomly generated data')
+        self.assertEqual(user_name, row_data['Name'])
+        self.assertEqual(contact_name, row_data['Contact'])
+
+    def test017_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
+
+    def test018_filter_by_contact_name(self):
         """
         Contacts: Filter Approach: Make sure you can filter by Name
         LIMS-6408
@@ -447,7 +518,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Contact Name'], data_to_filter_with)
             counter = counter +1
     
-    def test016_filter_by_contact_departments(self):
+    def test019_filter_by_contact_departments(self):
         """
         Contacts: Filter Approach: Make sure you can filter by departments
         LIMS-6413
@@ -465,7 +536,7 @@ class ContactsTestCases(BaseTest):
             self.assertIn(data_to_filter_with, contact_departments)
             counter = counter +1
     
-    def test017_filter_by_contact_skype(self):
+    def test020_filter_by_contact_skype(self):
         """
         Contacts: Filter Approach: Make sure you can filter by skype
         LIMS-6418
@@ -482,7 +553,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Skype'], data_to_filter_with)
             counter = counter +1
     
-    def test018_filter_by_contact_number(self):
+    def test021_filter_by_contact_number(self):
         """
         Contacts: Filter Approach: Make sure you can filter by number
         LIMS-6409
@@ -499,7 +570,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Contact No'], data_to_filter_with)
             counter = counter +1
    
-    def test019_filter_by_contact_email(self):
+    def test022_filter_by_contact_email(self):
         """
         Contacts: Filter Approach: Make sure you can filter by email
         LIMS-6414
@@ -516,7 +587,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Email'], data_to_filter_with)
             counter = counter +1
     
-    def test020_filter_by_contact_postalcode(self):
+    def test023_filter_by_contact_postalcode(self):
         """
         Contacts: Filter Approach: Make sure you can filter by postal code
         LIMS-6419
@@ -533,7 +604,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Postal Code'], data_to_filter_with)
             counter = counter +1
     
-    def test021_filter_by_contact_changed_by(self):
+    def test024_filter_by_contact_changed_by(self):
         """
         Contacts: Filter Approach: Make sure you can filter by changed by
         LIMS-6410
@@ -550,7 +621,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Changed By'], data_to_filter_with)
             counter = counter +1
     
-    def test022_filter_by_contact_website(self):
+    def test025_filter_by_contact_website(self):
         """
         Contacts: Filter Approach: Make sure you can filter by website
         LIMS-6415
@@ -567,7 +638,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Website'], data_to_filter_with)
             counter = counter +1
     
-    def test023_filter_by_contact_created_on(self):
+    def test026_filter_by_contact_created_on(self):
         """
         Contacts: Filter Approach: Make sure you can filter by created on 
         LIMS-6420
@@ -585,7 +656,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Created On'], data_to_filter_with)
             counter = counter +1
     
-    def test024_filter_by_contact_address(self):
+    def test027_filter_by_contact_address(self):
         """
         Contacts: Filter Approach: Make sure you can filter by address
         LIMS-6411
@@ -602,7 +673,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Country'], data_to_filter_with)
             counter = counter +1
     
-    def test025_filter_by_contact_type(self):
+    def test028_filter_by_contact_type(self):
         """
         Contacts: Filter Approach: Make sure you can filter by type
         LIMS-6421
@@ -622,7 +693,7 @@ class ContactsTestCases(BaseTest):
             self.assertIn(data_to_filter_with, contact_type)
             counter = counter +1
    
-    def test026_filter_by_contact_phone(self):
+    def test029_filter_by_contact_phone(self):
         """
         Contacts: Filter Approach: Make sure you can filter by phone
         LIMS-6412
@@ -639,7 +710,7 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(row_data['Phone'], data_to_filter_with)
             counter = counter +1
     
-    def test027_filter_by_contact_location(self):
+    def test030_filter_by_contact_location(self):
         """
         Contacts: Filter Approach: Make sure you can filter by location
         LIMS-6417
@@ -655,7 +726,5 @@ class ContactsTestCases(BaseTest):
             row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
             self.assertEqual(row_data['Location'], data_to_filter_with)
             counter = counter +1
+
     
-
-
-
