@@ -789,7 +789,7 @@ elements = {
                           'order': 2},
         'confirm_button': {'method': 'class_name',
                            'value': 'btn-success',
-                           'order': 0}
+                           'order': 0},
     'company_profile': {
         'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
         'name_field': {'method': 'id', 'value': 'namefield'},
