@@ -1038,6 +1038,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.set_testunit_type(testunit_type=testunit_type)
         self.test_unit_page.sleep_tiny()
         self.base_selenium.LOGGER.info('set testunit type to {}, fields should be displayed as the following'.format(testunit_type))
+        
         if testunit_type == 'Quantitative':
             self.assertTrue(self.test_unit_page.check_for_quantitative_fields())
         elif testunit_type == 'Qualitative':
