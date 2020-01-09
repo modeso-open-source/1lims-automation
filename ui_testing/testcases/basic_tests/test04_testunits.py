@@ -1043,7 +1043,7 @@ class TestUnitsTestCases(BaseTest):
         elif testunit_type == 'Qualitative':
             self.assertTrue(self.test_unit_page.check_for_qualitative_fields())
         elif testunit_type == 'Quantitative MiBi':
-        self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
+            self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
     
     def test_029_allow_user_to_change_between_specification_and_quantification(self):
