@@ -44,6 +44,19 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text_in_drop_down(ng_select_element='test_plan:test_plan', text=name)
         return name
 
+    def search_test_unit_not_set(self, test_unit=''):
+        self.base_selenium.LOGGER.info('navigate to testplan second step')
+        self.base_selenium.click('test_plan:next')
+        self.sleep_tiny()
+        self.base_selenium.click('test_plan:add_test_units')
+        self.sleep_tiny()
+        is_option_exist = self.base_selenium.select_item_from_drop_down(element='test_plan:test_units',
+                                                                        item_text=test_unit)
+        self.sleep_tiny()
+        self.base_selenium.click(element='test_plan:cancel_add_testunit')
+        self.base_selenium.click(element='test_plan:back_button')
+        return is_option_exist
+
     def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
@@ -60,6 +73,25 @@ class TstPlan(TestPlans):
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
             lower.send_keys(kwargs['lower'])
+
+    def get_testunit_in_testplan_title_multiple_line_properties(self):
+        dom_element = self.base_selenium.find_element(element='test_plan:testunit_title')
+        multiple_line_properties = dict()
+        multiple_line_properties['textOverflow'] = self.base_selenium.driver.execute_script( 'return '
+                                                                                             'window'
+                                                                                             '.getComputedStyle('
+                                                                                             'arguments[0], '
+                                                                                             '"None").textOverflow',
+                                                                                             dom_element)
+        multiple_line_properties['lineBreak'] = self.base_selenium.driver.execute_script('return '
+                                                                                            'window'
+                                                                                            '.getComputedStyle('
+                                                                                            'arguments[0], '
+                                                                                            '"None").lineBreak',
+                                                                                            dom_element)
+
+        return multiple_line_properties
+
 
     def get_test_unit_limits(self):
         self.base_selenium.click('test_plan:next')
