@@ -121,3 +121,31 @@ class MyProfileTestCases(BaseTest):
             self.assertEqual(page_name, 'My Profile') 
         else:
             self.assertEqual(page_name, 'Mein Profil')
+
+    def test005_company_profile_upload_file_then_cancel_should_not_save(self):
+        """
+        My Profile: Signature Approach: Make sure after you upload the signature 
+        & press on cancel button, this signature didn't submit
+        
+        LIMS-6086
+        """
+        # open signature tab
+        self.base_selenium.click('my_profile:signature_tab')
+
+        # choose file from assets to be uploaded
+        file_name = 'logo.png'
+
+        # upload the file then cancel
+        self.my_profile_page.upload_file(
+            file_name=file_name, drop_zone_element='my_profile:signature_field', save=False, remove_current_file=True)
+
+        # go back to the company profile
+        self.my_profile_page.get_my_profile_page()
+
+        # open signature tab
+        self.base_selenium.click('my_profile:signature_tab')
+
+        # check that the image is not saved
+        is_the_file_exist = self.base_selenium.check_element_is_exist(
+            element='general:file_upload_success_flag')
+        self.assertFalse(is_the_file_exist)
