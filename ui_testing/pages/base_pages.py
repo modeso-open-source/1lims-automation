@@ -414,7 +414,7 @@ class BasePages:
             # show the file name
             self.base_selenium.driver.execute_script("document.querySelector('.dz-details').style.opacity = 'initial';")
             # get the file name
-            uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name')
+            uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name').text
             return uploaded_file_name
         else:
             self.cancel(True)
