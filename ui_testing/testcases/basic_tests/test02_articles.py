@@ -886,7 +886,7 @@ class ArticlesTestCases(BaseTest):
         self.test_plan.get_test_plans_page()
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
 
-     def test030_hide_all_table_configurations(self):
+    def test030_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
 
