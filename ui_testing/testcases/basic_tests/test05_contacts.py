@@ -1,6 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
+import random
 from unittest import skip
 
 
@@ -426,3 +427,73 @@ class ContactsTestCases(BaseTest):
         self.article_page.sleep_small()
         self.assertEqual(self.base_selenium.get_url(), '{}contacts'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+
+    def test015_contacts_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        contacts = self.get_all_contacts()
+        contact_name = random.choice(contacts)['name']
+        search_results = self.contact_page.search(contact_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Contact Name'] == contact_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(contact_name, search_data['Contact Name'])
+        # Navigate to test plan page
+        self.base_selenium.LOGGER.info('navigate to test plans page')
+        self.test_plan.get_test_plans_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+
+    def test015_create_user_with_role_contact(self):
+        """
+        New: Contact: User management: All the contacts created should be found when I create new user with role contact 
+        All the contacts created should be found when I create new user with role contact 
+        
+        LIMS-3569
+        """
+
+        contact_request = self.contacts_api.get_all_contacts().json()
+        self.assertEqual(contact_request['status'], 1)
+        self.assertNotEqual(contact_request['count'], 0)
+        contacts_records = contact_request['contacts']
+        
+        contact_name = contacts_records[0]['name']
+        
+        self.header_page.get_users_page()
+
+        user_name = self.header_page.generate_random_text()
+        self.base_selenium.LOGGER.info('random username generate is {}'.format(user_name))
+        
+        user_pw = self.header_page.generate_random_text()
+        self.base_selenium.LOGGER.info('random user password generate is {}'.format(user_pw))
+        
+        user_mail = self.header_page.generate_random_email()
+        self.base_selenium.LOGGER.info('random user email generate is {}'.format(user_mail))
+        
+        self.base_selenium.LOGGER.info('contact that user will be created with is {}'.format(contact_name))
+
+        
+        self.base_selenium.LOGGER.info('create new user with the randomly generated data')
+        self.header_page.create_new_user(user_role='Contact', user_password=user_pw, user_confirm_password=user_pw, user_email=user_mail, user_name=user_name, user_contact=contact_name)
+
+        self.base_selenium.LOGGER.info('search with the user name to make sure that it was created with the correct data')
+        user_record = self.header_page.search(user_name)[0]
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=user_record)
+
+        self.base_selenium.LOGGER.info('compare the user data with the randomly generated data')
+        self.assertEqual(user_name, row_data['Name'])
+        self.assertEqual(contact_name, row_data['Contact'])
+
+    def test016_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
