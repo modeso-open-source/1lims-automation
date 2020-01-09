@@ -1151,6 +1151,7 @@ class TestUnitsTestCases(BaseTest):
                 self.assertEqual(record_data['Quantification Limit'],
                                  str(random_lower_limit) + '-' + str(random_upper_limit))
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
+
             version_counter = version_counter + 1
             record_counter = record_counter + 1
 
@@ -1469,7 +1470,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
 
-    def test032_testunits_search_then_navigate(self):
+    def test040_testunits_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
         LIMS-6201
@@ -1490,3 +1491,10 @@ class TestUnitsTestCases(BaseTest):
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
+ def test041_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
