@@ -490,3 +490,10 @@ class ContactsTestCases(BaseTest):
         self.assertEqual(user_name, row_data['Name'])
         self.assertEqual(contact_name, row_data['Contact'])
 
+    def test016_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
