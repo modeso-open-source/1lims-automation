@@ -45,19 +45,19 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text_in_drop_down(ng_select_element='test_plan:test_plan', text=name)
         return name
 
-    def set_test_unit(self, test_unit='', add_limits=True, **kwargs):
+    def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
         testunit_added_result = self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
         if testunit_added_result == False:
             return False
         self.base_selenium.click('test_plan:add')
-        if add_limits and 'upper' in kwargs:
+        if 'upper' in kwargs:
             self.base_selenium.LOGGER.info(' set upper : {}'.format(kwargs['upper']))
             elems = self.base_selenium.find_elements('general:col_6')
             upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
             upper.send_keys(kwargs['upper'])
-        if add_limits and  'lower' in kwargs:
+        if  'lower' in kwargs:
             self.base_selenium.LOGGER.info(' set lower : {}'.format(kwargs['lower']))
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
