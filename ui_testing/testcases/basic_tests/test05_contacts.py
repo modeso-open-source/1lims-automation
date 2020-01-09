@@ -567,7 +567,7 @@ class ContactsTestCases(BaseTest):
         counter = 0
         while counter < (len(table_records) -1):
             row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
-            self.assertEqual(row_data['Contact No'], data_to_filter_with)
+            self.assertEqual(row_data['Contact No'].replace("'",""), data_to_filter_with.replace("'",""))
             counter = counter +1
    
     def test022_filter_by_contact_email(self):
