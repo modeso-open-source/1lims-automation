@@ -28,10 +28,6 @@ script:
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/test04_testunits.py --tc-file=config.ini
 #  - export TESTS='test04_testunits.py:TestUnitsTestCases.test010_material_type_approach_1_Quantitative_MiBi'
 #  - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_029_allow_user_to_change_between_specification_and_quantification
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_030_allow_user_to_change_between_specification_and_quantification
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_028_changing_testunit_type_update_fields_accordingly_0_Quantitative
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_028_changing_testunit_type_update_fields_accordingly_1_Qualitative
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test_028_changing_testunit_type_update_fields_accordingly_2_MiBi
+  - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test07_company_profile.py:companyProfileTestCases.test006_company_profile_upload_file_then_cancel_should_not_save
 
 
