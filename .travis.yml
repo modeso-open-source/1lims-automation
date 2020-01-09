@@ -28,4 +28,7 @@ script:
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
 #  - export TESTS='test04_testunits.py:TestUnitsTestCases.test010_material_type_approach_1_Quantitative_MiBi'
 #  - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test015_create_user_with_role_contact
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_testplans.py:TestPlansTestCases.test021_filter_by_testplan_name
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_testplans.py:TestPlansTestCases.test022_filter_by_testplan_status
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_testplans.py:TestPlansTestCases.test023_filter_by_testplan_changed_by
+

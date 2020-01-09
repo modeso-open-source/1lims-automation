@@ -28,8 +28,6 @@ class UsersAPI(BaseAPI):
         self.info('Status code: {}'.format(response.status_code))
         return response
 
-
-class UsersAPI(BaseAPI):
     def get_all_users(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['users_api']['list_all_users'])
         _payload = {"sort_value": "userId",
