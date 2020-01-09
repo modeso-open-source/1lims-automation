@@ -253,3 +253,6 @@ class TstUnit(TstUnits):
         qualitative_value = self.base_selenium.find_element_in_element(destination_element='general:input',
                                                                        source_element='test_unit:qualitative_value')
         qualitative_value.send_keys(value)
+
+    def map_testunit_to_testplan_format(self, testunit):
+        self.info(testunit)
