@@ -5,7 +5,8 @@ end_points = {
         'archive_articles': '/api/articles/',
         'restore_articles': '/api/articles/',
         'delete_article': '/api/articles/',
-        'create_article': '/api/articles'
+        'create_article': '/api/articles',
+        'list_articles_by_materialtype': '/api/articles/get/names/'
     },
     'test_unit_api': {
         'list_all_test_units': '/api/testUnits',
@@ -25,7 +26,8 @@ end_points = {
         'form_data': '/api/testPlans/get/',
         'archive_testplans': '/api/testPlans/',
         'restore_testplans': '/api/testPlans/',
-        'delete_testplan': '/api/testPlans/'
+        'delete_testplan': '/api/testPlans/',
+        'create_testplan': '/api/testPlans'
     },
     'orders_api': {
         'list_all_orders': '/api/orders',

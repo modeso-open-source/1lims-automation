@@ -92,3 +92,36 @@ class TestPlanAPI(BaseAPI):
                 return False
         else:
             return False
+    
+    def create_testplan(self, **kwargs):
+        request_body = {}
+        for key in kwargs:
+            request_body[key] = kwargs[key]
+            if key == 'testPlan' :
+                request_body['selectedTestPlan'] = kwargs['testPlan']
+        
+        if 'attachments' not in kwargs:
+            request_body['attachments'] = '[]'
+        
+        request_body['selectedTestUnits']=[]
+
+        request_body['materialTypeId'] = request_body['materialType']['id']
+        request_body['dynamicFieldsValues'] = []
+        
+        if 'testUnits' not in kwargs:
+            request_body['testUnits'] = []
+
+        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan']) 
+        self.info('POST : {}'.format(api))
+        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        
+        if data['status'] == 1:
+            return data['testPlanDetails']
+        else:
+            return data['message']
+
+
+

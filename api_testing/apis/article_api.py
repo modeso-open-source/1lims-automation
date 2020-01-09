@@ -89,3 +89,13 @@ class ArticleAPI(BaseAPI):
             return data['article']
         else:
             return data['message']
+
+    def list_articles_by_materialtype(self, materialtype_id=1, name='', is_archived=0):
+        api = '{}{}{}/{}?name={}'.format(self.url, self.END_POINTS['article_api']['list_articles_by_materialtype'], materialtype_id, is_archived, name) 
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params='', headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        if data['status'] == 1:
+            return data['articles']
+        return []

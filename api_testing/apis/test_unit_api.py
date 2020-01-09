@@ -177,7 +177,7 @@ class TestUnitAPI(BaseAPI):
             else:
                 request_body[key] = kwargs[key]
         
-        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit']) 
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testplan']) 
         self.info('POST : {}'.format(api))
         response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
 
@@ -185,7 +185,7 @@ class TestUnitAPI(BaseAPI):
         data = response.json()
         
         if data['status'] == 1:
-            return data['testUnit']
+            return data['testPlanDetails']
         else:
             return data['message']
 
