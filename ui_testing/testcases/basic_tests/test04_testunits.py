@@ -1169,5 +1169,6 @@ class TestUnitsTestCases(BaseTest):
         self.test_plan.get_test_plans_page()
 
         self.test_plan.create_new_test_plan(material_type=material_type, test_unit=testunit_name)
+        self.base_selenium.LOGGER.info('error message should appear')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='test_plan:add_testunit_error_msg'))
         
