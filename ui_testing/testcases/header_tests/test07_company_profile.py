@@ -92,9 +92,61 @@ class companyProfileTestCases(BaseTest):
 
         LIMS-6096
         """
+        # choose file from assets to be uploaded
+        file_name = 'logo.png'
+
+        # upload the file then cancel
         self.company_profile_page.upload_file(
-            file_name='logo.png', drop_zone_element='company_profile:logo_field', save=False, remove_current_file=True)
+            file_name=file_name, drop_zone_element='company_profile:logo_field', save=False, remove_current_file=True)
+
+        # go back to the company profile
         self.company_profile_page.get_company_profile_page()
+
+        # check that the image is not saved
         is_the_file_exist = self.base_selenium.check_element_is_exist(
             element='general:file_upload_success_flag')
         self.assertFalse(is_the_file_exist)
+
+    def test007_company_profile_user_can_upload_logo(self):
+        """
+        Company Profile: Make sure that you can upload logo
+
+        LIMS-6094
+        """
+        # choose file from assets to be uploaded
+        file_name = 'logo.png'
+
+        # upload the file then save
+        self.company_profile_page.upload_file(
+            file_name=file_name, drop_zone_element='company_profile:logo_field', save=True, remove_current_file=True)
+        
+        # check that the uploaded file has the same name as file choosed
+        uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name')
+        self.assertEqual(uploaded_file_name.text, file_name)
+
+
+    def test008_company_profile_user_can_update_logo(self):
+        """
+        Company Profile: Make sure that you can update logo with another one
+
+        LIMS-6095
+        """
+        # choose file from assets to be uploaded
+        file_name = 'logo.png'
+        other_file_name = 'logo2.png'
+
+        # upload the first file
+        self.company_profile_page.upload_file(
+            file_name=file_name, drop_zone_element='company_profile:logo_field', save=True, remove_current_file=True)
+
+        # refresh the page
+        self.company_profile_page.get_company_profile_page()
+
+        # update the current file with another one
+        self.company_profile_page.upload_file(
+            file_name=other_file_name, drop_zone_element='company_profile:logo_field', save=True, remove_current_file=True)
+
+        # check that the file updated has the updated name
+        uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name')
+        self.assertEqual(uploaded_file_name.text, other_file_name)
+
