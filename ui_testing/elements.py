@@ -142,7 +142,11 @@ elements = {
         'next_page': {
             'method': 'id',
             'value': 'table_next'
-        }
+        },
+        'file_input_field': {'method':'css_selector', 'value':'[type="file"]'},
+        'file_upload_success_flag': {'method':'class_name', 'value': 'dz-complete', 'order': 0},
+        'remove_file': {'method': 'class_name', 'value': 'dz-remove', 'order': 0},
+        'uploaded_file_name': {'method': 'xpath', 'value': '//span[@data-dz-name="" and last()]'},
     },
     'login': {
         'username': {'method': 'name',
@@ -419,6 +423,10 @@ elements = {
                               'value': 'textValueArrayfield'},
         'unit_display_value': {'method': 'id',
                                 'value': 'unit_display_value'},
+       'specification_checkbox': {'method': 'xpath',
+                                   'value': '//label[@id="useSpec"]//input[@type="checkbox"]'},
+       'quantification_checkbox': {'method': 'xpath',
+                                   'value': '//label[@id="useQuantification"]//input[@type="checkbox"]'},
         'configuration_testunit_no': {'method': 'class_name',
                                       'value': 'number',
                                       'order': 0},
@@ -869,6 +877,7 @@ elements = {
         'location_field': {'method': 'id', 'value': 'locationfield'},
         'logo_field': {'method': 'id', 'value': 'logo'},
         'username': {'method': 'class_name', 'value': 'm-card-profile__name', 'order': 0},
-        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0}
+        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
+        'validation_error': {'method': 'id', 'value': 'ohSnapMsg'}
     },
 }
