@@ -854,7 +854,7 @@ elements = {
         'confirm_password_field': {'method': 'id', 'value': 'confirmPassword'},
         'language_field': {'method': 'id', 'value': 'languagefield'},
         'signature_field': {'method': 'id', 'value': 'signiture'},
-        'cancel_button': {'method': 'id', 'value': 'cancelButton'},
+        'cancel_button':  {'method': 'class_name','value': 'btn-secondary','order': 2},
         'save_button': {'method': 'id', 'value': 'saveButton'},
         'username': {'method': 'class_name', 'value': 'm-card-profile__name', 'order': 0},
         'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
