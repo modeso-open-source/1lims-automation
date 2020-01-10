@@ -299,7 +299,7 @@ elements = {
     'test_plan': {
         'no': {'method': 'id',
             'value': 'numberfield'},
-    'test_plan': {'method': 'id',
+        'test_plan': {'method': 'id',
                       'value': 'testPlan'},
         'material_type': {'method': 'id',
                         'value': 'materialTypefield'},
@@ -360,21 +360,21 @@ elements = {
                            },
                            'remove_testunit': {'method': 'id',
                         'value': 'remove_testunit'},
-    'testunit_category': {'method': 'class_name',
-                            'value': 'category-label',
-                            'order': 0},
-    'testunit_iteration': {'method': 'id',
-                            'value': 'testunit_iterations_value'},
-    'testunit_unit': {'method': 'id',
-                        'value': 'testunit_unit'},
-    'testunit_quantification_upper_limit': {
-        'method': 'id',
-        'value': 'quantification_upper_limit'
-    },
-    'testunit_quantification_lower_limit': {
-        'method': 'id',
-        'value': 'quantification_lower_limit'
-    }
+        'testunit_category': {'method': 'class_name',
+                                'value': 'category-label',
+                                'order': 0},
+        'testunit_iteration': {'method': 'id',
+                                'value': 'testunit_iterations_value'},
+        'testunit_unit': {'method': 'id',
+                            'value': 'testunit_unit'},
+        'testunit_quantification_upper_limit': {
+            'method': 'id',
+            'value': 'quantification_upper_limit'
+        },
+        'testunit_quantification_lower_limit': {
+            'method': 'id',
+            'value': 'quantification_lower_limit'
+        }
     },
 
     'test_unit': {
@@ -718,12 +718,10 @@ elements = {
                           'value': 'supplierfield'}
     },
 
+
     'contacts': {
         'new_contact': {'method': 'xpath',
                         'value': '//span[contains(text(),"New Contact")]'},
-    },
-
-    'contacts': {
         'contact_archive_button': {'method': 'tag_name',
                                    'value': 'a',
                                    'order': 0},
@@ -892,7 +890,6 @@ elements = {
         'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
         'validation_error': {'method': 'id', 'value': 'ohSnapMsg'}
     },
-  }
 }
 
     
