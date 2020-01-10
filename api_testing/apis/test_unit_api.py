@@ -189,7 +189,7 @@ class TestUnitAPI(BaseAPI):
         data = response.json()
         
         if data['status'] == 1:
-            return data['testPlanDetails']
+            return data['testUnit']
         else:
             return data['message']
 
