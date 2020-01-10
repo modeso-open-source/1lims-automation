@@ -564,7 +564,6 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.get_test_plan_edit_page(testplan_name)
         self.test_plan.navigate_to_testunits_selection_page()
 
-
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
         self.assertEqual(unit, testunit_unit_display)
         self.test_plan.switch_test_units_to_row_view()
