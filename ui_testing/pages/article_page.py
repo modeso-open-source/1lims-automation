@@ -18,8 +18,8 @@ class Article(Articles):
             self.set_material_type(random=True)
         self.article_material_type = self.get_material_type()
 
-        current_date = date.today()
-        self.article_create_date = "{}.{}.{}".format(current_date.day, current_date.month, current_date.year)
+        self.article_create_date = date.today().strftime("%d.%m.%Y")
+        # self.article_create_date = "{}.{}.{}".format(current_date.day, current_date.month, current_date.year)
         self.article_create_user = config['site']['username']
 
         article_data = {
