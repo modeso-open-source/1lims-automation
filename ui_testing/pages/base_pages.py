@@ -2,6 +2,7 @@ from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
 import time, pyperclip, os
 from random import randint
+import pymysql
 
 
 class BasePages:
@@ -59,6 +60,7 @@ class BasePages:
         self.confirm_popup(force)
 
     def confirm_popup(self, force=True):
+        self.base_selenium.LOGGER.info('Confirming the popup')
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
             if force:
                 self.base_selenium.click(element='general:confirm_pop')
@@ -113,7 +115,8 @@ class BasePages:
         self.info("select random row")
         rows = self.base_selenium.get_table_rows(element=element)
         for _ in range(5):
-            row = rows[randint(0, len(rows) - 1)]
+            row_index = randint(0, len(rows) - 1)
+            row = rows[row_index]
             row_text = row.text
             if not row_text:
                 continue
@@ -344,7 +347,51 @@ class BasePages:
     def cancel_overview_pop_up(self):
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
+        
+    def duplicate_selected_item(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:duplicate')
+        self.sleep_small()
 
+    '''
+    archives this item and tries to delete it
+    returns True if it's deleted and False otherwise
+    '''
+    def delete_selected_item_from_active_table_and_from_archived_table(self, item_name):
+        
+        # archive this item
+        row = self.search(item_name)
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.click_check_box(source=row[0])
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Archiving the selected row')
+        self.archive_selected_items()
+        self.base_selenium.LOGGER.info('Navigating to the Archived table')
+        self.get_archived_items()
+
+        # try to delete it
+        archived_row = self.search(item_name)
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.click_check_box(source=archived_row[0])
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Attempting to delete item: {}'.format(item_name))
+        self.delete_selected_item()
+
+        if self.base_selenium.check_element_is_exist(element='general:cant_delete_message'):
+            self.base_selenium.click(element='general:confirm_pop')
+            return False
+        return True
+
+    def open_connection_with_database(self):
+        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
+        cursor = db.cursor()
+        return cursor, db
+
+    def close_connection_with_database(self, db):
+        db.close()
+        
     def upload_file(self, file_name, drop_zone_element, save=True, remove_current_file=False):
         """
         Upload single file to a page that only have 1 drop zone
