@@ -861,8 +861,6 @@ class ArticlesTestCases(BaseTest):
         self.article_page.sleep_medium()
         result_article = self.article_page.result_table()[0]
         self.assertIn(article[filter_name], result_article.text)
-        self.article_page.info('+ Check Related article field existance in edit page')
-        self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
 
     def test028_article_search_then_navigate(self):
         """
