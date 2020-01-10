@@ -2,6 +2,7 @@ from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
 import time, pyperclip
 from random import randint
+import datetime
 
 
 class BasePages:
@@ -344,4 +345,13 @@ class BasePages:
     def cancel_overview_pop_up(self):
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
+
+    def get_current_date_formated(self):
+        current_time = datetime.datetime.now()
+        date = str(current_time.year)+'-'+str(current_time.month)+'-'+str(current_time.day)
+        return date
+
+    def get_current_year(self):
+        current_year = datetime.datetime.now()
+        return str(current_year.year)
 
