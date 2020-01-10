@@ -1,5 +1,5 @@
 from ui_testing.pages.testplans_page import TestPlans
-
+from selenium.common.exceptions import NoSuchElementException
 
 class TstPlan(TestPlans):
     def get_no(self):
@@ -27,7 +27,7 @@ class TstPlan(TestPlans):
             self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
     def get_material_type(self):
-        return self.base_selenium.get_text(element='test_plans:material_type')
+        return self.base_selenium.get_text(element='test_plan:material_type')
 
     def set_material_type(self, material_type='', random=False):
         if random:
@@ -60,6 +60,7 @@ class TstPlan(TestPlans):
     def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
         self.base_selenium.click('test_plan:add_test_units')
+        self.sleep_small()
         self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
         self.base_selenium.click('test_plan:add')
         if 'upper' in kwargs:
@@ -123,7 +124,7 @@ class TstPlan(TestPlans):
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
             self.set_test_unit(test_unit=test_unit, **kwargs)
-            self.save(save_btn='test_plan:save')
+            self.save(save_btn='test_plan:save_btn')
         else:
             self.save()
 
@@ -176,3 +177,56 @@ class TstPlan(TestPlans):
         self.base_selenium.LOGGER.info('Accepting the changes made')
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
+
+    def delete_all_testunits(self):
+        testunits_still_available = 1
+        while testunits_still_available:
+            try:
+                self.base_selenium.click(element='test_plan:remove_testunit')
+            except:
+                testunits_still_available = 0      
+
+    '''
+    Changes the fields in the testplan after choosing the duplicate option on
+    a specific testplan
+    '''
+    def duplicate_testplan(self, change=[]):
+        for c in change:
+            self.base_selenium.LOGGER.info('Changing the {} field'.format(c))
+            if c == 'name':
+                duplicated_test_plan_name = self.generate_random_text()
+                self.set_test_plan(name=duplicated_test_plan_name)
+        self.save()
+        
+    def get_testunit_category_and_iterations(self, testplan_name):
+        self.get_test_plan_edit_page(testplan_name)
+        self.navigate_to_testunits_selection_page()
+        testunit_category = self.base_selenium.get_text(element='test_plan:testunit_category')
+        testunit_iteration = self.base_selenium.get_value(element='test_plan:testunit_iteration')
+        
+        return testunit_category, testunit_iteration
+
+    '''
+    Update the testunits field searchable in the database
+    '''
+    def get_and_update_testunits_dropdown_field(self, cursor, db, searchable):
+        testunits_select_query_from_testplans = ("SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(testunits_select_query_from_testplans)
+        old_testunits_searchable_from_testplans = str(cursor.fetchone()[0])
+
+        testunits_searchable_update_query_in_testplans = ("UPDATE `field_data` SET `searchable`= '" + searchable + "' WHERE componentId = 5 AND name = 'testUnits'")
+        cursor.execute(testunits_searchable_update_query_in_testplans)
+        db.commit()
+
+        return old_testunits_searchable_from_testplans
+
+    def update_upper_lower_limits_of_testunit(self, old_upper, old_lower):
+        self.base_selenium.set_text('test_plan:testunit_quantification_upper_limit', str(old_upper + 5))
+        self.base_selenium.set_text('test_plan:testunit_quantification_lower_limit', str(old_lower + 5))
+        self.sleep_small()
+
+    def get_testunit_quantification_limit(self, testunits, testunit_display_name):
+        for testunit in testunits:
+            if (testunit_display_name in testunit['Test Unit Name']):
+                quantification_limit = testunit['Quantification Limit']
+                return quantification_limit
