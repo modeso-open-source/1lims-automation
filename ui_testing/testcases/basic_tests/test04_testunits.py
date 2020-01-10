@@ -820,7 +820,7 @@ class TestUnitsTestCases(BaseTest):
                     self.assertIn(item, fixed_sheet_row_data)
 
     @parameterized.expand(['unitsub', 'unitsuper'])
-    def test033_create_qualitative_test_unit_with_sub_and_super_scripts(self, unit_with_sub_or_super):
+    def test031_create_qualitative_test_unit_with_sub_and_super_scripts(self, unit_with_sub_or_super):
         """
 
         Test unit : Unit: Subscript and superscript scripts Approach: Allow the unit filed to accept sub and super scripts in the test unit form
@@ -1214,7 +1214,7 @@ class TestUnitsTestCases(BaseTest):
 
         self.assertEquals(random_category_before_edit.strip(), new_random_category.strip())
         self.assertEquals(random_category_after_edit.strip(), new_random_category_edit.strip())
-        
+
     def test032_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
         """
         New: Test unit: Limits of quantification Approach: Versions:
@@ -1308,8 +1308,10 @@ class TestUnitsTestCases(BaseTest):
                 self.assertEqual(record_data['Quantification Limit'],
                                  str(random_lower_limit) + '-' + str(random_upper_limit))
                 self.assertEqual(record_data['Quantification Limit Unit'], random_unit)
-            version_counter = version_counter+1
-            record_counter = record_counter+1
+
+            version_counter = version_counter + 1
+            record_counter = record_counter + 1
+
 
     def test032_archive_quantifications_limit_field(self):
         """
@@ -1327,9 +1329,6 @@ class TestUnitsTestCases(BaseTest):
             self.assertFalse(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
             self.test_unit_page.get_archived_fields_tab()
             self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
-            
-            version_counter = version_counter + 1
-            record_counter = record_counter + 1
 
     @skip('waiting for API deleting')
     def test033_archive_quantifications_limit_field(self):
