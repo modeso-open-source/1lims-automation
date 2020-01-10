@@ -1605,3 +1605,18 @@ class TestUnitsTestCases(BaseTest):
         LIMS-6288
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
+
+    def test_testplan_creation_api(self):
+        article = self.article_api.list_articles_by_materialtype(materialtype_id=1)[0]
+        material_type = self.general_utilities_api.list_all_material_types()[0]
+        testunit = self.test_unit_api.get_all_test_units().json()['testUnits'][0]
+        testunit_form_data = self.test_unit_api.get_testunit_form_data(id=int(testunit['id']))
+        testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
+
+        testplan_name = self.test_unit_page.generate_random_text()
+        testplan_number = self.test_unit_page.generate_random_number()
+        testplan_object = {
+            'text': testplan_name,
+            'id': 'new'
+        }
+        self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article], testUnits=[testunit]))
