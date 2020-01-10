@@ -513,9 +513,10 @@ class TestPlansTestCases(BaseTest):
 
         # choose a random testplan
         main_testplan_data = (self.test_plan.select_random_table_row(element='test_plans:test_plans_table'))
+        testplan_number = (main_testplan_data['Test Plan No.']).replace("'", '')
 
         # get testplan data from an api call
-        testplan_data = (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=str(main_testplan_data['Test Plan No.'])))[0]
+        testplan_data = (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=testplan_number))[0]
 
         # get information, material type and article
         testplan_name = testplan_data['testPlanName']
