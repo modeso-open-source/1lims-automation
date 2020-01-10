@@ -583,5 +583,5 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.open_filter_menu()
         self.test_plan.filter_by_testplan_number(random_testplan['number'])
         testplan_found = self.test_plan.result_table()
-        self.assertIn(str(random_testplan['number']), testplan_found[0].text)
+        self.assertIn(str(random_testplan['number']), (testplan_found[0].text).replace("'", ""))
         self.base_selenium.LOGGER.info('Filtering by number was done successfully')
