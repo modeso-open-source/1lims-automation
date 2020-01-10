@@ -1215,7 +1215,6 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testPlan to use the newly created testunit')
         testplan_data = self.test_plan_api.create_testplan(testUnits=[testunit_testplan_formated], testPlan=testplan_name, selectedArticles=article_object, materialType=article_materialtype, number=random_testplan_number)
 
-        self.base_page.sleep_tiny()
         self.test_plan.get_test_plan_edit_page(random_testplan_name)
         random_category_before_edit = self.test_plan.get_test_unit_category()
 
@@ -1231,7 +1230,6 @@ class TestUnitsTestCases(BaseTest):
 
         self.test_plan.get_test_plans_page()
         self.test_plan.get_test_plan_edit_page(random_testplan_name)
-        self.base_page.sleep_tiny()
         random_category_after_edit = self.test_plan.get_test_unit_category()
 
         self.assertEquals(random_category_before_edit.strip(), new_random_category.strip())
