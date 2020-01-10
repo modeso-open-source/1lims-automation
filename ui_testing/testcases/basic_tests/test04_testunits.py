@@ -1182,10 +1182,10 @@ class TestUnitsTestCases(BaseTest):
             'id': 'new',
             'text': new_random_category
         }
-        material_type={
+        material_type=[{
             'id': 0,
             'text': 'All'
-        }
+        }]
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         testunit_id = self.test_unit_api.create_qualitative_testunit(name=new_random_name, number=new_random_number, method=new_random_method, category=category, selectedMaterialTypes=material_type, textValue=new_random_qualtitative_value)['testUnitId']
         testunit_form_data = self.test_unit_api.get_testunit_form_data(id=str(testunit_id))
