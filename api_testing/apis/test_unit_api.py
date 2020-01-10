@@ -29,6 +29,10 @@ class TestUnitAPI(BaseAPI):
         self.info('Status code: {}'.format(response.status_code))
         return response
 
+    def get_all_testunits_json(self):
+        testunits = self.get_all_test_units().json()['testUnits']
+        return testunits
+        
     def get_testunit_form_data(self, id=1):
         api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['form_data'], str(id)) 
         self.info('GET : {}'.format(api))

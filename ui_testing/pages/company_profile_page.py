@@ -20,8 +20,9 @@ class CompanyProfile(BasePages):
                 element='company_profile:{}_field'.format(field_name)).split('\n')[0]
         return field_value
 
-    def set_field_value(self, field_name, field_type='text', item_text=''):
-        if item_text == '' and field_type == 'text':
+    
+    def set_field_value(self, field_name, field_type='text', item_text='', empty=False):
+        if item_text == '' and field_type == 'text' and empty == False:
             item_text = self.generate_random_text()
 
         if field_type == 'drop_down':
