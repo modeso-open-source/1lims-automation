@@ -99,6 +99,8 @@ elements = {
                    'value': 'Delete'},
         'xslx': {'method': 'link_text',
                  'value': 'XSLX'},
+        'duplicate': {'method': 'link_text',
+                        'value': 'Duplicate'},
         'configurations': {'method': 'link_text',
                            'value': 'Configurations'},
         'table_info': {'method': 'id',
@@ -137,6 +139,14 @@ elements = {
                              'value': "//div[contains(@class, 'swal2-actions')]//button[1]"},
         'cancel_overview': {'method': 'xpath',
                             'value': "//div[contains(@class, 'swal2-actions')]//button[2]"},
+        'next_page': {
+            'method': 'id',
+            'value': 'table_next'
+        },
+        'file_input_field': {'method':'css_selector', 'value':'[type="file"]'},
+        'file_upload_success_flag': {'method':'class_name', 'value': 'dz-complete', 'order': 0},
+        'remove_file': {'method': 'class_name', 'value': 'dz-remove', 'order': 0},
+        'uploaded_file_name': {'method': 'xpath', 'value': '//span[@data-dz-name="" and last()]'},
     },
     'login': {
         'username': {'method': 'name',
@@ -232,7 +242,30 @@ elements = {
                                    'value': 'a',
                                    'order': 1},
         'new_test_plan': {'method': 'link_text',
-                          'value': 'New Test Plan'}
+                          'value': 'New Test Plan'},
+                          
+        'testplan_number_filter': {'method': 'id',
+                             'value': 'numberfield'},
+        'testplan_name_filter': {
+            'method': 'id',
+            'value': 'testPlanNamefield'
+        },
+        'testplan_material_type_filter': {
+            'method': 'id',
+            'value': 'materialTypefield'
+        },
+        'testplan_changed_by_filter': {
+            'method': 'id',
+            'value': 'lastModifiedUserfield'
+        },
+        'testplan_status_filter': {
+            'method': 'id',
+            'value': 'statusfield'
+        },
+        'testplan_article_filter': {
+            'method': 'id',
+            'value': 'articlefield'
+        },
     },
 
     'test_units': {
@@ -264,61 +297,71 @@ elements = {
 
     'test_plan': {
         'no': {'method': 'id',
-               'value': 'numberfield'},
-        'test_plan': {'method': 'id',
-                      'value': 'testPlan'},
-        'material_type': {'method': 'xpath',
-                          'value': '//*[@id="materialTypefield"]'},
-        'material_type_options': {'method': 'class_name',
-                                  'value': 'ng-option'},
-        'article': {'method': 'css_selector',
-                    'value': '#selectedArticles > div'
-                    },
-        'article_options': {'method': 'class_name',
-                            'value': 'ng-option'},
-        'next': {'method': 'link_text',
-                 'value': 'Next'},
-        'test_units': {'method': 'id',
-                       'value': 'selectedTestUnitsfield'},
-        'add': {'method': 'class_name',
-                'value': 'btn-primary',
-                'order': 0},
-        'save_btn': {'method': 'id',
-                     'value': 'save_btn'},
-        'add_test_units': {'method': 'id',
-                           'value': 'first-col'},
-        'testunit_upper_limit': {'method': 'class_name',
-                                 'value': '//*[@id="88"]/div[2]/div/div[3]/input'},
-        'testunit_lower_limit': {'method': 'xpath',
-                                 'value': '//*[@id="88"]/div[2]/div/div[4]/input'},
-        'testunits_selection': {'method': 'id',
-                                'value': 'test_unit_selection_tab'},
-        'delete_first_test_unit_btn': {'method': 'xpath',
-                                       'value': '//*[@id="remove_testunit"]'},
-        'testunit_label': {'method': 'class_name',
-                           'value': 'm-portlet__head-text',
-                           'order': 1},
-        'table_card_switcher': {'method': 'id',
-                                'value': 'table-switcher'},
-        'testunits_table': {'method': 'id',
-                            'value': 'table-with-add'},
-        'row_delete_button': {'method': 'class_name',
-                              'value': 'flaticon-close',
-                              'order': 0},
-        'cancel_button': {'method': 'class_name',
-                          'value': 'swal2-cancel',
-                          'order': 0},
-        'ok': {'method': 'class_name',
-               'value': 'swal2-confirm',
-               'order': 0},
-        'cancel_add_testunit': {'method': 'class_name',
-                                'value': 'btn-secondary',
-                                'order': 1},
-        'back_button': {'method': 'id',
-                        'value': 'back_btn'},
-        'testunit_title': {'method': 'css_selector',
-                           'value': '[class="m-portlet__head-text m--font-success"]'
-                           }
+            'value': 'numberfield'},
+    'test_plan': {'method': 'id',
+                    'value': 'testPlan'},
+    'material_type': {'method': 'id',
+                        'value': 'materialTypefield'},
+    'material_type_options': {'method': 'class_name',
+                                'value': 'ng-option'},
+    'article': {'method': 'id',
+                'value': 'selectedArticles'
+                },
+    'article_options': {'method': 'class_name',
+                        'value': 'ng-option'},
+    'next': {'method': 'link_text',
+                'value': 'Next'},
+    'test_units': {'method': 'id',
+                    'value': 'selectedTestUnitsfield'},
+    'add': {'method': 'id',
+            'value': 'new_testunit_add_button'},
+    'save_btn': {'method': 'id',
+                    'value': 'save_btn'},
+    'save_and_complete': {'method': 'id',
+                            'value': 'save_and_complete_btn'},
+    'add_test_units': {'method': 'id',
+                        'value': 'add_new_testunit_form_view'},
+    'testunit_upper_limit': {'method': 'class_name',
+                                'value': '//*[@id="88"]/div[2]/div/div[3]/input'},
+    'testunit_lower_limit': {'method': 'xpath',
+                                'value': '//*[@id="88"]/div[2]/div/div[4]/input'},
+    'status_filter': {'method': 'id',
+                        'value': 'statusfield'},
+    'testunits_selection': {'method': 'id',
+                            'value': 'test_unit_selection_tab'},
+    'testunit_label': {'method': 'class_name',
+                        'value': 'm-portlet__head-text',
+                        'order': 1},
+    'table_card_switcher': {'method': 'id',
+                            'value': 'table-switcher'},
+    'testunits_table': {'method': 'id',
+                        'value': 'table-with-add'},
+    'row_delete_button': {'method': 'class_name',
+                            'value': 'flaticon-close',
+                            'order': 0},
+    'cancel_button': {'method': 'class_name',
+                        'value': 'swal2-cancel',
+                        'order': 0},
+    'ok': {'method': 'class_name',
+            'value': 'swal2-confirm',
+            'order': 0},
+    'remove_testunit': {'method': 'id',
+                        'value': 'remove_testunit'},
+    'testunit_category': {'method': 'class_name',
+                            'value': 'category-label',
+                            'order': 0},
+    'testunit_iteration': {'method': 'id',
+                            'value': 'testunit_iterations_value'},
+    'testunit_unit': {'method': 'id',
+                        'value': 'testunit_unit'},
+    'testunit_quantification_upper_limit': {
+        'method': 'id',
+        'value': 'quantification_upper_limit'
+    },
+    'testunit_quantification_lower_limit': {
+        'method': 'id',
+        'value': 'quantification_lower_limit'
+    }
     },
 
     'test_unit': {
@@ -378,6 +421,12 @@ elements = {
                           'value': 'selectedConcs'},
         'qualitative_value': {'method': 'id',
                               'value': 'textValueArrayfield'},
+        'unit_display_value': {'method': 'id',
+                                'value': 'unit_display_value'},
+       'specification_checkbox': {'method': 'xpath',
+                                   'value': '//label[@id="useSpec"]//input[@type="checkbox"]'},
+       'quantification_checkbox': {'method': 'xpath',
+                                   'value': '//label[@id="useQuantification"]//input[@type="checkbox"]'},
         'configuration_testunit_no': {'method': 'class_name',
                                       'value': 'number',
                                       'order': 0},
@@ -560,7 +609,10 @@ elements = {
         'filter_analysis_no': {
             'method': 'id',
             'value': 'nofield'
-        }
+        },
+    'analysis_tab': {'method': 'xpath',
+                    'value': "//span[@class='m-wizard__step-label'][contains(text(),'Analysis')]"
+                        }
     },
 
     'header': {
@@ -802,6 +854,30 @@ elements = {
                            'order': 0}
 
     },
+    'analysis_page': {
+        'all_rows': {
+            'method': 'class_name',
+            'value': 'm-accordion__item',
+            'order': -1
+        },
+        'accordion_item': {
+            'method': 'tag_name',
+            'value': 'td',
+            'order': 1
+        },
+        'table': {
+            'method': 'xpath',
+            'value': "//div[@id='headers']//table[@class='header']"
+        },
+        'first_accordion_item': {
+            'method': 'xpath',
+            'value': "//div[@id='m_accordion_7_item_head_0']//td[2]"
+        },
+        'testunits_table': {
+            'method': 'id',
+            'value': 'table-with-add'
+        },
+    },
     'company_profile': {
         'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
         'name_field': {'method': 'id', 'value': 'namefield'},
@@ -811,6 +887,7 @@ elements = {
         'location_field': {'method': 'id', 'value': 'locationfield'},
         'logo_field': {'method': 'id', 'value': 'logo'},
         'username': {'method': 'class_name', 'value': 'm-card-profile__name', 'order': 0},
-        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0}
+        'email': {'method': 'class_name', 'value': 'm-card-profile__email', 'order': 0},
+        'validation_error': {'method': 'id', 'value': 'ohSnapMsg'}
     },
 }
