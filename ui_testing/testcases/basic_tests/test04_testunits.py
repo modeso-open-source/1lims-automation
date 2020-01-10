@@ -1174,27 +1174,49 @@ class TestUnitsTestCases(BaseTest):
         :return:
         """
         new_random_name = self.generate_random_string()
+        new_random_number = self.generate_random_number()
         new_random_method = self.generate_random_string()
         new_random_category = self.generate_random_string()
-
+        new_random_qualtitative_value = self.generate_random_string()
+        category={
+            'id': 'new',
+            'text': new_random_category
+        }
+        material_type={
+            'id': 0,
+            'text': 'All'
+        }
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
-        self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
-                                                        material_type='All', unit='',
-                                                        category=new_random_category)
+        testunit_id = self.test_unit_api.create_qualitative_testunit(name=new_random_name, number=new_random_number, method=new_random_method, category=category, selectedMaterialTypes=material_type, textValue=new_random_qualtitative_value)['testUnitId']
+        testunit_form_data = self.test_unit_api.get_testunit_form_data(id=str(testunit_id))
+        testunit_testplan_formated = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
 
-        self.test_unit_page.sleep_tiny()
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
+        active_article={}
+        active_article_request = self.article_api.get_all_articles().json()['articles']
+        active_article = active_article_request[0]
 
-        active_testplan_data = self.get_active_article_with_tst_plan()
+        all_materialtypes = self.general_utilities_api.list_all_material_types()
+
+        article_materialtype = list(filter(lambda x: x['name'] == active_article['materialType'], all_materialtypes))[0]
+        article_object = [{
+            'id': active_article['id'],
+            'text': active_article['name']
+        }]
         self.test_plan.get_test_plans_page()
+
+        random_testplan_name = self.generate_random_string()
+        random_testplan_number = self.generate_random_number()
+
+        testplan_name = {
+            'id': 'new',
+            'text': random_testplan_name
+        }
+        
         self.base_selenium.LOGGER.info('Create new testPlan to use the newly created testunit')
-        new_random_testplan_name = self.test_plan.create_new_test_plan(test_unit=new_random_name,
-                                                                       material_type=
-                                                                       active_testplan_data['Material Type'],
-                                                                       article=
-                                                                       active_testplan_data['Article Name'])
+        testplan_data = self.test_plan_api.create_testplan(testUnits=[testunit_testplan_formated], testPlan=testplan_name, selectedArticles=article_object, materialType=article_materialtype, number=random_testplan_number)
+
         self.base_page.sleep_tiny()
-        self.test_plan.get_test_plan_edit_page(new_random_testplan_name)
+        self.test_plan.get_test_plan_edit_page(random_testplan_name)
         random_category_before_edit = self.test_plan.get_test_unit_category()
 
         self.test_unit_page.get_test_units_page()
@@ -1208,7 +1230,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.save_and_return_overview()
 
         self.test_plan.get_test_plans_page()
-        self.test_plan.get_test_plan_edit_page(new_random_testplan_name)
+        self.test_plan.get_test_plan_edit_page(random_testplan_name)
         self.base_page.sleep_tiny()
         random_category_after_edit = self.test_plan.get_test_unit_category()
 
