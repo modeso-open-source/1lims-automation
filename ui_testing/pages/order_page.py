@@ -469,3 +469,7 @@ class Order(Orders):
         current_splited_url = self.base_selenium.get_url().split('/')
         order_id = current_splited_url[(len(current_splited_url)-1)]
         return order_id
+
+    def navigate_to_analysis_tab(self):
+        self.base_selenium.click('order:analysis_tab')
+        self.sleep_small()

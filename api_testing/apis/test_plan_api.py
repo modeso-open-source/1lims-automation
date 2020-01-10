@@ -16,11 +16,40 @@ class TestPlanAPI(BaseAPI):
         self.info('Status code: {}'.format(response.status_code))
         return response
 
-    def get_completed_testplans(self):
-        response = self.get_all_test_plans()
+    def get_completed_testplans(self, **kwargs):
+        response = self.get_all_test_plans(**kwargs)
         all_test_plans = response.json()['testPlans']
         completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
         return completed_test_plans
+    
+    def get_inprogress_testplans(self, **kwargs):
+        response = self.get_all_test_plans(**kwargs)
+        all_test_plans = response.json()['testPlans']
+        inprogress_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'InProgress']
+        return inprogress_test_plans
+
+    def get_testunits_in_testplan(self, id):
+        api = '{}{}{}'.format(self.url, self.END_POINTS['test_plan_api']['get_testunits_in_testplan'], id)
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        testplan_data = response.json()['testPlan']
+        testunits_data = testplan_data['specifications']
+        return testunits_data
+
+    def get_testplan_with_quicksearch(self, quickSearchText, **kwargs):
+        filter_text = '{"quickSearch":"' + quickSearchText + '","columns":["number","name"]}'
+        response = self.get_all_test_plans(filter=filter_text, **kwargs)
+        return response.json()['testPlans']
+
+    def get_testplan_with_filter(self, filter_option, filter_text, **kwargs):
+        filter_text = '{"' + filter_option + '":"' + filter_text + '","columns":["number","name"]}'
+        response = self.get_all_test_plans(filter=filter_text, start=0, **kwargs)
+        return response.json()['testPlans']
+    
+    def get_all_test_plans_json(self, **kwargs):
+        testplans_response = self.get_all_test_plans(**kwargs)
+        return testplans_response.json()['testPlans']
 
     def get_testplan_testunits(self, id=1):
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_testplan_testunits'])
@@ -92,3 +121,46 @@ class TestPlanAPI(BaseAPI):
                 return False
         else:
             return False
+    
+    def create_testplan(self, **kwargs):
+        request_body = {}
+        for key in kwargs:
+            request_body[key] = kwargs[key]
+            if key == 'testPlan' :
+                request_body['selectedTestPlan'] = kwargs['testPlan']
+        
+        if 'attachments' not in kwargs:
+            request_body['attachments'] = '[]'
+        
+        request_body['selectedTestUnits']=[]
+
+        request_body['materialTypeId'] = request_body['materialType']['id']
+        request_body['dynamicFieldsValues'] = []
+        
+        if 'testUnits' not in kwargs:
+            request_body['testUnits'] = []
+
+        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan']) 
+        self.info('POST : {}'.format(api))
+        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        
+        if data['status'] == 1:
+            return data['testPlanDetails']
+        else:
+            return data['message']
+
+    def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue) 
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params='', headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        if data['status'] == 1:
+            return data['testUnits']
+        return []
+
+
+
