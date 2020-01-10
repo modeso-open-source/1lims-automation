@@ -86,6 +86,19 @@ class companyProfileTestCases(BaseTest):
         self.assertTrue(username)
         self.assertTrue(email)
 
+    def test005_company_profile_fields_validation(self):
+        """
+        Compeny profile: Make sure that when you didn't enter any field then press on save button, 
+        red border display on all fields
+
+        LIMS-6506
+        """
+        self.company_profile_page.set_field_value(field_name='name', empty=True)
+        self.company_profile_page.save()
+        self.company_profile_page.sleep_small()
+        validation_error = self.base_selenium.check_element_is_exist(element='company_profile:validation_error')
+        self.assertTrue(validation_error)
+
     def test006_company_profile_upload_file_then_cancel_should_not_save(self):
         """
         Company profile: Make sure after you edit any data and press on cancel button, nothing occur
