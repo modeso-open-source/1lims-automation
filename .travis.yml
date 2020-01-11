@@ -26,9 +26,22 @@ script:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
-  # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/test04_testunits.py --tc-file=config.ini
 #  - export TESTS='test04_testunits.py:TestUnitsTestCases.test010_material_type_approach_1_Quantitative_MiBi'
 #  - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/basic_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_testplans.py:TestPlansTestCases.test017_archived_testplan_shouldnot_appear_in_order
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_testplans.py:TestPlansTestCases.test018_testunit_sub_super_scripts
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_testplans.py:TestPlansTestCases.test020_filter_by_testplan_number
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test010_create_article_with_test_plan_filter_by_test_plan
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_any_field_0_name
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_any_field_1_number
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_any_field_2_unit
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_any_field_3_created_at
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_any_field_4_material_type
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test028_filter_article_by_any_field_5_changed_by
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_any_default_filter_0_name
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_any_default_filter_1_number
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_any_default_filter_2_unit
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_any_default_filter_3_created_at
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_any_default_filter_4_material_type
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_any_default_filter_5_changed_by
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test029_filter_article_by_any_default_filter_6_test_plan
+
+
+
