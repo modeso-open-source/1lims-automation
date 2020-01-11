@@ -3,7 +3,7 @@ from unittest import skip
 from parameterized import parameterized
 
 
-class companyProfileTestCases(BaseTest):
+class CompanyProfileTestCases(BaseTest):
     def setUp(self):
         super().setUp()
         self.login_page.login(

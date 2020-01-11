@@ -8,25 +8,25 @@ from unittest import skip
 class MyProfileTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
+        # generate random username/email & password
+        self.username = self.generate_random_string()
+        self.email = self.header_page.generate_random_email()
+        self.current_password = self.generate_random_string()
+        self.new_password = None
+
+        # create new user
+        self.info('Create User {}'.format(self.username))
+        self.users_api.create_new_user(self.username, self.email, self.current_password)
+
+        # login and navigate to profile page
+        self.login_page.login(username=self.username, password=self.current_password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.my_profile_page.get_my_profile_page()
-        self.username = self.base_selenium.username
-        self.current_password = self.base_selenium.password
-        self.email = None
-        self.new_password = None
-        self.reset_original_password = False
+
+        # init the flags
         self.reset_language = False
 
     def tearDown(self):
-        # reset the original password
-        if self.reset_original_password:
-            self.login_page.login(username=self.base_selenium.username, password=self.new_password)
-            self.base_selenium.wait_until_page_url_has(text='dashboard')
-            self.my_profile_page.get_my_profile_page()
-            self.my_profile_page.change_password(self.new_password, self.current_password, True)
-            self.reset_original_password = False
-
         # reset the english language
         if self.reset_language:
             self.my_profile_page.chang_lang('EN')
@@ -49,9 +49,6 @@ class MyProfileTestCases(BaseTest):
         # change the password value
         self.my_profile_page.change_password(self.current_password, self.new_password)
 
-        # logout
-        self.login_page.logout()
-
         # try to authorize with the new password
         try:
             baseAPI = BaseAPI()
@@ -70,9 +67,12 @@ class MyProfileTestCases(BaseTest):
         LIMS-6090
         """
         username = self.base_selenium.get_text(element='my_profile:username')
-        email = self.base_selenium.get_text(element='my_profile:email')
+        self.info('Check the username is {}'.format(self.username))
         self.assertEqual(username.lower(), self.username.lower())
-        self.assertTrue(email) 
+
+        email = self.base_selenium.get_text(element='my_profile:email')
+        self.info('Check the email is {}'.format(self.email))
+        self.assertTrue(email.lower(), self.email.lower()) 
 
     def test003_user_can_change_password_and_login_successfully(self):
         """
@@ -86,12 +86,6 @@ class MyProfileTestCases(BaseTest):
 
         # change password
         self.my_profile_page.change_password(self.current_password, self.new_password, True)
-
-        # reset the original password flag
-        self.reset_original_password = True
-        
-        # logout
-        self.login_page.logout()
 
         # Authorize
         baseAPI = BaseAPI()
@@ -110,9 +104,16 @@ class MyProfileTestCases(BaseTest):
         # change language
         self.my_profile_page.chang_lang(lang)
 
+        # change the EN to DE
+        self.my_profile_page.chang_lang('DE')
         # to restore the language
-        if lang == 'DE':
-            self.reset_language = True
+        self.reset_language = True
+        
+        if lang == 'EN':
+            # change the DE to EN
+            self.my_profile_page.chang_lang('EN')
+            # reset the flag
+            self.reset_language = False
         
         # get page name
         page_name = self.base_selenium.get_text('my_profile:page_name')
