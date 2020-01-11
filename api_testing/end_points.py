@@ -52,6 +52,7 @@ end_points = {
     },
     'contacts_api': {
         'list_all_contacts': '/api/contacts',
+        'get_table_fields': '/api/custom_field_data/',
         'form_data': '/api/contacts/get/',
         'archive_contacts': '/api/contacts/archive/',
         'restore_contacts': '/api/contacts/restore/',
