@@ -193,4 +193,13 @@ class TestUnitAPI(BaseAPI):
         else:
             return data['message']
 
+    def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue) 
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params='', headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        if data['status'] == 1:
+            return data['testUnits']
+        return []
         
