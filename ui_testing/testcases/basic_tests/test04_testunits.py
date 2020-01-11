@@ -1165,6 +1165,76 @@ class TestUnitsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
             self.assertIn(row_data['Unit'], fixed_sheet_row_data)
 
+    def test032_edit_category_edits_category_label_in_testplan_step_two(self):
+        """
+
+        New: Test unit: Category Approach: Any update in test unit category should reflect in the test plan ( step two ) in this test unit
+
+        LIMS-3687
+        :return:
+        """
+        new_random_name = self.generate_random_string()
+        new_random_number = self.generate_random_number()
+        new_random_method = self.generate_random_string()
+        new_random_category = self.generate_random_string()
+        new_random_qualtitative_value = self.generate_random_string()
+        category={
+            'id': 'new',
+            'text': new_random_category
+        }
+        material_type=[{
+            'id': 0,
+            'text': 'All'
+        }]
+        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
+        testunit_id = self.test_unit_api.create_qualitative_testunit(name=new_random_name, number=new_random_number, method=new_random_method, category=category, selectedMaterialTypes=material_type, textValue=new_random_qualtitative_value)['testUnitId']
+        testunit_form_data = self.test_unit_api.get_testunit_form_data(id=str(testunit_id))
+        testunit_testplan_formated = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
+
+        active_article={}
+        active_article_request = self.article_api.get_all_articles().json()['articles']
+        active_article = active_article_request[0]
+
+        all_materialtypes = self.general_utilities_api.list_all_material_types()
+
+        article_materialtype = list(filter(lambda x: x['name'] == active_article['materialType'], all_materialtypes))[0]
+        article_object = [{
+            'id': active_article['id'],
+            'text': active_article['name']
+        }]
+        self.test_plan.get_test_plans_page()
+
+        random_testplan_name = self.generate_random_string()
+        random_testplan_number = self.generate_random_number()
+
+        testplan_name = {
+            'id': 'new',
+            'text': random_testplan_name
+        }
+        
+        self.base_selenium.LOGGER.info('Create new testPlan to use the newly created testunit')
+        testplan_data = self.test_plan_api.create_testplan(testUnits=[testunit_testplan_formated], testPlan=testplan_name, selectedArticles=article_object, materialType=article_materialtype, number=random_testplan_number)
+
+        self.test_plan.get_test_plan_edit_page(random_testplan_name)
+        random_category_before_edit = self.test_plan.get_test_unit_category()
+
+        self.test_unit_page.get_test_units_page()
+        new_random_category_edit = self.generate_random_string()
+
+        self.base_selenium.LOGGER.info('edit newly created testunit with qualitative and random generated data')
+        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.test_unit_page.search(new_random_name)
+        self.test_unit_page.get_random_test_units()
+        self.test_unit_page.set_category(new_random_category_edit)
+        self.test_unit_page.save_and_return_overview()
+
+        self.test_plan.get_test_plans_page()
+        self.test_plan.get_test_plan_edit_page(random_testplan_name)
+        random_category_after_edit = self.test_plan.get_test_unit_category()
+
+        self.assertEquals(random_category_before_edit.strip(), new_random_category.strip())
+        self.assertEquals(random_category_after_edit.strip(), new_random_category_edit.strip())
+
     def test032_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
         """
         New: Test unit: Limits of quantification Approach: Versions:
@@ -1262,6 +1332,23 @@ class TestUnitsTestCases(BaseTest):
             version_counter = version_counter + 1
             record_counter = record_counter + 1
 
+
+    def test032_archive_quantifications_limit_field(self):
+        """
+        New: Test unit: Configuration: Limit of quantification Approach: Display the new fields in the configuration section 
+        ( Upper limit & lower limit & unit of  limit of quantification ) and I can archive them. 
+        User can archive the quantification limits field from the configuration section 
+
+        LIMS-4164
+        """
+        self.test_unit_page.open_configurations()
+        self.assertTrue(self.test_unit_page.archive_quantification_limit_field())
+        if self.base_selenium.check_element_is_exist(element='configurations_page:error_msg'):
+            self.base_selenium.LOGGER.info('this field is used in another testunit, you need to delete all testunits with quantification option to archive this field')
+        else:
+            self.assertFalse(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
+            self.test_unit_page.get_archived_fields_tab()
+            self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
 
     @skip('waiting for API deleting')
     def test033_archive_quantifications_limit_field(self):
