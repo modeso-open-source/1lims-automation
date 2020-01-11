@@ -39,3 +39,4 @@ script:
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test028_filter_by_contact_type
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test029_filter_by_contact_phone
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test030_filter_by_contact_location
+

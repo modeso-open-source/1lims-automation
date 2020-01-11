@@ -1,6 +1,8 @@
 from ui_testing.pages.articles_page import Articles
+from testconfig import config
 from random import randint
 import time
+from datetime import date
 
 
 class Article(Articles):
@@ -16,6 +18,20 @@ class Article(Articles):
             self.set_material_type(random=True)
         self.article_material_type = self.get_material_type()
 
+        self.article_create_date = date.today().strftime("%d.%m.%Y")
+        # self.article_create_date = "{}.{}.{}".format(current_date.day, current_date.month, current_date.year)
+        self.article_create_user = config['site']['username']
+
+        article_data = {
+            "number": self.get_no(),
+            "name": self.article_name,
+            "material_type": self.article_material_type,
+            "created_at": self.article_create_date,
+            "changed_at": self.article_create_date,
+            "changed_by": self.article_create_user,
+            "test_plan": None,
+        }
+
         if full_options:
             self.article_comment = self.generate_random_text()
             self.set_comment(comment=self.article_comment)
@@ -23,11 +39,18 @@ class Article(Articles):
             self.set_unit(self.article_unit)
             self.set_related_article()
             self.article_related_article = self.get_related_article()
-        
-        article_data={
-            "name": self.article_name,
-            "material_type": self.article_material_type
-        }
+            article_data = {
+                "number": self.get_no(),
+                "name": self.article_name,
+                "material_type": self.article_material_type,
+                "related_article": self.article_related_article,
+                "unit": self.article_unit,
+                "comment": self.article_comment,
+                "created_at": self.article_create_date,
+                "changed_at": self.article_create_date,
+                "changed_by": self.article_create_user,            
+                "test_plan": None,
+            }
 
         self.save(sleep)
         self.base_selenium.LOGGER.info(' + Article name : {}'.format(self.article_name))
@@ -83,11 +106,13 @@ class Article(Articles):
     def set_comment(self, comment):
         self.base_selenium.set_text(element="article:comment", value=comment)
 
-    def filter_by_test_plan(self, filter_text):
-        self.base_selenium.LOGGER.info(' + Filter by test plan : {}'.format(filter_text))
-        self.open_filter_menu()
-        self.filter_by(filter_element='article:filter_test_plan', filter_text=filter_text)
+    def filter_article_by(self, filter_element, filter_text, field_type='text'):
+        self.base_selenium.LOGGER.info(
+            ' + Filter by {} : {}'.format(filter_element.replace('article:filter_', '').replace('_', ' '), filter_text))
+        self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
+        self.sleep_tiny()
+        return self.result_table()[0]
 
     def set_related_article(self):
         self.base_selenium.select_item_from_drop_down(element='article:related_article')
@@ -106,6 +131,19 @@ class Article(Articles):
             if 'text' in label:
                 input_item = self.base_selenium.find_element_in_element(source=item, destination_element='general:input')
                 # send text
+    
+    def toggle_default_filters(self, element1, element2=None):
+        self.open_filter_menu()
+        self.base_selenium.click(element='general:filter_configuration') # open filter configuration
+        self.sleep_small()
+        self.base_selenium.click(element=element1)
+        if element2:
+            self.base_selenium.click(element=element2)
+        self.base_selenium.click(element='article:default_filter_save')
+        self.sleep_small()
+        self.open_filter_menu()
+        self.sleep_medium()
+
 
     def archive_restore_optional_fields(self, restore=False):
         self.sleep_small()

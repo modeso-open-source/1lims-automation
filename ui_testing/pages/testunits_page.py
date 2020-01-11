@@ -43,6 +43,13 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:archived')
         self.sleep_small()
+    
+    def open_configurations(self):
+        self.info('open testunits configurations')
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='test_units:right_menu')
+        self.base_selenium.click(element='test_units:configurations')
+        self.sleep_small()
 
 
     def is_test_unit_in_table(self, value):
@@ -79,7 +86,7 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click('orders:duplicate')
         self.save()
-
+        
     def open_configurations(self):
         self.info('open testunits configurations')
         self.base_selenium.scroll()
@@ -149,7 +156,7 @@ class TstUnits(BasePages):
         self.info('get archived fields tab')
         self.base_selenium.click(element='configurations_page:archived_fields_tab')
         self.sleep_tiny()
-        
+
     def archive_quantification_limit_field(self):
         self.base_selenium.LOGGER.info('archive quantification limit field')
         self.get_active_fields_tab()
@@ -162,7 +169,7 @@ class TstUnits(BasePages):
         self.confirm_popup()
         self.sleep_tiny()
         return True
-        
+
     def restore_quantification_limit_field(self):
         self.base_selenium.LOGGER.info('restore quantification limit field')
         self.get_archived_items()
@@ -176,3 +183,4 @@ class TstUnits(BasePages):
         self.confirm_popup()
         self.sleep_tiny()
         return True
+
