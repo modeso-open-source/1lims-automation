@@ -391,6 +391,10 @@ elements = {
         'testunit_quantification_lower_limit': {
             'method': 'id',
             'value': 'quantification_lower_limit'
+        },
+        'add_testunit_error_msg': {
+            'method': 'xpath',
+            'value': '//span[@class="m-form__help"]'
         }
     },
 
