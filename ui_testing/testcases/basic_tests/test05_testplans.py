@@ -625,6 +625,7 @@ class TestPlansTestCases(BaseTest):
                     self.assertIn('Completed', tp.text)
                     self.assertNotIn('In Progress', tp.text)
             if self.base_page.is_next_page_button_enabled():
+                self.base_selenium.LOGGER.info('Navigating to the next page')
                 self.base_selenium.click('general:next_page')
                 self.test_plan.sleep_small()
                 testplans_found = self.test_plan.result_table()
@@ -636,6 +637,7 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.sleep_small()
 
         testplans_found = self.test_plan.filter_by_element_and_get_results('Status', 'test_plans:testplan_status_filter', 'In Progress', 'drop_down')
+        self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
         results_found = True
         while results_found:
             for tp in testplans_found:
@@ -643,6 +645,7 @@ class TestPlansTestCases(BaseTest):
                     self.assertIn('In Progress', tp.text)
                     self.assertNotIn('Completed', tp.text)
             if self.base_page.is_next_page_button_enabled():
+                self.base_selenium.LOGGER.info('Navigating to the next page')
                 self.base_selenium.click('general:next_page')
                 self.test_plan.sleep_small()
                 testplans_found = self.test_plan.result_table()
