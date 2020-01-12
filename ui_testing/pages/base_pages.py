@@ -488,11 +488,11 @@ class BasePages:
             self.cancel(True)
             return True
 
-   def open_pagination_menu(self):
+    def open_pagination_menu(self):
         self.base_selenium.wait_element(element='general:pagination_button')
         self.base_selenium.click(element='general:pagination_button')
 
-   def set_page_limit(self, limit='20'):
+    def set_page_limit(self, limit='20'):
         self.base_selenium.LOGGER.info('set the pagination limit to {}'.format(limit))
         self.open_pagination_menu()
         limit_index = self.pagination_elements_array.index(limit)
