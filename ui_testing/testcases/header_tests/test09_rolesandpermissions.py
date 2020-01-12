@@ -413,7 +413,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info('get the order url')
         self.assertTrue('Sample Management', self.order_page.get_orders_page())
         self.base_selenium.LOGGER.info( 'get the analysis url')
-        self.assertTrue('Sample Management', self.analysis_page.get_analysis_page())
+        self.assertTrue('Sample Management', self.single_analysis_page.get_analysis_page())
 
 
 

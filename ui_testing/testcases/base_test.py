@@ -17,7 +17,6 @@ from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
 from ui_testing.pages.header_page import Header
-from ui_testing.pages.analysis_page import Analysis
 from api_testing.apis.orders_api import OrdersAPI
 from ui_testing.pages.analysis_page import SingleAnalysisPage
 from api_testing.apis.contacts_api import ContactsAPI
@@ -25,7 +24,6 @@ from api_testing.apis.users_api import UsersAPI
 from api_testing.apis.roles_api import RolesAPI
 from api_testing.apis.analysis_api import AnalysisAPI
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
-
 import datetime, re
 
 
@@ -49,7 +47,6 @@ class BaseTest(TestCase):
         self.header_page = Header()
         self.base_page = BasePages()
         self.contacts_page = Contacts()
-        self.analysis_page = Analysis()
         self.company_profile_page = CompanyProfile()
         self.article_api = ArticleAPI()
         self.test_plan_api = TestPlanAPI()
