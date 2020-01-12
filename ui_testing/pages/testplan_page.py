@@ -1,3 +1,5 @@
+from selenium.webdriver.common.keys import Keys
+
 from ui_testing.pages.testplans_page import TestPlans
 from selenium.common.exceptions import NoSuchElementException
 
@@ -99,6 +101,12 @@ class TstPlan(TestPlans):
         upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
         lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
         return upper.get_attribute('value'), lower.get_attribute('value')
+
+    def get_test_unit_category(self):
+        self.base_selenium.click('test_plan:next')
+        self.sleep_small()
+        category_label_test_unit = self.base_selenium.find_element('test_plan:category-label')
+        return category_label_test_unit.get_attribute('textContent')
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
         self.base_selenium.LOGGER.info(' Create new test plan')
