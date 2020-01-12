@@ -822,7 +822,7 @@ elements = {
         'type_filter': {'method': 'id',
                         'value': 'typefield'},
         'postalcode_filter': {'method': 'id',
-                            'value': 'postal_codefield'}
+                            'value': 'postal_codefield'},
         'contact_persons_table': {'method': 'id',
                                   'value': 'table-with-add'},
         'departments_field_tags': {'method': 'xpath',
