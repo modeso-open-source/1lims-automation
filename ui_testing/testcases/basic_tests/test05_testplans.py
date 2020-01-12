@@ -513,9 +513,10 @@ class TestPlansTestCases(BaseTest):
 
         # choose a random testplan
         main_testplan_data = (self.test_plan.select_random_table_row(element='test_plans:test_plans_table'))
+        testplan_number = (main_testplan_data['Test Plan No.']).replace("'", '')
 
         # get testplan data from an api call
-        testplan_data = (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=str(main_testplan_data['Test Plan No.'])))[0]
+        testplan_data = (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=testplan_number))[0]
 
         # get information, material type and article
         testplan_name = testplan_data['testPlanName']
@@ -563,7 +564,6 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.get_test_plan_edit_page(testplan_name)
         self.test_plan.navigate_to_testunits_selection_page()
 
-
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
         self.assertEqual(unit, testunit_unit_display)
         self.test_plan.switch_test_units_to_row_view()
@@ -582,7 +582,7 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.open_filter_menu()
         self.test_plan.filter_by_testplan_number(random_testplan['number'])
         testplan_found = self.test_plan.result_table()
-        self.assertIn(str(random_testplan['number']), testplan_found[0].text)
+        self.assertIn(str(random_testplan['number']), (testplan_found[0].text).replace("'", ""))
         self.base_selenium.LOGGER.info('Filtering by number was done successfully')
 
     def test021_filter_by_testplan_name(self):
