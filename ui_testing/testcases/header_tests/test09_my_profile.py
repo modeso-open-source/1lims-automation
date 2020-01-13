@@ -38,7 +38,8 @@ class MyProfileTestCases(BaseTest):
 
         # try to authorize with the new password
         baseAPI = BaseAPI()
-        self.assertRaises(EXCEPTION, baseAPI._get_authorized_session(username=self.base_selenium.username, password=self.new_password, reset_token=True))
+        with self.assertRaises(KeyError) as e:
+            baseAPI._get_authorized_session(username=self.base_selenium.username, password=self.new_password, reset_token=True)
 
     def test002_my_profile_should_show_username_and_email(self):
         """
