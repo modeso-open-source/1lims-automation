@@ -148,6 +148,9 @@ elements = {
         'file_upload_success_flag': {'method': 'class_name', 'value': 'dz-complete', 'order': 0},
         'remove_file': {'method': 'class_name', 'value': 'dz-remove', 'order': 0},
         'uploaded_file_name': {'method': 'xpath', 'value': '//span[@data-dz-name="" and last()]'},
+        'pagination_button': {'method': 'xpath', 'value': '//button[@class="btn dropdown-toggle btn-default"]'},
+        'pagination_menu': {'method': 'xpath', 'value': '//ul[@class="dropdown-menu inner"]'}
+
     },
     'login': {
         'username': {'method': 'name',
