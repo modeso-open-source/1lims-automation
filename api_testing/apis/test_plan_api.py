@@ -117,11 +117,25 @@ class TestPlanAPI(BaseAPI):
             if self.delete_archived_testplan(id=id):
                 return True
             else:
-                self.restore_testplans(ids=[id])
+                self.restore_testplans(ids=[str(id)])
                 return False
         else:
             return False
     
+    # example for using testplan creation using the API 
+    # article = self.article_api.list_articles_by_materialtype(materialtype_id=1)[0]
+    # material_type = self.general_utilities_api.list_all_material_types()[0]
+    # testunit = self.test_unit_api.get_all_test_units().json()['testUnits'][0]
+    # testunit_form_data = self.test_unit_api.get_testunit_form_data(id=int(testunit['id']))
+    # testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
+
+    # testplan_name = self.test_unit_page.generate_random_text()
+    # testplan_number = self.test_unit_page.generate_random_number()
+    # testplan_object = {
+    #     'text': testplan_name,
+    #     'id': 'new'
+    # }
+    # self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article], testUnits=[testunit]))
     def create_testplan(self, **kwargs):
         request_body = {}
         for key in kwargs:
