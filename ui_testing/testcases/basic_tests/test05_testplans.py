@@ -584,3 +584,106 @@ class TestPlansTestCases(BaseTest):
         testplan_found = self.test_plan.result_table()
         self.assertIn(str(random_testplan['number']), (testplan_found[0].text).replace("'", ""))
         self.base_selenium.LOGGER.info('Filtering by number was done successfully')
+
+    def test021_filter_by_testplan_name(self):
+        '''
+        LIMS-6470
+        User can filter with testplan name
+        '''
+
+        testplans = self.test_plan_api.get_all_test_plans_json()
+        random_testplan = random.choice(testplans)
+
+        testplans_found = self.test_plan.filter_by_element_and_get_results('Testplan Name', 'test_plans:testplan_name_filter', random_testplan['testPlanName'], 'drop_down')
+        self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
+        results_found = True
+        while results_found:
+            for tp in testplans_found:
+                if len(tp.text) > 0:
+                    self.assertIn(str(random_testplan['testPlanName']), tp.text)
+            if self.base_page.is_next_page_button_enabled():
+                self.base_selenium.click('general:next_page')
+                self.test_plan.sleep_small()
+                testplans_found = self.test_plan.result_table()
+            else:
+                results_found = False
+
+        self.base_selenium.LOGGER.info('Filtering by name was done successfully')
+
+    def test022_filter_by_testplan_status(self):
+        '''
+        LIMS-6474
+        User can filter with status
+        '''
+
+        testplans_found = self.test_plan.filter_by_element_and_get_results('Status', 'test_plans:testplan_status_filter', 'Completed', 'drop_down')
+        self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
+        results_found = True
+        while results_found:
+            for tp in testplans_found:
+                if len(tp.text) > 0:
+                    self.assertIn('Completed', tp.text)
+                    self.assertNotIn('In Progress', tp.text)
+            if self.base_page.is_next_page_button_enabled():
+                self.base_selenium.LOGGER.info('Navigating to the next page')
+                self.base_selenium.click('general:next_page')
+                self.test_plan.sleep_small()
+                testplans_found = self.test_plan.result_table()
+            else:
+                results_found = False
+
+        self.base_selenium.LOGGER.info('Filtering by status completed was done successfully')
+        
+        self.test_plan.sleep_small()
+
+        testplans_found = self.test_plan.filter_by_element_and_get_results('Status', 'test_plans:testplan_status_filter', 'In Progress', 'drop_down')
+        self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
+        results_found = True
+        while results_found:
+            for tp in testplans_found:
+                if len(tp.text) > 0:
+                    self.assertIn('In Progress', tp.text)
+                    self.assertNotIn('Completed', tp.text)
+            if self.base_page.is_next_page_button_enabled():
+                self.base_selenium.LOGGER.info('Navigating to the next page')
+                self.base_selenium.click('general:next_page')
+                self.test_plan.sleep_small()
+                testplans_found = self.test_plan.result_table()
+            else:
+                results_found = False
+        self.base_selenium.LOGGER.info('Filtering by status in progress was done successfully')
+
+    def test023_filter_by_testplan_changed_by(self):
+        '''
+        LIMS-6475
+        User can filter with changed by field
+        '''
+        random_user_name = self.generate_random_string()
+        random_user_email = self.header_page.generate_random_email()
+        random_user_password = self.generate_random_string()
+        self.base_selenium.LOGGER.info('Calling the users api to create a new user with username: {}'.format(random_user_name))
+        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
+        
+        self.header_page.click_on_header_button()
+        self.base_selenium.click('header:logout')
+        self.login_page.login(username=random_user_name, password=random_user_password)
+        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.test_plan.get_test_plans_page()
+
+        testplans = self.test_plan_api.get_all_test_plans_json()
+        testplan = random.choice(testplans)
+        
+        testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
+                                                            article=(testplan['article'])[0])
+        self.base_selenium.LOGGER.info(
+            'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
+                testplan_name, (testplan['article'])[0], testplan['materialType']))
+
+        self.base_page.set_all_configure_table_columns_to_specific_value(value=True)
+
+        testplan_found = self.test_plan.filter_by_element_and_get_results('Changed By', 'test_plans:testplan_changed_by_filter', random_user_name, 'drop_down')        
+        self.assertEqual(len(testplan_found), 2)
+        self.assertIn(random_user_name, testplan_found[0].text)
+        self.assertIn(testplan_name, testplan_found[0].text)
+
+        
