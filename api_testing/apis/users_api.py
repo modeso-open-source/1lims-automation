@@ -88,7 +88,7 @@ class UsersAPI(BaseAPI):
             if self.delete_archived_user(id=id):
                 return True
             else:
-                self.restore_users(ids=[id])
+                self.restore_users(ids=[str(id)])
                 return False
         else:
             return False

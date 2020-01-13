@@ -82,7 +82,7 @@ class TestUnitAPI(BaseAPI):
             if self.delete_archived_testunit(id=id):
                 return True
             else:
-                self.restore_testunits(ids=[id])
+                self.restore_testunits(ids=[str(id)])
                 return False
         else:
             return False
