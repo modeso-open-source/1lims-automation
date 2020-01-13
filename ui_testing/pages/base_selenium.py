@@ -242,6 +242,10 @@ class BaseSelenium:
         dom_element = self.wait_until_element_clickable(element=element)
         dom_element.click()
 
+    def click_by_script(self, element):
+        dom_element = self.wait_until_element_clickable(element=element)
+        self.driver.execute_script('arguments[0].click();', dom_element)
+
     def click_item(self, element, ID):
         for temp in range(10):
             method, value, order = self.get_method_value_order(element=element)
@@ -354,7 +358,7 @@ class BaseSelenium:
         if element:
             if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
                 self.LOGGER.info(' Drop-down is disabled')
-                return
+                return False
 
         if item_text:
             if element:
@@ -362,19 +366,20 @@ class BaseSelenium:
             else: # if element_source
                 input_element = self.find_element_in_element(destination_element='general:input',
                                                              source=element_source)
+            time.sleep(self.TIME_TINY)
             input_element.send_keys(item_text)
         else:
             if element_source:
                 element_source.click()
             else:
                 self.click(element=element)
-        time.sleep(self.TIME_TINY)
+        time.sleep(self.TIME_SMALL)
 
         items = self.find_elements(element=options_element)
         if not item_text: #random selection
             if len(items) <= 1:
                 self.LOGGER.info(' There is no drop-down options')
-                return
+                return False
             if avoid_duplicate:
                 items[random.choice(self._unique_index_list(data=items))].click()
                 return True

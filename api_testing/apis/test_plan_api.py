@@ -121,3 +121,46 @@ class TestPlanAPI(BaseAPI):
                 return False
         else:
             return False
+    
+    def create_testplan(self, **kwargs):
+        request_body = {}
+        for key in kwargs:
+            request_body[key] = kwargs[key]
+            if key == 'testPlan' :
+                request_body['selectedTestPlan'] = kwargs['testPlan']
+        
+        if 'attachments' not in kwargs:
+            request_body['attachments'] = '[]'
+        
+        request_body['selectedTestUnits']=[]
+
+        request_body['materialTypeId'] = request_body['materialType']['id']
+        request_body['dynamicFieldsValues'] = []
+        
+        if 'testUnits' not in kwargs:
+            request_body['testUnits'] = []
+
+        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan']) 
+        self.info('POST : {}'.format(api))
+        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        
+        if data['status'] == 1:
+            return data['testPlanDetails']
+        else:
+            return data['message']
+
+    def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue) 
+        self.info('GET : {}'.format(api))
+        response = self.session.get(api, params='', headers=self.headers, verify=False)
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        if data['status'] == 1:
+            return data['testUnits']
+        return []
+
+
+

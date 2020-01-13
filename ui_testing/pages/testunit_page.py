@@ -154,6 +154,12 @@ class TstUnit(TstUnits):
         self.confirm_popup(force=confirm)
         self.sleep_small()
 
+    def save_and_return_overview(self):
+        self.save(save_btn='general:save_form', logger_msg='Save And update the current version')
+        self.sleep_small()
+        self.click_overview()
+        self.sleep_small()
+
     def set_testunit_type(self, testunit_type=''):
         self.base_selenium.LOGGER.info('Set testunit type to be {}'.format(testunit_type))
         if testunit_type:
@@ -508,6 +514,69 @@ class TstUnit(TstUnits):
         self.set_spec_upper_limit(value=upper_limit)
         self.sleep_tiny()
         self.save(save_btn='general:save_form', logger_msg='Save testunit')
+
+    def map_testunit_to_testplan_format(self, testunit, order=0):
+        testunit_formated = {}
+        testunit_formated['id'] = testunit['id']
+        testunit_formated['comment'] = testunit['comment']
+        testunit_formated['testUnitTypeId'] = testunit['type']['id']
+        testunit_formated['method'] = testunit['method']
+        testunit_formated['typeName'] = testunit['typeName']
+        testunit_formated['name'] = testunit['name']
+        testunit_formated['unit'] = testunit['unit']
+        testunit_formated['number'] = testunit['number']
+        testunit_formated['category'] = testunit['category']
+        testunit_formated['iterations'] = testunit['iterations']
+        testunit_formated['order'] = order
+        testunit_formated['testunitVersion'] = testunit['version']
+
+        if testunit_formated['testUnitTypeId'] == 1:
+            return self.map_qualtiative_testunit(testunit_formated=testunit_formated, testunit=testunit)
+        elif testunit_formated['testUnitTypeId'] == 2:
+            return self.map_quantiative_testunit(testunit_formated=testunit_formated, testunit=testunit)
+        elif testunit_formated['testUnitTypeId'] == 3:
+            return self.map_mibi_testunit(testunit_formated=testunit_formated, testunit=testunit)
+
+    def map_qualtiative_testunit(self, testunit_formated, testunit):
+            testunit_formated['useSpec'] = False
+            testunit_formated['useQuantification'] = False
+            testunit_formated['upperLimit'] = ''
+            testunit_formated['mibiValue'] = ''
+            testunit_formated['quantificationUpperLimit'] = ''
+            testunit_formated['quantificationLowerLimit'] = ''
+            testunit_formated['concentrations'] = []
+            testunit_formated['textValue'] = testunit['textValue']
+            temp_arr = []
+            for value in testunit['textValue'].split(','):
+                temp_arr.append({
+                    'value': value,
+                    'display': value
+                })
+            testunit_formated['textValueArray'] = temp_arr
+            return testunit_formated
+    
+    def map_quantiative_testunit(self, testunit_formated, testunit):
+            testunit_formated['useSpec'] = testunit['useSpec']
+            testunit_formated['useQuantification'] = testunit['useQuantification']
+            testunit_formated['mibiValue'] = ''
+            testunit_formated['lowerLimit'] = testunit['lowerLimit']
+            testunit_formated['upperLimit'] = testunit['upperLimit']
+            testunit_formated['quantificationLowerLimit'] = testunit['quantificationLowerLimit']
+            testunit_formated['quantificationUpperLimit'] = testunit['quantificationUpperLimit']
+            testunit_formated['concentrations'] = []
+            testunit_formated['textValue'] = ''
+            return testunit_formated
+    
+    def map_mibi_testunit(self, testunit_formated, testunit):
+            testunit_formated['useSpec'] = False
+            testunit_formated['useQuantification'] = False
+            testunit_formated['upperLimit'] = ''
+            testunit_formated['mibiValue'] = testunit['upperLimit']
+            testunit_formated['quantificationUpperLimit'] = ''
+            testunit_formated['quantificationLowerLimit'] = ''
+            testunit_formated['concentrations'] = testunit['concentrations']
+            testunit_formated['textValue'] = ''
+            return testunit_formated
 
     
 

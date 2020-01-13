@@ -23,7 +23,8 @@ class TestPlans(BasePages):
     def get_test_plan_edit_page(self, name):
         self.base_selenium.LOGGER.info('Navigating to testplan {} edit page'.format(name))
         test_plan = self.search(value=name)[0]
-        self.open_edit_page(row=test_plan, xpath='//a[@title="Edit details"]')
+        self.open_edit_page_by_css_selector(row=test_plan,css_selector='')
+        self.sleep_small()
 
     def get_testunits_in_testplans(self, test_plan_name=''):
         self.base_selenium.LOGGER.info('Search by testplan name {}'.format(test_plan_name))

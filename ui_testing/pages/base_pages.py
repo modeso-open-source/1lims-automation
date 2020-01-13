@@ -2,6 +2,7 @@ from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
 import time, pyperclip, os
 from random import randint
+import datetime
 import pymysql
 
 
@@ -84,6 +85,12 @@ class BasePages:
         self.base_selenium.click(element='general:filter_btn')
         time.sleep(self.base_selenium.TIME_SMALL)
 
+    def apply_filter_scenario(self, filter_element, filter_text, field_type='drop_down'):
+        self.open_filter_menu()
+        self.base_selenium.wait_element(element=filter_element)
+        self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
+        self.filter_apply()
+
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')
         self.base_selenium.click(element='general:filter_reset_btn')
@@ -132,6 +139,12 @@ class BasePages:
         if xpath == '':
             xpath = '//span[@class="mr-auto"]/a'
         row.find_element_by_xpath(xpath).click()
+        self.sleep_small() # sleep for loading
+
+    def open_edit_page_by_css_selector(self, row, css_selector=''):
+        if css_selector == '':
+            css_selector = '[title="Edit details"]'
+        row.find_element_by_css_selector(css_selector).click()
         self.sleep_small() # sleep for loading
 
     def get_archived_items(self):
@@ -234,12 +247,6 @@ class BasePages:
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
 
-    def open_configuration(self):
-        self.base_selenium.click(element='general:right_menu')
-        self.base_selenium.click(element='general:configurations')
-        self.sleep_medium()
-        
-
     def generate_random_email(self):
         name = str(uuid4()).replace("-", "")[:10]
         server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'
@@ -248,7 +255,12 @@ class BasePages:
       
     def generate_random_website(self):
         return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
-
+    
+    def open_configuration(self):
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:configurations')
+        self.sleep_medium()
+        
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
@@ -337,7 +349,7 @@ class BasePages:
     def click_overview(self):
         # click on Overview, this will display an alert to the user
         self.base_selenium.LOGGER.info('click on Overview')
-        self.base_selenium.click(element='general:overview')
+        self.base_selenium.click_by_script(element='general:overview')
         self.sleep_tiny()
 
     def confirm_overview_pop_up(self):
@@ -391,6 +403,13 @@ class BasePages:
 
     def close_connection_with_database(self, db):
         db.close()
+
+    def is_next_page_button_enabled(self, element='general:next_page'):
+        _class = self.base_selenium.get_attribute('general:next_page', 'class')
+        if 'disabled' in _class:
+            return False
+        else:
+            return True
         
     def upload_file(self, file_name, drop_zone_element, save=True, remove_current_file=False):
         """
@@ -466,3 +485,18 @@ class BasePages:
         else:
             self.cancel(True)
             return True
+
+    def convert_to_dot_date_format(self, date):
+        date_in_days = date[0:10]
+        date_parameters = date_in_days.split('-')
+        date_parameters.reverse()
+        return '.'.join(date_parameters)
+        
+    def get_current_date_formated(self):
+        current_time = datetime.datetime.now()
+        date = str(current_time.year)+'-'+str(current_time.month)+'-'+str(current_time.day)
+        return date
+
+    def get_current_year(self):
+        current_year = datetime.datetime.now()
+        return str(current_year.year)
