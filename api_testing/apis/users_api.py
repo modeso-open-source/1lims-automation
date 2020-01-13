@@ -23,7 +23,7 @@ class UsersAPI(BaseAPI):
         self.info('POST : {}'.format(api))
         response = self.session.post(api, json=body, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
-        return response
+        return response.json()['user']
 
     def get_all_users(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['users_api']['list_all_users'])
