@@ -53,12 +53,18 @@ class BasePages:
 
     def save(self, sleep=True, save_btn='general:save', logger_msg='save the changes'):
         self.base_selenium.LOGGER.info(logger_msg)
-        self.base_selenium.click(element=save_btn)
+        if self.base_selenium.check_element_is_exist(element=save_btn):
+            self.base_selenium.click(element=save_btn)
+        else:            
+            self.base_selenium.click(element='my_profile:save_button')
         if sleep:
             time.sleep(self.base_selenium.TIME_MEDIUM)
 
     def cancel(self, force=True):
-        self.base_selenium.click(element='general:cancel')
+        if self.base_selenium.check_element_is_exist(element='general:cancel'):
+            self.base_selenium.click(element='general:cancel')
+        else:            
+            self.base_selenium.click(element='my_profile:cancel_button')
         self.confirm_popup(force)
 
     def confirm_popup(self, force=True):
