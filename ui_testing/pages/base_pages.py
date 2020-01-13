@@ -1,7 +1,9 @@
 from uuid import uuid4
 from ui_testing.pages.base_selenium import BaseSelenium
-import time, pyperclip
+import time, pyperclip, os
 from random import randint
+import datetime
+import pymysql
 
 
 class BasePages:
@@ -27,7 +29,8 @@ class BasePages:
         return self.result_table()
 
     def result_table(self, element='general:table'):
-        return self.base_selenium.get_table_rows(element=element)
+        table=self.base_selenium.get_table_rows(element=element)
+        return table
 
     def clear_text(self, element):
         self.base_selenium.clear_element_text(element= element)
@@ -59,6 +62,7 @@ class BasePages:
         self.confirm_popup(force)
 
     def confirm_popup(self, force=True):
+        self.base_selenium.LOGGER.info('Confirming the popup')
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
             if force:
                 self.base_selenium.click(element='general:confirm_pop')
@@ -81,6 +85,12 @@ class BasePages:
     def filter_apply(self):
         self.base_selenium.click(element='general:filter_btn')
         time.sleep(self.base_selenium.TIME_SMALL)
+
+    def apply_filter_scenario(self, filter_element, filter_text, field_type='drop_down'):
+        self.open_filter_menu()
+        self.base_selenium.wait_element(element=filter_element)
+        self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
+        self.filter_apply()
 
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')
@@ -113,7 +123,8 @@ class BasePages:
         self.info("select random row")
         rows = self.base_selenium.get_table_rows(element=element)
         for _ in range(5):
-            row = rows[randint(0, len(rows) - 1)]
+            row_index = randint(0, len(rows) - 1)
+            row = rows[row_index]
             row_text = row.text
             if not row_text:
                 continue
@@ -129,6 +140,12 @@ class BasePages:
         if xpath == '':
             xpath = '//span[@class="mr-auto"]/a'
         row.find_element_by_xpath(xpath).click()
+        self.sleep_small() # sleep for loading
+
+    def open_edit_page_by_css_selector(self, row, css_selector=''):
+        if css_selector == '':
+            css_selector = '[title="Edit details"]'
+        row.find_element_by_css_selector(css_selector).click()
         self.sleep_small() # sleep for loading
 
     def get_archived_items(self):
@@ -231,12 +248,6 @@ class BasePages:
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
 
-    def open_configuration(self):
-        self.base_selenium.click(element='general:right_menu')
-        self.base_selenium.click(element='general:configurations')
-        self.sleep_medium()
-        
-
     def generate_random_email(self):
         name = str(uuid4()).replace("-", "")[:10]
         server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'
@@ -245,12 +256,18 @@ class BasePages:
       
     def generate_random_website(self):
         return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
-
+    
+    def open_configuration(self):
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:configurations')
+        self.sleep_medium()
+        
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
         configure_table_menu.click()
         self.sleep_small()
+
     
     def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
         self.open_configure_table()
@@ -312,11 +329,28 @@ class BasePages:
         for column in total_columns:
             self.change_column_view(column=column, value=True, always_hidden_columns=always_hidden_columns)
         self.press_apply_in_configure_table()
-        
+
+    def deselect_all_configurations(self):
+        self.open_configure_table()
+        active_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items',
+                                                                     destination_element='general:li')
+        for column in active_columns:
+            if column.text:
+                self.change_column_view(column=column, value=False)
+
+        archived_coloums = self.base_selenium.find_elements_in_element(
+            source_element='general:configure_table_archive_items',
+            destination_element='general:li')
+        for column in archived_coloums:
+            if column.text:
+                self.change_column_view(column=column, value=False)
+
+        return self.base_selenium.element_is_displayed(element="general:apply_configure_table")
+
     def click_overview(self):
         # click on Overview, this will display an alert to the user
         self.base_selenium.LOGGER.info('click on Overview')
-        self.base_selenium.click(element='general:overview')
+        self.base_selenium.click_by_script(element='general:overview')
         self.sleep_tiny()
 
     def confirm_overview_pop_up(self):
@@ -326,6 +360,133 @@ class BasePages:
     def cancel_overview_pop_up(self):
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
+        
+    def duplicate_selected_item(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:duplicate')
+        self.sleep_small()
+
+    '''
+    archives this item and tries to delete it
+    returns True if it's deleted and False otherwise
+    '''
+    def delete_selected_item_from_active_table_and_from_archived_table(self, item_name):
+        
+        # archive this item
+        row = self.search(item_name)
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.click_check_box(source=row[0])
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Archiving the selected row')
+        self.archive_selected_items()
+        self.base_selenium.LOGGER.info('Navigating to the Archived table')
+        self.get_archived_items()
+
+        # try to delete it
+        archived_row = self.search(item_name)
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Selecting the row')
+        self.click_check_box(source=archived_row[0])
+        self.sleep_small()
+        self.base_selenium.LOGGER.info('Attempting to delete item: {}'.format(item_name))
+        self.delete_selected_item()
+
+        if self.base_selenium.check_element_is_exist(element='general:cant_delete_message'):
+            self.base_selenium.click(element='general:confirm_pop')
+            return False
+        return True
+
+    def open_connection_with_database(self):
+        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
+        cursor = db.cursor()
+        return cursor, db
+
+    def close_connection_with_database(self, db):
+        db.close()
+
+    def is_next_page_button_enabled(self, element='general:next_page'):
+        _class = self.base_selenium.get_attribute('general:next_page', 'class')
+        if 'disabled' in _class:
+            return False
+        else:
+            return True
+        
+    def upload_file(self, file_name, drop_zone_element, save=True, remove_current_file=False):
+        """
+        Upload single file to a page that only have 1 drop zone
+        
+        
+        :param file_name: name of the file to be uploaded
+        :param drop_zone_element: the dropZone element 
+        :return:
+        """
+        self.base_selenium.LOGGER.info("+ Uploading file")
+
+        # remove the current file and save
+        if remove_current_file:
+            self.base_selenium.LOGGER.info("Remove current file")
+            is_the_file_exist = self.base_selenium.check_element_is_exist(
+            element='general:file_upload_success_flag')
+            if is_the_file_exist:
+                self.base_selenium.click('general:remove_file')
+                self.save()      
+            else:
+                self.base_selenium.LOGGER.info("There is no current file")
+
+        # get the absolute path of the file
+        file_path = os.path.abspath('ui_testing/assets/{}'.format(file_name))
+
+        # check if the file exist
+        if os.path.exists(file_path) == False:
+            raise Exception(
+                "The file you are trying to upload doesn't exist localy")
+        else:
+            self.base_selenium.LOGGER.info(
+                "The {} file is ready for upload".format(file_name))
+
+        # silence the click event of file input to prevent the opening of (Open  Files) Window
+        self.base_selenium.driver.execute_script(
+            """
+            HTMLInputElement.prototype.click = function() {
+                if(this.type !== 'file') 
+                {
+                    HTMLElement.prototype.click.call(this); 
+                }
+            }
+            """)
+
+        # click on the dropZone component
+        self.base_selenium.click(element=drop_zone_element)
+
+        # the input tag will be appended to the HTML by dropZone after the click
+        # find the <input type="file"> tag
+        file_field = self.base_selenium.find_element(
+            element='general:file_input_field')
+
+        # send the path of the file to the input tag
+        file_field.send_keys(file_path)
+
+        self.base_selenium.LOGGER.info("Uploading {}".format(file_name))
+
+        # wait until the file uploads
+        self.base_selenium.wait_until_element_located(
+            element='general:file_upload_success_flag')
+
+        self.base_selenium.LOGGER.info(
+            "{} file is uploaded successfully".format(file_name))
+
+        # save the form or cancel
+        if save:
+            self.save()
+            # show the file name
+            self.base_selenium.driver.execute_script("document.querySelector('.dz-details').style.opacity = 'initial';")
+            # get the file name
+            uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name').text
+            return uploaded_file_name
+        else:
+            self.cancel(True)
+            return True
 
     def open_pagination_menu(self):
         self.base_selenium.wait_element(element='general:pagination_button')
@@ -339,6 +500,8 @@ class BasePages:
         pagination_elements = self.base_selenium.find_elements_in_element(source_element='general:pagination_menu', destination_element='general:li')
         if limit_index >= 0:
             pagination_elements[limit_index].click()
+        time.sleep(self.base_selenium.TIME_MEDIUM)
+        
         
 
     def get_current_pagination_limit(self):
@@ -367,5 +530,18 @@ class BasePages:
                 'pagination_limit': current_pagination_limit
                 }
 
-
+    def convert_to_dot_date_format(self, date):
+        date_in_days = date[0:10]
+        date_parameters = date_in_days.split('-')
+        date_parameters.reverse()
+        return '.'.join(date_parameters)
         
+    def get_current_date_formated(self):
+        current_time = datetime.datetime.now()
+        date = str(current_time.year)+'-'+str(current_time.month)+'-'+str(current_time.day)
+        return date
+
+    def get_current_year(self):
+        current_year = datetime.datetime.now()
+        return str(current_year.year)
+

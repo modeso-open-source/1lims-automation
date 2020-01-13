@@ -4,6 +4,7 @@ from uuid import uuid4
 from random import randint
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.contact_page import Contact
+from ui_testing.pages.articles_page import Articles
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
@@ -16,10 +17,13 @@ from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
 from ui_testing.pages.header_page import Header
-from ui_testing.pages.analysis_page import Analysis
 from api_testing.apis.orders_api import OrdersAPI
+from ui_testing.pages.analysis_page import SingleAnalysisPage
 from api_testing.apis.contacts_api import ContactsAPI
-
+from api_testing.apis.users_api import UsersAPI
+from api_testing.apis.roles_api import RolesAPI
+from api_testing.apis.analysis_api import AnalysisAPI
+from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 import datetime, re
 
 
@@ -36,20 +40,25 @@ class BaseTest(TestCase):
         self.test_plan = TstPlan()
         self.article_page = Article()
         self.contact_page = Contact()
+        self.articles_page = Articles()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
         self.audit_trail_page = AuditTrail()
         self.header_page = Header()
         self.base_page = BasePages()
         self.contacts_page = Contacts()
-        self.analysis_page = Analysis()
         self.company_profile_page = CompanyProfile()
         self.article_api = ArticleAPI()
         self.test_plan_api = TestPlanAPI()
         self.test_unit_api = TestUnitAPI()
         self.test_plan_api = TestPlanAPI()
         self.orders_api = OrdersAPI()
+        self.analysis_api = AnalysisAPI()
+        self.single_analysis_page = SingleAnalysisPage()
         self.contacts_api = ContactsAPI()
+        self.users_api = UsersAPI()
+        self.roles_api = RolesAPI()
+        self.general_utilities_api = GeneralUtilitiesAPI()
 
     def tearDown(self):
         self.base_selenium.quit_driver()
@@ -141,6 +150,41 @@ class BaseTest(TestCase):
                 data[material_type] = []
             data[material_type].append(article['name'])
         return data
+
+    '''
+    Removes the data that was changed in the duplication process in order to compare
+    between the objects to make sure that the duplication was done correcly.
+    '''
+    def remove_unduplicated_data(self, data_changed=[], first_element=[], second_element=[]):
+        for data in data_changed:
+            if data in first_element and data in second_element:
+                if first_element[data] != None:
+                    del first_element[data]
+                if second_element[data] != None:
+                    del second_element[data]
+
+        return first_element, second_element
+        
+
+    def get_all_articles(self):
+        articles_response = self.article_api.get_all_articles()
+        articles=articles_response.json()['articles']
+        return articles
+
+    def get_all_test_plans(self):
+        test_plans_response = self.test_plan_api.get_all_test_plans()
+        test_plans = test_plans_response.json()['testPlans']
+        return test_plans
+
+    def get_all_test_units(self):
+        test_units_response = self.test_unit_api.get_all_test_units()
+        test_units = test_units_response.json()['testUnits']
+        return test_units
+
+    def get_all_contacts(self):
+        contacts_response=self.contacts_api.get_all_contacts()
+        contacts= contacts_response.json()['contacts']
+        return contacts
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)

@@ -258,6 +258,10 @@ class BaseSelenium:
         dom_element = self.wait_until_element_clickable(element=element)
         dom_element.click()
 
+    def click_by_script(self, element):
+        dom_element = self.wait_until_element_clickable(element=element)
+        self.driver.execute_script('arguments[0].click();', dom_element)
+
     def click_item(self, element, ID):
         for temp in range(10):
             method, value, order = self.get_method_value_order(element=element)
@@ -370,7 +374,7 @@ class BaseSelenium:
         if element:
             if 'ng-select-disabled' in self.get_attribute(element=element, attribute='class'):
                 self.LOGGER.info(' Drop-down is disabled')
-                return
+                return False
 
         if item_text:
             if element:
@@ -378,23 +382,26 @@ class BaseSelenium:
             else: # if element_source
                 input_element = self.find_element_in_element(destination_element='general:input',
                                                              source=element_source)
+            time.sleep(self.TIME_TINY)
             input_element.send_keys(item_text)
         else:
             if element_source:
                 element_source.click()
             else:
                 self.click(element=element)
-        time.sleep(self.TIME_TINY)
+        time.sleep(self.TIME_SMALL)
 
         items = self.find_elements(element=options_element)
         if not item_text: #random selection
             if len(items) <= 1:
                 self.LOGGER.info(' There is no drop-down options')
-                return
+                return False
             if avoid_duplicate:
                 items[random.choice(self._unique_index_list(data=items))].click()
+                return True
             else:
                 items[random.randint(0, len(items) - 1)].click()
+                return True
         else:
             if item_text not in [item.text for item in items]:
                 time.sleep(self.TIME_TINY)
@@ -402,9 +409,10 @@ class BaseSelenium:
             for item in items:
                 if item_text in item.text:
                     item.click()
-                    break
+                    return True
             else:
                 self.LOGGER.info(' There is no {} option in the drop-down'.format(item_text))
+                return False
 
     def is_item_in_drop_down(self, element, item_text, options_element='general:drop_down_options'):
         """
@@ -515,20 +523,25 @@ class BaseSelenium:
         else:
             self.LOGGER.warning(" this %s item isn't exist in this url: %s" % (text_item, self.get_url()))
 
-    def get_table_rows(self, element=None):
+    def get_table_rows(self, element=None, source=None):
         'This method return all rows in the current page else return false'
-        try:
-            if element == None:
-                tbody = self.driver.find_element_by_tag_name('tbody')
-            else:
-                element = self.find_element(element)
-                tbody = element.find_element_by_tag_name('tbody')
-
+        if source:
+            tbody = source.find_element_by_tag_name('tbody')
             rows = tbody.find_elements_by_tag_name('tr')
             return rows
-        except:
-            self.LOGGER.exception(" Can't get the tbody elements")
-            return []
+        else:
+            try:
+                if element == None:
+                    tbody = self.driver.find_element_by_tag_name('tbody')
+                else:
+                    element = self.find_element(element)
+                    tbody = element.find_element_by_tag_name('tbody')
+
+                rows = tbody.find_elements_by_tag_name('tr')
+                return rows
+            except:
+                self.LOGGER.exception(" Can't get the tbody elements")
+                return []
 
     def get_row_cells(self, row):
         'This method take a row and return its cells elements else return false'
@@ -546,6 +559,17 @@ class BaseSelenium:
             #thead_row = thead[0].find_elements_by_tag_name('tr')
             #return thead_row[0].find_elements_by_tag_name('th')
             return thead[0].find_elements_by_tag_name('th')
+        except:
+            self.LOGGER.exception(" Can't get table head.")
+            return []
+
+    def get_table_head_elements_with_tr(self, element):
+        try:
+            table = self.find_element(element)
+            thead = table.find_elements_by_tag_name('thead')
+            thead_row = thead[0].find_elements_by_tag_name('tr')
+            #return thead_row[0].find_elements_by_tag_name('th')
+            return thead_row
         except:
             self.LOGGER.exception(" Can't get table head.")
             return []

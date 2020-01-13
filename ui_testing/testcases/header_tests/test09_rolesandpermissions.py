@@ -362,11 +362,10 @@ class HeaderTestCases(BaseTest):
 
         self.header_page.click_on_header_button()
         self.base_selenium.LOGGER.info('Press on logout button')
-        self.base_selenium.click(element='login:logout_btn')
+        self.base_selenium.click(element='header:logout')
 
         # login with role & user that you created to make sure from the permissions
         self.login_page.login(username=random_user_name, password='1')
-        #self.header_page.login_with_created_user(username=random_user_name, password='1')
         time.sleep(15)
 
         # make sure that all the master data pages appear(articles & test units & test plans & contacts)
@@ -404,7 +403,7 @@ class HeaderTestCases(BaseTest):
 
         self.header_page.click_on_header_button()
         self.base_selenium.LOGGER.info('Press on logout button')
-        self.base_selenium.click(element='login:logout_btn')
+        self.base_selenium.click(element='header:logout')
 
         # login with role & user that you created to make sure from the permissions
         self.login_page.login(username=random_user_name, password='1')
@@ -414,7 +413,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info('get the order url')
         self.assertTrue('Sample Management', self.order_page.get_orders_page())
         self.base_selenium.LOGGER.info( 'get the analysis url')
-        self.assertTrue('Sample Management', self.analysis_page.get_analysis_page())
+        self.assertTrue('Sample Management', self.single_analysis_page.get_analysis_page())
 
 
 
