@@ -82,9 +82,6 @@ class MyProfileTestCases(BaseTest):
 
         LIMS-6089
         """
-        # change language
-        self.my_profile_page.chang_lang(lang)
-
         # change the EN to DE
         self.my_profile_page.chang_lang('DE')
         
