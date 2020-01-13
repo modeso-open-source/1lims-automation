@@ -117,7 +117,7 @@ class TestPlanAPI(BaseAPI):
             if self.delete_archived_testplan(id=id):
                 return True
             else:
-                self.restore_testplans(ids=[id])
+                self.restore_testplans(ids=[str(id)])
                 return False
         else:
             return False
