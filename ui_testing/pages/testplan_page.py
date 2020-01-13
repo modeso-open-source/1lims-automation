@@ -11,11 +11,12 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text(element="test_plan:no", value=no)
 
     def get_article(self):
-        articles = self.base_selenium.get_value(element="test_plan:article")
-        if "×" in articles:
-            return articles.replace("× ", "").split('\n')
-        else:
-            return []
+        articles = self.base_selenium.get_text(element="test_plan:article").split('\n')
+        article_list = []
+        for article in articles:
+            if "×" in article:
+                article_list.append(article.replace("× ", ""))
+        return article_list
 
     def set_article(self, article='', random=False):
         if random:
@@ -29,7 +30,7 @@ class TstPlan(TestPlans):
             self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
     def get_material_type(self):
-        return self.base_selenium.get_text(element='test_plan:material_type')
+        return self.base_selenium.get_text(element='test_plan:material_type').split('\n')[0]
 
     def set_material_type(self, material_type='', random=False):
         if random:
@@ -70,7 +71,7 @@ class TstPlan(TestPlans):
             elems = self.base_selenium.find_elements('general:col_6')
             upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
             upper.send_keys(kwargs['upper'])
-        if 'lower' in kwargs:
+        if  'lower' in kwargs:
             self.base_selenium.LOGGER.info(' set lower : {}'.format(kwargs['lower']))
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
