@@ -49,7 +49,7 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
             self.assertEqual(current_no, order_no)
             
-   # will continue with us
+    # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])
     def test002_cancel_button_edit_contact(self, save):
         """
@@ -119,8 +119,8 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_departments) == {} (order_departments)'.format(current_departments,
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
+    
     # will change totally and implement the new behavior 
-
     def test004_archive_order(self):
         """
             New: Orders: Archive
@@ -260,8 +260,8 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
             
-   # will implement with the new behavior that it will duplicate with new order number 
-    @skip('https://modeso.atlassian.net/browse/LIMS-4766')
+    # will implement with the new behavior that it will duplicate with new order number 
+    # @skip('https://modeso.atlassian.net/browse/LIMS-4766')
     def test008_duplicate_order_one_copy(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
@@ -269,57 +269,60 @@ class OrdersTestCases(BaseTest):
         LIMS-3270
         :return:
         """
-        order_row_from_table_list = []
-        order_row_from_form_list = []
-        selected_row = self.order_page.get_random_order_row()
-        self.order_page.click_check_box(source=selected_row)
+        # order_row_from_table_list = []
+        # order_row_from_form_list = []
+        selected_order = self.order_page.get_random_order_row()
+        self.order_page.open_child_table(source=selected_order)
+        self.base_selenium.get_row_cells_dict_related_to_header(row=selected_order)
+        data = self.order_page.get_child_table_data()
+        self.info('+ Get Child Data')
 
-        # add order number
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
-        # contact
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
-        # material type
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
-        # article name
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
-        # article number
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...',
-                                                                                                        '').replace(
-                "'", ''))
+        # # add order number
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
+        # # contact
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
+        # # material type
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
+        # # article name
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
+        # # article number
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...',
+        #                                                                                                 '').replace(
+        #         "'", ''))
 
-        # #shipment date
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
-        # #test Date
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Departments'))
+        # # #shipment date
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
+        # # #test Date
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
+        # order_row_from_table_list.append(
+        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Departments'))
 
-        self.order_page.duplicate_order_from_table_overview(1)
-        order_row_from_form_list.extend(
-            [self.order_page.get_order_number().replace("'", ''), self.order_page.get_contact(),
-             self.order_page.get_material_type()])
-        order_row_from_form_list.append(
-            self.order_page.get_article().split(' No')[0][0:30])
-        order_row_from_form_list.append(self.order_page.get_article().split('No:')[
-                                            1].replace("'", '')[0:30])
-        order_row_from_form_list.append(self.order_page.get_shipment_date())
-        order_row_from_form_list.append(self.order_page.get_test_date())
-        order_row_from_form_list.append(self.order_page.get_test_plan())
-        order_row_from_form_list.append(self.order_page.get_departments())
-        self.base_selenium.LOGGER.info(
-            ' + compare if data from table : {} is equal data in form {} '.format(order_row_from_table_list,
-                                                                                  order_row_from_form_list))
-        self.assertListEqual(order_row_from_form_list,
-                             order_row_from_table_list)
+        # self.order_page.duplicate_order_from_table_overview(1)
+        # order_row_from_form_list.extend(
+        #     [self.order_page.get_order_number().replace("'", ''), self.order_page.get_contact(),
+        #      self.order_page.get_material_type()])
+        # order_row_from_form_list.append(
+        #     self.order_page.get_article().split(' No')[0][0:30])
+        # order_row_from_form_list.append(self.order_page.get_article().split('No:')[
+        #                                     1].replace("'", '')[0:30])
+        # order_row_from_form_list.append(self.order_page.get_shipment_date())
+        # order_row_from_form_list.append(self.order_page.get_test_date())
+        # order_row_from_form_list.append(self.order_page.get_test_plan())
+        # order_row_from_form_list.append(self.order_page.get_departments())
+        # self.base_selenium.LOGGER.info(
+        #     ' + compare if data from table : {} is equal data in form {} '.format(order_row_from_table_list,
+        #                                                                           order_row_from_form_list))
+        # self.assertListEqual(order_row_from_form_list,
+        #                      order_row_from_table_list)
     
     # will continue with us 
     def test009_export_order_sheet(self):
@@ -636,7 +639,7 @@ class OrdersTestCases(BaseTest):
                 self.assertEqual(order_data[key].replace(
                     "'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
-   # will continue with us 
+    # will continue with us 
     def test016_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
@@ -886,7 +889,7 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, test_units_list)
             
-   # will continue with us
+    # will continue with us
     def test021_create_existing_order_with_test_units(self):
         """
         New: Orders: Create an existing order with test units
