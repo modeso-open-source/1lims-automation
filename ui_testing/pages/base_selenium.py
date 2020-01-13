@@ -485,6 +485,7 @@ class BaseSelenium:
             self.select_item_from_drop_down(element_source=item, item_text=item_text)
         else:
             input_item = self.find_element_in_element(source=item, destination_element='general:input')
+            input_item.clear()
             input_item.send_keys(item_text)
 
     def set_text_in_drop_down(self, ng_select_element, text, input_element='general:input', confirm_button='general:drop_down_options'):
