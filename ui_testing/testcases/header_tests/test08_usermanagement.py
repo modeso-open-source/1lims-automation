@@ -239,10 +239,3 @@ class HeaderTestCases(BaseTest):
             self.assertEqual(current_role, user_role)
 
 
-
-
-
-
-
-
-

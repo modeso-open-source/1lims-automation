@@ -23,7 +23,7 @@ install:
 script:
   - export TESTS='test09_my_profile.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
-  - echo $TESTS
+  #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test09_my_profile.py

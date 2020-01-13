@@ -175,6 +175,22 @@ class BaseSelenium:
                     break
             raise TimeoutException()
 
+    def wait_until_element_is_not_displayed(self, element):
+        method, value, order = self.get_method_value_order(element=element)
+        if order == 0:
+            return self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
+        else:
+            dom_element = self.find_element(element=element)
+            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+            while True:
+                if dom_element.is_displayed():
+                    time.sleep(0.5)
+                else:
+                    return dom_element
+                if time.time() > end_time:
+                    break
+            raise TimeoutException()
+
     def wait_until_element_clickable(self, element):
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:

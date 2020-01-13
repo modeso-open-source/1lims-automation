@@ -9,6 +9,7 @@ import pymysql
 class BasePages:
     def __init__(self):
         self.base_selenium = BaseSelenium()
+        self.pagination_elements_array=['10', '20', '25', '50', '100']
 
     def generate_random_text(self):
         return str(uuid4()).replace("-", "")[:10]
@@ -414,7 +415,8 @@ class BasePages:
     def upload_file(self, file_name, drop_zone_element, save=True, remove_current_file=False):
         """
         Upload single file to a page that only have 1 drop zone
-
+        
+        
         :param file_name: name of the file to be uploaded
         :param drop_zone_element: the dropZone element 
         :return:
@@ -486,6 +488,48 @@ class BasePages:
             self.cancel(True)
             return True
 
+    def open_pagination_menu(self):
+        self.base_selenium.wait_element(element='general:pagination_button')
+        self.base_selenium.click(element='general:pagination_button')
+
+    def set_page_limit(self, limit='20'):
+        self.base_selenium.LOGGER.info('set the pagination limit to {}'.format(limit))
+        self.open_pagination_menu()
+        limit_index = self.pagination_elements_array.index(limit)
+        self.base_selenium.wait_element(element='general:pagination_menu')
+        pagination_elements = self.base_selenium.find_elements_in_element(source_element='general:pagination_menu', destination_element='general:li')
+        if limit_index >= 0:
+            pagination_elements[limit_index].click()
+        time.sleep(self.base_selenium.TIME_MEDIUM)
+        
+        
+
+    def get_current_pagination_limit(self):
+        return self.base_selenium.find_element(element='general:pagination_button').text.split('\n')[0]
+
+    # eslam, i'll need your check on this function
+    def wait_for_loading_msg(self):
+        self.base_selenium.LOGGER.info('wait for loading msg to disappear')
+        self.base_selenium.wait_element('general:loading_msg')
+        self.base_selenium.wait_until_element_is_not_displayed('general:loading_msg')
+
+    def get_table_info_data(self):
+        self.base_selenium.LOGGER.info('get table information')
+        table_info = self.base_selenium.find_element('general:table_info')
+        table_info_data = table_info.text
+        table_info_elements = table_info_data.split(' ')
+        start = table_info_elements[1]
+        end = table_info_elements[3]
+        count = table_info_elements[5]
+        page_limit = str((int(end) - int(start)) +1)
+        current_pagination_limit = self.get_current_pagination_limit()
+        return {'start': start,
+                'end': end,
+                'count': count,
+                'page_limit': page_limit,
+                'pagination_limit': current_pagination_limit
+                }
+
     def convert_to_dot_date_format(self, date):
         date_in_days = date[0:10]
         date_parameters = date_in_days.split('-')
@@ -500,3 +544,4 @@ class BasePages:
     def get_current_year(self):
         current_year = datetime.datetime.now()
         return str(current_year.year)
+

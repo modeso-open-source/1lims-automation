@@ -17,16 +17,18 @@ class MyProfileTestCases(BaseTest):
         self.info('Create User {}'.format(self.username))
         user = self.users_api.create_new_user(self.username, self.email, self.current_password)
 
-        self.userId = user['userId']
+        # uncomment with the tearDown
+        # self.userId = user['userId'] 
 
         # login and navigate to profile page
         self.login_page.login(username=self.username, password=self.current_password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.my_profile_page.get_my_profile_page()
 
-    def tearDown(self):
-        # self.users_api.delete_active_user(id=self.userId) # Blocked by https://modeso.atlassian.net/browse/LIMS-6425
-        return super().tearDown()
+    # Blocked by https://modeso.atlassian.net/browse/LIMS-6425
+    # def tearDown(self):
+    #     self.users_api.delete_active_user(id=self.userId)
+    #     return super().tearDown()
 
     def test001_user_can_change_password_and_press_on_cancel(self):
         """
