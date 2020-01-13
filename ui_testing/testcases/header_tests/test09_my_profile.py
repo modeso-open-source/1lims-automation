@@ -12,7 +12,6 @@ class MyProfileTestCases(BaseTest):
         self.username = self.generate_random_string()
         self.email = self.header_page.generate_random_email()
         self.current_password = self.generate_random_string()
-        self.new_password = None
 
         # create new user
         self.info('Create User {}'.format(self.username))
@@ -26,7 +25,7 @@ class MyProfileTestCases(BaseTest):
         self.my_profile_page.get_my_profile_page()
 
     def tearDown(self):
-        self.users_api.delete_active_user(id=self.userId)
+        # self.users_api.delete_active_user(id=self.userId) # Blocked by https://modeso.atlassian.net/browse/LIMS-6425
         return super().tearDown()
 
     def test001_user_can_change_password_and_press_on_cancel(self):
