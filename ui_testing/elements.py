@@ -314,6 +314,7 @@ elements = {
     'test_plan': {
         'no': {'method': 'id',
                'value': 'numberfield'},
+
         'test_plan': {'method': 'id',
                       'value': 'testPlan'},
         'material_type': {'method': 'id',
@@ -333,6 +334,7 @@ elements = {
                        'value': 'selectedTestUnitsfield'},
         'add': {'method': 'id',
                 'value': 'new_testunit_add_button'},
+
         'save_btn': {'method': 'id',
                      'value': 'save_btn'},
         'save_and_complete': {'method': 'id',
@@ -389,6 +391,10 @@ elements = {
         'testunit_quantification_lower_limit': {
             'method': 'id',
             'value': 'quantification_lower_limit'
+        },
+        'add_testunit_error_msg': {
+            'method': 'xpath',
+            'value': '//span[@class="m-form__help"]'
         }
     },
 
