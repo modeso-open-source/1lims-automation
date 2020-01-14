@@ -317,3 +317,18 @@ class Header(BasePages):
     def get_contact(self):
         self.base_selenium.LOGGER.info('Get user contact')
         return self.base_selenium.get_text(element='user_management:contact_field').split('\n')[0]
+
+    def click_on_user_config_btn(self):
+        self.base_selenium.LOGGER.info('click on the table configuration button')
+        self.base_selenium.click(element='user_management:config_table')
+        self.sleep_small()
+
+    def checked_user_changed_by(self):
+        self.base_selenium.LOGGER.info(
+            'checked the changed by field from the table configuration to display in the active table ')
+        self.base_selenium.click(element='user_management:checked_changed_by')
+        self.sleep_small()
+
+
+
+

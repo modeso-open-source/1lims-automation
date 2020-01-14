@@ -233,7 +233,7 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.base_selenium.click(element='header:user_management_button')
-         # open random user in the edit mode
+        # open random user in the edit mode
         self.header_page.get_random_user()
         user_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + user_url : {}'.format(user_url))
@@ -298,7 +298,7 @@ class HeaderTestCases(BaseTest):
         user_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_user)
 
         self.header_page.click_on_header_button()
-        self.base_selenium.click(element='login:logout_btn')
+        self.base_selenium.click(element='header:logout')
 
         # use this user in any other entity so you can login with it
         self.login_page.login(username=user_random_name, password='1')
@@ -413,7 +413,7 @@ class HeaderTestCases(BaseTest):
         self.assertTrue(result_user, user_filter)
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test016_filter_no(self):
+    def test016_filter_by_no(self):
         """
         User management Approach: I can filter by no successfully
         LIMS-6488
@@ -429,20 +429,40 @@ class HeaderTestCases(BaseTest):
         self.assertTrue(user_data['number'], user_filter)
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test017_filter_changed_by(self):
+    def test017_filter_by_changed_by(self):
         """
-        User management Approach: I can filter by changed by successfully
-        LIMS-6487
+        Header: Roles & Permissions Approach: Make sure that you can filter by role changed by
+        LIMS-6507
         :return:
         """
+        # create user with this user to filter by it
         self.base_selenium.click(element='header:user_management_button')
-        user_data = self.header_page.get_data_from_row()
+        random_user_name = self.generate_random_string()
+        random_user_email = self.base_page.generate_random_email()
+        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
+                                         user_role='Admin', user_password='1', user_confirm_password='1')
+
+        self.header_page.click_on_header_button()
+        self.base_selenium.click(element='header:logout')
+        self.login_page.login(username=random_user_name, password='1')
+        self.header_page.click_on_header_button()
+        self.base_selenium.click(element='header:user_management_button')
+
+        new_user = self.generate_random_string()
+        new_email = self.base_page.generate_random_email()
+        self.header_page.create_new_user(user_name=new_user, user_email=new_email,
+                                         user_role='Admin', user_password='1', user_confirm_password='1')
+
+        self.header_page.click_on_user_config_btn()
+        self.header_page.checked_user_changed_by()
+        self.base_selenium.click(element='user_management:apply_btn')
 
         self.base_selenium.click(element='general:menu_filter_view')
         user_filter = self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by',
-                                                             filter_text=user_data['changed_by'])
+                                                             filter_text=random_user_name)
 
-        self.assertIn(user_data['changed_by'], user_filter)
+        result_user = self.header_page.result_table()[0]
+        self.assertTrue(result_user, user_filter)
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test018_filter_created_on(self):

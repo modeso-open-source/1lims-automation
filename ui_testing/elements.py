@@ -663,7 +663,7 @@ elements = {
         'logout': {
             'method': 'xpath',
             'value': "//a[@class='btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder']"
-        }
+        },
 
     },
     'user_management': {
@@ -725,11 +725,19 @@ elements = {
 
        'filter_role': {'method': 'xpath',
                  'value':'//ng-select[@id="rolefield"]//input'},
+       'filter_role11': {'method': 'xpath',
+                        'value': '//*[@id="rolefield"]//input'},
 
        'filter_reset_btn': {'method': 'id',
                  'value':'reset_btn'},
        'delete': {'method': 'link_text',
                  'value': 'Delete'},
+       'confirm_pop': {'method': 'class_name',
+                        'value': 'btn-success',
+                        'order': 0},
+
+       'alert_confirmation': {'method': 'id',
+                               'value': 'noty_layout__topCenter'},
        
        'overview_btn': {'method': 'xpath',
                                'value': '//span[contains(text(),"Overview")]'},
@@ -742,66 +750,16 @@ elements = {
        'content': {'method': 'xpath',
                               'value': '//div[@class="m-accordion__item-content"]'},
        'contact_field': {'method': 'id',
-                         'value': 'supplierfield'}
+                         'value': 'supplierfield'},
+       'config_table': {'method': 'id',
+                         'value': 'config'},
+       'apply_btn': {'method': 'xpath',
+                         'value': '//span[contains(text(),"Apply")]'},
+       'checked_changed_by': {'method': 'id',
+                         'value': 'modifiedBy'},
 
    },
-    'contacts':{
-        'new_contact': {'method': 'xpath',
-                        'value': '//span[contains(text(),"New Contact")]'},              
-        'user_role': {'method': 'xpath',
-                      'value': '//*[@class="ng-input"]'},
-        'user_email': {'method': 'id',
-                       'value': 'emailfield'},
-        'user_password': {'method': 'id',
-                          'value': 'password'},
-        'user_confirm_password': {'method': 'id',
-                                  'value': 'confirmPassword'},
-        'create_user_button': {'method': 'xpath',
-                               'value': '//*[contains(text(),"New User")]'},
-        'save_btn': {'method': 'id',
-                     'value': 'saveButton'},
-
-        'filter_number': {'method': 'id',
-                          'value': 'userIdfield'},
-
-        'filter_contact': {'method': 'xpath',
-                           'value': '//*[@id="supplierfield"]//input'},
-
-        'filter_changed_by': {'method': 'xpath',
-                              'value': '//*[@id="lastModifiedUserfield"]//input'},
-
-        'filter_created_on': {'method': 'id',
-                              'value': 'start_createdAt'},
-
-        'filter_name': {'method': 'id',
-                        'value': 'usernamefield'},
-        'filter_email': {'method': 'id',
-                         'value': 'emailfield'},
-
-        'filter_role': {'method': 'xpath',
-                        'value': '//*[@id="rolefield"]//input'},
-
-        'filter_reset_btn': {'method': 'id',
-                             'value': 'reset_btn'},
-        'delete': {'method': 'link_text',
-                   'value': 'Delete'},
-
-        'confirm_pop': {'method': 'class_name',
-                        'value': 'btn-success',
-                        'order': 0},
-
-        'alert_confirmation': {'method': 'id',
-                               'value': 'noty_layout__topCenter'},
-
-        'overview_btn': {'method': 'xpath',
-                         'value': '//span[contains(text(),"Overview")]'},
-        'cancel': {'method': 'id',
-                   'value': 'cancelButton'},
-        'contact_field': {'method': 'id',
-                          'value': 'supplierfield'}
-    },
-
-   'roles_and_permissions': {
+    'roles_and_permissions': {
         'right_menu': {'method': 'xpath',
                        'value': '//i[@class="flaticon-grid-menu-v2"]'},
         'archive': {'method': 'xpath',
@@ -842,7 +800,7 @@ elements = {
                                       'value': '//div[@id="permissionsTable"]//div[9]//div[3]//span[1]//label[1]'},
     },
 
-    'contacts': {
+   'contacts': {
         'new_contact': {'method': 'xpath',
                         'value': '//span[contains(text(),"New Contact")]'},
         'contact_archive_button': {'method': 'tag_name',
@@ -861,7 +819,7 @@ elements = {
         'contacts_table': {'method': 'id',
                            'value': 'table'}
     },
-    'contact': {
+   'contact': {
         'name': {'method': 'id',
                  'value': 'namefield'},
         'no': {'method': 'id',
@@ -902,7 +860,6 @@ elements = {
         'add_another_item': {'method': 'class_name',
                              'value': 'addNewItem',
                              'order': 0},
-
         'contact_persons_table': {'method': 'id',
                                   'value': 'table-with-add'},
         'departments_field_tags': {'method': 'xpath',
@@ -928,61 +885,19 @@ elements = {
         'postalcode_filter': {'method': 'id',
                               'value': 'postal_codefield'},
         'contact_persons_table': {'method': 'id',
-                     'value': 'table-with-add'},
-       'departments_field_tags': {'method': 'xpath',
-                     'value': '//div[@class="ng2-tags-container"]'},
-       'departments_tag': {'method': 'xpath',
-                     'value': '//div[@class="tag__text inline"]'},
-       'is_client_checkbox': {'method': 'xpath',
-                     'value': '//label[@id="isClient"]//input[@type="checkbox"]'},
-       'is_supplier_checkbox': {'method': 'xpath',
-                     'value': '//label[@id="isSupplier"]//input[@type="checkbox"]'},
-       'is_laboratory_checkbox': {'method': 'xpath',
-                     'value': '//label[@id="isLaboratory"]//input[@type="checkbox"]'},
-       'delete_person_button': {'method': 'id',
-                     'value': 'delete_table_view'},
-    },
-   'roles_and_permissions': {
-        'right_menu': {'method': 'xpath',
-                          'value': '//i[@class="flaticon-grid-menu-v2"]'},
-        'archive': {'method': 'xpath',
-                 'value': '//modeso-table-filter//a[2]'},
-        'archived': {'method': 'link_text',
-                 'value': 'Archived'},
-        'restore': {'method': 'link_text',
-                 'value': 'Restore'},
-       'active': {'method': 'link_text',
-                 'value': 'Active'},
-       'user_table': {'method': 'id',
-                      'value': 'table'},
-       'roles_overview_btn': {'method': 'xpath',
-                      'value': '//span[contains(text(),"Overview")]'},
-       'new_role_btn': {'method': 'xpath',
-                              'value': '//span[contains(text(),"New Role")]'},
-       'role_name': {'method': 'id',
-                              'value': 'namefield'},
-       'save_btn': {'method': 'xpath',
-                              'value': '//button[@class="btn btn-primary mb-md-0 mr-md-3"]'},
-       'delete': {'method': 'xpath',
-                              'value': '//a[contains(text(),"Delete")]'},
-       'oh_snap_message': {'method': 'id',
-                              'value': 'ohSnapMsg'},
-       'pagination_page': {'method': 'xpath',
-                           'value': '//a[contains(text(),"2")]'},
-       'master_data_view_permissions': {'method': 'xpath',
-                              'value': '//div[@id="permissionsTable"]//div[2]//div[2]//span[1]//label[1]'},
-       'master_data_edit_permissions': {'method': 'xpath',
-                              'value':'//div[@id="permissionsTable"]//div[2]//div[3]//span[1]//label[1]'},
-       'order_view_permissions': {'method': 'xpath',
-                              'value': '//div[@id="permissionsTable"]//div[7]//div[2]//span[1]//label[1]'},
-       'order_edit_permissions': {'method': 'xpath',
-                              'value':'//div[@id="permissionsTable"]//div[7]//div[3]//span[1]//label[1]'},
-       'analysis_view_permissions': {'method': 'xpath',
-                              'value': '//div[@id="permissionsTable"]//div[9]//div[2]//span[1]//label[1]'},
-       'analysis_edit_permissions': {'method': 'xpath',
-                              'value':'//div[@id="permissionsTable"]//div[9]//div[3]//span[1]//label[1]'},
-   },
-     
+                                  'value': 'table-with-add'},
+        'departments_field_tags': {'method': 'xpath',
+                                   'value': '//div[@class="ng2-tags-container"]'},
+        'departments_tag': {'method': 'xpath',
+                            'value': '//div[@class="tag__text inline"]'},
+        'is_client_checkbox': {'method': 'xpath',
+                               'value': '//label[@id="isClient"]//input[@type="checkbox"]'},
+        'is_supplier_checkbox': {'method': 'xpath',
+                                 'value': '//label[@id="isSupplier"]//input[@type="checkbox"]'},
+        'is_laboratory_checkbox': {'method': 'xpath',
+                                   'value': '//label[@id="isLaboratory"]//input[@type="checkbox"]'},
+        'delete_person_button': {'method': 'id',
+                                 'value': 'delete_table_view'}
     },
     'configurations_page': {
         'active_fields_tab': {'method': 'id',
