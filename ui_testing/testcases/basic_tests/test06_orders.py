@@ -259,8 +259,6 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
             
-    # will implement with the new behavior that it will duplicate with new order number
-    # @skip('https://modeso.atlassian.net/browse/LIMS-4766')
     def test008_duplicate_order_one_copy(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
@@ -270,46 +268,35 @@ class OrdersTestCases(BaseTest):
         """
         # get the random main order data
         main_order = self.order_page.get_random_main_order_with_sub_orders_data()
-
         # select the order
         self.order_page.click_check_box(main_order['row_element'])
-
         # duplicate the main order
         self.order_page.duplicate_main_order_from_table_overview()
-
         # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
 
         # ignore the non matching properties that exist in one view and not the other
-        # the table view doesn't have testUnits, so will ignore the duplicate form testunits
-        for suborder in after_duplicate_order['suborders']:
-            suborder['testunits'] = []
-        # analysis no is empty in the duplicated order, so will ignore the table analysis no
-        for suborder in main_order['suborders']:
-            suborder['analysis_no'] = ''
+        for index in range(len(main_order['suborders'])):
+            main_order['suborders'][index]['analysis_no'] = ''
+            after_duplicate_order['suborders'][index]['testunits'] = []
 
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
-
         # make sure that the new order has different order No
         self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
-
         # make sure that the main order and the new order has the same number of suborders
         self.assertEqual(len(main_order['suborders']), len(after_duplicate_order['suborders']))
-
         # compare the data of sub orders data in both orders
         self.assertListEqual(main_order['suborders'], after_duplicate_order['suborders'])
 
         # save the duplicated order
         self.order_page.save()
-
         # go back to the table view
         self.order_page.get_orders_page()
-
         # search for the created order no
         self.order_page.search(after_duplicate_order['orderNo'])
-        results = self.order_page.result_table().text
-
+        # get the search result text
+        results = self.order_page.result_table()[0].text
         # check that it exists
         self.assertIn(after_duplicate_order['orderNo'], results)
 

@@ -4,6 +4,9 @@ from selenium import webdriver
 from random import randint
 
 class Order(Orders):
+    def save(self, sleep=True, save_btn='general:save', logger_msg='save the changes'):
+        return super().save(sleep=sleep, save_btn='orders:save_order', logger_msg=logger_msg)
+
     def get_order(self):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]
 
@@ -330,7 +333,7 @@ class Order(Orders):
             suborder_data = suborder
             article = {
                 "name": suborder_data['Article Name'],
-                "no": suborder_data['Article No.']
+                "no": suborder_data['Article No.'].replace("'", '').replace('"', '')
             }
 
             mapped_suborder_data = {
