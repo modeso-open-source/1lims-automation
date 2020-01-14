@@ -125,7 +125,7 @@ class Orders(BasePages):
         # attach the sub orders to the main order
         main_order['suborders'] = sub_orders
         # construct the order object
-        main_order = self.construct_main_order_object(main_order)
+        main_order = self.construct_main_order_from_table_view(main_order)
         # attach the row element
         main_order['row_element'] = all_orders[row_id]
         # return the main order
