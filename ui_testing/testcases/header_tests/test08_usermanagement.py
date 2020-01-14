@@ -522,5 +522,3 @@ class HeaderTestCases(BaseTest):
 
 
 
-
-
