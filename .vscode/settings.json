@@ -1,0 +1,13 @@
+{
+    "python.testing.nosetestsEnabled": true,
+    "python.testing.nosetestArgs": [
+        "-vs",
+        "ui_testing/testcases/",
+        "--logging-level=WARNING",
+        "--tc-file=config.ini",
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--max-line-length=120"]
+}

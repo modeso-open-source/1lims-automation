@@ -12,6 +12,7 @@ from ui_testing.pages.base_pages import BasePages
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.audit_trail_page import AuditTrail
 from ui_testing.pages.contacts_page import Contacts
+from ui_testing.pages.my_profile_page import MyProfile
 from ui_testing.pages.company_profile_page import CompanyProfile
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
@@ -24,7 +25,6 @@ from api_testing.apis.users_api import UsersAPI
 from api_testing.apis.roles_api import RolesAPI
 from api_testing.apis.analysis_api import AnalysisAPI
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
-
 import datetime, re
 
 
@@ -46,6 +46,7 @@ class BaseTest(TestCase):
         self.order_page = Order()
         self.audit_trail_page = AuditTrail()
         self.header_page = Header()
+        self.my_profile_page = MyProfile()
         self.base_page = BasePages()
         self.contacts_page = Contacts()
         self.company_profile_page = CompanyProfile()

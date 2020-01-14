@@ -66,7 +66,7 @@ class RolesAPI(BaseAPI):
             if self.delete_archived_role(id=id):
                 return True
             else:
-                self.restore_roles(ids=[id])
+                self.restore_roles(ids=[str(id)])
                 return False
         else:
             return False

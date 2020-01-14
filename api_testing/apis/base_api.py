@@ -31,18 +31,26 @@ class BaseAPI:
                         'cache-control': "no-cache"}
         self._get_authorized_session()
 
-    def _get_authorized_session(self):
+    def _get_authorized_session(self, username=None, password=None, reset_token=False):
+        username = username or self.username
+        password = password or self.password
+        if reset_token == True:
+            BaseAPI.AUTHORIZATION = None
+            self.headers['Authorization'] = None
+
         if not BaseAPI.AUTHORIZATION:
             self.info('Get authorized api session.')
             api = self.url + "/api/auth"
             header = {'Content-Type': "application/json", 'Authorization': "Bearer", 'Connection': "keep-alive",
                       'cache-control': "no-cache"}
-            data = {'username': self.username, 'password': self.password}
+            data = {'username': username, 'password': password}
             response = self.session.post(api, json=data, headers=header, verify=False)
             BaseAPI.AUTHORIZATION = 'Bearer {}'.format(response.json()['data']['sessionId'])
             self.info('session ID : {} .....'.format(response.json()['data']['sessionId'][:10]))
 
         self.headers['Authorization'] = BaseAPI.AUTHORIZATION
+        return BaseAPI.AUTHORIZATION
+
 
     @staticmethod
     def update_payload(payload, **kwargs):
