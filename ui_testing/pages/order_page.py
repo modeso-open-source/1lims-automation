@@ -306,7 +306,7 @@ class Order(Orders):
                 'departments': suborder_data['departments'].split(',\n'),
                 'material_type': suborder_data['materialType'],
                 'article': article,
-                'testplans': suborder_data['testPlans'].split(',\n') ,
+                'testplans': suborder_data['testPlans'].split(',\n'),
                 'testunits': testunits,
                 'shipment_date': suborder_data['shipmentDate'],
                 'test_date': suborder_data['testDate']
@@ -315,7 +315,7 @@ class Order(Orders):
         order_data['suborders'] = suborders_data
         return order_data
 
-    def construct_order_object(self, order_row=None):
+    def construct_main_order_object(self, order_row=None):
         order_data = {
             "orderNo": self.get_no(order_row),
             "contacts": self.get_contact(order_row),
@@ -336,7 +336,8 @@ class Order(Orders):
                 'departments': suborder_data['Departments'].split(',\n'),
                 'material_type': suborder_data['Material Type'],
                 'article': article,
-                'testplans': suborder_data['Test Plans'].split(',\n'),
+                'testplans': suborder_data['Test Plans'].split(',\n'),              
+                'testunits': [],
                 'shipment_date': suborder_data['Shipment Date'],
                 'test_date': suborder_data['Test Date']
             }

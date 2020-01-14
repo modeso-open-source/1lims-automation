@@ -254,13 +254,12 @@ class OrdersTestCases(BaseTest):
             for search_result in search_results:
                 search_data = self.base_selenium.get_row_cells_dict_related_to_header(
                     search_result)
-                if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[
-                    0]:
+                if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[0]:
                     break
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
             
-    # will implement with the new behavior that it will duplicate with new order number 
+    # will implement with the new behavior that it will duplicate with new order number
     # @skip('https://modeso.atlassian.net/browse/LIMS-4766')
     def test008_duplicate_order_one_copy(self):
         """
@@ -272,8 +271,6 @@ class OrdersTestCases(BaseTest):
         # get the random main order data
         main_order = self.order_page.get_random_main_order_with_sub_orders_data()
 
-        constructed_order = self.order_page.construct_order_object(main_order)
-
         # select the order
         self.order_page.click_check_box(main_order['row_element'])
 
@@ -283,20 +280,23 @@ class OrdersTestCases(BaseTest):
         # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
 
+        for suborder in after_duplicate_order['suborders']:
+            suborder['article']['no'] = None
+            suborder['testunits'] = []
+
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
 
         # make sure that the new order has different order No
-        self.assertNotEqual(main_order['Order No.'], after_duplicate_order['orderNo'])
+        self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
 
         # make sure that the main order and the new order has the same number of suborders
         self.assertEqual(len(main_order['suborders']), len(after_duplicate_order['suborders']))
 
         # compare some of the sub orders data in both orders
-        self.assertEqual(main_order['suborders'][0]['Article Name'], after_duplicate_order['suborders'][0]['article']['name'])
-        self.assertEqual(main_order['suborders'][0]['Material Type'], after_duplicate_order['suborders'][0]['material_type'])
-    
-    # will continue with us 
+        self.assertDictEqual(main_order['suborders'], after_duplicate_order['suborders'])
+
+    # will continue with us
     def test009_export_order_sheet(self):
         """
         New: Orders: XSLX Approach: user can download all data in table view with the same order with table view

@@ -119,12 +119,14 @@ class Orders(BasePages):
         # select random order
         row_id = randint(0, len(all_orders) - 2)
         # get the main order data
-        main_order = self.base_selenium.get_row_cells_dict_related_to_header(row = all_orders[row_id])
+        main_order = self.base_selenium.get_row_cells_dict_related_to_header(row=all_orders[row_id])
         # get its sub orders
         sub_orders = self.get_child_table_data(row_id)
         # attach the sub orders to the main order
         main_order['suborders'] = sub_orders
-        # attach the row element 
+        # construct the order object
+        main_order = self.construct_main_order_object(main_order)
+        # attach the row element
         main_order['row_element'] = all_orders[row_id]
         # return the main order
         return main_order
