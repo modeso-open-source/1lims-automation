@@ -315,13 +315,33 @@ class Order(Orders):
         order_data['suborders'] = suborders_data
         return order_data
 
-    def construct_order_object(self, order_row = None):
+    def construct_order_object(self, order_row=None):
         order_data = {
             "orderNo": self.get_no(order_row),
             "contacts": self.get_contact(order_row),
             "suborders": []
         }
 
+        suborders_data = []
+        self.base_selenium.LOGGER.info('getting suborders data')
+        for suborder in order_row['suborders']:
+            suborder_data = suborder
+            article = {
+                "name": suborder_data['Article Name'],
+                "no": suborder_data['Article Name']
+            }
+
+            mapped_suborder_data = {
+                'analysis_no': suborder_data['Analysis No.'],
+                'departments': suborder_data['Departments'].split(',\n'),
+                'material_type': suborder_data['Material Type'],
+                'article': article,
+                'testplans': suborder_data['Test Plans'].split(',\n'),
+                'shipment_date': suborder_data['Shipment Date'],
+                'test_date': suborder_data['Test Date']
+            }
+            suborders_data.append(mapped_suborder_data)
+        order_data['suborders'] = suborders_data
         return order_data
 
     def remove_testplan_by_name(self, index, testplan_name):

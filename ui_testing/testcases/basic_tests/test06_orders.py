@@ -280,7 +280,7 @@ class OrdersTestCases(BaseTest):
         # duplicate the main order
         self.order_page.duplicate_main_order_from_table_overview()
 
-        # get the new order data 
+        # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
 
         # make sure that its the duplication page
@@ -289,7 +289,7 @@ class OrdersTestCases(BaseTest):
         # make sure that the new order has different order No
         self.assertNotEqual(main_order['Order No.'], after_duplicate_order['orderNo'])
 
-        # make sure that the main order and the new order has the same number of suborders 
+        # make sure that the main order and the new order has the same number of suborders
         self.assertEqual(len(main_order['suborders']), len(after_duplicate_order['suborders']))
 
         # compare some of the sub orders data in both orders
