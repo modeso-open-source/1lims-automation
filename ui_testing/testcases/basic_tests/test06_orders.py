@@ -269,60 +269,32 @@ class OrdersTestCases(BaseTest):
         LIMS-3270
         :return:
         """
-        # order_row_from_table_list = []
-        # order_row_from_form_list = []
-        selected_order = self.order_page.get_random_order_row()
-        self.order_page.open_child_table(source=selected_order)
-        self.base_selenium.get_row_cells_dict_related_to_header(row=selected_order)
-        data = self.order_page.get_child_table_data()
-        self.info('+ Get Child Data')
+        # get the random main order data
+        main_order = self.order_page.get_random_main_order_with_sub_orders_data()
 
-        # # add order number
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
-        # # contact
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
-        # # material type
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
-        # # article name
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
-        # # article number
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...',
-        #                                                                                                 '').replace(
-        #         "'", ''))
+        constructed_order = self.order_page.construct_order_object(main_order)
 
-        # # #shipment date
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
-        # # #test Date
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
-        # order_row_from_table_list.append(
-        #     self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Departments'))
+        # select the order
+        self.order_page.click_check_box(main_order['row_element'])
 
-        # self.order_page.duplicate_order_from_table_overview(1)
-        # order_row_from_form_list.extend(
-        #     [self.order_page.get_order_number().replace("'", ''), self.order_page.get_contact(),
-        #      self.order_page.get_material_type()])
-        # order_row_from_form_list.append(
-        #     self.order_page.get_article().split(' No')[0][0:30])
-        # order_row_from_form_list.append(self.order_page.get_article().split('No:')[
-        #                                     1].replace("'", '')[0:30])
-        # order_row_from_form_list.append(self.order_page.get_shipment_date())
-        # order_row_from_form_list.append(self.order_page.get_test_date())
-        # order_row_from_form_list.append(self.order_page.get_test_plan())
-        # order_row_from_form_list.append(self.order_page.get_departments())
-        # self.base_selenium.LOGGER.info(
-        #     ' + compare if data from table : {} is equal data in form {} '.format(order_row_from_table_list,
-        #                                                                           order_row_from_form_list))
-        # self.assertListEqual(order_row_from_form_list,
-        #                      order_row_from_table_list)
+        # duplicate the main order
+        self.order_page.duplicate_main_order_from_table_overview()
+
+        # get the new order data 
+        after_duplicate_order = self.order_page.get_suborder_data()
+
+        # make sure that its the duplication page
+        self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
+
+        # make sure that the new order has different order No
+        self.assertNotEqual(main_order['Order No.'], after_duplicate_order['orderNo'])
+
+        # make sure that the main order and the new order has the same number of suborders 
+        self.assertEqual(len(main_order['suborders']), len(after_duplicate_order['suborders']))
+
+        # compare some of the sub orders data in both orders
+        self.assertEqual(main_order['suborders'][0]['Article Name'], after_duplicate_order['suborders'][0]['article']['name'])
+        self.assertEqual(main_order['suborders'][0]['Material Type'], after_duplicate_order['suborders'][0]['material_type'])
     
     # will continue with us 
     def test009_export_order_sheet(self):

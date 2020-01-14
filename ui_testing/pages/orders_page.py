@@ -56,6 +56,12 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:create_copies')
         self.sleep_medium()
 
+    def duplicate_main_order_from_table_overview(self):
+        self.info('Duplicate the main order')
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='orders:duplicate')
+        self.sleep_medium()
+
     def get_random_order(self):
         self.base_selenium.LOGGER.info(' + Get random order.')
         row = self.get_random_order_row()
@@ -105,3 +111,20 @@ class Orders(BasePages):
             return filter_fileds
         else:
             return filter_fileds[key]
+
+    def get_random_main_order_with_sub_orders_data(self):
+        self.info('+ Get Main order data with related subOrders')
+        # get all the order rows
+        all_orders = self.base_selenium.get_table_rows(element='orders:orders_table')
+        # select random order
+        row_id = randint(0, len(all_orders) - 2)
+        # get the main order data
+        main_order = self.base_selenium.get_row_cells_dict_related_to_header(row = all_orders[row_id])
+        # get its sub orders
+        sub_orders = self.get_child_table_data(row_id)
+        # attach the sub orders to the main order
+        main_order['suborders'] = sub_orders
+        # attach the row element 
+        main_order['row_element'] = all_orders[row_id]
+        # return the main order
+        return main_order

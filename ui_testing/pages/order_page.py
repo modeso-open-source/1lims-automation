@@ -1,6 +1,7 @@
 from ui_testing.pages.orders_page import Orders
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
+from random import randint
 
 class Order(Orders):
     def get_order(self):
@@ -53,8 +54,11 @@ class Order(Orders):
                 element='order:contact')
             return self.get_contact()
 
-    def get_contact(self):
-        return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]}, self.base_selenium.get_text(element='order:contact').split('\n')))
+    def get_contact(self, order_row = None):
+        if order_row:
+            return list(map(lambda s: {"name": str(s), "no": None}, order_row['Contact Name'].split(',\n')))
+        else:
+            return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]}, self.base_selenium.get_text(element='order:contact').split('\n')))
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
@@ -141,8 +145,11 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' Order Auto filled with data from order no : {} '.format(order_no))
         return order_no
 
-    def get_no(self):
-        return self.base_selenium.get_value(element="order:no")
+    def get_no(self, order_row = None):
+        if order_row:
+            return order_row['Order No.']
+        else:
+            return self.base_selenium.get_value(element="order:no")
 
     def set_no(self, no):
         self.base_selenium.LOGGER.info(' set no. {}'.format(no))
@@ -306,6 +313,15 @@ class Order(Orders):
             }
             suborders_data.append(temp_suborder_data)
         order_data['suborders'] = suborders_data
+        return order_data
+
+    def construct_order_object(self, order_row = None):
+        order_data = {
+            "orderNo": self.get_no(order_row),
+            "contacts": self.get_contact(order_row),
+            "suborders": []
+        }
+
         return order_data
 
     def remove_testplan_by_name(self, index, testplan_name):
@@ -473,3 +489,11 @@ class Order(Orders):
     def navigate_to_analysis_tab(self):
         self.base_selenium.click('order:analysis_tab')
         self.sleep_small()
+
+    def get_random_main_order_with_related_sub_orders_data(self):
+        rows = self.base_selenium.get_table_rows(element='orders:orders_table')
+        row_id = randint(0, len(rows) - 2)
+        row = self.base_selenium.get_row_cells_dict_related_to_header(row = rows[row_id])
+        child_row = self.get_child_table_data(row_id)
+        row['sub_orders'] = child_row
+        return row
