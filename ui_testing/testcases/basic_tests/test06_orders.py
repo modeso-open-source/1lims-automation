@@ -284,8 +284,6 @@ class OrdersTestCases(BaseTest):
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No
         self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
-        # make sure that the main order and the new order has the same number of suborders
-        self.assertEqual(len(main_order['suborders']), len(after_duplicate_order['suborders']))
         # compare the data of sub orders data in both orders
         self.assertListEqual(main_order['suborders'], after_duplicate_order['suborders'])
 
