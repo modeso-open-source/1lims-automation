@@ -288,7 +288,7 @@ class OrdersTestCases(BaseTest):
         self.assertListEqual(main_order['suborders'], after_duplicate_order['suborders'])
 
         # save the duplicated order
-        self.order_page.save()
+        self.order_page.save(save_btn='orders:save_order')
         # go back to the table view
         self.order_page.get_orders_page()
         # search for the created order no
