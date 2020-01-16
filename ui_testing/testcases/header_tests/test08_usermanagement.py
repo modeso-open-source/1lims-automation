@@ -72,7 +72,8 @@ class HeaderTestCases(BaseTest):
                 if search_data[column] == row_data[column]:
                     break
             self.assertEqual(row_data[column], search_data[column])
-
+            
+    @skip('https://modeso.atlassian.net/browse/LIMS-6563')
     def test004_download_user_sheet(self):
         """
         User management: Make sure you can export all the data in the active table & it should display in the same order
