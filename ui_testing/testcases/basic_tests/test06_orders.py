@@ -708,7 +708,7 @@ class OrdersTestCases(BaseTest):
     def test032_update_test_date(self, save):
         """
         New: Orders: Test Date: I can update test date successfully with cancel/save buttons
-        LIMS-4780
+        
         LIMS-4780
         :return:
         """
