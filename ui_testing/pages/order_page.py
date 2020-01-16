@@ -1,6 +1,7 @@
 from ui_testing.pages.orders_page import Orders
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
+from random import randint
 
 class Order(Orders):
     def get_order(self):
@@ -179,13 +180,59 @@ class Order(Orders):
     def get_shipment_date(self):
         return self.base_selenium.get_value(element='order:shipment_date')
 
-    def get_test_date(self):
-        return self.base_selenium.get_value(element='order:test_date')
+    def get_random_suborder_data(self, row_id=None):
+        
+        # get all the suborders
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        # select random row id
+        if not row_id:
+            if len(suborders) > 1:
+                row_id = randint(0, len(suborders) - 1)
+            else:
+                row_id = 0
 
-    def set_test_date(self, date=''):
+        self.info('Getting suborder no. {}'.format(row_id))
+
+        # get the current suborder data
+        suborder = self.base_selenium.get_row_cells_id_dict_related_to_header(
+            row=suborders[row_id], table_element='order:suborder_table')
+        # attach the row_id to the suborder
+        suborder['row_id'] = row_id
+        # attach the row element to the suborder
+        suborder['row_element'] = suborders[row_id]
+        return suborder
+
+    def open_suborder_edit_mode(self, row_id=None):
+        # get the suborder
+        suborder_data = self.get_random_suborder_data(row_id)
+        self.info('Open suborder no. {} for edit mode'.format(suborder_data['row_id']))
+        # click the table row (used script because the tr is not clickable)
+        self.base_selenium.driver.execute_script('arguments[0].click();', suborder_data['row_element'])
+        return suborder_data['row_id']
+
+    def close_suborder_edit_mode(self):
+        self.info('Close the suborder edit mode')
+        webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
+
+    def get_test_date(self, row_id=None):
+        # open the row in edit mode
+        row_id = self.open_suborder_edit_mode(row_id=row_id)
+        self.info('Get the test date value')
+        # get the test_date field of the selected row
+        test_date = self.base_selenium.find_element_by_xpath('//*[@id="date_testDate_{}"]'.format(row_id))
+        return test_date.get_attribute('value')
+
+    def set_test_date(self, date='', row_id=None):
+        # set random date
         if not date:
             date = self.get_random_date()
-        self.base_selenium.set_text(element='order:test_date', value=date)
+        self.info('Set the test date value to {}'.format(date))
+        # open the row in edit mode
+        row_id = self.open_suborder_edit_mode(row_id=row_id)
+        # get the test_date field of the selected row
+        test_date = self.base_selenium.find_element_by_xpath('//*[@id="date_testDate_{}"]'.format(row_id))
+        test_date.clear()
+        test_date.send_keys(date)
         return date
 
     def set_shipment_date(self, date=''):
