@@ -12,16 +12,20 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.header_page.click_on_header_button()
 
+
     def test001_archive_user_management(self):
         """
         User management: Make sure that you can archive any record
         LIMS-6379
         :return:
         """
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
+        self.header_page.sleep_small()
         selected_user_management_data, _ = self.header_page.select_random_multiple_table_rows()
-        self.header_page.archive_selected_users()
-        self.header_page.get_archived_users()
+        self.header_page.archive_entity(menu_element='user_management:right_menu',
+                                        archive_element='user_management:archive')
+        self.header_page.get_archived_entities(menu_element='user_management:right_menu',
+                                               archived_element='user_management:archived')
         for user in selected_user_management_data:
             user_name = user['Name']
             self.base_selenium.LOGGER.info(' + {} user should be activated.'.format(user_name))
@@ -33,15 +37,17 @@ class HeaderTestCases(BaseTest):
         LIMS-6380
         :return:
             """
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
         user_names = []
-        self.header_page.get_archived_users()
+        self.header_page.get_archived_entities(menu_element='user_management:right_menu',
+                                               archived_element='user_management:archived')
         selected_user_data, _ = self.header_page.select_random_multiple_table_rows()
         for user in selected_user_data:
             user_names.append(user['Name'])
-
-        self.header_page.restore_selected_user()
-        self.header_page.get_active_users()
+        self.header_page.restore_entity(menu_element='user_management:right_menu',
+                                        restore_element='user_management:restore')
+        self.header_page.get_active_entities(menu_element='user_management:right_menu',
+                                             active_element='user_management:active')
         for user_name in user_names:
             self.assertTrue(self.header_page.is_user_in_table(value=user_name))
 
@@ -52,7 +58,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6082
         :return:
         """
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
         row = self.header_page.getsearch_random_user_row()
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         for column in row_data:
@@ -73,7 +79,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6101
         :return:
         """
-        self.header_page.click_on_user_management_button()
+        self.base_selenium.click(element='header:user_management_button')
         self.base_selenium.LOGGER.info(' * Download XSLX sheet')
         self.header_page.download_xslx_sheet()
         rows_data = self.header_page.get_table_rows_data()
@@ -84,7 +90,6 @@ class HeaderTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
-
 
     def test005_delete_user(self):
         self.base_selenium.click(element='header:user_management_button')
