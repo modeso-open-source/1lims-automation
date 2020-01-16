@@ -1,6 +1,7 @@
 from ui_testing.testcases.base_test import BaseTest
 from parameterized import parameterized
 import re
+import random
 from unittest import skip
 
 
@@ -10,7 +11,10 @@ class ContactsTestCases(BaseTest):
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.contact_page.get_contacts_page()
-        self.contact_page.set_all_configure_table_columns_to_specific_value(value=True, always_hidden_columns=['fax'])
+        table_fields = self.contacts_api.get_table_fields(component_id=3)
+
+        if self.contact_page.check_for_hidden_table_fields(fields=table_fields):
+            self.contact_page.set_all_configure_table_columns_to_specific_value(value=True, always_hidden_columns=['fax'])
         self.contact_page.sleep_tiny()
 
     def test_001_archive_contact(self):
@@ -427,7 +431,29 @@ class ContactsTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}contacts'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
-    def test015_create_user_with_role_contact(self):
+    def test015_contacts_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+        LIMS-6201
+
+        """
+        contacts = self.get_all_contacts()
+        contact_name = random.choice(contacts)['name']
+        search_results = self.contact_page.search(contact_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Contact Name'] == contact_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(contact_name, search_data['Contact Name'])
+        # Navigate to test plan page
+        self.base_selenium.LOGGER.info('navigate to test plans page')
+        self.test_plan.get_test_plans_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+
+    def test016_create_user_with_role_contact(self):
         """
         New: Contact: User management: All the contacts created should be found when I create new user with role contact 
         All the contacts created should be found when I create new user with role contact 
@@ -467,4 +493,238 @@ class ContactsTestCases(BaseTest):
         self.assertEqual(user_name, row_data['Name'])
         self.assertEqual(contact_name, row_data['Contact'])
 
+    def test017_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
 
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
+
+    def test018_filter_by_contact_name(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by Name
+        LIMS-6408
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='name')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:name', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Contact Name'], data_to_filter_with)
+            counter = counter +1
+    
+    def test019_filter_by_contact_departments(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by departments
+        LIMS-6413
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='departments').split(',')[0]
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:departments', filter_text=data_to_filter_with)
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            contact_departments = row_data['Departments'].split(', ')
+            self.assertIn(data_to_filter_with, contact_departments)
+            counter = counter +1
+    
+    def test020_filter_by_contact_skype(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by skype
+        LIMS-6418
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='skype')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:skype', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Skype'], data_to_filter_with)
+            counter = counter +1
+    
+    def test021_filter_by_contact_number(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by number
+        LIMS-6409
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='companyNo')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:no', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Contact No'].replace("'",""), data_to_filter_with.replace("'",""))
+            counter = counter +1
+   
+    def test022_filter_by_contact_email(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by email
+        LIMS-6414
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='email')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:email', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Email'], data_to_filter_with)
+            counter = counter +1
+    
+    def test023_filter_by_contact_postalcode(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by postal code
+        LIMS-6419
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='postalCode')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:postalcode_filter', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Postal Code'], data_to_filter_with)
+            counter = counter +1
+    
+    def test024_filter_by_contact_changed_by(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by changed by
+        LIMS-6410
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='lastModifiedUser')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:last_modified_user_field', filter_text=data_to_filter_with)
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Changed By'], data_to_filter_with)
+            counter = counter +1
+    
+    def test025_filter_by_contact_website(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by website
+        LIMS-6415
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='website')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:website', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Website'], data_to_filter_with)
+            counter = counter +1
+    
+    def test026_filter_by_contact_created_on(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by created on 
+        LIMS-6420
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='createdAt')
+        data_to_filter_with = self.contact_page.convert_to_dot_date_format(date=data_to_filter_with)
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:created_on_field', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Created On'], data_to_filter_with)
+            counter = counter +1
+    
+    def test027_filter_by_contact_address(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by address
+        LIMS-6411
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='country')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:country_filter', filter_text=data_to_filter_with)
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Country'], data_to_filter_with)
+            counter = counter +1
+    
+    def test028_filter_by_contact_type(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by type
+        LIMS-6421
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='type')
+        self.assertNotEqual(data_to_filter_with, False)
+        data_to_filter_with = self.contact_page.get_mapped_contact_type(contact_type=data_to_filter_with[0])
+        
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:type_filter', filter_text=data_to_filter_with)
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            contact_type = row_data['Type'].split(', ')
+            self.assertIn(data_to_filter_with, contact_type)
+            counter = counter +1
+   
+    def test029_filter_by_contact_phone(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by phone
+        LIMS-6412
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='phone')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:phone', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Phone'], data_to_filter_with)
+            counter = counter +1
+    
+    def test030_filter_by_contact_location(self):
+        """
+        Contacts: Filter Approach: Make sure you can filter by location
+        LIMS-6417
+        """
+        
+        data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='location')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.contact_page.apply_filter_scenario(filter_element='contact:location', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.contact_page.result_table()
+        counter = 0
+        while counter < (len(table_records) -1):
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=table_records[counter])
+            self.assertEqual(row_data['Location'], data_to_filter_with)
+            counter = counter +1
+
+    

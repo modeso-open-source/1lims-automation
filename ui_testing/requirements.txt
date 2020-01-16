@@ -10,3 +10,4 @@ pandas
 xlrd
 loguru
 pyperclip
+pymysql
