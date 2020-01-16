@@ -510,5 +510,3 @@ class HeaderTestCases(BaseTest):
 
 
 
-
-
