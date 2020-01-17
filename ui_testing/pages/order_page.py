@@ -315,38 +315,6 @@ class Order(Orders):
         order_data['suborders'] = suborders_data
         return order_data
 
-    def construct_main_order_from_table_view(self, order_row=None):
-        order_data = {
-            "orderNo": self.get_no(order_row),
-            "contacts": self.get_contact(order_row),
-            "suborders": []
-        }
-
-        suborders_data = []
-
-        self.base_selenium.LOGGER.info('getting suborders data')
-
-        for suborder in order_row['suborders']:
-            suborder_data = suborder
-            article = {
-                "name": suborder_data['Article Name'],
-                "no": suborder_data['Article No.'].replace("'", '').replace('"', '')
-            }
-
-            mapped_suborder_data = {
-                'analysis_no': suborder_data['Analysis No.'],  # suborder_data['Analysis No.'],
-                'departments': suborder_data['Departments'].split(', '),
-                'material_type': suborder_data['Material Type'],
-                'article': article,
-                'testplans': suborder_data['Test Plans'].split(',\n') if suborder_data['Test Plans'] != '-' else [''],              
-                'testunits': [],
-                'shipment_date': suborder_data['Shipment Date'],
-                'test_date': suborder_data['Test Date']
-            }
-            suborders_data.append(mapped_suborder_data)
-
-        order_data['suborders'] = suborders_data
-        return order_data
 
     def remove_testplan_by_name(self, index, testplan_name):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
@@ -513,11 +481,3 @@ class Order(Orders):
     def navigate_to_analysis_tab(self):
         self.base_selenium.click('order:analysis_tab')
         self.sleep_small()
-
-    def get_random_main_order_with_related_sub_orders_data(self):
-        rows = self.base_selenium.get_table_rows(element='orders:orders_table')
-        row_id = randint(0, len(rows) - 2)
-        row = self.base_selenium.get_row_cells_dict_related_to_header(row = rows[row_id])
-        child_row = self.get_child_table_data(row_id)
-        row['sub_orders'] = child_row
-        return row

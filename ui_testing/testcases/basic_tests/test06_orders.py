@@ -259,7 +259,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
             
-    def test008_duplicate_order_one_copy(self):
+    def test008_duplicate_main_order(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
 

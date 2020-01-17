@@ -112,6 +112,39 @@ class Orders(BasePages):
         else:
             return filter_fileds[key]
 
+    def construct_main_order_from_table_view(self, order_row=None):
+        order_data = {
+            "orderNo": self.get_no(order_row),
+            "contacts": self.get_contact(order_row),
+            "suborders": []
+        }
+
+        suborders_data = []
+
+        self.base_selenium.LOGGER.info('getting suborders data')
+
+        for suborder in order_row['suborders']:
+            suborder_data = suborder
+            article = {
+                "name": suborder_data['Article Name'],
+                "no": suborder_data['Article No.'].replace("'", '').replace('"', '')
+            }
+
+            mapped_suborder_data = {
+                'analysis_no': suborder_data['Analysis No.'],  # suborder_data['Analysis No.'],
+                'departments': suborder_data['Departments'].split(', '),
+                'material_type': suborder_data['Material Type'],
+                'article': article,
+                'testplans': suborder_data['Test Plans'].split(',\n') if suborder_data['Test Plans'] != '-' else [''],              
+                'testunits': [],
+                'shipment_date': suborder_data['Shipment Date'],
+                'test_date': suborder_data['Test Date']
+            }
+            suborders_data.append(mapped_suborder_data)
+
+        order_data['suborders'] = suborders_data
+        return order_data
+
     def get_random_main_order_with_sub_orders_data(self):
         self.info('+ Get Main order data with related subOrders')
         # get all the order rows
