@@ -167,6 +167,41 @@ class TestUnitAPI(BaseAPI):
 
         return self.create_testunit(request_body=request_body, **kwargs)
 
+    # you need to add the following attributes
+    # {
+    # number: testunit number
+    # name: testunit name
+    # selectedMAterialType: [
+    # {
+    #   'id': material type id,
+    #   'text': material type text
+    # }
+    # ]
+    # category: {
+    #   'id': 'new' in case of creating new category, category id in case of old category
+    #   'text': category text
+    # }
+    # type: {
+    #   'id': testunit type id can be obtained using API call list_testunits_types,
+    #   'text': testunit type text
+    # }
+    # unit: *optional*
+    # method: mandatory field, will be set to 'random method' in case no method provided
+    # textValue: string separated by ',' dentoes the values of specifications (in case of qualtiative testunit only)
+    # useQuantification: True/False in case of Quantitative testunits with quantification limit 
+    # useSpec: True/False in case of Quantitative testunits with specifications
+    # upperLimit: specification upper limit in case of Quantitative with specifications
+    # lowerLimit: specification lower limit in case of Quantitative with specifications
+    # quantificationUpperLimit: quantification upper limit in case of Quantitative with quantification
+    # quantificationLowerLimit: quantification lower limit in case of Quantitative with quantification
+    # quantificationUnit: unit in case of quantification limit
+    # selectedConcs: [
+    # {
+    #   'id': concentration id, can be obtained using list_testunits_concentrations,
+    #   'text': concentration text, can be obtained using list_testunits_concentrations
+    # }
+    # ]
+    # in case of MiBi, use upperLimit: to define mibi upper limit value}
     def create_testunit(self, request_body, **kwargs):
         if 'method' not in kwargs:
             request_body['method'] = 'random method'
