@@ -201,7 +201,8 @@ class TestUnitAPI(BaseAPI):
     #   'text': concentration text, can be obtained using list_testunits_concentrations
     # }
     # ]
-    # in case of MiBi, use upperLimit: to define mibi upper limit value}
+    # in case of MiBi, use upperLimit: to define mibi upper limit value
+    # }
     def create_testunit(self, request_body, **kwargs):
         if 'method' not in kwargs:
             request_body['method'] = 'random method'

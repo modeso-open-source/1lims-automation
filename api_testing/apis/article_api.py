@@ -70,12 +70,23 @@ class ArticleAPI(BaseAPI):
         else:
             return False
 
+    # you need to add the following attributes
+    # {
+    # No: article number
+    # name: article name
+    # materialType: {
+    #   'id': 'new' in case of new material type, material type id can be obtained using general_utilities_api.list_all_material_types(),
+    #   'text': material type text
+    # }
+    # }
     def create_article(self, **kwargs):
         request_body = {}
         request_body['selectedArticles'] = []
         request_body['selectedArticlesNos'] = []
         request_body['dynamicFieldsValues'] = []
-        
+        request_body['selectedMaterialType'] = [kwargs['materialType']]
+        request_body['materialTypeId'] = kwargs['materialType']['id']
+
         payload = self.update_payload(request_body, **kwargs)
 
         api = '{}{}'.format(self.url, self.END_POINTS['article_api']['create_article']) 
