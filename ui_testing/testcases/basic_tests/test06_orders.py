@@ -286,8 +286,6 @@ class OrdersTestCases(BaseTest):
             for testunit in after_duplicate_order['suborders'][index]['testunits']:
                 testunit['no'] = None
 
-        self.maxDiff = None
-
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No

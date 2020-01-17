@@ -299,7 +299,7 @@ class Order(Orders):
                         "no": testunit.split(' No: ')[1]
                     })
                 else:
-                    testunits.append('-')
+                    testunits = []
 
             temp_suborder_data = {
                 'analysis_no': suborder_data['analysisNo'],
