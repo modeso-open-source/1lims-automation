@@ -275,15 +275,15 @@ class OrdersTestCases(BaseTest):
         # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
 
-        # ignore the non matching properties that exist in one view and not the other
         for index in range(len(main_order['suborders'])):
+            # ignore analysis no. since it won't be created until saving
             main_order['suborders'][index]['analysis_no'] = ''
-            after_duplicate_order['suborders'][index]['testunits'] = []
 
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No
         self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
+        # compare the contacts 
         # compare the data of sub orders data in both orders
         self.assertListEqual(main_order['suborders'], after_duplicate_order['suborders'])
 
