@@ -152,7 +152,7 @@ class Orders(BasePages):
                 'material_type': suborder_data['Material Type'],
                 'article': article,
                 'testplans': suborder_data['Test Plans'].split(',\n') if suborder_data['Test Plans'] != '-' else [''],              
-                'testunits': testunits if suborder_data['Test Units'] != '-' else [''],
+                'testunits': testunits if suborder_data['Test Units'] != '-' else [],
                 'shipment_date': suborder_data['Shipment Date'],
                 'test_date': suborder_data['Test Date']
             }
