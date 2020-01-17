@@ -275,17 +275,27 @@ class OrdersTestCases(BaseTest):
         # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
 
+        # ignore contact no since the table view doesn't have contact No.
+        for contact in after_duplicate_order['contacts']:
+            contact['no'] = None
+
         for index in range(len(main_order['suborders'])):
-            # ignore analysis no. since it won't be created until saving
+            # ignore analysis no. since it won't be created in the form until saving
             main_order['suborders'][index]['analysis_no'] = ''
+            # ignore testunit numbers since the table view only got the name
+            for testunit in after_duplicate_order['suborders'][index]['testunits']:
+                testunit['no'] = None
+
+        self.maxDiff = None
 
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No
         self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
         # compare the contacts 
-        # compare the data of sub orders data in both orders
-        self.assertListEqual(main_order['suborders'], after_duplicate_order['suborders'])
+        self.assertCountEqual(main_order['contacts'], after_duplicate_order['contacts'])
+        # compare the data of suborders data in both orders
+        self.assertCountEqual(main_order['suborders'], after_duplicate_order['suborders'])
 
         # save the duplicated order
         self.order_page.save(save_btn='orders:save_order')

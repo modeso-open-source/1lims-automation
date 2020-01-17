@@ -80,7 +80,7 @@ elements = {
                   'value': 'label',
                   'order': 0},
         'right_menu': {'method': 'xpath',
-                       'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+                       'value': '//a[@data-toggle="dropdown"]'},
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
         'alert_confirmation': {'method': 'id',

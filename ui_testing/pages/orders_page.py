@@ -58,7 +58,9 @@ class Orders(BasePages):
 
     def duplicate_main_order_from_table_overview(self):
         self.info('Duplicate the main order')
+        self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
+        self.sleep_tiny()
         self.base_selenium.click(element='orders:duplicate')
         self.sleep_medium()
 
@@ -130,16 +132,31 @@ class Orders(BasePages):
                 "no": suborder_data['Article No.'].replace("'", '').replace('"', '')
             }
 
+            testunits =[]
+            testunit = {}
+
+            # get all the testunit names
+            testunits_names = suborder_data['Test Units'].split(',\n') or []
+            
+            # map the testunit to name and number
+            for testunit_name in testunits_names:
+                testunit['name'] = testunit_name
+                testunit['no'] = None
+
+            # append the testunit to the testunits list
+            testunits.append(testunit)
+
             mapped_suborder_data = {
                 'analysis_no': suborder_data['Analysis No.'],  # suborder_data['Analysis No.'],
                 'departments': suborder_data['Departments'].split(', '),
                 'material_type': suborder_data['Material Type'],
                 'article': article,
                 'testplans': suborder_data['Test Plans'].split(',\n') if suborder_data['Test Plans'] != '-' else [''],              
-                'testunits': [],
+                'testunits': testunits if suborder_data['Test Units'] != '-' else [''],
                 'shipment_date': suborder_data['Shipment Date'],
                 'test_date': suborder_data['Test Date']
             }
+            
             suborders_data.append(mapped_suborder_data)
 
         order_data['suborders'] = suborders_data
