@@ -75,12 +75,12 @@ class ArticleAPI(BaseAPI):
         request_body['selectedArticles'] = []
         request_body['selectedArticlesNos'] = []
         request_body['dynamicFieldsValues'] = []
-        for key in kwargs:
-            request_body[key] = kwargs[key]
+        
+        payload = self.update_payload(request_body, **kwargs)
 
         api = '{}{}'.format(self.url, self.END_POINTS['article_api']['create_article']) 
         self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()

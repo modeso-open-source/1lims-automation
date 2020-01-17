@@ -134,13 +134,12 @@ class ContactsAPI(BaseAPI):
         request_body['persons'] = []
         request_body['country'] = ''
         request_body['dynamicFieldsValues'] = []
-        for key in kwargs:
-            request_body[key] = kwargs[key]
 
+        payload = self.update_payload(request_body, **kwargs)
         
         api = '{}{}'.format(self.url, self.END_POINTS['contacts_api']['create_contact']) 
         self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()

@@ -138,25 +138,23 @@ class TestPlanAPI(BaseAPI):
     # self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article], testUnits=[testunit]))
     def create_testplan(self, **kwargs):
         request_body = {}
-        for key in kwargs:
-            request_body[key] = kwargs[key]
-            if key == 'testPlan' :
-                request_body['selectedTestPlan'] = kwargs['testPlan']
+        payload = self.update_payload(request_body, **kwargs)
+        payload['selectedTestPlan'] = kwargs['testPlan']        
         
         if 'attachments' not in kwargs:
-            request_body['attachments'] = '[]'
+            payload['attachments'] = '[]'
         
-        request_body['selectedTestUnits']=[]
+        payload['selectedTestUnits']=[]
 
-        request_body['materialTypeId'] = request_body['materialType']['id']
-        request_body['dynamicFieldsValues'] = []
+        payload['materialTypeId'] = payload['materialType']['id']
+        payload['dynamicFieldsValues'] = []
         
         if 'testUnits' not in kwargs:
-            request_body['testUnits'] = []
+            payload['testUnits'] = []
 
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan']) 
         self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()

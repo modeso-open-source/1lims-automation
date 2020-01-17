@@ -63,9 +63,7 @@ class OrdersAPI(BaseAPI):
 
     def format_object(self, **kwargs):
         request_body = {}
-        for key in kwargs:
-            request_body[key] = kwargs[key]
-
+        request_body = self.update_payload({}, **kwargs)
         request_body['deletedTestPlans'] = []
         request_body['deletedAnalysisIds'] = []
         request_body['dynamicFieldsValues'] = []
