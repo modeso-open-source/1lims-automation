@@ -195,10 +195,9 @@ class Order(Orders):
         # set random date
         date = date or self.get_random_date()
         self.info('Set the test date value to {}'.format(date))
-        # open the row in edit mode
-        # row_id = self.open_suborder_edit_mode(row_id=row_id)
         # get the test_date field of the selected row
         test_date = self.base_selenium.find_element_by_xpath('//*[@id="date_testDate_{}"]'.format(row_id))
+        # update the field
         test_date.clear()
         test_date.send_keys(date)
         return date
