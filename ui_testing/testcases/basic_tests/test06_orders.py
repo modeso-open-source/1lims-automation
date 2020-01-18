@@ -714,14 +714,17 @@ class OrdersTestCases(BaseTest):
         """
         # open random order edit page
         self.order_page.get_random_order()
-        self.order_page.sleep_medium()
         # preserve the url
         order_url = self.base_selenium.get_url()
+        # get all the suborders
+        all_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
         # get random suborder row_id
-        row_id = self.order_page.open_suborder_edit_mode()
+        row_id = 0
+        if len(all_suborders) > 1:
+            row_id = randint(0, len(all_suborders) - 1)
 
         # change the test date
-        new_test_date = self.order_page.set_test_date(row_id=row_id)
+        new_test_date = self.order_page.update_suborder(sub_order_index=row_id, test_date=True)
 
         # save or cancel
         if 'save_btn' == save:
@@ -735,7 +738,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         # get the saved test_date
-        saved_test_date = self.order_page.get_test_date(row_id=row_id)
+        saved_test_date = self.order_page.get_suborder_data()['suborders'][row_id]['test_date']
 
         # check if the test date changed or not
         if 'cancel' == save:

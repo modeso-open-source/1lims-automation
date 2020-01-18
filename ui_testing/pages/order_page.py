@@ -180,43 +180,12 @@ class Order(Orders):
     def get_shipment_date(self):
         return self.base_selenium.get_value(element='order:shipment_date')
 
-    def get_random_suborder_data(self, row_id=None):
-        
-        # get all the suborders
-        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        # select random row id
-        if not row_id:
-            if len(suborders) > 1:
-                row_id = randint(0, len(suborders) - 1)
-            else:
-                row_id = 0
-
-        self.info('Getting suborder no. {}'.format(row_id))
-
-        # get the current suborder data
-        suborder = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborders[row_id], table_element='order:suborder_table')
-        # attach the row_id to the suborder
-        suborder['row_id'] = row_id
-        # attach the row element to the suborder
-        suborder['row_element'] = suborders[row_id]
-        return suborder
-
-    def open_suborder_edit_mode(self, row_id=None):
-        # get the suborder
-        suborder_data = self.get_random_suborder_data(row_id)
-        self.info('Open suborder no. {} for edit mode'.format(suborder_data['row_id']))
-        # click the table row (used script because the tr is not clickable)
-        self.base_selenium.driver.execute_script('arguments[0].click();', suborder_data['row_element'])
-        return suborder_data['row_id']
-
-    def close_suborder_edit_mode(self):
-        self.info('Close the suborder edit mode')
-        webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
-
     def get_test_date(self, row_id=None):
         # open the row in edit mode
-        row_id = self.open_suborder_edit_mode(row_id=row_id)
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
+        suborder_row = suborder_table_rows[row_id]
+        suborder_row.click()
         self.info('Get the test date value')
         # get the test_date field of the selected row
         test_date = self.base_selenium.find_element_by_xpath('//*[@id="date_testDate_{}"]'.format(row_id))
@@ -228,7 +197,7 @@ class Order(Orders):
             date = self.get_random_date()
         self.info('Set the test date value to {}'.format(date))
         # open the row in edit mode
-        row_id = self.open_suborder_edit_mode(row_id=row_id)
+        # row_id = self.open_suborder_edit_mode(row_id=row_id)
         # get the test_date field of the selected row
         test_date = self.base_selenium.find_element_by_xpath('//*[@id="date_testDate_{}"]'.format(row_id))
         test_date.clear()
@@ -372,64 +341,45 @@ class Order(Orders):
                                              item_text=testunit_name.replace("'", ''))
 
     def update_suborder(self, sub_order_index=0, contacts=False, departments=[], material_type=False, articles=False,
-                        test_plans=[], test_units=[], shipment_date=False, test_date=False, form_view=True):
-        if form_view:
-            self.get_suborder_table()
-        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
+                        test_plans=[], test_units=[], shipment_date=False, test_date=False):
+
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
         suborder_row = suborder_table_rows[sub_order_index]
-
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(row=suborder_row,
-                                                                                                table_element='order:suborder_table')
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
         contacts_record = 'contact with many departments'
-
+        suborder_row.click()
         if material_type:
-            self.base_selenium.LOGGER.info(' Set material type : {}'.format(material_type))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['materialType'],
-                                                 item_text=material_type.replace("'", ''))
-
+            self.base_selenium.LOGGER.info(
+                ' Set material type : {}'.format(material_type))
+            self.set_material_type(material_type=material_type)
+            self.sleep_small()
         if articles:
-            self.base_selenium.LOGGER.info(' Set article name : {}'.format(articles))
-            self.base_selenium.update_item_value(item=suborder_elements_dict['article'],
-                                                 item_text=articles.replace("'", ''))
-
-        self.base_selenium.LOGGER.info(' Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
+            self.remove_article(testplans=suborder_elements_dict['testPlans'])
+            self.base_selenium.LOGGER.info(
+                ' Set article name : {}'.format(articles))
+            self.set_article(article=articles)
+            self.sleep_small()
+        self.base_selenium.LOGGER.info(
+            ' Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
         for testplan in test_plans:
-            self.base_selenium.update_item_value(item=suborder_elements_dict['testPlans'],
-                                                 item_text=testplan.replace("'", ''))
-
-        self.base_selenium.LOGGER.info(' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
+            self.set_test_plan(test_plan=testplan)
+        self.base_selenium.LOGGER.info(
+            ' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
-            self.base_selenium.update_item_value(item=suborder_elements_dict['testUnits'],
-                                                 item_text=testunit.replace("'", ''))
-
+            self.set_test_unit(test_unit=testunit)
         if shipment_date:
             pass
-
         if test_date:
-            pass
-
+            return self.set_test_date(row_id=sub_order_index)
         if contacts:
             self.set_contact(contact=contacts_record)
-
         if departments:
-            self.base_selenium.LOGGER.info(' Set departments : {}'.format(departments))
-            for department in departments:
-                self.base_selenium.update_item_value(item=suborder_elements_dict['departments'], item_text=department)
+            self.base_selenium.LOGGER.info(
+                ' Set departments : {}'.format(departments))
+            self.set_departments(departments=departments)
 
-        if articles:
-            self.update_article_suborder(row=suborder_elements_dict, article=articles)
-
-        if len(test_plans) > 0:
-            self.add_multiple_testplans_suborder(row=suborder_elements_dict, testplans=test_plans)
-
-        if len(test_units) > 0:
-            self.add_multiple_testunits_suborder(row=suborder_elements_dict, testunits=test_units)
-
-        if contacts:
-            self.set_contact(contact=contacts)
-
-        if departments:
-            self.update_departments_suborder(row=suborder_elements_dict, departments=departments)
 
     def update_material_type_suborder(self, row, material_type):
         self.base_selenium.LOGGER.info(' Set material type : {}'.format(material_type))
