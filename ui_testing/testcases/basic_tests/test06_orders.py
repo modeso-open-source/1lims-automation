@@ -728,6 +728,7 @@ class OrdersTestCases(BaseTest):
 
         # save or cancel
         if 'save_btn' == save:
+            self.order_page.sleep_medium()
             self.order_page.save(save_btn='order:save_btn')
             self.order_page.sleep_medium()
         else:
