@@ -96,10 +96,9 @@ class HeaderTestCases(BaseTest):
         # create new user
         random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
-        created_user =self.header_page.create_new_user(user_name=random_user_name,
-                                         user_email=random_user_email,
-                                         user_role='Admin', user_password='1',
-                                         user_confirm_password='1')
+        random_user_password = self.generate_random_string()
+        created_user = self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
+
         result = self.header_page.search(value=random_user_name)
         self.assertTrue(result, created_user)
         self.header_page.select_all_records()
@@ -111,14 +110,10 @@ class HeaderTestCases(BaseTest):
         result = self.header_page.search(value=random_user_name)
         self.assertTrue(result, created_user)
         self.header_page.select_all_records()
-        self.base_selenium.LOGGER.info('Press on the right menu')
-        self.base_selenium.click(element='user_management:right_menu')
-        self.base_selenium.LOGGER.info('Press on the delete button')
-        self.base_selenium.click(element='user_management:delete')
-        self.header_page.confirm_popup()
+        self.header_page.delete_entity()
         result = self.header_page.search(value=random_user_name)
-        self.base_selenium.LOGGER.info('deleted successfully')
         self.assertTrue(result, 'No records found')
+        self.base_selenium.LOGGER.info('deleted successfully')
 
     def test006_create_new_user_with_admin_role(self):
         """
@@ -129,8 +124,9 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:user_management_button')
         #create new user
         random_user_name = self.generate_random_string()
-        user_data= self.header_page.create_new_user(user_name = random_user_name, user_email=(self.header_page.generate_random_email()), user_role='Admin',
-                                         user_password='1', user_confirm_password='1')
+        random_user_email = self.base_page.generate_random_email()
+        random_user_password = self.generate_random_string()
+        user_data = self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
 
         #make sure when you search you will find it
         result = self.header_page.search(value=random_user_name)
@@ -240,8 +236,8 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info(' + user_url : {}'.format(user_url))
         self.order_page.sleep_tiny()
         current_email = self.header_page.get_user_email()
-        self.header_page.set_user_email((self.header_page.generate_random_email()))
-        new_email = self.header_page.get_user_email()
+        new_email = self.header_page.generate_random_email()
+        self.header_page.set_user_email(new_email)
         if 'save_btn' == save:
             self.header_page.save(save_btn='user_management:save_btn')
         else:
@@ -287,11 +283,9 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:user_management_button')
         # create new user with random data
         user_random_name = self.generate_random_string()
-        user_random_email = self.base_page.generate_random_email()
-        self.header_page.create_new_user(user_name=user_random_name,
-                                         user_email=user_random_email,
-                                         user_role='Admin', user_password='1',
-                                         user_confirm_password='1')
+        random_user_email = self.base_page.generate_random_email()
+        random_user_password = self.generate_random_string()
+        self.users_api.create_new_user(user_random_name, random_user_email, random_user_password)
 
         self.base_selenium.LOGGER.info(
             'search to make sure that the user created '.format(user_random_name))
@@ -302,7 +296,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:logout')
 
         # use this user in any other entity so you can login with it
-        self.login_page.login(username=user_random_name, password='1')
+        self.login_page.login(username=user_random_name, password=random_user_password)
 
         # make sure that I can login with the user that I created it
         time.sleep(15)
@@ -325,11 +319,7 @@ class HeaderTestCases(BaseTest):
                                                archived_element='user_management:archived')
 
         self.header_page.select_all_records()
-        self.base_selenium.LOGGER.info('Press on the right menu')
-        self.base_selenium.click(element='user_management:right_menu')
-        self.base_selenium.LOGGER.info('Press on the delete button')
-        self.base_selenium.click(element='user_management:delete')
-        self.header_page.confirm_popup()
+        self.header_page.delete_entity()
 
         self.base_selenium.LOGGER.info(
             'message will appear this user related to some data & cant delete it')
@@ -340,43 +330,45 @@ class HeaderTestCases(BaseTest):
         result = self.header_page.search(value=user_random_name)
         self.assertTrue(result, user_data)
 
-    def test013_filter_by_user_name(self):
+    def test013_filter_by_name(self):
         """
-        User management Approach: I can filter by user name successfully
-        LIMS-6002
+        User management Approach: I can filter by no successfully
+        LIMS-6488
         :return:
         """
-        self.base_selenium.click(element='header:user_management_button')
-        random_user_name = self.generate_random_string()
-        random_user_email = self.base_page.generate_random_email()
-        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
-                                         user_role='', user_password='1', user_confirm_password='1')
+        self.header_page.get_users_page()
+        self.users_api.get_all_users()
+        user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
-        user_filter = self.header_page.filter_user_by(filter_element='user_management:filter_name',
-                                                      filter_text=random_user_name)
-        result_user = self.header_page.result_table()[0]
-        self.assertTrue(result_user, user_filter)
+        self.header_page.filter_user_by(filter_element='user_management:filter_name',
+                                        filter_text=user_data['name'])
+
+        users_result = self.header_page.result_table()
+        self.assertIn(str(user_data['name']), (users_result[0].text).replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with random user name')
         self.base_selenium.click(element='user_management:filter_reset_btn')
+
 
     def test014_filter_by_email(self):
         """
-        User management Approach: I can filter by user email successfully
-        LIMS-6442
+        User management Approach: I can filter by no successfully
+        LIMS-6488
         :return:
         """
-        self.base_selenium.click(element='header:user_management_button')
-        random_user_name = self.generate_random_string()
-        random_email = self.header_page.generate_random_email()
-        self.header_page.create_new_user(user_name=random_user_name, user_email=random_email,
-                                         user_role='', user_password='1', user_confirm_password='1')
+        self.header_page.get_users_page()
+        self.users_api.get_all_users()
+        user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
-        user_filter = self.header_page.filter_user_by(filter_element='user_management:filter_email',
-                                                      filter_text=random_email)
+        self.header_page.filter_user_by(filter_element='user_management:filter_email',
+                                        filter_text=user_data['email'])
 
-        result_user = self.header_page.result_table()[0]
-        self.assertTrue(result_user, user_filter)
+        users_result = self.header_page.result_table()
+        self.assertIn(str(user_data['email']), (users_result[0].text). replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with the user email')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test015_filter_by_role(self):
@@ -385,33 +377,29 @@ class HeaderTestCases(BaseTest):
         LIMS-6443
         :return:
         """
-        # create random role
         self.base_selenium.click(element='header:roles_and_permissions_button')
         random_role_name = self.generate_random_string()
-        self.header_page.create_new_role(role_name=random_role_name)
-
+        self.roles_api.create_role(random_role_name)
         self.base_selenium.LOGGER.info('make sure that that the user record created in the active table')
         created_role = self.header_page.search(random_role_name)[0]
         role_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_role)
         self.assertTrue(created_role, role_data)
 
-        # create user with this role to filter by it
         self.header_page.click_on_header_button()
         self.base_selenium.click(element='header:user_management_button')
         random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
-        self.header_page.create_new_user(user_name=random_user_name,user_email=random_user_email,
+        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
                                          user_role=random_role_name, user_password='1', user_confirm_password='1')
 
         self.base_selenium.click(element='general:menu_filter_view')
-        self.header_page.set_user_role(user_role=random_role_name)
-        user_role = self.header_page.get_user_role()
 
-        user_filter = self.header_page.filter_user_by(filter_element='user_management:filter_role',
-                                                      filter_text=user_role)
+        result_user = self.header_page.get_table_rows_data()
+        user_filter = self.header_page.filter_user_drop_down(filter_name='user_management:filter_role',
+                                                             filter_text=random_role_name)
 
-        result_user = self.header_page.result_table()[0]
-        self.assertTrue(result_user, user_filter)
+        self.assertIn(user_filter, result_user )
+        self.base_selenium.LOGGER.info('filter results displayed with the random user role')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test016_filter_by_no(self):
@@ -420,14 +408,18 @@ class HeaderTestCases(BaseTest):
         LIMS-6488
         :return:
         """
-        self.base_selenium.click(element='header:user_management_button')
+        self.header_page.get_users_page()
+        self.users_api.get_all_users()
         user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
-        user_filter = self.header_page.filter_user_by(filter_element='user_management:filter_number',
-                                                      filter_text=user_data['number'])
+        self.header_page.filter_user_by(filter_element='user_management:filter_number',
+                                        filter_text=user_data['number'])
 
-        self.assertTrue(user_data['number'], user_filter)
+        users_result = self.header_page.result_table()
+        self.assertIn(str(user_data['number']), (users_result[0].text).replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with the user no')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test017_filter_by_changed_by(self):
@@ -436,16 +428,15 @@ class HeaderTestCases(BaseTest):
         LIMS-6507
         :return:
         """
-        # create user with this user to filter by it
         self.base_selenium.click(element='header:user_management_button')
         random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
-        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
-                                         user_role='Admin', user_password='1', user_confirm_password='1')
+        random_user_password = self.generate_random_string()
+        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
 
         self.header_page.click_on_header_button()
         self.base_selenium.click(element='header:logout')
-        self.login_page.login(username=random_user_name, password='1')
+        self.login_page.login(username=random_user_name, password=random_user_password)
         self.header_page.click_on_header_button()
         self.base_selenium.click(element='header:user_management_button')
 
@@ -455,15 +446,16 @@ class HeaderTestCases(BaseTest):
                                          user_role='Admin', user_password='1', user_confirm_password='1')
 
         self.header_page.click_on_user_config_btn()
-        self.header_page.checked_user_changed_by()
+        self.base_selenium.click(element='user_management:checked_changed_by')
         self.base_selenium.click(element='user_management:apply_btn')
 
         self.base_selenium.click(element='general:menu_filter_view')
-        user_filter = self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by',
-                                                             filter_text=random_user_name)
+        users_result = self.header_page.get_table_rows_data()
+        self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by',
+                                               filter_text=random_user_name)
 
-        result_user = self.header_page.result_table()[0]
-        self.assertTrue(result_user, user_filter)
+        users_result = self.header_page.result_table()
+        self.assertIn(random_user_name, (users_result[0].text).replace("'", ""))
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test018_filter_created_on(self):
@@ -472,14 +464,18 @@ class HeaderTestCases(BaseTest):
         LIMS-64
         :return:
         """
-        self.base_selenium.click(element='header:user_management_button')
+        self.header_page.get_users_page()
+        self.users_api.get_all_users()
         user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
-        user_filter = self.header_page.filter_user_by(filter_element='user_management:filter_created_on',
-                                                      filter_text=user_data['created_on'])
+        self.header_page.filter_user_by(filter_element='user_management:filter_created_on',
+                                        filter_text=user_data['created_on'])
 
-        self.assertTrue(user_data['created_on'], user_filter)
+        users_result = self.header_page.result_table()
+        self.assertIn(str(user_data['created_on']), (users_result[0].text).replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with the date ( created on ) ')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test019_cant_create_two_users_with_the_same_name(self):
@@ -494,7 +490,6 @@ class HeaderTestCases(BaseTest):
         random_user_email = self.base_page.generate_random_email()
         self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
                                          user_role='Admin', user_password='1', user_confirm_password='1')
-
 
         self.base_selenium.LOGGER.info(
             'search to make sure that the role created '.format(random_user_name))

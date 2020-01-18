@@ -158,6 +158,7 @@ class Header(BasePages):
             'number': user_row_data['No'],
             'role': user_row_data['Role'],
             'email': user_row_data['Email'],
+            'name': user_row_data['Name'],
         }
 
     def get_created_on_filter(self):
@@ -329,6 +330,11 @@ class Header(BasePages):
         self.base_selenium.click(element='user_management:checked_changed_by')
         self.sleep_small()
 
-
-
+    def delete_entity(self):
+        self.base_selenium.LOGGER.info(
+            ' press on the delete button ')
+        self.base_selenium.click(element='user_management:right_menu')
+        self.base_selenium.click(element='user_management:delete')
+        self.confirm_popup()
+        self.sleep_small()
 

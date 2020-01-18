@@ -16,6 +16,10 @@ class TestPlanAPI(BaseAPI):
         self.info('Status code: {}'.format(response.status_code))
         return response
 
+    def get_all_test_plans_json(self, **kwargs):
+        testplans_response = self.get_all_test_plans(**kwargs)
+        return testplans_response.json()['testPlans']
+
     def get_completed_testplans(self, **kwargs):
         response = self.get_all_test_plans(**kwargs)
         all_test_plans = response.json()['testPlans']

@@ -726,11 +726,8 @@ elements = {
        'filter_email': {'method': 'id',
                  'value':'emailfield'},
 
-       'filter_role': {'method': 'xpath',
-                 'value':'//ng-select[@id="rolefield"]//input'},
-       'filter_role11': {'method': 'xpath',
-                        'value': '//*[@id="rolefield"]//input'},
-
+        'filter_role': {'method': 'id',
+                     'value': 'rolefield'},
        'filter_reset_btn': {'method': 'id',
                  'value':'reset_btn'},
        'delete': {'method': 'link_text',
@@ -758,8 +755,8 @@ elements = {
                          'value': 'config'},
        'apply_btn': {'method': 'xpath',
                          'value': '//span[contains(text(),"Apply")]'},
-       'checked_changed_by': {'method': 'id',
-                         'value': 'modifiedBy'},
+       'checked_changed_by': {'method': 'xpath',
+                         'value': '//li[@id="modifiedBy"]//span[@class="checkbox"]//span'},
 
    },
     'roles_and_permissions': {
