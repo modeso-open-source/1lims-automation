@@ -193,8 +193,7 @@ class Order(Orders):
 
     def set_test_date(self, date='', row_id=None):
         # set random date
-        if not date:
-            date = self.get_random_date()
+        date = date or self.get_random_date()
         self.info('Set the test date value to {}'.format(date))
         # open the row in edit mode
         # row_id = self.open_suborder_edit_mode(row_id=row_id)
