@@ -3,8 +3,6 @@ from parameterized import parameterized
 import re
 import random
 from unittest import skip
-import ipdb
-
 
 class ContactsTestCases(BaseTest):
     def setUp(self):
