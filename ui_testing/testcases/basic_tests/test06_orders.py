@@ -16,8 +16,8 @@ class OrdersTestCases(BaseTest):
 
     # will continue with us    
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
-    def test001_cancel_button_edit_no(self, save):
+    #@skip('https://modeso.atlassian.net/browse//LIMS-4768')
+    def test001_update_number_with_save_cancel_btn(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
         a pop up will appear that the data will be
@@ -51,7 +51,7 @@ class OrdersTestCases(BaseTest):
             
    # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])
-    def test002_cancel_button_edit_contact(self, save):
+    def test002_update_contact_with_save_cancel_btn(self, save):
         """
         Orders: In case I update the contact then press on cancel button, a pop up should display with ( ok & cancel )
         buttons and when I press on cancel button, this update shouldn't submit
@@ -64,9 +64,9 @@ class OrdersTestCases(BaseTest):
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
-        current_contact = self.order_page.get_contact()
+        current_contact = self.order_page.get_contact_field()
         self.order_page.set_contact()
-        new_contact = self.order_page.get_contact()
+        new_contact = self.order_page.get_contact_field()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -74,7 +74,7 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.get(url=order_url, sleep=5)
 
-        order_contact = self.order_page.get_contact()
+        order_contact = self.order_page.get_contact_field()
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (new_contact) == {} (order_contact)'.format(new_contact, order_contact))
@@ -204,21 +204,14 @@ class OrdersTestCases(BaseTest):
 
         order_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=order_row)
-        analysis_numbers_list = order_data['Analysis No.'].split(',')
+        order_number = order_data['Order No.'].split(',')
 
         self.base_selenium.LOGGER.info(
             ' + Delete order has number = {}'.format(order_data['Order No.']))
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
-
-        self.analyses_page.get_analyses_page()
-        self.analyses_page.get_archived_items()
-        self.base_selenium.LOGGER.info(
-            ' + Is analysis number {} deleted successfully?'.format(analysis_numbers_list))
-        has_active_analysis = self.analyses_page.search_if_analysis_exist(
-            analysis_numbers_list)
-        self.base_selenium.LOGGER.info(' + {} '.format(has_active_analysis))
-        self.assertFalse(has_active_analysis)
+        deleted_order = self.header_page.search(order_number)[0]
+        self.assertTrue(deleted_order, order_data)
 
     # will continue with us    
     @parameterized.expand(['True', 'False'])

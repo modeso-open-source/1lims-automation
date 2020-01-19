@@ -23,3 +23,4 @@ class SingleAnalysisPage(AllAnalysesPage):
             testunits.append(row_data)
 
         return testunits
+
