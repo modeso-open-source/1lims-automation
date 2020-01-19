@@ -3,6 +3,7 @@ from parameterized import parameterized
 import re
 import random
 from unittest import skip
+import ipdb
 
 
 class ContactsTestCases(BaseTest):
@@ -19,35 +20,32 @@ class ContactsTestCases(BaseTest):
 
     def test_001_archive_contact(self):
         """
-        New: Contact: Restore/Archive Approach: I can archive/restore any contact successfully
-        I can archive/restore any contact successfully
+        New: Contact: Restore/Archive Approach: I can archive any contact successfully
+
         LIMS-3566
         """
-        
-
         selected_contacts_data, _ = self.contact_page.select_random_multiple_table_rows()
         self.contact_page.archive_selected_contacts()
         self.contact_page.get_archived_contacts()
         for contact in selected_contacts_data:
             contact_no = contact['Contact No']
-            self.base_selenium.LOGGER.info(' + {} Contact should be archived.'.format(contact_no))
+            self.contacts_page.info(' + {} Contact sucessfully archived.'.format(contact_no))
             self.assertTrue(self.contact_page.is_contact_in_table(value=contact_no))
 
     def test_002_restore_contact(self):
         """
-        New: Contact: Restore/Archive Approach: I can archive/restore any contact successfully
-        I can archive/restore any contact successfully
+        New: Contact: Restore/Archive Approach: I can restore any contact successfully
+
         LIMS-3566
         """
-            
         self.contact_page.get_archived_contacts()
+        self.contacts_page.sleep_tiny()
         selected_contacts_data, _ = self.contact_page.select_random_multiple_table_rows()
         self.contact_page.restore_selected_contacts()
         self.contact_page.get_active_contacts()
-
         for contact in selected_contacts_data:
             contact_no = contact['Contact No']
-            self.base_selenium.LOGGER.info(' + {} Contact should be active.'.format(contact_no))
+            self.contacts_page.info(' + {} Contact sucessfully restored.'.format(contact_no))
             self.assertTrue(self.contact_page.is_contact_in_table(value=contact_no))
 
     def test_003_create_contact(self):
@@ -73,9 +71,7 @@ class ContactsTestCases(BaseTest):
             if header != 'contact_persons':
                 self.base_selenium.LOGGER.info('contact {} is {}, and it should be {}'.format(header, first_contact_data[header], contact_data[header]) )
                 self.assertEqual(first_contact_data[header], contact_data[header])
-            
 
-        
     def test_004_upadte_contact(self):
         """
         New: Contact: Edit Approach: I can update any contact record 
