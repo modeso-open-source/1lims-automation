@@ -1,13 +1,14 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.articles_page import Articles
 from unittest import skip
 from parameterized import parameterized
-import re, random
-from selenium.common.exceptions import NoSuchElementException
+import random
 
 class TestPlansTestCases(BaseTest):
 
     def setUp(self):
         super().setUp()
+        self.articles_page = Articles()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_plan.get_test_plans_page()
@@ -326,7 +327,7 @@ class TestPlansTestCases(BaseTest):
         main_testplan_data = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
         testplan_number = main_testplan_data['Test Plan No.']
         self.base_selenium.LOGGER.info('Testplan number: {} will be duplicated'.format(testplan_number))
-        
+
         self.test_plan.open_filter_menu()
         self.test_plan.filter_by_testplan_number(testplan_number)
 
@@ -394,7 +395,7 @@ class TestPlansTestCases(BaseTest):
 
         testplans = self.test_plan_api.get_all_test_plans_json()
         testplan = random.choice(testplans)
-        
+
         testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
                                                             article=(testplan['article'])[0])
         self.base_selenium.LOGGER.info(
@@ -446,7 +447,7 @@ class TestPlansTestCases(BaseTest):
 
         data = self.test_plan.search(testplan_name)
         self.assertGreaterEqual(len(data), 2)
-        
+
     def test014_create_testplans_same_name_materialtype_all_article(self):
         '''
         LIMS-3500
@@ -457,13 +458,12 @@ class TestPlansTestCases(BaseTest):
 
         testplans = self.test_plan_api.get_all_test_plans_json()
         testplan = random.choice(testplans)
-        
+
         testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
                                                             article=(testplan['article'])[0])
         self.base_selenium.LOGGER.info(
             'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
                 testplan_name, (testplan['article'])[0], testplan['materialType']))
-
 
         self.base_selenium.LOGGER.info(
             'Attempting to create another testplan with the same name & material type as the previously created one,'
@@ -492,15 +492,17 @@ class TestPlansTestCases(BaseTest):
         testplan_name = test_plan_dict['Test Plan Name']
         testplan_article = test_plan_dict['Article Name']
         testplan_materialtype = test_plan_dict['Material Type']
-    
+
         # create a new order with this testplan
         self.order_page.get_orders_page()
-        self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article, test_plans=[testplan_name])
+        self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article,
+                                         test_plans=[testplan_name])
 
         # delete testplan
         self.test_plan.get_test_plans_page()
         self.base_selenium.LOGGER.info('Testplan number: {} will be archived'.format(testplan_name))
-        testplan_deleted = self.test_plan.delete_selected_item_from_active_table_and_from_archived_table(item_name=testplan_name)
+        testplan_deleted = self.test_plan.delete_selected_item_from_active_table_and_from_archived_table(
+            item_name=testplan_name)
 
         # check for the error popup that this testplan is used and can't be deleted
         self.assertFalse(testplan_deleted)
@@ -516,7 +518,8 @@ class TestPlansTestCases(BaseTest):
         testplan_number = (main_testplan_data['Test Plan No.']).replace("'", '')
 
         # get testplan data from an api call
-        testplan_data = (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=testplan_number))[0]
+        testplan_data = \
+        (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=testplan_number))[0]
 
         # get information, material type and article
         testplan_name = testplan_data['testPlanName']
@@ -531,8 +534,9 @@ class TestPlansTestCases(BaseTest):
         self.order_page.get_orders_page()
 
         # create a new order with material type and article same as the saved ones
-        order_data = self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article, test_plans=[testplan_name])
-       
+        order_data = self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article,
+                                                      test_plans=[testplan_name])
+
         # get the first suborder's testplan and make sure it's an empty string
         suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]
         self.assertEqual(len(suborder_first_testplan), 0)
@@ -551,7 +555,8 @@ class TestPlansTestCases(BaseTest):
         articles_with_chosen_materialtype = active_articles_with_materialtype_dictionary[random_materialtype]
         random_article = random.choice(articles_with_chosen_materialtype)
 
-        self.test_unit_page.create_qualitative_testunit(name=testunit_name, unit='mg[2]{o}', method='a', material_type=random_materialtype)
+        self.test_unit_page.create_qualitative_testunit(name=testunit_name, unit='mg[2]{o}', method='a',
+                                                        material_type=random_materialtype)
         testunit_unit_display = (self.base_selenium.find_element(element='test_unit:unit_display_value')).text
 
         self.test_unit_page.save()
@@ -559,7 +564,8 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(testunit_unit_display, 'mg2o')
         self.test_plan.get_test_plans_page()
 
-        testplan_name = self.test_plan.create_new_test_plan(material_type=random_materialtype, article=random_article, test_unit=testunit_name)
+        testplan_name = self.test_plan.create_new_test_plan(material_type=random_materialtype, article=random_article,
+                                                            test_unit=testunit_name)
 
         self.test_plan.get_test_plan_edit_page(testplan_name)
         self.test_plan.navigate_to_testunits_selection_page()
@@ -594,7 +600,9 @@ class TestPlansTestCases(BaseTest):
         testplans = self.test_plan_api.get_all_test_plans_json()
         random_testplan = random.choice(testplans)
 
-        testplans_found = self.test_plan.filter_by_element_and_get_results('Testplan Name', 'test_plans:testplan_name_filter', random_testplan['testPlanName'], 'drop_down')
+        testplans_found = self.test_plan.filter_by_element_and_get_results('Testplan Name',
+                                                                           'test_plans:testplan_name_filter',
+                                                                           random_testplan['testPlanName'], 'drop_down')
         self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
         results_found = True
         while results_found:
@@ -616,7 +624,9 @@ class TestPlansTestCases(BaseTest):
         User can filter with status
         '''
 
-        testplans_found = self.test_plan.filter_by_element_and_get_results('Status', 'test_plans:testplan_status_filter', 'Completed', 'drop_down')
+        testplans_found = self.test_plan.filter_by_element_and_get_results('Status',
+                                                                           'test_plans:testplan_status_filter',
+                                                                           'Completed', 'drop_down')
         self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
         results_found = True
         while results_found:
@@ -633,10 +643,12 @@ class TestPlansTestCases(BaseTest):
                 results_found = False
 
         self.base_selenium.LOGGER.info('Filtering by status completed was done successfully')
-        
+
         self.test_plan.sleep_small()
 
-        testplans_found = self.test_plan.filter_by_element_and_get_results('Status', 'test_plans:testplan_status_filter', 'In Progress', 'drop_down')
+        testplans_found = self.test_plan.filter_by_element_and_get_results('Status',
+                                                                           'test_plans:testplan_status_filter',
+                                                                           'In Progress', 'drop_down')
         self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
         results_found = True
         while results_found:
@@ -661,9 +673,10 @@ class TestPlansTestCases(BaseTest):
         random_user_name = self.generate_random_string()
         random_user_email = self.header_page.generate_random_email()
         random_user_password = self.generate_random_string()
-        self.base_selenium.LOGGER.info('Calling the users api to create a new user with username: {}'.format(random_user_name))
+        self.base_selenium.LOGGER.info(
+            'Calling the users api to create a new user with username: {}'.format(random_user_name))
         self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
-        
+
         self.header_page.click_on_header_button()
         self.base_selenium.click('header:logout')
         self.login_page.login(username=random_user_name, password=random_user_password)
@@ -672,7 +685,7 @@ class TestPlansTestCases(BaseTest):
 
         testplans = self.test_plan_api.get_all_test_plans_json()
         testplan = random.choice(testplans)
-        
+
         testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
                                                             article=(testplan['article'])[0])
         self.base_selenium.LOGGER.info(
@@ -681,9 +694,78 @@ class TestPlansTestCases(BaseTest):
 
         self.base_page.set_all_configure_table_columns_to_specific_value(value=True)
 
-        testplan_found = self.test_plan.filter_by_element_and_get_results('Changed By', 'test_plans:testplan_changed_by_filter', random_user_name, 'drop_down')        
+        testplan_found = self.test_plan.filter_by_element_and_get_results('Changed By',
+                                                                          'test_plans:testplan_changed_by_filter',
+                                                                          random_user_name, 'drop_down')
         self.assertEqual(len(testplan_found), 2)
         self.assertIn(random_user_name, testplan_found[0].text)
         self.assertIn(testplan_name, testplan_found[0].text)
 
-        
+    @parameterized.expand(['ok', 'cancel'])
+    def test024_create_approach_overview_button(self, ok):
+        """
+        Master data: Create: Overview button Approach: Make sure
+        after I press on the overview button, it redirects me to the active table
+
+        LIMS-6203
+        """
+        self.test_plan.click_create_test_plan_button()
+        self.test_plan.sleep_tiny()
+        # click on Overview, this will display an alert to the user
+        self.base_page.click_overview()
+        # switch to the alert
+        if 'ok' == ok:
+            self.base_page.confirm_overview_pop_up()
+            self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+            self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+        else:
+            self.base_page.cancel_overview_pop_up()
+            self.assertEqual(self.base_selenium.get_url(), '{}testPlans/add'.format(self.base_selenium.url))
+            self.base_selenium.LOGGER.info('clicking on Overview cancelled')
+
+    def test025_edit_approach_overview_button(self):
+        """
+        Edit: Overview Approach: Make sure after I press on
+        the overview button, it redirects me to the active table
+        LIMS-6202
+        """
+        self.test_plan.get_random_test_plans()
+        testplans_url = self.base_selenium.get_url()
+        self.base_selenium.LOGGER.info('testplans_url : {}'.format(testplans_url))
+        # click on Overview, it will redirect you to articles' page
+        self.base_selenium.LOGGER.info('click on Overview')
+        self.base_page.click_overview()
+        self.test_plan.sleep_tiny()
+        self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
+        self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+
+    def test026_testplans_search_then_navigate(self):
+        """
+        Search Approach: Make sure that you can search then navigate to any other page
+
+        LIMS-6201
+        """
+        testplans = self.get_all_test_plans()
+        testplan_name = random.choice(testplans)['testPlanName']
+        search_results = self.test_plan.search(testplan_name)
+        self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+        for search_result in search_results:
+            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
+            if search_data['Test Plan Name'] == testplan_name:
+                break
+        else:
+            self.assertTrue(False, " * There is no search results for it, Report a bug.")
+        self.assertEqual(testplan_name, search_data['Test Plan Name'])
+        # Navigate to articles page
+        self.info('navigate to articles page')
+        self.articles_page.get_articles_page()
+        self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
+
+    def test004_hide_all_table_configurations(self):
+        """
+        Table configuration: Make sure that you can't hide all the fields from the table configuration
+
+        LIMS-6288
+        """
+        assert (self.test_unit_page.deselect_all_configurations(), False)
+
