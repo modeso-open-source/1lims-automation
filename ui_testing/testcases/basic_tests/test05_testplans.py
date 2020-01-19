@@ -717,11 +717,11 @@ class TestPlansTestCases(BaseTest):
         if 'ok' == ok:
             self.base_page.confirm_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
-            self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+            self.info('clicking on Overview confirmed')
         else:
             self.base_page.cancel_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(), '{}testPlans/add'.format(self.base_selenium.url))
-            self.base_selenium.LOGGER.info('clicking on Overview cancelled')
+            self.info('clicking on Overview cancelled')
 
     def test025_edit_approach_overview_button(self):
         """
@@ -731,13 +731,13 @@ class TestPlansTestCases(BaseTest):
         """
         self.test_plan.get_random_test_plans()
         testplans_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info('testplans_url : {}'.format(testplans_url))
+        self.info('testplans_url : {}'.format(testplans_url))
         # click on Overview, it will redirect you to articles' page
-        self.base_selenium.LOGGER.info('click on Overview')
+        self.info('click on Overview')
         self.base_page.click_overview()
         self.test_plan.sleep_tiny()
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
-        self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+        self.info('clicking on Overview confirmed')
 
     def test026_testplans_search_then_navigate(self):
         """
