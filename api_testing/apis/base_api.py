@@ -1,6 +1,7 @@
 from testconfig import config
 from api_testing.end_points import end_points
-from ui_testing.testcases.base_test import BasePages
+from uuid import uuid4
+from random import randint
 import requests
 from loguru import logger
 
@@ -15,7 +16,6 @@ class BaseAPI:
 
     _instance = None
 
-    base_test = BasePages
 
     def __new__(class_, *args, **kwargs):
         if not isinstance(class_._instance, class_):
@@ -67,3 +67,11 @@ class BaseAPI:
     @staticmethod
     def info(message):
         BaseAPI.LOGGER.info(message)
+
+    @staticmethod
+    def generate_random_string():
+        return str(uuid4()).replace("-", "")[:10]
+
+    @staticmethod
+    def generate_random_number(lower=1, upper=100000):
+        return randint(lower, upper) 

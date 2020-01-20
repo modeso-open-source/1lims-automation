@@ -1719,4 +1719,8 @@ class TestUnitsTestCases(BaseTest):
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
 
-        
+
+    def test_creating_testunits(self):
+        self.info(self.test_unit_api.create_quantitative_testunit())
+        self.info(self.test_unit_api.create_qualitative_testunit())
+        self.info(self.test_unit_api.create_mibi_testunit())

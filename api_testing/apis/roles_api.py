@@ -90,6 +90,6 @@ class RolesAPI(BaseAPI):
         data = response.json()
         
         if data['status'] == 1:
-            return data['message']
+            return request_body
         else:
-            return data
+            return data['message']

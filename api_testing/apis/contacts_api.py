@@ -149,7 +149,7 @@ class ContactsAPI(BaseAPI):
         data = response.json()
         
         if data['status'] == 1:
-            return data['company']
+            return payload
         else:
             return data['message']
 
