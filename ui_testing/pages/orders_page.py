@@ -56,6 +56,14 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:create_copies')
         self.sleep_medium()
 
+    def duplicate_main_order_from_table_overview(self):
+        self.info('Duplicate the main order')
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.sleep_tiny()
+        self.base_selenium.click(element='orders:duplicate')
+        self.sleep_medium()
+
     def get_random_order(self):
         self.base_selenium.LOGGER.info(' + Get random order.')
         row = self.get_random_order_row()
@@ -105,3 +113,70 @@ class Orders(BasePages):
             return filter_fileds
         else:
             return filter_fileds[key]
+
+    def construct_main_order_from_table_view(self, order_row=None):
+        order_data = {
+            "orderNo": self.get_no(order_row),
+            "contacts": self.get_contact(order_row),
+            "suborders": []
+        }
+
+        suborders_data = []
+
+        self.base_selenium.LOGGER.info('getting suborders data')
+
+        for suborder in order_row['suborders']:
+            suborder_data = suborder
+            article = {
+                "name": suborder_data['Article Name'],
+                "no": suborder_data['Article No.'].replace("'", '').replace('"', '')
+            }
+
+            testunits =[]
+            testunit = {}
+
+            # get all the testunit names
+            testunits_names = suborder_data['Test Units'].split(',\n') or []
+            
+            # map the testunit to name and number
+            for testunit_name in testunits_names:
+                testunit['name'] = testunit_name
+                testunit['no'] = None
+
+            # append the testunit to the testunits list
+            testunits.append(testunit)
+
+            mapped_suborder_data = {
+                'analysis_no': suborder_data['Analysis No.'],  # suborder_data['Analysis No.'],
+                'departments': suborder_data['Departments'].split(', '),
+                'material_type': suborder_data['Material Type'],
+                'article': article,
+                'testplans': suborder_data['Test Plans'].split(',\n') if suborder_data['Test Plans'] != '-' else [''],              
+                'testunits': testunits if suborder_data['Test Units'] != '-' else [],
+                'shipment_date': suborder_data['Shipment Date'],
+                'test_date': suborder_data['Test Date']
+            }
+            
+            suborders_data.append(mapped_suborder_data)
+
+        order_data['suborders'] = suborders_data
+        return order_data
+
+    def get_random_main_order_with_sub_orders_data(self):
+        self.info('+ Get Main order data with related subOrders')
+        # get all the order rows
+        all_orders = self.base_selenium.get_table_rows(element='orders:orders_table')
+        # select random order
+        row_id = randint(0, len(all_orders) - 2)
+        # get the main order data
+        main_order = self.base_selenium.get_row_cells_dict_related_to_header(row=all_orders[row_id])
+        # get its sub orders
+        sub_orders = self.get_child_table_data(row_id)
+        # attach the sub orders to the main order
+        main_order['suborders'] = sub_orders
+        # construct the order object
+        main_order = self.construct_main_order_from_table_view(main_order)
+        # attach the row element
+        main_order['row_element'] = all_orders[row_id]
+        # return the main order
+        return main_order

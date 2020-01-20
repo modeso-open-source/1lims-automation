@@ -54,8 +54,11 @@ class Order(Orders):
                 element='order:contact')
             return self.get_contact()
 
-    def get_contact(self):
-        return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]}, self.base_selenium.get_text(element='order:contact').split('\n')))
+    def get_contact(self, order_row = None):
+        if order_row:
+            return list(map(lambda s: {"name": str(s), "no": None}, order_row['Contact Name'].split(',\n')))
+        else:
+            return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]}, self.base_selenium.get_text(element='order:contact').split('\n')))
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
@@ -142,8 +145,11 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' Order Auto filled with data from order no : {} '.format(order_no))
         return order_no
 
-    def get_no(self):
-        return self.base_selenium.get_value(element="order:no")
+    def get_no(self, order_row = None):
+        if order_row:
+            return order_row['Order No.']
+        else:
+            return self.base_selenium.get_value(element="order:no")
 
     def set_no(self, no):
         self.base_selenium.LOGGER.info(' set no. {}'.format(no))
@@ -306,14 +312,14 @@ class Order(Orders):
                         "no": testunit.split(' No: ')[1]
                     })
                 else:
-                    testunits.append('-')
+                    testunits = []
 
             temp_suborder_data = {
                 'analysis_no': suborder_data['analysisNo'],
                 'departments': suborder_data['departments'].split(',\n'),
                 'material_type': suborder_data['materialType'],
                 'article': article,
-                'testplans': suborder_data['testPlans'].split(',\n') ,
+                'testplans': suborder_data['testPlans'].split(',\n'),
                 'testunits': testunits,
                 'shipment_date': suborder_data['shipmentDate'],
                 'test_date': suborder_data['testDate']
@@ -321,6 +327,7 @@ class Order(Orders):
             suborders_data.append(temp_suborder_data)
         order_data['suborders'] = suborders_data
         return order_data
+
 
     def remove_testplan_by_name(self, index, testplan_name):
         suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
