@@ -1,6 +1,5 @@
 from api_testing.apis.base_api import BaseAPI
 
-
 class TestUnitAPI(BaseAPI):
     def get_all_test_units(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_all_test_units'])
@@ -104,6 +103,40 @@ class TestUnitAPI(BaseAPI):
         return data['concentrations']
 
     def create_qualitative_testunit(self, **kwargs):
+        """
+        minimum required parameters: 
+            parameter: number: testunit number
+            parameter: name: testunit name
+
+        Parameter: selectedMAterialType: [{
+
+            'id': material type id,
+            'text': material type text
+            }]
+        Parameter: category: {
+            'id': 'new' in case of creating new category, category id in case of old category
+            'text': category text
+            }
+        Parameter: type: {
+            'id': testunit type id can be obtained using API call list_testunits_types,
+            'text': testunit type text
+            }
+        Parameter: unit: *optional*
+        Parameter: method: mandatory field, will be set to 'random method' in case no method provided
+        Parameter: textValue: string separated by ',' dentoes the values of specifications (in case of qualtiative testunit only)
+        Parameter: useQuantification: True/False in case of Quantitative testunits with quantification limit 
+        Parameter: useSpec: True/False in case of Quantitative testunits with specifications
+        Parameter: upperLimit: specification upper limit in case of Quantitative with specifications
+        Parameter: lowerLimit: specification lower limit in case of Quantitative with specifications
+        Parameter: quantificationUpperLimit: quantification upper limit in case of Quantitative with quantification
+        Parameter: quantificationLowerLimit: quantification lower limit in case of Quantitative with quantification
+        Parameter: quantificationUnit: unit in case of quantification limit
+        Parameter: selectedConcs: [{
+            'id': concentration id, can be obtained using list_testunits_concentrations,
+            'text': concentration text, can be obtained using list_testunits_concentrations
+            }]
+        in case of MiBi, use upperLimit: to define mibi upper limit value
+        """
         request_body = {
             'selectedConcs': [],
             'unit': '',
@@ -113,26 +146,32 @@ class TestUnitAPI(BaseAPI):
                 'text': "Qualitative"
             },
             'testUnitTypeId': 1,
-
+            'selectedCategory': [kwargs['category']],
+            'selectedMAterialType': [{
+                'id': 0,
+                'text': 'All'
+            }]
         }
-        qualitiative_values = kwargs['textValue'].split(',')
+        payload = self.update_payload(request_body, **kwargs)
+
+        if 'textValue' not in kwargs:
+            payload['textValue'] = self.base_test.generate_random_text()
+
+        qualitiative_values = payload['textValue'].split(',')
         values_arr = []
         for value in qualitiative_values:
             values_arr.append({
                 'display': value,
                 'value': value
             })
-        request_body['textValueArray'] = values_arr
+        payload['textValueArray'] = values_arr
         
         if 'method' not in kwargs:
-            request_body['method'] = 'random method'
+            payload['method'] = self.base_test.generate_random_text()
 
         if 'iterations' not in kwargs:
-            request_body['iterations'] = '1'
-
-        request_body['selectedCategory'] = [kwargs['category']]
+            payload['iterations'] = '1'
         
-        payload = self.update_payload(request_body, **kwargs)
         
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit']) 
         self.info('POST : {}'.format(api))
@@ -189,43 +228,6 @@ class TestUnitAPI(BaseAPI):
         kwargs['selectedConcs'] = concentrations_arr
 
         return self.create_testunit(request_body=request_body, **kwargs)
-
-    # you need to add the following attributes
-    # {
-    # number: testunit number
-    # name: testunit name
-    # selectedMAterialType: [
-    # {
-    #   'id': material type id,
-    #   'text': material type text
-    # }
-    # ]
-    # category: {
-    #   'id': 'new' in case of creating new category, category id in case of old category
-    #   'text': category text
-    # }
-    # type: {
-    #   'id': testunit type id can be obtained using API call list_testunits_types,
-    #   'text': testunit type text
-    # }
-    # unit: *optional*
-    # method: mandatory field, will be set to 'random method' in case no method provided
-    # textValue: string separated by ',' dentoes the values of specifications (in case of qualtiative testunit only)
-    # useQuantification: True/False in case of Quantitative testunits with quantification limit 
-    # useSpec: True/False in case of Quantitative testunits with specifications
-    # upperLimit: specification upper limit in case of Quantitative with specifications
-    # lowerLimit: specification lower limit in case of Quantitative with specifications
-    # quantificationUpperLimit: quantification upper limit in case of Quantitative with quantification
-    # quantificationLowerLimit: quantification lower limit in case of Quantitative with quantification
-    # quantificationUnit: unit in case of quantification limit
-    # selectedConcs: [
-    # {
-    #   'id': concentration id, can be obtained using list_testunits_concentrations,
-    #   'text': concentration text, can be obtained using list_testunits_concentrations
-    # }
-    # ]
-    # in case of MiBi, use upperLimit: to define mibi upper limit value
-    # }
 
     def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
         api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue) 

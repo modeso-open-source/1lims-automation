@@ -1,5 +1,6 @@
 from testconfig import config
 from api_testing.end_points import end_points
+from ui_testing.testcases.base_test import BasePages
 import requests
 from loguru import logger
 
@@ -13,6 +14,8 @@ class BaseAPI:
     LOGGER = logger
 
     _instance = None
+
+    base_test = BasePages
 
     def __new__(class_, *args, **kwargs):
         if not isinstance(class_._instance, class_):
