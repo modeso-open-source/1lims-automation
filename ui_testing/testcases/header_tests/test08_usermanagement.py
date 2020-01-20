@@ -338,7 +338,6 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.header_page.get_users_page()
-        self.users_api.get_all_users()
         user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
@@ -359,7 +358,6 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.header_page.get_users_page()
-        self.users_api.get_all_users()
         user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
@@ -410,7 +408,6 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.header_page.get_users_page()
-        self.users_api.get_all_users()
         user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
@@ -418,7 +415,7 @@ class HeaderTestCases(BaseTest):
                                         filter_text=user_data['number'])
 
         users_result = self.header_page.result_table()
-        self.assertIn(str(user_data['number']), (users_result[0].text).replace("'", ""))
+        self.assertIn(str(user_data['number'].replace("'", "")), (users_result[0].text).replace("'", ""))
 
         self.base_selenium.LOGGER.info('filter results displayed with the user no')
         self.base_selenium.click(element='user_management:filter_reset_btn')
