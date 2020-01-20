@@ -121,7 +121,28 @@ class TestUnitAPI(BaseAPI):
                 'value': value
             })
         request_body['textValueArray'] = values_arr
-        return self.create_testunit(request_body=request_body, **kwargs)
+        
+        if 'method' not in kwargs:
+            request_body['method'] = 'random method'
+
+        if 'iterations' not in kwargs:
+            request_body['iterations'] = '1'
+
+        request_body['selectedCategory'] = [kwargs['category']]
+        
+        payload = self.update_payload(request_body, **kwargs)
+        
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit']) 
+        self.info('POST : {}'.format(api))
+        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
+
+        self.info('Status code: {}'.format(response.status_code))
+        data = response.json()
+        
+        if data['status'] == 1:
+            return data['testUnit']
+        else:
+            return data['message']
     
     def create_quantitative_testunit(self, **kwargs):
         request_body = {}
@@ -203,28 +224,6 @@ class TestUnitAPI(BaseAPI):
     # ]
     # in case of MiBi, use upperLimit: to define mibi upper limit value
     # }
-    def create_testunit(self, request_body, **kwargs):
-        if 'method' not in kwargs:
-            request_body['method'] = 'random method'
-
-        if 'iterations' not in kwargs:
-            request_body['iterations'] = '1'
-
-        request_body['selectedCategory'] = [kwargs['category']]
-        
-        payload = self.update_payload(request_body, **kwargs)
-        
-        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit']) 
-        self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
-
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        
-        if data['status'] == 1:
-            return data['testUnit']
-        else:
-            return data['message']
 
     def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
         api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue) 
