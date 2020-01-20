@@ -104,15 +104,17 @@ class TestUnitAPI(BaseAPI):
         return data['concentrations']
 
     def create_qualitative_testunit(self, **kwargs):
-        request_body = {}
-        request_body['selectedConcs'] = []
-        request_body['unit'] = ''
-        request_body['dynamicFieldsValues'] = []
-        request_body['type'] = {
-            'id': 1,
-            'text': "Qualitative"
+        request_body = {
+            'selectedConcs': [],
+            'unit': '',
+            'dynamicFieldsValues': [],
+            'type': {
+                'id': 1,
+                'text': "Qualitative"
+            },
+            'testUnitTypeId': 1,
+
         }
-        request_body['testUnitTypeId'] = 1
         qualitiative_values = kwargs['textValue'].split(',')
         values_arr = []
         for value in qualitiative_values:
