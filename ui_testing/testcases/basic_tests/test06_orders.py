@@ -704,35 +704,52 @@ class OrdersTestCases(BaseTest):
         self.assertIn('has-error', test_plan_class_name)
         self.assertIn('has-error', test_unit_class_name)
 
-    # will continue with us 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test018_update_test_date(self, save):
+    def test032_update_test_date(self, save):
         """
         New: Orders: Test Date: I can update test date successfully with cancel/save buttons
-        LIMS-4780
+        
         LIMS-4780
         :return:
         """
+        # open random order edit page
         self.order_page.get_random_order()
+        # preserve the url
         order_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        order_test_date = self.order_page.get_test_date()
-        test_date = self.order_page.set_test_date()
+        # get all the suborders
+        all_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        # get random suborder row_id
+        row_id = 0
+        if len(all_suborders) > 1:
+            row_id = randint(0, len(all_suborders) - 1)
+
+        # change the test date
+        new_test_date = self.order_page.update_suborder(sub_order_index=row_id, test_date=True)
+
+        # save or cancel
         if 'save_btn' == save:
+            self.order_page.sleep_medium()
             self.order_page.save(save_btn='order:save_btn')
+            self.order_page.sleep_medium()
         else:
             self.order_page.cancel(force=True)
 
+        # refresh the page
+        self.info('reopen the edited order page')
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
-        current_test_date = self.order_page.get_test_date()
-        if 'save_btn' == save:
+
+        # get the saved test_date
+        saved_test_date = self.order_page.get_suborder_data()['suborders'][row_id]['test_date']
+
+        # check if the test date changed or not
+        if 'cancel' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date, test_date))
-            self.assertEqual(test_date, current_test_date)
+                ' + Assert {} (current_test_date) != {} (new_test_date)'.format(new_test_date, saved_test_date))
+            self.assertNotEqual(saved_test_date, new_test_date)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date, order_test_date))
-            self.assertEqual(current_test_date, order_test_date)
+                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(new_test_date, saved_test_date))
+            self.assertEqual(saved_test_date, new_test_date)
 
     # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])

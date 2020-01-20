@@ -26,4 +26,6 @@ script:
   #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test09_my_profile.py:MyProfileTestCases.test005_company_profile_upload_file_then_cancel_should_not_save
+  - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test032_update_test_date_0_save_btn
+  - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test032_update_test_date_1_cancel
+
