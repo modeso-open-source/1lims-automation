@@ -26,4 +26,3 @@ script:
   #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
   - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test05_contacts.py:ContactsTestCases.test_008_create_contact_person_from_edit_update_old_value --tc-file=config.ini
-
