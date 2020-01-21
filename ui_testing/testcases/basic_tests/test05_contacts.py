@@ -166,27 +166,23 @@ class ContactsTestCases(BaseTest):
     def test_008_create_contact_person_from_edit_update_old_value(self):
         """
         Contact: Edit Approach: make sure that you can add contact person from the edit mode 
+
         LIMS-6388
-
-        Contact: Edit Approach: Make sure that you can delete any contact person from the edit mode 
-        LIMS-6387
         """
-
-        self.base_selenium.LOGGER.info('open random contact record to add a new contact persons to it')
+        self.info('open random contact record to add a new contact persons to it')
         random_contact_record = self.contact_page.get_random_contact_row()
         self.contact_page.open_edit_page(row=random_contact_record)
 
-        self.base_selenium.LOGGER.info('acquire contact data to compare it after updating the persons')
+        self.info('acquire contact data to compare it after updating the persons')
         contact_data = self.contact_page.get_full_contact_data()
 
-        self.base_selenium.LOGGER.info('Open contact persons page')
+        self.info('Open contact persons page')
         self.contact_page.get_contact_persons_page()
-        self.base_selenium.LOGGER.info('add new record to contact persons')
+        self.info('add new record to contact persons')
         contact_persons_after_update = self.contact_page.create_update_contact_person(save=True)
 
-        self.base_selenium.LOGGER.info('Refresh to compare the data before and after refresh')
+        self.info('Refresh to compare the data before and after refresh')
         self.base_selenium.refresh()
-
         contact_data_after_refresh = self.contact_page.get_full_contact_data()
         self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh,
                                                                     data_before_save=contact_data))
@@ -194,7 +190,7 @@ class ContactsTestCases(BaseTest):
         self.contact_page.get_contact_persons_page()
         contact_persons_after_refresh = self.contact_page.get_contact_persons_data()
 
-        self.base_selenium.LOGGER.info('compare contact persons data after refresh')
+        self.info('compare contact persons data after refresh')
         self.assertTrue(self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh,
                                                                        data_before_save=contact_persons_after_update))
 
@@ -267,34 +263,32 @@ class ContactsTestCases(BaseTest):
         random_order_index = self.generate_random_number(lower=0, upper=len(orders_records) - 1)
         selected_order_record = orders_records[random_order_index]
         contact_name = selected_order_record['company'][0]
-        self.contacts_page.info('filter by contact name: {}'.format(contact_name))
+        self.info('filter by contact name: {}'.format(contact_name))
         contact_record = self.contact_page.search(value=contact_name)[0]
         if self.contact_page.check_if_table_is_empty():
-            self.contacts_page.info('Contact "{}" doesn\'t exist in active table'.format(contact_name))
+            self.info('Contact "{}" doesn\'t exist in active table'.format(contact_name))
         else:
             self.contact_page.click_check_box(source=contact_record)
             self.contact_page.archive_selected_items()
 
-        self.contacts_page.info('get the archived contacts')
+        self.info('get the archived contacts')
         self.contact_page.get_archived_contacts()
-
         contact_archived_records = self.contact_page.search(value=contact_name)[0]
 
         self.assertFalse(self.contact_page.check_if_table_is_empty())
-
-        self.contacts_page.info('delete selected record')
+        self.info('delete selected record')
         self.contact_page.click_check_box(source=contact_archived_records)
         self.contact_page.delete_selected_contacts()
         self.contact_page.sleep_tiny()
-        self.contacts_page.info('refresh to check that data wasn\'t affected')
+        self.info('refresh to check that data wasn\'t affected')
         self.base_selenium.refresh()
         self.contact_page.get_archived_contacts()
         archived_record = self.contact_page.search(value=contact_name)
 
         self.assertFalse(self.contact_page.check_if_table_is_empty())
+        self.info('Contact record could not be deleted')
+        self.info('making sure that the archived contact is the same that is used in data')
 
-        self.contacts_page.info('Contact record could not be deleted')
-        self.contacts_page.info('making sure that the archived contact is the same that is used in data')
         found = False
         for row in archived_record:
             contact_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
