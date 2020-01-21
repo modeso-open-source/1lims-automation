@@ -4,6 +4,7 @@ from uuid import uuid4
 from random import randint
 import requests
 from loguru import logger
+from datetime import datetime
 
 
 class BaseAPI:
@@ -75,3 +76,8 @@ class BaseAPI:
     @staticmethod
     def generate_random_number(lower=1, upper=100000):
         return randint(lower, upper) 
+
+    @staticmethod
+    def get_current_date():
+        return datetime.today().strftime('%Y-%m-%d')
+        

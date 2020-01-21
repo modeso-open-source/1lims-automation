@@ -85,12 +85,15 @@ class OrdersAPI(BaseAPI):
                 'day': shipment_date_arr[2]
             }
         
-        test_date_arr = kwargs['testDate'].split('-')
-        _payload['testDatedateOption']={
-            'year': test_date_arr[0],
-            'month': test_date_arr[1],
-            'day': test_date_arr[2]
-        }
+        if 'testDate' not in kwargs:
+            current_date = self.get_current_date()
+            test_date_arr = current_date.split('-')
+            payload['testDatedateOption']={
+                'year': test_date_arr[0],
+                'month': test_date_arr[1],
+                'day': test_date_arr[2]
+            }
+            payload['testDate'] = 
 
         _payload['articleId'] = kwargs['article']['id']
         if kwargs['yearOption'] == 1:

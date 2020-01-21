@@ -536,7 +536,6 @@ class BasePages:
                 'pagination_limit': current_pagination_limit
                 }
 
-    def 
     (self, date):
         date_in_days = date[0:10]
         date_parameters = date_in_days.split('-')
