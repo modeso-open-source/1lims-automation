@@ -137,21 +137,57 @@ class TestPlanAPI(BaseAPI):
     # }
     # self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article], testUnits=[testunit]))
     def create_testplan(self, **kwargs):
-        request_body = {}
-        payload = self.update_payload(request_body, **kwargs)
-        payload['selectedTestPlan'] = kwargs['testPlan']        
-        
-        if 'attachments' not in kwargs:
-            payload['attachments'] = '[]'
-        
-        payload['selectedTestUnits']=[]
+        """
+        param: testplan: {
+            'id': testplan id, 'new' in case of new testplan name,
+            'text': testplan name text
+        }
+        param: 'number': testplan number
+        param: 'selectedArticles':  denotes articles that support this testplan, all by default[{
+            'id': article id,
+            'text': article name
+        }]
+        param: materialType: testplan material type, raw material by default{
+            'id': material type id,
+            'text': material type text
+        }
+        param testUnits: testunits in this testplan, if empty, it will be created as in progress testplan, else
+        put array of testunits by the following way
+        using testunit id, select testunit form data through api call: test_unit_api.get_testunit_form_data(id=#testunit_id)
+        and then use the return of this mapping function test_unit_page.map_testunit_to_testplan_format(testunit=formdata_testunit) to add it to the testunits array
+        """
+        testplan_name = self.generate_random_string()
+        _payload = {
+            'number': self.generate_random_number(),
+            'testPlan': {
+                'id': 'new',
+                'text': testplan_name
+            },
+            'selectedTestPlan': {
+                'id': 'new',
+                'text': testplan_name
+            },
+            'selectedArticles': [{
+                'id': -1,
+                'text': 'All'
+            }],
+            'materialType': {
+                'id': 1,
+                'text': 'Raw Material'
+            },
+            'attachments': '[]',
+            'selectedTestUnits': [],
+            'materialTypeId': 1,
+            'dynamicFieldsValues': [],
+            'testUnits': []
+        }   
 
-        payload['materialTypeId'] = payload['materialType']['id']
-        payload['dynamicFieldsValues'] = []
         
-        if 'testUnits' not in kwargs:
-            payload['testUnits'] = []
-
+        payload = self.update_payload(_payload, **kwargs)
+        if 'testPlan' in kwargs:
+            payload['selectedTestPlan'] = [kwargs['testPlan']]
+        if 'materialType' in kwargs:
+            payload['materialTypeId'] = kwargs['materialType']['id']
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan']) 
         self.info('POST : {}'.format(api))
         response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
@@ -160,7 +196,7 @@ class TestPlanAPI(BaseAPI):
         data = response.json()
         
         if data['status'] == 1:
-            return data['testPlanDetails']
+            return payload
         else:
             return data['message']
 

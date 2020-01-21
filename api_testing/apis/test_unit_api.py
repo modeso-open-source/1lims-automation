@@ -148,7 +148,7 @@ class TestUnitAPI(BaseAPI):
     def create_qualitative_testunit(self, **kwargs):
         
         random_category = self.generate_random_string()
-        request_body = {
+        _payload = {
             'name': self.generate_random_string(),
             'number': self.generate_random_number(),
             'selectedConcs': [],
@@ -174,7 +174,7 @@ class TestUnitAPI(BaseAPI):
             'method': self.generate_random_string(),
             'iterations': '1'
         }
-        payload = self.update_payload(request_body, **kwargs)
+        payload = self.update_payload(_payload, **kwargs)
 
         if 'textValue' not in kwargs:
             payload['textValue'] = self.generate_random_string()
@@ -202,9 +202,8 @@ class TestUnitAPI(BaseAPI):
             return data['message']
     
     def create_quantitative_testunit(self, **kwargs):
-        request_body = {}
         random_category =self.generate_random_string()
-        request_body = {
+        _payload = {
             'name': self.generate_random_string(),
             'number': self.generate_random_number(),
             'selectedConcs': [],
@@ -236,7 +235,7 @@ class TestUnitAPI(BaseAPI):
             'useSpec': True,
             'iterations': '1'
         }
-        payload = self.update_payload(request_body, **kwargs)
+        payload = self.update_payload(_payload, **kwargs)
         if 'category' in kwargs:
             payload['selectedCategory'] = [kwargs['category']]
 
@@ -256,9 +255,8 @@ class TestUnitAPI(BaseAPI):
     
     def create_mibi_testunit(self, **kwargs):
                 
-        request_body = {}
         random_category =self.generate_random_string()
-        request_body = {
+        _payload = {
             'name': self.generate_random_string(),
             'number': self.generate_random_number(),
             'selectedConcs': [{
@@ -289,7 +287,7 @@ class TestUnitAPI(BaseAPI):
             'method': self.generate_random_string(),
             'iterations': '1'
         }
-        payload = self.update_payload(request_body, **kwargs)
+        payload = self.update_payload(_payload, **kwargs)
         if 'category' in kwargs:
             payload['selectedCategory'] = [kwargs['category']]
 

@@ -1721,6 +1721,7 @@ class TestUnitsTestCases(BaseTest):
 
 
     def test_creating_testunits(self):
-        self.info(self.test_unit_api.create_quantitative_testunit())
-        self.info(self.test_unit_api.create_qualitative_testunit())
-        self.info(self.test_unit_api.create_mibi_testunit())
+        # self.info(self.test_unit_api.create_quantitative_testunit())
+        # self.info(self.test_unit_api.create_qualitative_testunit())
+        # self.info(self.test_unit_api.create_mibi_testunit())
+        self.info(self.test_plan_api.create_testplan())

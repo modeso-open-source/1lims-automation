@@ -40,7 +40,6 @@ class OrdersAPI(BaseAPI):
 
         api = '{}{}'.format(self.url, self.END_POINTS['orders_api']['create_new_order']) 
         self.info('POST : {}'.format(api))
-        self.info(request_body)
         response = self.session.post(api, json=[request_body], params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
