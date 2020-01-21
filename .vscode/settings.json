@@ -9,5 +9,5 @@
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": false,
     "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": ["--max-line-length=120"]
+    "python.linting.flake8Args": ["--max-line-length=120", "--ignore=E302,E251,E225,W293,E226,W291,E501,E301,E266,E303,"]
 }
