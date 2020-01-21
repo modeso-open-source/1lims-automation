@@ -424,13 +424,14 @@ class ContactsTestCases(BaseTest):
         """
         self.contacts_page.get_random_contact()
         contact_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info('contact_url : {}'.format(contact_url))
+        self.contacts_page.info('contact_url : {}'.format(contact_url))
         # click on Overview, it will redirect you to contacts' page
-        self.base_selenium.LOGGER.info('click on Overview')
+        self.contacts_page.info('click on Overview and confirm pop-up')
         self.base_page.click_overview()
-        self.article_page.sleep_small()
+        self.contacts_page.confirm_overview_pop_up()
+        self.contacts_page.sleep_tiny()
         self.assertEqual(self.base_selenium.get_url(), '{}contacts'.format(self.base_selenium.url))
-        self.base_selenium.LOGGER.info('clicking on Overview confirmed')
+        self.contacts_page.info('clicking on Overview confirmed')
 
     def test015_contacts_search_then_navigate(self):
         """
