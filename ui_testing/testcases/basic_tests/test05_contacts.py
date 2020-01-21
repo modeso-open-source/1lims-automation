@@ -173,7 +173,7 @@ class ContactsTestCases(BaseTest):
         random_contact_record = self.contact_page.get_random_contact_row()
         self.contact_page.open_edit_page(row=random_contact_record)
 
-        self.contacts_page.info('acquire contact data to compare it after updating the persons')
+        self.info('acquire contact data to compare it after updating the persons')
         contact_data = self.contact_page.get_full_contact_data()
 
         self.info('Open contact persons page')
@@ -183,18 +183,16 @@ class ContactsTestCases(BaseTest):
 
         self.info('Refresh to compare the data before and after refresh')
         self.base_selenium.refresh()
-
         contact_data_after_refresh = self.contact_page.get_full_contact_data()
-        self.assertTrue(
-            self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh,
-                                                        data_before_save=contact_data))
+        self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh,
+                                                                    data_before_save=contact_data))
 
         self.contact_page.get_contact_persons_page()
         contact_persons_after_refresh = self.contact_page.get_contact_persons_data()
+
         self.info('compare contact persons data after refresh')
-        self.assertTrue(
-            self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh,
-                                                           data_before_save=contact_persons_after_update))
+        self.assertTrue(self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh,
+                                                                       data_before_save=contact_persons_after_update))
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6394')
     def test_009_delete_contact_person(self):
