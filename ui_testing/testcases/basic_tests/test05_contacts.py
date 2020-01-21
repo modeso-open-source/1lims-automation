@@ -185,14 +185,16 @@ class ContactsTestCases(BaseTest):
         self.base_selenium.refresh()
 
         contact_data_after_refresh = self.contact_page.get_full_contact_data()
-        self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh,
-                                                                    data_before_save=contact_data))
+        self.assertTrue(
+            self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh,
+                                                        data_before_save=contact_data))
 
         self.contact_page.get_contact_persons_page()
         contact_persons_after_refresh = self.contact_page.get_contact_persons_data()
         self.info('compare contact persons data after refresh')
-        self.assertTrue(self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh,
-                                                                       data_before_save=contact_persons_after_update))
+        self.assertTrue(
+            self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_after_refresh,
+                                                           data_before_save=contact_persons_after_update))
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6394')
     def test_009_delete_contact_person(self):
