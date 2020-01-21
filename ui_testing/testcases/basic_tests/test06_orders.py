@@ -49,7 +49,7 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
             self.assertEqual(current_no, order_no)
             
-   # will continue with us
+    # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])
     def test002_cancel_button_edit_contact(self, save):
         """
@@ -119,8 +119,8 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_departments) == {} (order_departments)'.format(current_departments,
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
+    
     # will change totally and implement the new behavior 
-
     def test004_archive_order(self):
         """
             New: Orders: Archive
@@ -254,74 +254,60 @@ class OrdersTestCases(BaseTest):
             for search_result in search_results:
                 search_data = self.base_selenium.get_row_cells_dict_related_to_header(
                     search_result)
-                if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[
-                    0]:
+                if search_data[column].replace("'", '').split(',')[0] == row_data[column].replace("'", '').split(',')[0]:
                     break
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
             
-   # will implement with the new behavior that it will duplicate with new order number 
-    @skip('https://modeso.atlassian.net/browse/LIMS-4766')
-    def test008_duplicate_order_one_copy(self):
+    def test008_duplicate_main_order(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
 
         LIMS-3270
         :return:
         """
-        order_row_from_table_list = []
-        order_row_from_form_list = []
-        selected_row = self.order_page.get_random_order_row()
-        self.order_page.click_check_box(source=selected_row)
+        # get the random main order data
+        main_order = self.order_page.get_random_main_order_with_sub_orders_data()
+        # select the order
+        self.order_page.click_check_box(main_order['row_element'])
+        # duplicate the main order
+        self.order_page.duplicate_main_order_from_table_overview()
+        # get the new order data
+        after_duplicate_order = self.order_page.get_suborder_data()
 
-        # add order number
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Order No.').replace("'", ''))
-        # contact
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Contact Name').replace('...', ''))
-        # material type
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Material Type').replace('...', ''))
-        # article name
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article Name').replace('...', ''))
-        # article number
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Article No.').replace('...',
-                                                                                                        '').replace(
-                "'", ''))
+        # ignore contact no since the table view doesn't have contact No.
+        for contact in after_duplicate_order['contacts']:
+            contact['no'] = None
 
-        # #shipment date
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Shipment Date'))
-        # #test Date
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Date'))
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Test Plans').replace('...', ''))
-        order_row_from_table_list.append(
-            self.base_selenium.get_row_cell_text_related_to_header(selected_row, 'Departments'))
+        for index in range(len(main_order['suborders'])):
+            # ignore analysis no. since it won't be created in the form until saving
+            main_order['suborders'][index]['analysis_no'] = ''
+            # ignore testunit numbers since the table view only got the name
+            for testunit in after_duplicate_order['suborders'][index]['testunits']:
+                testunit['no'] = None
 
-        self.order_page.duplicate_order_from_table_overview(1)
-        order_row_from_form_list.extend(
-            [self.order_page.get_order_number().replace("'", ''), self.order_page.get_contact(),
-             self.order_page.get_material_type()])
-        order_row_from_form_list.append(
-            self.order_page.get_article().split(' No')[0][0:30])
-        order_row_from_form_list.append(self.order_page.get_article().split('No:')[
-                                            1].replace("'", '')[0:30])
-        order_row_from_form_list.append(self.order_page.get_shipment_date())
-        order_row_from_form_list.append(self.order_page.get_test_date())
-        order_row_from_form_list.append(self.order_page.get_test_plan())
-        order_row_from_form_list.append(self.order_page.get_departments())
-        self.base_selenium.LOGGER.info(
-            ' + compare if data from table : {} is equal data in form {} '.format(order_row_from_table_list,
-                                                                                  order_row_from_form_list))
-        self.assertListEqual(order_row_from_form_list,
-                             order_row_from_table_list)
-    
-    # will continue with us 
+        # make sure that its the duplication page
+        self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
+        # make sure that the new order has different order No
+        self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
+        # compare the contacts 
+        self.assertCountEqual(main_order['contacts'], after_duplicate_order['contacts'])
+        # compare the data of suborders data in both orders
+        self.assertCountEqual(main_order['suborders'], after_duplicate_order['suborders'])
+
+        # save the duplicated order
+        self.order_page.save(save_btn='orders:save_order')
+        # go back to the table view
+        self.order_page.get_orders_page()
+        # search for the created order no
+        self.order_page.search(after_duplicate_order['orderNo'])
+        # get the search result text
+        results = self.order_page.result_table()[0].text
+        # check that it exists
+        self.assertIn(after_duplicate_order['orderNo'], results)
+
+
+    # will continue with us
     def test009_export_order_sheet(self):
         """
         New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
@@ -636,7 +622,7 @@ class OrdersTestCases(BaseTest):
                 self.assertEqual(order_data[key].replace(
                     "'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
-   # will continue with us 
+    # will continue with us 
     def test016_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
@@ -704,35 +690,52 @@ class OrdersTestCases(BaseTest):
         self.assertIn('has-error', test_plan_class_name)
         self.assertIn('has-error', test_unit_class_name)
 
-    # will continue with us 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test018_update_test_date(self, save):
+    def test032_update_test_date(self, save):
         """
         New: Orders: Test Date: I can update test date successfully with cancel/save buttons
-        LIMS-4780
+        
         LIMS-4780
         :return:
         """
+        # open random order edit page
         self.order_page.get_random_order()
+        # preserve the url
         order_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        order_test_date = self.order_page.get_test_date()
-        test_date = self.order_page.set_test_date()
+        # get all the suborders
+        all_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        # get random suborder row_id
+        row_id = 0
+        if len(all_suborders) > 1:
+            row_id = randint(0, len(all_suborders) - 1)
+
+        # change the test date
+        new_test_date = self.order_page.update_suborder(sub_order_index=row_id, test_date=True)
+
+        # save or cancel
         if 'save_btn' == save:
+            self.order_page.sleep_medium()
             self.order_page.save(save_btn='order:save_btn')
+            self.order_page.sleep_medium()
         else:
             self.order_page.cancel(force=True)
 
+        # refresh the page
+        self.info('reopen the edited order page')
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
-        current_test_date = self.order_page.get_test_date()
-        if 'save_btn' == save:
+
+        # get the saved test_date
+        saved_test_date = self.order_page.get_suborder_data()['suborders'][row_id]['test_date']
+
+        # check if the test date changed or not
+        if 'cancel' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(current_test_date, test_date))
-            self.assertEqual(test_date, current_test_date)
+                ' + Assert {} (current_test_date) != {} (new_test_date)'.format(new_test_date, saved_test_date))
+            self.assertNotEqual(saved_test_date, new_test_date)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_test_date) == {} (order_test_date)'.format(current_test_date, order_test_date))
-            self.assertEqual(current_test_date, order_test_date)
+                ' + Assert {} (current_test_date) == {} (new_test_date)'.format(new_test_date, saved_test_date))
+            self.assertEqual(saved_test_date, new_test_date)
 
     # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])
@@ -886,7 +889,7 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, test_units_list)
             
-   # will continue with us
+    # will continue with us
     def test021_create_existing_order_with_test_units(self):
         """
         New: Orders: Create an existing order with test units
