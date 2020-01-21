@@ -138,6 +138,13 @@ class TestPlanAPI(BaseAPI):
     # self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article], testUnits=[testunit]))
     def create_testplan(self, **kwargs):
         """
+        NOTE: calling this api without adding testunits, will create an in progress testplan, to create a complete testplan
+        you will need to pass parameter testunits[testunit_object], and this object is can be formated by the following steps,
+        
+        testunit = self.test_unit_api.get_testunit_form_data(id=#testunit_id)
+        formated_testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit)
+        self.test_plan_api.create_testplan(testunits=[formated_testunit])
+
         param: testplan: {
             'id': testplan id, 'new' in case of new testplan name,
             'text': testplan name text

@@ -1724,4 +1724,6 @@ class TestUnitsTestCases(BaseTest):
         # self.info(self.test_unit_api.create_quantitative_testunit())
         # self.info(self.test_unit_api.create_qualitative_testunit())
         # self.info(self.test_unit_api.create_mibi_testunit())
-        self.info(self.test_plan_api.create_testplan())
+        testunit = self.test_unit_api.get_testunit_form_data(id=972)
+        formated_testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit)
+        self.info(self.test_plan_api.create_testplan(testUnits=[formated_testunit]))
