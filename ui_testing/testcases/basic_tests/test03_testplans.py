@@ -483,7 +483,7 @@ class TestPlansTestCases(BaseTest):
         self.assertTrue(validation_result)
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6405')
-    def test016_delete_used_testplan(self):
+    def test015_delete_used_testplan(self):
         '''
         LIMS-3509
         If a testplan is used, it can't be deleted
@@ -507,7 +507,7 @@ class TestPlansTestCases(BaseTest):
         # check for the error popup that this testplan is used and can't be deleted
         self.assertFalse(testplan_deleted)
 
-    def test017_archived_testplan_shouldnot_appear_in_order(self):
+    def test016_archived_testplan_shouldnot_appear_in_order(self):
         '''
         LIMS-3708
         In case a testplan is archived, it shouldn't appear when creating a new order
@@ -541,7 +541,7 @@ class TestPlansTestCases(BaseTest):
         suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]
         self.assertEqual(len(suborder_first_testplan), 0)
 
-    def test018_testunit_sub_super_scripts(self):
+    def test017_testunit_sub_super_scripts(self):
         '''
         LIMS-5796
         Create a testunit with sub/super scripts, use this testunit to create a testplan
@@ -576,7 +576,7 @@ class TestPlansTestCases(BaseTest):
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
         self.assertEqual(unit, testunit_unit_display)
 
-    def test020_filter_by_testplan_number(self):
+    def test018_filter_by_testplan_number(self):
         '''
         LIMS-6473
         User can filter with testplan number
@@ -591,7 +591,7 @@ class TestPlansTestCases(BaseTest):
         self.assertIn(str(random_testplan['number']), (testplan_found[0].text).replace("'", ""))
         self.base_selenium.LOGGER.info('Filtering by number was done successfully')
 
-    def test021_filter_by_testplan_name(self):
+    def test019_filter_by_testplan_name(self):
         '''
         LIMS-6470
         User can filter with testplan name
@@ -618,7 +618,7 @@ class TestPlansTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Filtering by name was done successfully')
 
-    def test022_filter_by_testplan_status(self):
+    def test020_filter_by_testplan_status(self):
         '''
         LIMS-6474
         User can filter with status
@@ -665,7 +665,7 @@ class TestPlansTestCases(BaseTest):
                 results_found = False
         self.base_selenium.LOGGER.info('Filtering by status in progress was done successfully')
 
-    def test023_filter_by_testplan_changed_by(self):
+    def test021_filter_by_testplan_changed_by(self):
         '''
         LIMS-6475
         User can filter with changed by field
@@ -702,7 +702,7 @@ class TestPlansTestCases(BaseTest):
         self.assertIn(testplan_name, testplan_found[0].text)
 
     @parameterized.expand(['ok', 'cancel'])
-    def test024_create_approach_overview_button(self, ok):
+    def test022_create_approach_overview_button(self, ok):
         """
         Master data: Create: Overview button Approach: Make sure
         after I press on the overview button, it redirects me to the active table
@@ -723,7 +723,7 @@ class TestPlansTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), '{}testPlans/add'.format(self.base_selenium.url))
             self.info('clicking on Overview cancelled')
 
-    def test025_edit_approach_overview_button(self):
+    def test023_edit_approach_overview_button(self):
         """
         Edit: Overview Approach: Make sure after I press on
         the overview button, it redirects me to the active table
@@ -739,7 +739,7 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
         self.info('clicking on Overview confirmed')
 
-    def test026_testplans_search_then_navigate(self):
+    def test024_testplans_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
 
@@ -761,7 +761,7 @@ class TestPlansTestCases(BaseTest):
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
-    def test027_hide_all_table_configurations(self):
+    def test025_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
 
