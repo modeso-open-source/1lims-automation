@@ -536,7 +536,8 @@ class BasePages:
                 'pagination_limit': current_pagination_limit
                 }
 
-    def convert_to_dot_date_format(self, date):
+    def 
+    (self, date):
         date_in_days = date[0:10]
         date_parameters = date_in_days.split('-')
         date_parameters.reverse()
