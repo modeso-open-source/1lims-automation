@@ -1720,10 +1720,3 @@ class TestUnitsTestCases(BaseTest):
         assert (self.test_unit_page.deselect_all_configurations(), False)
 
 
-    def test_creating_testunits(self):
-        # self.info(self.test_unit_api.create_quantitative_testunit())
-        # self.info(self.test_unit_api.create_qualitative_testunit())
-        # self.info(self.test_unit_api.create_mibi_testunit())
-        testunit = self.test_unit_api.get_testunit_form_data(id=972)
-        formated_testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit)
-        self.info(self.orders_api.create_new_order())
