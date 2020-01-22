@@ -1719,4 +1719,4 @@ class TestUnitsTestCases(BaseTest):
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
 
-        
+
