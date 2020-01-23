@@ -44,11 +44,10 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
-    def test003_testplans_search_then_navigate(self):
+    def test024_testplans_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
         LIMS-6201
-
         """
         testplans = self.get_all_test_plans()
         testplan_name = random.choice(testplans)['testPlanName']
@@ -66,10 +65,9 @@ class TestPlansTestCases(BaseTest):
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
-     def test004_hide_all_table_configurations(self):
+    def test025_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
-
         LIMS-6288
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)

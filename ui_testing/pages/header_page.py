@@ -338,3 +338,7 @@ class Header(BasePages):
         self.confirm_popup()
         self.sleep_small()
 
+    def get_last_user_row(self):
+        rows = self.result_table()
+        return rows[0]
+

@@ -12,6 +12,17 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.header_page.click_on_header_button()
 
+class LoginRandomUser(BaseTest):
+
+    def setUp(self):
+        super().setUp()
+        random_user_name = self.generate_random_string()
+        random_user_email = self.base_page.generate_random_email()
+        random_user_password = self.generate_random_string()
+        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
+        self.login_page.login(username=random_user_name, password=random_user_password)
+        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.header_page.click_on_header_button()
 
     def test001_archive_user_management(self):
         """
@@ -109,11 +120,12 @@ class HeaderTestCases(BaseTest):
                                                archived_element='user_management:archived')
         self.base_selenium.LOGGER.info('make sure that that the user record navigate to the archive table')
         result = self.header_page.search(value=random_user_name)
-        self.assertTrue(result, created_user)
+        table_row = self.header_page.result_table()
+        self.assertEqual(result, table_row)
         self.header_page.select_all_records()
         self.header_page.delete_entity()
         result = self.header_page.search(value=random_user_name)
-        self.assertTrue(result, 'No records found')
+        self.assertEqual(result[0].get_attribute("textContent"), 'No data available in table')
         self.base_selenium.LOGGER.info('deleted successfully')
 
     def test006_create_new_user_with_admin_role(self):
@@ -123,15 +135,14 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.base_selenium.click(element='header:user_management_button')
-        #create new user
         random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
         random_user_password = self.generate_random_string()
-        user_data = self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
+        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
 
-        #make sure when you search you will find it
-        result = self.header_page.search(value=random_user_name)
-        self.assertTrue(result, user_data)
+        user_row = self.header_page.search(value=random_user_name)
+        table_row = self.header_page.result_table()
+        self.assertEqual(table_row, user_row)
 
     def test007_overview_btn_from_create_edit_mode(self):
         """
@@ -282,54 +293,19 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.base_selenium.click(element='header:user_management_button')
-        # create new user with random data
-        user_random_name = self.generate_random_string()
-        random_user_email = self.base_page.generate_random_email()
-        random_user_password = self.generate_random_string()
-        self.users_api.create_new_user(user_random_name, random_user_email, random_user_password)
 
-        self.base_selenium.LOGGER.info(
-            'search to make sure that the user created '.format(user_random_name))
-        created_user = self.header_page.search(user_random_name)[0]
-        user_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_user)
+        last_row = self.header_page.get_last_user_row()
+        self.header_page.click_check_box(source=last_row)
 
-        self.header_page.click_on_header_button()
-        self.base_selenium.click(element='header:logout')
-
-        # use this user in any other entity so you can login with it
-        self.login_page.login(username=user_random_name, password=random_user_password)
-
-        # make sure that I can login with the user that I created it
-        time.sleep(15)
-        self.assertIn('dashboard', self.login_page.base_selenium.get_url())
-
-        self.header_page.click_on_header_button()
-        self.base_selenium.click(element='header:user_management_button')
-        self.base_page.sleep_small()
-
-        self.base_selenium.LOGGER.info(
-            'search to make sure after I login the user found in the active tabele '
-                .format(user_random_name))
-        self.header_page.search(value=user_random_name)
-
-        self.header_page.select_all_records()
-        # navigate to the archived table to delete it
         self.header_page.archive_entity(menu_element='user_management:right_menu',
                                         archive_element='user_management:archive')
         self.header_page.get_archived_entities(menu_element='user_management:right_menu',
                                                archived_element='user_management:archived')
 
-        self.header_page.select_all_records()
+        last_row = self.header_page.get_last_user_row()
+        self.header_page.click_check_box(source=last_row)
         self.header_page.delete_entity()
-
-        self.base_selenium.LOGGER.info(
-            'message will appear this user related to some data & cant delete it')
-        self.header_page.confirm_popup()
-
-        self.base_selenium.LOGGER.info(
-            'search to make sure this user found in the active table '.format(user_random_name))
-        result = self.header_page.search(value=user_random_name)
-        self.assertTrue(result, user_data)
+        self.assertTrue(self.base_selenium.element_is_displayed(element='general:confirmation_pop_up'))
 
     def test013_filter_by_name(self):
         """
@@ -349,7 +325,6 @@ class HeaderTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('filter results displayed with random user name')
         self.base_selenium.click(element='user_management:filter_reset_btn')
-
 
     def test014_filter_by_email(self):
         """
@@ -397,7 +372,7 @@ class HeaderTestCases(BaseTest):
         user_filter = self.header_page.filter_user_drop_down(filter_name='user_management:filter_role',
                                                              filter_text=random_role_name)
 
-        self.assertIn(user_filter, result_user )
+        self.assertIn(user_filter, result_user)
         self.base_selenium.LOGGER.info('filter results displayed with the random user role')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
@@ -427,16 +402,6 @@ class HeaderTestCases(BaseTest):
         :return:
         """
         self.base_selenium.click(element='header:user_management_button')
-        random_user_name = self.generate_random_string()
-        random_user_email = self.base_page.generate_random_email()
-        random_user_password = self.generate_random_string()
-        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
-
-        self.header_page.click_on_header_button()
-        self.base_selenium.click(element='header:logout')
-        self.login_page.login(username=random_user_name, password=random_user_password)
-        self.header_page.click_on_header_button()
-        self.base_selenium.click(element='header:user_management_button')
 
         new_user = self.generate_random_string()
         new_email = self.base_page.generate_random_email()
@@ -447,13 +412,16 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='user_management:checked_changed_by')
         self.base_selenium.click(element='user_management:apply_btn')
 
-        self.base_selenium.click(element='general:menu_filter_view')
-        users_result = self.header_page.get_table_rows_data()
-        self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by',
-                                               filter_text=random_user_name)
+        last_row = self.header_page.get_last_user_row()
+        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=last_row)
+        user_changed_by = row_data['Changed By']
 
-        users_result = self.header_page.result_table()
-        self.assertIn(random_user_name, (users_result[0].text).replace("'", ""))
+        self.base_selenium.click(element='general:menu_filter_view')
+        self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by',
+                                               filter_text=user_changed_by)
+
+        users_result = self.header_page.get_table_rows_data()
+        self.assertIn(row_data['Changed By'], users_result[0])
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test018_filter_created_on(self):
@@ -476,6 +444,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info('filter results displayed with the date ( created on ) ')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-6624')
     def test019_cant_create_two_users_with_the_same_name(self):
         """
         User management: Can't create two users with the same name
@@ -496,11 +465,15 @@ class HeaderTestCases(BaseTest):
         self.assertTrue(created_user, user_data)
 
         # create role with the same name
-        created_user = self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
+        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
                                                         user_role='Admin', user_password='1', user_confirm_password='1')
         self.base_selenium.LOGGER.info(
-            'red border will display that the name already exit'.format(random_user_name))
-        self.assertTrue(created_user, 'username already exit')
+            'waiting fo validation message appear when I enter two users with the same name')
+        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
 
+        self.base_selenium.LOGGER.info(
+            'Assert the error message to make sure that validation when I enter two users with the same name? {}'.format(
+                validation_result))
+        self.assertTrue(validation_result)
 
 

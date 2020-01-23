@@ -757,7 +757,6 @@ elements = {
                          'value': '//span[contains(text(),"Apply")]'},
        'checked_changed_by': {'method': 'xpath',
                          'value': '//li[@id="modifiedBy"]//span[@class="checkbox"]//span'},
-
    },
     'roles_and_permissions': {
         'right_menu': {'method': 'xpath',
