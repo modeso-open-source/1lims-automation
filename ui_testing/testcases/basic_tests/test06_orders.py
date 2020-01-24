@@ -211,7 +211,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
         deleted_order = self.header_page.search(order_number)[0]
-        self.assertTrue(deleted_order, order_data)
+        self.assertTrue(deleted_order.get_attribute("textContent"), 'No records found')
 
     # will continue with us    
     @parameterized.expand(['True', 'False'])
