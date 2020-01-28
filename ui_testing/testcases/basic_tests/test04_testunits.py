@@ -51,10 +51,9 @@ class TestUnitsTestCases(BaseTest):
 
     def test003_restore_test_units(self):
         """
-         New: Test units: Restore Approach: I can restore any test unit successfully.
+        New: Test units: Restore Approach: I can restore any test unit successfully.
 
         LIMS-5262
-        :return:
         """
         test_unit_names = []
         self.test_unit_page.get_archived_test_units()
@@ -65,6 +64,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.restore_selected_test_units()
         self.test_unit_page.get_active_test_units()
         for test_unit_name in test_unit_names:
+            self.info(' + {} Test Unit is restored'.format(test_unit_name))
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
 
     def test004_check_version_after_update(self):
