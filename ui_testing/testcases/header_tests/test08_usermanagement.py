@@ -12,18 +12,6 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.header_page.click_on_header_button()
 
-class LoginRandomUser(BaseTest):
-
-    def setUp(self):
-        super().setUp()
-        random_user_name = self.generate_random_string()
-        random_user_email = self.base_page.generate_random_email()
-        random_user_password = self.generate_random_string()
-        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
-        self.login_page.login(username=random_user_name, password=random_user_password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
-        self.header_page.click_on_header_button()
-
     def test001_archive_user_management(self):
         """
         User management: Make sure that you can archive any record
@@ -83,7 +71,7 @@ class LoginRandomUser(BaseTest):
                 if search_data[column] == row_data[column]:
                     break
             self.assertEqual(row_data[column], search_data[column])
-            
+
     @skip('https://modeso.atlassian.net/browse/LIMS-6563')
     def test004_download_user_sheet(self):
         """
@@ -137,8 +125,7 @@ class LoginRandomUser(BaseTest):
         self.base_selenium.click(element='header:user_management_button')
         random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
-        random_user_password = self.generate_random_string()
-        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
+        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email, user_password='1', user_confirm_password='1')
 
         user_row = self.header_page.search(value=random_user_name)
         table_row = self.header_page.result_table()
@@ -261,11 +248,11 @@ class LoginRandomUser(BaseTest):
         user_email = self.header_page.get_user_email()
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
-                    ' + Assert {} (new_email) == {} (user_email)'.format(new_email, user_email))
+                ' + Assert {} (new_email) == {} (user_email)'.format(new_email, user_email))
             self.assertEqual(new_email, user_email)
         else:
             self.base_selenium.LOGGER.info(
-                    ' + Assert {} (current_email) == {} (user_email)'.format(current_email, user_email))
+                ' + Assert {} (current_email) == {} (user_email)'.format(current_email, user_email))
             self.assertEqual(current_email, user_email)
 
     def test011_validation_user_name_email_fields(self):
@@ -286,28 +273,7 @@ class LoginRandomUser(BaseTest):
         self.base_selenium.LOGGER.info('Assert error msg')
         self.assertEqual(validation_result, True)
 
-    def test012_delete_user_used_in_other_entity(self):
-        """
-        User management: Make sure that you can't delete any user record If this record used in other entity
-        LIMS-6407
-        :return:
-        """
-        self.base_selenium.click(element='header:user_management_button')
-
-        last_row = self.header_page.get_last_user_row()
-        self.header_page.click_check_box(source=last_row)
-
-        self.header_page.archive_entity(menu_element='user_management:right_menu',
-                                        archive_element='user_management:archive')
-        self.header_page.get_archived_entities(menu_element='user_management:right_menu',
-                                               archived_element='user_management:archived')
-
-        last_row = self.header_page.get_last_user_row()
-        self.header_page.click_check_box(source=last_row)
-        self.header_page.delete_entity()
-        self.assertTrue(self.base_selenium.element_is_displayed(element='general:confirmation_pop_up'))
-
-    def test013_filter_by_name(self):
+    def test012_filter_by_name(self):
         """
         User management Approach: I can filter by no successfully
         LIMS-6488
@@ -326,7 +292,7 @@ class LoginRandomUser(BaseTest):
         self.base_selenium.LOGGER.info('filter results displayed with random user name')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test014_filter_by_email(self):
+    def test013_filter_by_email(self):
         """
         User management Approach: I can filter by no successfully
         LIMS-6488
@@ -343,6 +309,25 @@ class LoginRandomUser(BaseTest):
         self.assertIn(str(user_data['email']), (users_result[0].text). replace("'", ""))
 
         self.base_selenium.LOGGER.info('filter results displayed with the user email')
+        self.base_selenium.click(element='user_management:filter_reset_btn')
+
+    def test014_filter_by_no(self):
+        """
+        User management Approach: I can filter by no successfully
+        LIMS-6488
+        :return:
+        """
+        self.header_page.get_users_page()
+        user_data = self.header_page.get_data_from_row()
+
+        self.base_selenium.click(element='general:menu_filter_view')
+        self.header_page.filter_user_by(filter_element='user_management:filter_number',
+                                        filter_text=user_data['number'])
+
+        users_result = self.header_page.result_table()
+        self.assertIn(str(user_data['number'].replace("'", "")), (users_result[0].text).replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with the user no')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
     def test015_filter_by_role(self):
@@ -376,26 +361,93 @@ class LoginRandomUser(BaseTest):
         self.base_selenium.LOGGER.info('filter results displayed with the random user role')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test016_filter_by_no(self):
+    def test016_filter_created_on(self):
         """
-        User management Approach: I can filter by no successfully
-        LIMS-6488
+        User management Approach: I can filter by created on successfully
+        LIMS-64
         :return:
         """
         self.header_page.get_users_page()
+        self.users_api.get_all_users()
         user_data = self.header_page.get_data_from_row()
 
         self.base_selenium.click(element='general:menu_filter_view')
-        self.header_page.filter_user_by(filter_element='user_management:filter_number',
-                                        filter_text=user_data['number'])
+        self.header_page.filter_user_by(filter_element='user_management:filter_created_on',
+                                        filter_text=user_data['created_on'])
 
         users_result = self.header_page.result_table()
-        self.assertIn(str(user_data['number'].replace("'", "")), (users_result[0].text).replace("'", ""))
+        self.assertIn(str(user_data['created_on']), (users_result[0].text).replace("'", ""))
 
-        self.base_selenium.LOGGER.info('filter results displayed with the user no')
+        self.base_selenium.LOGGER.info('filter results displayed with the date ( created on ) ')
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test017_filter_by_changed_by(self):
+    @skip('https://modeso.atlassian.net/browse/LIMS-6624')
+    def test017_cant_create_two_users_with_the_same_name(self):
+        """
+        User management: Can't create two users with the same name
+        LIMS-6503
+        :return:
+        """
+        self.base_selenium.click(element='header:user_management_button')
+        # create new user with random data
+        random_user_name = self.generate_random_string()
+        random_user_email = self.base_page.generate_random_email()
+        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
+                                         user_role='Admin', user_password='1', user_confirm_password='1')
+
+        self.base_selenium.LOGGER.info(
+            'search to make sure that the role created '.format(random_user_name))
+        created_user = self.header_page.search(random_user_name)[0]
+        user_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_user)
+        self.assertTrue(created_user, user_data)
+
+        # create role with the same name
+        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
+                                         user_role='Admin', user_password='1', user_confirm_password='1')
+        self.base_selenium.LOGGER.info(
+            'waiting fo validation message appear when I enter two users with the same name')
+        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
+
+        self.base_selenium.LOGGER.info(
+            'Assert the error message to make sure that validation when I enter two users with the same name? {}'.format(
+                validation_result))
+        self.assertTrue(validation_result)
+
+
+class LoginRandomUser(BaseTest):
+
+    def setUp(self):
+        super().setUp()
+        random_user_name = self.generate_random_string()
+        random_user_email = self.base_page.generate_random_email()
+        random_user_password = self.generate_random_string()
+        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
+        self.login_page.login(username=random_user_name, password=random_user_password)
+        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.header_page.click_on_header_button()
+
+    def test018_delete_user_used_in_other_entity(self):
+        """
+        User management: Make sure that you can't delete any user record If this record used in other entity
+        LIMS-6407
+        :return:
+        """
+        self.base_selenium.click(element='header:user_management_button')
+
+        last_row = self.header_page.get_last_user_row()
+        self.header_page.click_check_box(source=last_row)
+
+        self.header_page.archive_entity(menu_element='user_management:right_menu',
+                                        archive_element='user_management:archive')
+        self.header_page.get_archived_entities(menu_element='user_management:right_menu',
+                                               archived_element='user_management:archived')
+
+        last_row = self.header_page.get_last_user_row()
+        self.header_page.click_check_box(source=last_row)
+        self.header_page.delete_entity()
+        self.assertTrue(self.base_selenium.element_is_displayed(element='general:confirmation_pop_up'))
+
+    def test019_filter_by_changed_by(self):
         """
         Header: Roles & Permissions Approach: Make sure that you can filter by role changed by
         LIMS-6507
@@ -424,56 +476,5 @@ class LoginRandomUser(BaseTest):
         self.assertIn(row_data['Changed By'], users_result[0])
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
-    def test018_filter_created_on(self):
-        """
-        User management Approach: I can filter by created on successfully
-        LIMS-64
-        :return:
-        """
-        self.header_page.get_users_page()
-        self.users_api.get_all_users()
-        user_data = self.header_page.get_data_from_row()
-
-        self.base_selenium.click(element='general:menu_filter_view')
-        self.header_page.filter_user_by(filter_element='user_management:filter_created_on',
-                                        filter_text=user_data['created_on'])
-
-        users_result = self.header_page.result_table()
-        self.assertIn(str(user_data['created_on']), (users_result[0].text).replace("'", ""))
-
-        self.base_selenium.LOGGER.info('filter results displayed with the date ( created on ) ')
-        self.base_selenium.click(element='user_management:filter_reset_btn')
-
-    @skip('https://modeso.atlassian.net/browse/LIMS-6624')
-    def test019_cant_create_two_users_with_the_same_name(self):
-        """
-        User management: Can't create two users with the same name
-        LIMS-6503
-        :return:
-        """
-        self.base_selenium.click(element='header:user_management_button')
-        # create new user with random data
-        random_user_name = self.generate_random_string()
-        random_user_email = self.base_page.generate_random_email()
-        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
-                                         user_role='Admin', user_password='1', user_confirm_password='1')
-
-        self.base_selenium.LOGGER.info(
-            'search to make sure that the role created '.format(random_user_name))
-        created_user = self.header_page.search(random_user_name)[0]
-        user_data = self.base_selenium.get_row_cells_dict_related_to_header(row=created_user)
-        self.assertTrue(created_user, user_data)
-
-        # create role with the same name
-        self.header_page.create_new_user(user_name=random_user_name, user_email=random_user_email,
-                                                        user_role='Admin', user_password='1', user_confirm_password='1')
-        self.base_selenium.LOGGER.info(
-            'waiting fo validation message appear when I enter two users with the same name')
-        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
-
-        self.base_selenium.LOGGER.info(
-            'Assert the error message to make sure that validation when I enter two users with the same name? {}'.format(
-                validation_result))
-        self.assertTrue(validation_result)
 
 
