@@ -47,9 +47,9 @@ script:
   #- xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/test08_usermanagement.py --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test005_delete_user --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test006_create_new_user_with_admin_role --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test 009_update_user_role_with_save_cancel_btn_0_save_btn --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test 009_update_user_role_with_save_cancel_btn_1_cancel --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test 011_validation_user_name_email_fields --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test009_update_user_role_with_save_cancel_btn_0_save_btn --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test009_update_user_role_with_save_cancel_btn_1_cancel --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test011_validation_user_name_email_fields --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test012_filter_by_name --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test013_filter_by_email --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test014_filter_by_no --tc-file=config.ini
