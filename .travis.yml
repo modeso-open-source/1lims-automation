@@ -28,17 +28,4 @@ script:
   #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
   
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test005_delete_user --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test006_create_new_user_with_admin_role --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test 009_update_user_role_with_save_cancel_btn_0_save_btn --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test 009_update_user_role_with_save_cancel_btn_1_cancel --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test 011_validation_user_name_email_fields --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test012_filter_by_name --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test013_filter_by_email --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test014_filter_by_no --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test015_filter_by_role --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test016_filter_created_on --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test017_cant_create_two_users_with_same_name --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:LoginRandomUser.test018_delete_user_used_in_other_entity  --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:LoginRandomUser.test019_filter_by_changed_by  --tc-file=config.ini
-
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test08_usermanagement.py
