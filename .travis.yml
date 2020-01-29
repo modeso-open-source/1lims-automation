@@ -55,7 +55,7 @@ script:
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test014_filter_by_no --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test015_filter_by_role --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test016_filter_created_on --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test017_cant_create_two_users_with_same_name --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test017_cant_create_two_users_with_the_same_name --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:LoginRandomUser.test018_delete_user_used_in_other_entity  --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/header_tests/test08_usermanagement.py:LoginRandomUser.test019_filter_by_changed_by  --tc-file=config.ini
   #  - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test031_editing_limit_of_quantification_fields_should_affect_table_and_version
