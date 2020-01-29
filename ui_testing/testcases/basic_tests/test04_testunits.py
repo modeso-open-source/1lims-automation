@@ -13,7 +13,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_unit_page.get_test_units_page()
 
-    #@skip('https://modeso.atlassian.net/browse/LIMS-5237')
+    # @skip('https://modeso.atlassian.net/browse/LIMS-5237')
     def test001_test_units_search(self):
         """
         New: Test units: Search Approach: I can search by any field in the table view
@@ -40,22 +40,20 @@ class TestUnitsTestCases(BaseTest):
         New: Test units: Archive Approach: I can archive any test unit successfully.
 
         LIMS-3670
-        :return:
         """
         selected_test_units_data, _ = self.test_unit_page.select_random_multiple_table_rows()
         self.test_unit_page.archive_selected_test_units()
         self.test_unit_page.get_archived_test_units()
         for test_unit in selected_test_units_data:
             test_unit_name = test_unit['Test Unit Name']
-            self.base_selenium.LOGGER.info(' + {} Test Unit should be activated.'.format(test_unit_name))
+            self.info(' + {} Test Unit should be activated.'.format(test_unit_name))
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
 
     def test003_restore_test_units(self):
         """
-         New: Test units: Restore Approach: I can restore any test unit successfully.
+        New: Test units: Restore Approach: I can restore any test unit successfully.
 
         LIMS-5262
-        :return:
         """
         test_unit_names = []
         self.test_unit_page.get_archived_test_units()
@@ -66,6 +64,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.restore_selected_test_units()
         self.test_unit_page.get_active_test_units()
         for test_unit_name in test_unit_names:
+            self.info(' + {} Test Unit is restored'.format(test_unit_name))
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit_name))
 
     def test004_check_version_after_update(self):
@@ -1030,15 +1029,16 @@ class TestUnitsTestCases(BaseTest):
 
         if testunit_type == 'MiBi':
             testunit_type = 'Quantitative MiBi'
-            
+
         self.base_selenium.LOGGER.info('open testunits in create')
         self.test_unit_page.click_create_new_testunit()
-        
+
         self.base_selenium.LOGGER.info('set the type to {}'.format(testunit_type))
         self.test_unit_page.set_testunit_type(testunit_type=testunit_type)
         self.test_unit_page.sleep_tiny()
-        self.base_selenium.LOGGER.info('set testunit type to {}, fields should be displayed as the following'.format(testunit_type))
-        
+        self.base_selenium.LOGGER.info(
+            'set testunit type to {}, fields should be displayed as the following'.format(testunit_type))
+
         if testunit_type == 'Quantitative':
             self.assertTrue(self.test_unit_page.check_for_quantitative_fields())
         elif testunit_type == 'Qualitative':
@@ -1046,7 +1046,6 @@ class TestUnitsTestCases(BaseTest):
         elif testunit_type == 'Quantitative MiBi':
             self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
-    
     def test_029_allow_user_to_change_between_specification_and_quantification(self):
         """
         New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
@@ -1063,15 +1062,15 @@ class TestUnitsTestCases(BaseTest):
             if testunit['specifications'] != '' and testunit['quantification'] == '':
                 testunit_name = testunit['number']
                 break
-            
+
         if testunit_name == '':
             self.base_selenium.LOGGER.info('there is no testunit with specification only value')
             self.assertTrue(False)
-        
+
         testunit_record = self.test_unit_page.search(value=testunit_name)[0]
 
         self.test_unit_page.open_edit_page(row=testunit_record)
-        
+
         self.base_selenium.LOGGER.info('generate random lower/ upper limit')
         random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
         random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
@@ -1084,8 +1083,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
         self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
         self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
-    
-    
+
     def test_030_allow_user_to_change_between_specification_and_quantification(self):
         """
         New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
@@ -1111,11 +1109,11 @@ class TestUnitsTestCases(BaseTest):
         testunit_record = self.test_unit_page.search(value=testunit_name)[0]
 
         self.test_unit_page.open_edit_page(row=testunit_record)
-        
+
         self.base_selenium.LOGGER.info('generate random lower/ upper limit')
         random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
         random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
-        
+
         self.base_selenium.LOGGER.info('switch to specification')
         self.test_unit_page.switch_from_quan_to_spec(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
         self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
@@ -1124,7 +1122,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
         self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
         self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
-    
+
     def test031_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
         """
         New: Test unit: limit of quantification Approach: Allow the unit field to display when I select quantitative MiBi type & make sure it displayed in the active table & in the export sheet 
@@ -1178,20 +1176,24 @@ class TestUnitsTestCases(BaseTest):
         new_random_method = self.generate_random_string()
         new_random_category = self.generate_random_string()
         new_random_qualtitative_value = self.generate_random_string()
-        category={
+        category = {
             'id': 'new',
             'text': new_random_category
         }
-        material_type=[{
+        material_type = [{
             'id': 0,
             'text': 'All'
         }]
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
-        testunit_id = self.test_unit_api.create_qualitative_testunit(name=new_random_name, number=new_random_number, method=new_random_method, category=category, selectedMaterialTypes=material_type, textValue=new_random_qualtitative_value)['testUnitId']
+        testunit_id = self.test_unit_api.create_qualitative_testunit(name=new_random_name, number=new_random_number,
+                                                                     method=new_random_method, category=category,
+                                                                     selectedMaterialTypes=material_type,
+                                                                     textValue=new_random_qualtitative_value)[
+            'testUnitId']
         testunit_form_data = self.test_unit_api.get_testunit_form_data(id=str(testunit_id))
         testunit_testplan_formated = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
 
-        active_article={}
+        active_article = {}
         active_article_request = self.article_api.get_all_articles().json()['articles']
         active_article = active_article_request[0]
 
@@ -1211,9 +1213,12 @@ class TestUnitsTestCases(BaseTest):
             'id': 'new',
             'text': random_testplan_name
         }
-        
+
         self.base_selenium.LOGGER.info('Create new testPlan to use the newly created testunit')
-        testplan_data = self.test_plan_api.create_testplan(testUnits=[testunit_testplan_formated], testPlan=testplan_name, selectedArticles=article_object, materialType=article_materialtype, number=random_testplan_number)
+        testplan_data = self.test_plan_api.create_testplan(testUnits=[testunit_testplan_formated],
+                                                           testPlan=testplan_name, selectedArticles=article_object,
+                                                           materialType=article_materialtype,
+                                                           number=random_testplan_number)
 
         self.test_plan.get_test_plan_edit_page(random_testplan_name)
         random_category_before_edit = self.test_plan.get_test_unit_category()
@@ -1370,11 +1375,14 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.open_configurations()
         self.assertTrue(self.test_unit_page.archive_quantification_limit_field())
         if self.base_selenium.check_element_is_exist(element='configurations_page:error_msg'):
-            self.base_selenium.LOGGER.info('this field is used in another testunit, you need to delete all testunits with quantification option to archive this field')
+            self.base_selenium.LOGGER.info(
+                'this field is used in another testunit, you need to delete all testunits with quantification option to archive this field')
         else:
-            self.assertFalse(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
+            self.assertFalse(
+                self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
             self.test_unit_page.get_archived_fields_tab()
-            self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
+            self.assertTrue(
+                self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
 
     @skip('waiting for API deleting')
     def test033_archive_quantifications_limit_field(self):
@@ -1598,7 +1606,7 @@ class TestUnitsTestCases(BaseTest):
 
         self.test_unit_page.select_option_to_view_search_with(view_search_options=old_values)
 
-        self.assertEquals(multiple_lines_properties['textOverflow'],'clip')
+        self.assertEquals(multiple_lines_properties['textOverflow'], 'clip')
         self.assertEquals(multiple_lines_properties['lineBreak'], 'auto')
 
     @parameterized.expand([('name', 'type'),
@@ -1624,7 +1632,8 @@ class TestUnitsTestCases(BaseTest):
 
         self.test_unit_page.open_configurations()
         self.test_unit_page.open_testunit_name_configurations_options()
-        old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=[search_view_option1,search_view_option2])
+        old_values = self.test_unit_page.select_option_to_view_search_with(
+            view_search_options=[search_view_option1, search_view_option2])
 
         self.base_selenium.LOGGER.info('Get testunits page')
         self.test_unit_page.get_test_units_page()
@@ -1718,5 +1727,3 @@ class TestUnitsTestCases(BaseTest):
         LIMS-6288
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
-
-
