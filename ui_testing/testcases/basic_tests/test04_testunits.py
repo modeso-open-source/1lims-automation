@@ -626,7 +626,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(new_name, testunit_name)
 
     @skip('https://modeso.atlassian.net/browse/LIMS-5525')
-    def test019_download_test_units_sheet(self):
+    def test018_download_test_units_sheet(self):
         """
         New: Test unit: Limit of quantification Approach: Allow those fields to displayed in table view &
         XSLX file ( upper limit & lower limit & unit )
@@ -649,7 +649,7 @@ class TestUnitsTestCases(BaseTest):
                     continue
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test020_specification_limit_of_quantification_approach_can_be_minus(self):
+    def test019_specification_limit_of_quantification_approach_can_be_minus(self):
         """
         New: Test unit: Quantitative: Specification Approach User can enter (-) in upper/lower limit
 
@@ -677,7 +677,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('Assert upper and lower limits are in specifications with N/A values')
         self.assertEqual("N/A", specifications)
 
-    def test021_change_quantification_limits_not_effect_test_plan(self):
+    def test020_change_quantification_limits_not_effect_test_plan(self):
         """
         New: Test units/effect on test plan: Limits of quantification Approach: In case I make any edit in the limits
          of quantification, this shouldn't effect on test plan
@@ -720,7 +720,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(upper, '100')
         self.assertEqual(lower, '10')
 
-    def test022_create_multi_test_units_with_same_name(self):
+    def test021_create_multi_test_units_with_same_name(self):
         """
         New: Test unit: Creation Approach; In case I create two test units with the same name,
         when I go to the test plan I found both of those with the same name
@@ -762,7 +762,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('assert that all test units are in the suggestions list')
         self.assertEqual(len(test_units), 3)
 
-    def test023_duplicate_test_case(self):
+    def test022_duplicate_test_case(self):
         """"
         New: Test unit: Duplication Approach: I can duplicate the test unit with only one record
 
@@ -777,169 +777,71 @@ class TestUnitsTestCases(BaseTest):
         self.info('assert there is a new test unit')
         self.assertGreater(new_test_units, old_test_units)
 
-    @parameterized.expand(['unitsub', 'unitsuper'])
-    def test029_qualitative_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self,
-                                                                                           unit_with_sub_or_super):
+    @parameterized.expand([('unitsub', 'qualitative'),
+                           ('unitsub', 'quantitative'),
+                           ('unitsuper', 'qualitative'),
+                           ('unitsuper', 'quantitative')])
+    def test023_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self, unit_with_sub_or_super, type):
         """
-        New: Test unit: Export: Sub & Super scripts Approach: Allow user to see the sub & super scripts in the export file
+        New: Test unit: Export: Sub & Super scripts Approach: Allow user to see the
+        sub & super scripts in the export file
 
         LIMS-5795
-        :return:
-        """
-        new_random_name = self.generate_random_string()
-        new_random_method = self.generate_random_string()
-        new_random_category = self.generate_random_string()
 
-        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
-        if unit_with_sub_or_super == 'unitsub':
-            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
-                                                            material_type='All',
-                                                            unit=unit_with_sub_or_super.replace('sub', '[sub]'),
-                                                            category=new_random_category)
-        else:
-            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
-                                                            material_type='All',
-                                                            unit=unit_with_sub_or_super.replace('super', '{super}'),
-                                                            category=new_random_category)
-
-        self.test_unit_page.sleep_tiny()
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-
-        self.base_selenium.LOGGER.info('Get the test unit of it')
-        self.test_unit_page.search(new_random_name)
-        self.test_unit_page.download_xslx_sheet()
-        rows_data = self.test_unit_page.get_table_rows_data()
-        for index in range(len(rows_data) - 1):
-            self.base_selenium.LOGGER.info(' * Comparing the unit name no. {} '.format(index))
-            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
-            values = self.test_unit_page.sheet.iloc[index].values
-            fixed_sheet_row_data = self.fix_data_format(values)
-            for item in fixed_row_data:
-                if item == unit_with_sub_or_super:
-                    self.assertIn(item, fixed_sheet_row_data)
-
-    @parameterized.expand(['unitsub', 'unitsuper'])
-    def test031_create_qualitative_test_unit_with_sub_and_super_scripts(self, unit_with_sub_or_super):
-        """
-
-        Test unit : Unit: Subscript and superscript scripts Approach: Allow the unit filed to accept sub and super scripts in the test unit form
+        Test unit : Unit: Subscript and superscript scripts Approach: Allow the unit
+        filed to accept sub and super scripts in the test unit form
 
         LIMS-5784
-        :return:
-        """
-        new_random_name = self.generate_random_string()
-        new_random_method = self.generate_random_string()
-        new_random_category = self.generate_random_string()
 
-        self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
-        if unit_with_sub_or_super == 'unitsub':
-            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
-                                                            material_type='All',
-                                                            unit=unit_with_sub_or_super.replace('sub', '[sub]'),
-                                                            category=new_random_category)
-        else:
-            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
-                                                            material_type='All',
-                                                            unit=unit_with_sub_or_super.replace('super', '{super}'),
-                                                            category=new_random_category)
-
-        self.test_unit_page.sleep_tiny()
-        inserted_unit = self.test_unit_page.get_spec_unit()
-        preview_unit = self.test_unit_page.get_spec_unit_preview()
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-
-        self.base_selenium.LOGGER.info('Get the test unit of it')
-        self.test_unit_page.search(new_random_name)
-        rows_data = self.test_unit_page.get_table_rows_data()
-        self.base_selenium.LOGGER.info(' * Comparing the unit name')
-        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
-        self.assertIn(preview_unit, fixed_row_data)
-        self.assertNotIn(inserted_unit, fixed_row_data)
-
-    @parameterized.expand(['unitsub', 'unitsuper'])
-    def test026_create_quantitative_test_unit_with_sub_and_super_scripts(self, unit_with_sub_or_super):
-        """
-
-        Test unit form: Unit accepts subscript and superscript characters in case of quantitative type with limit of quantification unit
+        Test unit form: Unit accepts subscript and superscript characters in case of
+        quantitative type with limit of quantification unit
 
         LIMS-5785
-        :return:
+
+        Test unit: Export: Sub & Super scripts Approach:  Allow user to see the sub &
+        super scripts in the export file
+
+        LIMS-5809
         """
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
-        new_random_category = self.generate_random_string()
 
-        self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
-        if unit_with_sub_or_super == 'unitsub':
+        if unit_with_sub_or_super == 'unitsub' and type == 'qualitative':
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            unit=unit_with_sub_or_super.replace('sub', '[sub]'))
+        elif unit_with_sub_or_super == 'unitsuper' and type == 'qualitative':
+            self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
+                                                            unit=unit_with_sub_or_super.replace('super', '{super}'))
+        elif unit_with_sub_or_super == 'unitsub' and type == 'quantitative':
             self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
-                                                             material_type='All', upper_limit='33',
-                                                             unit=unit_with_sub_or_super.replace('sub', '[sub]'),
-                                                             category=new_random_category, lower_limit='22',
-                                                             spec_or_quan='spec')
+                                                             upper_limit='33', lower_limit='22', spec_or_quan='spec',
+                                                             unit=unit_with_sub_or_super.replace('sub', '[sub]'))
         else:
             self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
-                                                             material_type='All', upper_limit='33',
-                                                             unit=unit_with_sub_or_super.replace('super', '{super}'),
-                                                             category=new_random_category, lower_limit='22',
-                                                             spec_or_quan='spec')
-
+                                                             upper_limit='33',lower_limit='22', spec_or_quan='spec',
+                                                             unit=unit_with_sub_or_super.replace('super', '{super}'))
         self.test_unit_page.sleep_tiny()
         inserted_unit = self.test_unit_page.get_spec_unit()
         preview_unit = self.test_unit_page.get_spec_unit_preview()
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('Get the test unit of it')
-        self.test_unit_page.search(new_random_name)
-        rows_data = self.test_unit_page.get_table_rows_data()
-        self.base_selenium.LOGGER.info(' * Comparing the unit name')
-        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
-        self.assertIn(preview_unit, fixed_row_data)
-        self.assertNotIn(inserted_unit, fixed_row_data)
-
-    @parameterized.expand(['unitsub', 'unitsuper'])
-    def test027_quantitative_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self,
-                                                                                            unit_with_sub_or_super):
-        """
-        Test unit: Export: Sub & Super scripts Approach:  Allow user to see the sub & super scripts in the export file
-
-        LIMS-5809
-        :return:
-        """
-        new_random_name = self.generate_random_string()
-        new_random_method = self.generate_random_string()
-        new_random_category = self.generate_random_string()
-
-        self.base_selenium.LOGGER.info('Create new testunit with quantitative and random generated data')
-        if unit_with_sub_or_super == 'unitsub':
-            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
-                                                             material_type='All', upper_limit='33',
-                                                             unit=unit_with_sub_or_super.replace('sub', '[sub]'),
-                                                             category=new_random_category, lower_limit='22',
-                                                             spec_or_quan='spec')
-        else:
-            self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
-                                                             material_type='All', upper_limit='33',
-                                                             unit=unit_with_sub_or_super.replace('super', '{super}'),
-                                                             category=new_random_category, lower_limit='22',
-                                                             spec_or_quan='spec')
-
-        self.test_unit_page.sleep_tiny()
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.info('Get the test unit of it')
         self.test_unit_page.search(new_random_name)
         self.test_unit_page.download_xslx_sheet()
         rows_data = self.test_unit_page.get_table_rows_data()
-        for index in range(len(rows_data) - 1):
-            self.base_selenium.LOGGER.info(' * Comparing the unit name no. {} '.format(index))
-            fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
-            values = self.test_unit_page.sheet.iloc[index].values
-            fixed_sheet_row_data = self.fix_data_format(values)
-            for item in fixed_row_data:
-                if item == unit_with_sub_or_super:
-                    self.assertIn(item, fixed_sheet_row_data)
+        self.info('Comparing the unit name in test unit table')
+        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
+        self.assertIn(preview_unit, fixed_row_data)
+        self.assertNotIn(inserted_unit, fixed_row_data)
+        self.info('Comparing the unit name in xsxl sheet')
+        values = self.test_unit_page.sheet.iloc[0].values
+        fixed_sheet_row_data = self.fix_data_format(values)
+        for item in fixed_row_data:
+            if item == unit_with_sub_or_super:
+                self.assertIn(item, fixed_sheet_row_data)
 
     @parameterized.expand(['quantitative', 'qualitative'])
-    def test028_create_test_unit_appears_in_version_table(self, unit_type):
+    def test024_create_test_unit_appears_in_version_table(self, unit_type):
         """
 
         New: Test unit: Versions Approach: After you create new record, all the columns should display in the version table
@@ -980,7 +882,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertIn(new_random_method, fixed_row_data)
 
     @parameterized.expand(['ok', 'cancel'])
-    def test024_create_approach_overview_button(self, ok):
+    def test025_create_approach_overview_button(self, ok):
         """
         Master data: Create: Overview button Approach: Make sure
         after I press on the overview button, it redirects me to the active table
@@ -1001,7 +903,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits/add')
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
 
-    def test025_edit_approach_overview_button(self):
+    def test026_edit_approach_overview_button(self):
         """
         Edit: Overview Approach: Make sure after I press on
         the overview button, it redirects me to the active table
@@ -1018,7 +920,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
     @parameterized.expand(['Quantitative', 'Qualitative', 'MiBi'])
-    def test_028_changing_testunit_type_update_fields_accordingly(self, testunit_type):
+    def test_027_changing_testunit_type_update_fields_accordingly(self, testunit_type):
         """
         New: Test unit: Type Approach: When I change type from edit mode, the values should changed according to this type that selected 
         When I change type from edit mode, the values should changed according to this type that selected 
@@ -1046,7 +948,7 @@ class TestUnitsTestCases(BaseTest):
         elif testunit_type == 'Quantitative MiBi':
             self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
-    def test_029_allow_user_to_change_between_specification_and_quantification(self):
+    def test_028_allow_user_to_change_between_specification_and_quantification(self):
         """
         New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
         Allow user to change between the two options specification and limit of quantification from edit mode.
@@ -1084,7 +986,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
         self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
 
-    def test_030_allow_user_to_change_between_specification_and_quantification(self):
+    def test_029_allow_user_to_change_between_specification_and_quantification(self):
         """
         New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
         Allow user to change between the two options specification and limit of quantification from edit mode.
@@ -1123,7 +1025,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
         self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
 
-    def test031_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
+    def test030_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
         """
         New: Test unit: limit of quantification Approach: Allow the unit field to display when I select quantitative MiBi type & make sure it displayed in the active table & in the export sheet 
         
@@ -1163,7 +1065,7 @@ class TestUnitsTestCases(BaseTest):
             self.base_selenium.LOGGER.info('search for value of the unit field: {}'.format(row_data['Unit']))
             self.assertIn(row_data['Unit'], fixed_sheet_row_data)
 
-    def test032_edit_category_edits_category_label_in_testplan_step_two(self):
+    def test031_edit_category_edits_category_label_in_testplan_step_two(self):
         """
 
         New: Test unit: Category Approach: Any update in test unit category should reflect in the test plan ( step two ) in this test unit
@@ -1337,7 +1239,7 @@ class TestUnitsTestCases(BaseTest):
             version_counter = version_counter + 1
             record_counter = record_counter + 1
 
-    def test032_archived_testunits_should_not_appear_in_testplan_step2(self):
+    def test033_archived_testunits_should_not_appear_in_testplan_step2(self):
         """
         Test unit: Archive Approach: Archived test units shouldn't appear in the analysis step two & in orders in the drop down list of test units when I select it
         LIMS-3710
@@ -1364,7 +1266,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('error message should appear')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='test_plan:add_testunit_error_msg'))
 
-    def test032_archive_quantifications_limit_field(self):
+    def test034_archive_quantifications_limit_field(self):
         """
         New: Test unit: Configuration: Limit of quantification Approach: Display the new fields in the configuration section 
         ( Upper limit & lower limit & unit of  limit of quantification ) and I can archive them. 
@@ -1385,7 +1287,7 @@ class TestUnitsTestCases(BaseTest):
                 self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
 
     @skip('waiting for API deleting')
-    def test033_archive_quantifications_limit_field(self):
+    def test035_archive_quantifications_limit_field(self):
         """
         New: Test unit: Configuration: Limit of quantification Approach: Display the new fields in the configuration section 
         ( Upper limit & lower limit & unit of  limit of quantification ) and I can archive them. 
@@ -1405,7 +1307,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertFalse(self.base_selenium.check_element_is_exist(element='test_unit:use_quantification'))
 
     @skip('waiting for API deleting')
-    def test034_restore_quantifications_limit_field(self):
+    def test036_restore_quantifications_limit_field(self):
         """
         New: Test unit: Configuration: Limit of quantification Approach: Display the new fields in the configuration section 
         ( Upper limit & lower limit & unit of  limit of quantification ) and I can archive them. 
@@ -1425,7 +1327,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='test_unit:use_quantification'))
 
-    def test035_test_unit_name_is_mandatory(self):
+    def test037_test_unit_name_is_mandatory(self):
         """
 
         New: Test unit: Configuration: Test unit Name Approach: Make the test units field as as mandatory field (This mean you can't remove it )
@@ -1440,7 +1342,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertTrue(self.test_unit_page.check_all_options_of_search_view_menu())
 
     @parameterized.expand(['name', 'method', 'type', 'number'])
-    def test036_test_unit_name_allow_user_to_search_with_selected_options_testplan(self, search_view_option):
+    def test038_test_unit_name_allow_user_to_search_with_selected_options_testplan(self, search_view_option):
         """
 
         New: Test Unit: Configuration: Test unit Name Approach: Allow user to search with ( name, number, type, method ) in the drop down list of the analysis for
@@ -1512,7 +1414,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertFalse(is_type_exist)
             self.assertFalse(is_method_exist)
 
-    def test037_test_unit_name_search_default_options_name_type_in_testplan(self):
+    def test039_test_unit_name_search_default_options_name_type_in_testplan(self):
         """
 
         New: Test unit: Configuration: Test units field Approach: Allow name & type to display by default in the test plan form In case I select them from the test unit configuration
@@ -1568,7 +1470,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertTrue(is_type_exist)
         self.assertFalse(is_method_exist)
 
-    def test038_test_unit_name_view_method_option_multiple_line_in_testplan(self):
+    def test040_test_unit_name_view_method_option_multiple_line_in_testplan(self):
         """
 
         New: Test Unit: Configuration: Test unit Name Approach: In case you select the method to display and you entered long text in it, the method should display into multiple lines (test plan )
@@ -1616,7 +1518,7 @@ class TestUnitsTestCases(BaseTest):
                            ('type', 'number'),
                            ('method', 'number')
                            ])
-    def test039_test_unit_name_allow_user_to_search_with_selected_two_options_testplan(self, search_view_option1,
+    def test041_test_unit_name_allow_user_to_search_with_selected_two_options_testplan(self, search_view_option1,
                                                                                        search_view_option2):
         """
 
@@ -1699,7 +1601,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
 
-    def test040_testunits_search_then_navigate(self):
+    def test042_testunits_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
         LIMS-6201
@@ -1720,7 +1622,7 @@ class TestUnitsTestCases(BaseTest):
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
-    def test041_hide_all_table_configurations(self):
+    def test043_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
 
