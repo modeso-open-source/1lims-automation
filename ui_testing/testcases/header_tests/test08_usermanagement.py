@@ -427,7 +427,6 @@ class LoginRandomUser(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.header_page.click_on_header_button()
 
-
     def test018_delete_user_used_in_other_entity(self):
         """
         User management: Make sure that you can't delete any user record If this record used in other entity
