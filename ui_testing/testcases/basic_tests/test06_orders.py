@@ -970,9 +970,10 @@ class OrdersTestCases(BaseTest):
 
         self.order_page.get_orders_page()
         created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
-                                                         test_units=test_units_list)
+                                                         test_units=test_units_list, test_plans=[])
 
-        created_existing_order = self.order_page.create_existing_order_with_auto_fill(no=created_order.replace("'", ""))
+        #created_existing_order = self.order_page.create_existing_order_with_auto_fill(no=created_order.replace("'", ""))
+        created_existing_order = self.order_page.create_existing_order_with_auto_fill(no='')
         self.order_page.sleep_tiny()
         self.order_page.set_material_type(material_type='Subassembely')
         self.order_page.sleep_medium()

@@ -107,7 +107,8 @@ class Order(Orders):
         self.sleep_small()
         order_no = self.get_no()
 
-        for test_plan in test_plans:
+        if test_plans!=[]:
+         for test_plan in test_plans:
             self.set_test_plan(test_plan=test_plan)
         for test_unit in test_units:
             self.set_test_unit(test_unit)
