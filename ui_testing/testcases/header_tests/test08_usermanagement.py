@@ -418,7 +418,6 @@ class LoginRandomUser(BaseTest):
 
     def setUp(self):
         super().setUp()
-        #random_user_name = self.generate_random_string()
         self.random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
         random_user_password = self.generate_random_string()
