@@ -429,17 +429,13 @@ class BaseSelenium:
         else:
             return False
 
-    def _unique_index_list(self, data):
+    def _unique_index_list(self, data): # I didnt like this implemenation need to fix it!+
         result = []
-        for index in range(0, len(data)):
-            count = 0
-            for tmp in data:
-                if data[index].text == tmp.text:
-                    count += 1
-                    if count > 1:
-                        break
-            if count == 1:
-                result.append(index)
+        data_text = [data_item.text for data_item in data]
+        for text in data_text:
+            _occurrences = [index for index, value in enumerate(data_text) if value == text] # this returns the indexs for each item
+            if len(_occurrences) == 1:
+                result.append(_occurrences[0])
         return result
 
     def _is_item_a_drop_down(self, item):
@@ -485,6 +481,7 @@ class BaseSelenium:
             self.select_item_from_drop_down(element_source=item, item_text=item_text)
         else:
             input_item = self.find_element_in_element(source=item, destination_element='general:input')
+            input_item.clear()
             input_item.send_keys(item_text)
 
     def set_text_in_drop_down(self, ng_select_element, text, input_element='general:input', confirm_button='general:drop_down_options'):

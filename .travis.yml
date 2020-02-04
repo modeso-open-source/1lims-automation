@@ -64,5 +64,8 @@ script:
  # - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test05_testplans.py:TestPlansTestCases.test023_filter_by_testplan_changed_by
 #- xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test032_archived_testunits_should_not_appear_in_testplan_step2
 
+ # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test023_duplicate_test_case --tc-file=config.ini
+
+
 
 

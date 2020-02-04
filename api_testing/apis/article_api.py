@@ -65,30 +65,36 @@ class ArticleAPI(BaseAPI):
             if self.delete_archived_article(id=id):
                 return True
             else:
-                self.restore_articles(ids=[id])
+                self.restore_articles(ids=[str(id)])
                 return False
         else:
             return False
 
-    def create_article(self, **kwargs):
-        request_body = {}
-        request_body['selectedArticles'] = []
-        request_body['selectedArticlesNos'] = []
-        request_body['dynamicFieldsValues'] = []
-        for key in kwargs:
-            request_body[key] = kwargs[key]
-
-        api = '{}{}'.format(self.url, self.END_POINTS['article_api']['create_article']) 
+    def create_article(self, number, name, material_type={"id": "", "text": ""}, **kwargs):
+        """
+        Create an article.
+        :param number: article number.
+        :param name: article name.
+        :param material_type: {"id": "new" or general_utilities_api.list_all_material_types()[#NUMBER], "test": material_type text}
+        :param kwargs:
+        :return: response
+        """
+        api = '{}{}'.format(self.url, self.END_POINTS['article_api']['create_article'])
+        _payload = {
+            "No": number,
+            "name": name,
+            "materialType": material_type,
+            "selectedArticles": [],
+            "selectedArticlesNos": [],
+            "dynamicFieldsValues": [],
+            "selectedMaterialType": [material_type],
+            "materialTypeId": [material_type['id']]
+        }
+        payload = self.update_payload(_payload, **kwargs)
         self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
-
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        
-        if data['status'] == 1:
-            return data['article']
-        else:
-            return data['message']
+        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False).json()
+        self.info('Status code: {}'.format(response['status']))
+        return response
 
     def list_articles_by_materialtype(self, materialtype_id=1, name='', is_archived=0):
         api = '{}{}{}/{}?name={}'.format(self.url, self.END_POINTS['article_api']['list_articles_by_materialtype'], materialtype_id, is_archived, name) 

@@ -4,26 +4,22 @@ import json
 class UsersAPI(BaseAPI):
     def create_new_user(self, user_name, email, password, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['users_api']['list_all_users'])
-        body = {
-            "username": user_name,
-            "email": email,
-            "role": {
-                "id": 1,
-                "text": "Admin"
-            },
-            "supplier": None,
-            "supplierId": None,
-            "password": password,
-            "confirmPassword": password,
-            "roleId": 1,
-            "roleChanged": True,
-            "hasOwnPermissions": True
+        body={}
+        body['username'] = user_name
+        body['email'] = email
+        body['role'] = {
+            'id': 1,
+            'text': 'Admin'
         }
-        json.dumps(body)
+        body['password'] = password
+        body['confirmPassword'] = password
+        body['roleId'] = 1
+        body['roleChanged'] = True
+        body['hasOwnPermissions'] = False
         self.info('POST : {}'.format(api))
         response = self.session.post(api, json=body, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
-        return response
+        return response.json()['user']
 
     def get_all_users(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['users_api']['list_all_users'])
@@ -88,7 +84,7 @@ class UsersAPI(BaseAPI):
             if self.delete_archived_user(id=id):
                 return True
             else:
-                self.restore_users(ids=[id])
+                self.restore_users(ids=[str(id)])
                 return False
         else:
             return False

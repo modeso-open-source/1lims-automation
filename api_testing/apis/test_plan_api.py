@@ -121,38 +121,93 @@ class TestPlanAPI(BaseAPI):
             if self.delete_archived_testplan(id=id):
                 return True
             else:
-                self.restore_testplans(ids=[id])
+                self.restore_testplans(ids=[str(id)])
                 return False
         else:
             return False
     
+    # example for using testplan creation using the API 
+    # article = self.article_api.list_articles_by_materialtype(materialtype_id=1)[0]
+    # material_type = self.general_utilities_api.list_all_material_types()[0]
+    # testunit = self.test_unit_api.get_all_test_units().json()['testUnits'][0]
+    # testunit_form_data = self.test_unit_api.get_testunit_form_data(id=int(testunit['id']))
+    # testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
+
+    # testplan_name = self.test_unit_page.generate_random_text()
+    # testplan_number = self.test_unit_page.generate_random_number()
+    # testplan_object = {
+    #     'text': testplan_name,
+    #     'id': 'new'
+    # }
+    # self.base_selenium.LOGGER.info(self.test_plan_api.create_testplan(number=testplan_number, testPlan=testplan_object, materialType=material_type, selectedArticles=[article], testUnits=[testunit]))
     def create_testplan(self, **kwargs):
-        request_body = {}
-        for key in kwargs:
-            request_body[key] = kwargs[key]
-            if key == 'testPlan' :
-                request_body['selectedTestPlan'] = kwargs['testPlan']
+        """
+        NOTE: calling this api without adding testunits, will create an in progress testplan, to create a complete testplan
+        you will need to pass parameter testunits[testunit_object], and this object is can be formated by the following steps,
         
-        if 'attachments' not in kwargs:
-            request_body['attachments'] = '[]'
-        
-        request_body['selectedTestUnits']=[]
+        testunit = self.test_unit_api.get_testunit_form_data(id=#testunit_id)
+        formated_testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit)
+        self.test_plan_api.create_testplan(testunits=[formated_testunit])
 
-        request_body['materialTypeId'] = request_body['materialType']['id']
-        request_body['dynamicFieldsValues'] = []
-        
-        if 'testUnits' not in kwargs:
-            request_body['testUnits'] = []
+        param: testplan: {
+            'id': testplan id, 'new' in case of new testplan name,
+            'text': testplan name text
+        }
+        param: 'number': testplan number
+        param: 'selectedArticles':  denotes articles that support this testplan, all by default[{
+            'id': article id,
+            'text': article name
+        }]
+        param: materialType: testplan material type, raw material by default{
+            'id': material type id,
+            'text': material type text
+        }
+        param testUnits: testunits in this testplan, if empty, it will be created as in progress testplan, else
+        put array of testunits by the following way
+        using testunit id, select testunit form data through api call: test_unit_api.get_testunit_form_data(id=#testunit_id)
+        and then use the return of this mapping function test_unit_page.map_testunit_to_testplan_format(testunit=formdata_testunit) to add it to the testunits array
+        """
+        testplan_name = self.generate_random_string()
+        _payload = {
+            'number': self.generate_random_number(),
+            'testPlan': {
+                'id': 'new',
+                'text': testplan_name
+            },
+            'selectedTestPlan': {
+                'id': 'new',
+                'text': testplan_name
+            },
+            'selectedArticles': [{
+                'id': -1,
+                'text': 'All'
+            }],
+            'materialType': {
+                'id': 1,
+                'text': 'Raw Material'
+            },
+            'attachments': '[]',
+            'selectedTestUnits': [],
+            'materialTypeId': 1,
+            'dynamicFieldsValues': [],
+            'testUnits': []
+        }   
 
+        
+        payload = self.update_payload(_payload, **kwargs)
+        if 'testPlan' in kwargs:
+            payload['selectedTestPlan'] = [kwargs['testPlan']]
+        if 'materialType' in kwargs:
+            payload['materialTypeId'] = kwargs['materialType']['id']
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan']) 
         self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
         
         if data['status'] == 1:
-            return data['testPlanDetails']
+            return payload
         else:
             return data['message']
 
