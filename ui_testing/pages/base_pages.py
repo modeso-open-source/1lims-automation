@@ -552,3 +552,6 @@ class BasePages:
         current_year = datetime.datetime.now()
         return str(current_year.year)
 
+    def get_the_latest_row_data(self):
+        latest_row = (self.result_table()[0])
+        return self.base_selenium.get_row_cells_dict_related_to_header(latest_row)

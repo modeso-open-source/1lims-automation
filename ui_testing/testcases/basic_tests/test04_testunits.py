@@ -768,14 +768,28 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-3678
         """
+        # get the maximum number given to the latest testunit
+        latest_testunit_row_data = self.test_unit_page.get_the_latest_row_data()
+        largest_number = latest_testunit_row_data['Test Unit No.']
+        largest_number = str(largest_number).replace("'", '')
+        duplicated_test_unit_number = int(largest_number) + 1
+        self.info('The duplicated testunit should have the number: {}'.format(duplicated_test_unit_number))
+        self.info('Choosing a random testunit table row')
+
         random_test_unit = self.test_unit_page.select_random_table_row()
         test_unit_name = random_test_unit['Test Unit Name']
         self.info('test unit name : {}'.format(test_unit_name))
-        old_test_units = len(self.test_unit_page.search(test_unit_name))
+        self.base_selenium.scroll()
         self.test_unit_page.duplicate_test_unit()
-        new_test_units = len(self.test_unit_page.search(test_unit_name))
-        self.info('assert there is a new test unit')
-        self.assertGreater(new_test_units, old_test_units)
+        self.test_unit_page.sleep_tiny()
+        found_testunit = self.test_unit_page.search(test_unit_name)[0]
+        found_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=found_testunit)
+        data_changed = ['Test Unit No.']
+        random_test_unit, found_testunit_data = self.remove_unduplicated_data(
+            data_changed=data_changed, first_element=random_test_unit, second_element=found_testunit_data)
+
+        self.info('Asserting that the data is duplicated correctly')
+        self.assertEqual(random_test_unit, found_testunit_data)
 
     @parameterized.expand([('unitsub', 'qualitative'),
                            ('unitsub', 'quantitative'),
