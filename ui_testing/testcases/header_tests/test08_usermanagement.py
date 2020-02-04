@@ -464,10 +464,6 @@ class LoginRandomUser(BaseTest):
         self.base_selenium.click(element='user_management:checked_changed_by')
         self.base_selenium.click(element='user_management:apply_btn')
 
-        last_row = self.header_page.get_last_user_row()
-        self.base_selenium.get_row_cells_dict_related_to_header(row=last_row)
-
-
         self.base_selenium.click(element='general:menu_filter_view')
         self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by',
                                                filter_text=self.random_user_name)
