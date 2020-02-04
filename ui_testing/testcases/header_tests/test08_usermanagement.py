@@ -418,11 +418,12 @@ class LoginRandomUser(BaseTest):
 
     def setUp(self):
         super().setUp()
-        random_user_name = self.generate_random_string()
+        #random_user_name = self.generate_random_string()
+        self.random_user_name = self.generate_random_string()
         random_user_email = self.base_page.generate_random_email()
         random_user_password = self.generate_random_string()
-        self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
-        self.login_page.login(username=random_user_name, password=random_user_password)
+        self.users_api.create_new_user(self.random_user_name, random_user_email, random_user_password)
+        self.login_page.login(username=self.random_user_name, password=random_user_password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.header_page.click_on_header_button()
 
@@ -465,15 +466,17 @@ class LoginRandomUser(BaseTest):
         self.base_selenium.click(element='user_management:apply_btn')
 
         last_row = self.header_page.get_last_user_row()
-        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=last_row)
-        user_changed_by = row_data['Changed By']
+        self.base_selenium.get_row_cells_dict_related_to_header(row=last_row)
+
 
         self.base_selenium.click(element='general:menu_filter_view')
         self.header_page.filter_user_drop_down(filter_name='user_management:filter_changed_by',
-                                               filter_text=user_changed_by)
+                                               filter_text=self.random_user_name)
 
         users_result = self.header_page.get_table_rows_data()
-        self.assertIn(row_data['Changed By'], users_result[0])
+        self.assertIn(self.random_user_name, users_result[0])
+
+    def tearDown(self):
         self.base_selenium.click(element='user_management:filter_reset_btn')
 
 
