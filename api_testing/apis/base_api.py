@@ -1,7 +1,10 @@
 from testconfig import config
 from api_testing.end_points import end_points
+from uuid import uuid4
+from random import randint
 import requests
 from loguru import logger
+from datetime import datetime
 
 
 class BaseAPI:
@@ -13,6 +16,7 @@ class BaseAPI:
     LOGGER = logger
 
     _instance = None
+
 
     def __new__(class_, *args, **kwargs):
         if not isinstance(class_._instance, class_):
@@ -64,3 +68,16 @@ class BaseAPI:
     @staticmethod
     def info(message):
         BaseAPI.LOGGER.info(message)
+
+    @staticmethod
+    def generate_random_string():
+        return str(uuid4()).replace("-", "")[:10]
+
+    @staticmethod
+    def generate_random_number(lower=1, upper=100000):
+        return randint(lower, upper) 
+
+    @staticmethod
+    def get_current_date():
+        return datetime.today().strftime('%Y-%m-%d')
+        

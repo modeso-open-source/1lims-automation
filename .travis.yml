@@ -6,25 +6,32 @@ group: edge
 python:
   - "3.5"
 
-addons:
-  chrome: stable
 install:
+  #https://www.slimjet.com/chrome/google-chrome-old-version.php
+  - wget -N "https://www.slimjet.com/chrome/download-chrome.php?file=files%2F79.0.3945.88%2Fgoogle-chrome-stable_current_amd64.deb" -O ~/google-chrome-stable_current_amd64.deb
+  - sudo apt install -y ~/google-chrome-stable_current_amd64.deb
   - echo $(google-chrome --version)
-  - version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE) &&
-    wget -N "https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip" -P ~/
+  - wget -N "https://chromedriver.storage.googleapis.com/79.0.3945.36/chromedriver_linux64.zip" -P ~/
   - unzip ~/chromedriver_linux64.zip -d ~/
   - rm ~/chromedriver_linux64.zip
   - sudo mv -f ~/chromedriver /usr/local/share/
   - sudo chmod +x /usr/local/share/chromedriver
   - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+  - echo $(/usr/bin/chromedriver -v)
   - sudo apt-get install -y xvfb xclip
   - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
 
 script:
-  - export TESTS='test09_my_profile.py:'
+
+  - export TESTS='test08_usermanagement.py:'
+  #- export TESTS='test04_testunits.py:TestUnitsTestCases.test011_create_test_unit_with_random_category'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
+  
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
   - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test022_create_existing_order_with_test_units_and_change_material_type --tc-file=config.ini
+  #- xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test002_update_contact_with_save_cancel_btn_1_cancel --tc-file=config.ini
+  #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test002_archive_test_units --tc-file=config.ini
+
 
