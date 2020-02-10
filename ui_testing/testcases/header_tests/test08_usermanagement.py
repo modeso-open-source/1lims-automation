@@ -92,6 +92,12 @@ class HeaderTestCases(BaseTest):
                 self.assertIn(item, fixed_sheet_row_data)
 
     def test005_delete_user(self):
+        """
+        User management : Delete Approach: Make sure that you can delete
+        any record successfully If this record not used in any other entity
+
+        LIMS-6381
+        """
         self.base_selenium.click(element='header:user_management_button')
         # create new user
         random_user_name = self.generate_random_string()
@@ -106,7 +112,7 @@ class HeaderTestCases(BaseTest):
                                         archive_element='user_management:archive')
         self.header_page.get_archived_entities(menu_element='user_management:right_menu',
                                                archived_element='user_management:archived')
-        self.base_selenium.LOGGER.info('make sure that that the user record navigate to the archive table')
+        self.info('make sure that that the user record navigate to the archive table')
         result = self.header_page.search(value=random_user_name)
         table_row = self.header_page.result_table()
         self.assertEqual(result, table_row)
@@ -114,7 +120,7 @@ class HeaderTestCases(BaseTest):
         self.header_page.delete_entity()
         result = self.header_page.search(value=random_user_name)
         self.assertEqual(result[0].get_attribute("textContent"), 'No data available in table')
-        self.base_selenium.LOGGER.info('deleted successfully')
+        self.info('deleted successfully')
 
     def test006_create_new_user_with_admin_role(self):
         """
