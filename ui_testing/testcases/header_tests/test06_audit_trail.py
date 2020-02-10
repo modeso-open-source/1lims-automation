@@ -34,85 +34,27 @@ class AuditTrailTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test002_audit_trail_filter_by_action_date(self):
+    @parameterized.expand(['action_date', 'changed_by', 'action', 'entity', 'entity_number'])
+    def test002_audit_trail_filter(self, filter):
         """
         Header: Audit trail Approach: Make sure that I can filter by all the following fields 
         ( action date & entity & action & entity no & changed by )
 
-        LIMS-6357
+        LIMS-6355
         """
         # get random row data
         audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
         # open filter menu
         self.audit_trail_page.open_filter_menu()
         # filter by Action Date
+        if filter == 'action_date' or filter == 'entity_number':
+            field_type = 'text'
+        else:
+            field_type = 'drop_down'
+
         result = self.audit_trail_page.filter_audit_trail_by(
-            filter_name='action_date', filter_text=audit_trail['action_date'], field_type='text')
-        self.assertIn(audit_trail['action_date'], result)
-
-    def test003_audit_trail_filter_by_changed_by(self):
-        """
-        Header: Audit trail Approach: Make sure that I can filter by all the following fields 
-        ( action date & entity & action & entity no & changed by )
-
-        LIMS-6357
-        """
-        # get random row data
-        audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
-        # open filter menu
-        self.audit_trail_page.open_filter_menu()
-        # filter by Change By
-        result = self.audit_trail_page.filter_audit_trail_by(
-            filter_name='changed_by', filter_text=audit_trail['changed_by'], field_type='drop_down')
-        self.assertIn(audit_trail['changed_by'], result)
-
-    def test004_audit_trail_filter_by_action(self):
-        """
-        Header: Audit trail Approach: Make sure that I can filter by all the following fields 
-        ( action date & entity & action & entity no & changed by )
-
-        LIMS-6357
-        """
-        # get random row data
-        audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
-        # open filter menu
-        self.audit_trail_page.open_filter_menu()
-        # filter by Action
-        result = self.audit_trail_page.filter_audit_trail_by(
-            filter_name='action', filter_text=audit_trail['action'], field_type='drop_down')
-        self.assertIn(audit_trail['action'], result)
-
-    def test005_audit_trail_filter_by_entity(self):
-        """
-        Header: Audit trail Approach: Make sure that I can filter by all the following fields 
-        ( action date & entity & action & entity no & changed by )
-
-        LIMS-6357
-        """
-        # get random row data
-        audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
-        # open filter menu
-        self.audit_trail_page.open_filter_menu()
-        # filter by Change By
-        result = self.audit_trail_page.filter_audit_trail_by(
-            filter_name='entity', filter_text=audit_trail['entity'], field_type='drop_down')
-        self.assertIn(audit_trail['entity'], result)
-
-    def test006_audit_trail_filter_by_entity_number(self):
-        """
-        Header: Audit trail Approach: Make sure that I can filter by all the following fields 
-        ( action date & entity & action & entity no & changed by )
-
-        LIMS-6357
-        """
-        # get random row data
-        audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
-        # open filter menu
-        self.audit_trail_page.open_filter_menu()
-        # filter by Change By
-        result = self.audit_trail_page.filter_audit_trail_by(
-            filter_name='entity_number', filter_text=audit_trail['entity_number'], field_type='text')
-        self.assertIn(audit_trail['entity_number'], result)
+            filter_name=filter, filter_text=audit_trail[filter], field_type=field_type)
+        self.assertIn(audit_trail[filter], result)
 
     @parameterized.expand(['changed_by', 'action', 'entity', 'entity_number'])
     def test003_search_audit_trail(self, search_feild):
