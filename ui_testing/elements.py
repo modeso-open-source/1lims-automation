@@ -642,6 +642,7 @@ elements = {
         'confirm_pop': {'method': 'class_name',
                         'value': 'btn-success',
                         'order': 0},
+
         'confirm_cancel': {'method': 'class_name',
                            'value': 'btn-secondary',
                            'order': 2},

@@ -29,7 +29,6 @@ script:
 
   
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
-  - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test022_create_existing_order_with_test_units_and_change_material_type --tc-file=config.ini
   #- xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test002_update_contact_with_save_cancel_btn_1_cancel --tc-file=config.ini
   #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test002_archive_test_units --tc-file=config.ini
 

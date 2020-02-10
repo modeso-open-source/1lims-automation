@@ -784,17 +784,23 @@ class OrdersTestCases(BaseTest):
 
         LIMS-3406
         """
-        self.base_selenium.LOGGER.info('Running test case to check that order number should be unique')
-        order_row = self.base_selenium.get_row_cells_dict_related_to_header(self.order_page.get_random_order_row())
+        self.order_page.get_orders_page()
+        created_order = self.order_page.create_order_with_test_unit(material_type='r', article='a', contact='a',
+                                                                      test_units='')
 
+        self.order_page.get_orders_page()
         self.order_page.click_create_order_button()
         self.order_page.set_new_order()
-        self.order_page.copy_paste(element='order:no', value=order_row['Order No.'])
-        self.order_page.sleep_small()
-        order_no_class_name = self.base_selenium.get_attribute(element="order:no", attribute='class')
-        self.assertIn('has-error', order_no_class_name)
-        order_error_message = self.base_selenium.get_text(element="order:order_no_error_message")
-        self.assertIn('No. already exist', order_error_message)
+        self.base_page.sleep_small()
+        self.order_page.set_order_number(no = created_order['orderNo'].replace("'", ""))
+        self.base_selenium.LOGGER.info(
+            'waiting fo validation message appear when I enter number already exists')
+        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
+
+        self.base_selenium.LOGGER.info(
+            'Assert the error message to make sure that validation when I enter number already exists? {}'.format(
+                validation_result))
+        self.assertTrue(validation_result)
 
     # will continue with us
     def test019_validate_order_no_archived_exists(self):
