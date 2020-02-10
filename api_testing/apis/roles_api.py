@@ -71,26 +71,25 @@ class RolesAPI(BaseAPI):
         else:
             return False
 
-    # 
-    def create_role(self, role_name='', permissions=[], id=''):
+    # this API call doesn't need kwargs as those are the only arguments sent 
+    def create_role(self, role_name='', permissions=[]):
+
+        """
+        permession list can be obtained using this API call
+        general_utilities_api.list_all_permissions()
+        """
         request_body = {
             'name': role_name,
             'permissions': permissions
         }
-        if id == '' :
-            api = '{}{}'.format(self.url, self.END_POINTS['roles_api']['create_role']) 
-            self.info('POST : {}'.format(api))
-            response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
-        else:
-            request_body['id']=str(id)
-            api = '{}{}'.format(self.url, self.END_POINTS['roles_api']['update_role']) 
-            self.info('PUT : {}'.format(api))
-            response = self.session.put(api, json=request_body, params='', headers=self.headers, verify=False)
+        api = '{}{}'.format(self.url, self.END_POINTS['roles_api']['create_role']) 
+        self.info('POST : {}'.format(api))
+        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
         
         if data['status'] == 1:
-            return data['message']
+            return request_body
         else:
-            return data
+            return data['message']

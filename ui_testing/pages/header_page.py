@@ -27,17 +27,17 @@ class Header(BasePages):
             self.sleep_small()
 
     def archive_entity(self, menu_element, archive_element):
-            self.base_selenium.scroll()
-            self.base_selenium.click(element=menu_element)
-            self.base_selenium.click(element=archive_element)
-            self.confirm_popup()
+        self.base_selenium.scroll()
+        self.base_selenium.click(element=menu_element)
+        self.base_selenium.click(element=archive_element)
+        self.confirm_popup()
 
     def get_archived_entities(self, menu_element, archived_element):
-            self.base_selenium.scroll()
-            self.base_selenium.click(element=menu_element)
-            self.base_selenium.click(element=archived_element)
-            self.sleep_small()
-
+        self.base_selenium.scroll()
+        self.base_selenium.click(element=menu_element)
+        self.base_selenium.click(element=archived_element)
+        self.sleep_small()
+          
     def is_user_in_table(self, value):
             """
                 - get_archived_users then call me to check if the user has been archived.
@@ -55,21 +55,22 @@ class Header(BasePages):
                     return False
 
     def restore_entity(self, menu_element, restore_element):
-            self.base_selenium.scroll()
-            self.base_selenium.click(element=menu_element)
-            self.base_selenium.click(element=restore_element)
-            self.confirm_popup()
+
+        self.base_selenium.scroll()
+        self.base_selenium.click(element=menu_element)
+        self.base_selenium.click(element=restore_element)
+        self.confirm_popup()
 
     def get_active_entities(self, menu_element, active_element):
-            self.base_selenium.scroll()
-            self.base_selenium.click(element=menu_element)
-            self.base_selenium.click(element=active_element)
-            self.sleep_small()
+        self.base_selenium.scroll()
+        self.base_selenium.click(element=menu_element)
+        self.base_selenium.click(element=active_element)
+        self.sleep_small()
 
     def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='',  user_name=''):
         self.base_selenium.LOGGER.info(' + Create new user.')
         self.base_selenium.click(element='user_management:create_user_button')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        self.sleep_small()
         user_name = self.set_user_name(user_name)
         user_email = self.set_user_email(user_email)
         user_role = self.set_user_role(user_role)
@@ -129,7 +130,7 @@ class Header(BasePages):
             else:
                 self.base_selenium.select_item_from_drop_down(element='user_management:user_role', item_text=user_role)
                 return self.get_user_role()
-
+              
     def get_user_edit_page(self, name):
             user = self.search(value=name)[0]
             self.open_edit_page(row=user)
@@ -157,6 +158,7 @@ class Header(BasePages):
             'number': user_row_data['No'],
             'role': user_row_data['Role'],
             'email': user_row_data['Email'],
+            'name': user_row_data['Name'],
         }
 
     def get_created_on_filter(self):
@@ -185,11 +187,16 @@ class Header(BasePages):
         self.base_selenium.click(element='general:confirm_pop')
         self.sleep_small()
 
-    def click_on_clear_all(self):
-        self.base_selenium.LOGGER.info('Press on the overview button')
-        self.base_selenium.click(element='user_management:clear_all')
+    def click_on_overview_btn(self):
+        self.base_selenium.LOGGER.info('Press on the overview button button')
+        self.base_selenium.click(element='user_management:overview_btn')
         self.sleep_small()
 
+    def click_create_new_user(self):
+        self.base_selenium.LOGGER.info('Press on the create new user button')
+        self.base_selenium.click(element='user_management:create_user_button')
+        self.sleep_small()
+        
     def is_role_in_table(self, value):
         """
             - get_archived_roles then call me to check if the role has been archived.
@@ -219,7 +226,6 @@ class Header(BasePages):
             self.sleep_small()
 
     def set_role_name(self, role_name):
-
             self.base_selenium.set_text(element='roles_and_permissions:role_name', value=role_name)
 
     def get_role_name(self):
@@ -271,6 +277,11 @@ class Header(BasePages):
         self.save(sleep)
         return role_data
 
+    def click_on_user_management_button(self):
+        self.base_selenium.LOGGER.info('Press on the user management button')
+        self.base_selenium.click(element='header:user_management_button')
+        self.sleep_small()
+
     def click_on_sample_management_permissions(self):
         self.base_selenium.LOGGER.info('Press on logout button')
         self.base_selenium.click(element='roles_and_permissions:order_view_permissions')
@@ -307,3 +318,60 @@ class Header(BasePages):
     def get_contact(self):
         self.base_selenium.LOGGER.info('Get user contact')
         return self.base_selenium.get_text(element='user_management:contact_field').split('\n')[0]
+
+    def click_on_reset_btn(self):
+        self.base_selenium.LOGGER.info('click on the reset button')
+        self.base_selenium.click(element='roles_and_permissions:reset_btn')
+        self.sleep_small()
+
+    # this function should be used in case all the fields in the table configuration checked
+    def get_role_data_from_fully_checked_headers_random_row(self):
+
+        role_row = self.get_random_table_row(table_element='general:table')
+        role_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=role_row)
+        random_role_data_to_return = {
+            'created_on': role_row_data['Created On'].split(',')[0],
+            'changed_by': role_row_data['Changed By'],
+            'number': role_row_data['No'],
+            'name': role_row_data['Name'],
+        }
+
+        return random_role_data_to_return
+
+    def click_on_user_management(self):
+        self.base_selenium.LOGGER.info('click on the user management button')
+        self.base_selenium.click(element='header:user_management_button')
+        self.sleep_small()
+
+    def click_on_table_configuration_button(self):
+        self.base_selenium.LOGGER.info('click on the table configuration button')
+        self.base_selenium.click(element='roles_and_permissions:configure_table_btn')
+        self.sleep_small()
+
+    def get_last_role_row(self):
+        rows = self.result_table()
+        return rows[0]
+      
+    def click_on_user_config_btn(self):
+        self.base_selenium.LOGGER.info('click on the table configuration button')
+        self.base_selenium.click(element='user_management:config_table')
+        self.sleep_small()
+
+    def checked_user_changed_by(self):
+        self.base_selenium.LOGGER.info(
+            'checked the changed by field from the table configuration to display in the active table ')
+        self.base_selenium.click(element='user_management:checked_changed_by')
+        self.sleep_small()
+
+    def delete_entity(self):
+        self.base_selenium.LOGGER.info(
+            ' press on the delete button ')
+        self.base_selenium.click(element='user_management:right_menu')
+        self.base_selenium.click(element='user_management:delete')
+        self.confirm_popup()
+        self.sleep_small()
+
+    def get_last_user_row(self):
+        rows = self.result_table()
+        return rows[0]
+

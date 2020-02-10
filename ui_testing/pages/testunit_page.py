@@ -525,7 +525,7 @@ class TstUnit(TstUnits):
         testunit_formated['name'] = testunit['name']
         testunit_formated['unit'] = testunit['unit']
         testunit_formated['number'] = testunit['number']
-        testunit_formated['category'] = testunit['category']
+        testunit_formated['category'] = testunit['category']['name']
         testunit_formated['iterations'] = testunit['iterations']
         testunit_formated['order'] = order
         testunit_formated['testunitVersion'] = testunit['version']

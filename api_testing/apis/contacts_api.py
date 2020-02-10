@@ -91,62 +91,65 @@ class ContactsAPI(BaseAPI):
         else:
             return False
 
-    # kwargs are the arguments used in the request body
-    # departments: array denotes the contact's departments and each element consist of 
-    # {
-    # "display": department displayed name
-    # "value": department saved value
-    # "id": in case of update put department id, in case of create put 'new'
-    # "text": text of the department display
-    # }
-    # companyNo: denoted company no
-    # name: denotes contact name
-    # address: denotes contact address
-    # postalCode: denotes contact postal code
-    # location: denotes contact location
-    # selectedCountry: denotes contact selected country and it is object 
-    # {
-    # "id": country id,
-    # "text": country displayed text,
-    # "code": country code
-    # }
-    # email: denotes contact email
-    # phone: denotes contact phone
-    # skype: denotes contact skype
-    # website: denotes contact website
-    # isLaboratory: True/False
-    # isSupplier: True/False
-    # isClient: True/False
-    # country: text of the selected country
-    # persons: array and each element consist of the following
-    # {
-    # "name": contact person name
-    # "position": contact person position 
-    # "email": contact person email 
-    # "phone": contact person phone 
-    # "skype": contact person skype 
-    # "moreInfo": contact person information field
-    # }
     def create_contact(self, **kwargs):
-        request_body = {}
-        request_body['departments'] = []
-        request_body['departmentArray'] = []
-        request_body['persons'] = []
-        request_body['country'] = ''
-        request_body['dynamicFieldsValues'] = []
-        for key in kwargs:
-            request_body[key] = kwargs[key]
+        """
+        minimum require parameters:
+            Param: companyNo: denoted company no
+            Param: name: denotes contact name
+
+        Param: departments: array denotes the contact's departments and each element consist of 
+        {
+            "display": department displayed name,
+            "value": department saved value,
+            "id": in case of update put department id, in case of create put 'new',
+            "text": text of the department display,
+        }
+        Param: address: denotes contact address
+        Param: postalCode: denotes contact postal code
+        Param: location: denotes contact location
+        Param: selectedCountry: denotes contact selected country and it is object 
+        {
+            "id": country id,
+            "text": country displayed text,
+            "code": country code
+        }
+        Param: email: denotes contact email
+        Param: phone: denotes contact phone
+        Param: skype: denotes contact skype
+        Param: website: denotes contact website
+        Param: isLaboratory: True/False
+        Param: isSupplier: True/False
+        Param: isClient: True/False
+        Param: country: text of the selected country
+        
+        contact persons parameters
+        Param: persons: array and each element consist of the following
+            Param: "name": contact person name
+            Param: "position": contact person position 
+            Param: "email": contact person email 
+            Param: "phone": contact person phone 
+            Param: "skype": contact person skype 
+            Param: "moreInfo": contact person information field
+        """
+        _payload = {
+            'departments' : [],
+            'departmentArray' : [],
+            'persons' : [],
+            'country' : '',
+            'dynamicFieldsValues' : []
+        }
 
         
+        payload = self.update_payload(_payload, **kwargs)
         api = '{}{}'.format(self.url, self.END_POINTS['contacts_api']['create_contact']) 
         self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
         
         if data['status'] == 1:
-            return data['company']
+            return payload
         else:
             return data['message']
 

@@ -85,6 +85,7 @@ class TstUnits(BasePages):
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click('orders:duplicate')
+        self.sleep_tiny()
         self.save()
         
     def open_configurations(self):
