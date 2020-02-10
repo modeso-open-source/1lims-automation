@@ -543,7 +543,11 @@ elements = {
         'test_date_filter': {'method': 'id',
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
-                                 'value': 'start_shipmentDate'}
+                                 'value': 'start_shipmentDate'},
+        'analysis_tab': {
+            'method': 'xpath',
+            'value': "//label[@class='btn tab']"
+        }
     },
 
     'audit_trail': {
@@ -575,6 +579,7 @@ elements = {
                       'value': '//td//*[@id="testPlans"]'},
         'test_unit': {'method': 'xpath',
                       'value': '//td//*[@id="testUnits"]'},
+
         'test_plan_btn': {'method': 'tag_name',
                           'value': 'span',
                           'order': 0},
@@ -613,6 +618,7 @@ elements = {
         'save': {'method': 'class_name',
                  'value': 'btn-primary',
                  'order': 1},
+
         'duplicate_table_view': {'method': 'id',
                                  'value': 'duplicate_table_view'},
         'delete_table_view': {'method': 'id',

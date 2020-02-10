@@ -969,29 +969,30 @@ class OrdersTestCases(BaseTest):
             test_units_list.append(test_unit_dict['Test Unit Name'])
 
         self.order_page.get_orders_page()
-        created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
-                                                         test_units=test_units_list, test_plans=[])
-
-        #created_existing_order = self.order_page.create_existing_order_with_auto_fill(no=created_order.replace("'", ""))
-        created_existing_order = self.order_page.create_existing_order_with_auto_fill(no=created_order)
+        created_order = self.order_page.create_order_with_test_unit(material_type='r', article='a', contact='a',
+                                                                    test_units=test_units_list)
+        self.order_page.get_orders_page()
+        created_existing_order = self.order_page.create_existing_order_with_auto_fill(no=created_order['orderNo'].replace("'", ""))
         self.order_page.sleep_tiny()
-        self.order_page.set_material_type(material_type='Subassembely')
+        self.order_page.set_material_type(material_type='Subassembel')
         self.order_page.sleep_medium()
         self.base_selenium.LOGGER.info('Check If article and test units are empty')
         article = self.order_page.get_article()
         self.assertEqual('Search', article)
-        test_unit = self.order_page.get_test_unit()
+        test_units = self.order_page.get_test_unit()
         self.assertEqual('Search', article)
         self.order_page.set_article(article='a')
+        self.base_page.sleep_small()
         self.order_page.set_test_unit(test_unit=test_unit_dict['Test Unit Name'])
+        self.base_page.sleep_small()
 
         article = self.order_page.get_article()
         self.order_page.save(save_btn='order:save_btn')
         self.base_selenium.LOGGER.info(' + Order created with no : {} '.format(created_existing_order))
-        self.analyses_page.get_analyses_page()
+        self.order_page.navigate_to_analysis_active_table()
         self.base_selenium.LOGGER.info(
             'Assert There is an analysis for this new order.')
-        orders_analyess = self.analyses_page.search(created_order)
+        orders_analyess = self.single_analysis_page.search(created_order)
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=orders_analyess[0])
         self.assertEqual(

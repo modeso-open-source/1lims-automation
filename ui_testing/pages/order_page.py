@@ -86,6 +86,7 @@ class Order(Orders):
             self.base_selenium.select_item_from_drop_down(element='order:test_unit')
             return self.get_test_unit()
 
+
     def get_test_unit(self):
         test_units = self.base_selenium.get_text(element='order:test_unit')
         if "×" in test_units:
@@ -107,8 +108,8 @@ class Order(Orders):
         self.sleep_small()
         order_no = self.get_no()
 
-        if test_plans!=[]:
-         for test_plan in test_plans:
+
+        for test_plan in test_plans:
             self.set_test_plan(test_plan=test_plan)
         for test_unit in test_units:
             self.set_test_unit(test_unit)
@@ -120,13 +121,33 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' Order created with no : {} '.format(order_no))
         return self.get_suborder_data()
 
+    def create_order_with_test_unit(self, material_type='', article='', contact='', test_units=[''],
+                         multiple_suborders=0, departments=''):
+        self.base_selenium.LOGGER.info(' Create new order.')
+        self.click_create_order_button()
+        self.set_new_order()
+        self.set_contact(contact=contact)
+        self.sleep_small()
+        self.set_departments(departments=departments)
+        self.set_material_type(material_type=material_type)
+        self.sleep_small()
+        self.set_article(article=article)
+        self.sleep_small()
+        self.set_test_unit(test_unit=test_units)
+        order_no = self.get_no()
+        self.save(save_btn='order:save_btn')
+        self.base_selenium.LOGGER.info(' Order created with no : {} '.format(order_no))
+        return self.get_suborder_data()
+
     def create_existing_order(self, no='', material_type='', article='', contact='', test_units=[],
                               multiple_suborders=0):
         self.base_selenium.LOGGER.info(' Create new order.')
         self.click_create_order_button()
         self.set_existing_order()
         order_no = self.set_existing_number(no)
+        self.sleep_small()
         self.set_material_type(material_type=material_type)
+        self.sleep_small()
         self.set_article(article=article)
         self.set_contact(contact=contact)
 
@@ -157,7 +178,7 @@ class Order(Orders):
         else:
             self.base_selenium.select_item_from_drop_down(
                 element='order:order_number_add_form')
-            return self.get_order_number()
+        return self.get_order_number()
 
     def edit_random_order(self, edit_method, edit_value, save=True):
         if 'contact' in edit_method:
@@ -509,6 +530,11 @@ class Order(Orders):
             row=suborder_row, table_element='order:suborder_table')
         suborder_row.click()
         return self.base_selenium.get_text(element='order:material_type').split('\n')[0]
+
+    def navigate_to_analysis_active_table(self):
+        self.base_selenium.click(element='orders:analysis_tab')
+        self.sleep_small()
+
 
 
 
