@@ -415,6 +415,97 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info( 'get the analysis url')
         self.assertTrue('Sample Management', self.single_analysis_page.get_analysis_page())
 
+    def test015_filter_by_role_name(self):
+        """
+        Roles & Permissions: Make sure that the user can filter by role name
+        LIMS-6120
+        :return:
+        """
+        self.header_page.get_roles_page()
+        role_data = self.header_page.get_role_data_from_fully_checked_headers_random_row()
+
+        self.base_selenium.click(element='general:menu_filter_view')
+        self.header_page.filter_user_by(filter_element='roles_and_permissions:role_name',
+                                        filter_text=role_data['name'])
+
+        roles_result = self.header_page.result_table()
+        self.assertIn(str(role_data['name']), (roles_result[0].text).replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with random role name')
+        self.base_selenium.click(element='roles_and_permissions:reset_btn')
+
+    def test016_filter_by_no(self):
+        """
+        Header: Roles & Permissions Approach: Make sure that you can filter by role number
+        LIMS-6003
+        :return:
+        """
+        self.header_page.get_roles_page()
+        role_data = self.header_page.get_role_data_from_fully_checked_headers_random_row()
+
+        self.base_selenium.click(element='general:menu_filter_view')
+        self.header_page.filter_user_by(filter_element='roles_and_permissions:filter_no',
+                                        filter_text=role_data['number'])
+
+        roles_result = self.header_page.result_table()
+        self.assertIn(str(role_data['number']), (roles_result[0].text).replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with the role no')
+        self.base_selenium.click(element='roles_and_permissions:reset_btn')
+
+    def test017_filter_created_on(self):
+        """
+        Header: Roles & Permissions Approach: Make sure that you can filter by role created on
+        LIMS-6508
+        :return:
+        """
+        self.header_page.get_roles_page()
+        role_data = self.header_page.get_role_data_from_fully_checked_headers_random_row()
+
+        self.base_selenium.click(element='general:menu_filter_view')
+        self.header_page.filter_user_by(filter_element='roles_and_permissions:filter_created_on',
+                                        filter_text=role_data['created_on'])
+
+        roles_result = self.header_page.result_table()
+        self.assertIn(str(role_data['created_on']), (roles_result[0].text).replace("'", ""))
+
+        self.base_selenium.LOGGER.info('filter results displayed with the role created_on')
+        self.base_selenium.click(element='roles_and_permissions:reset_btn')
+
+class LoginRandomUser(BaseTest):
+
+    def setUp(self):
+        super().setUp()
+        self.random_user_name = self.generate_random_string()
+        random_user_email = self.base_page.generate_random_email()
+        random_user_password = self.generate_random_string()
+        self.users_api.create_new_user(self.random_user_name, random_user_email, random_user_password)
+        self.login_page.login(username=self.random_user_name, password=random_user_password)
+        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.header_page.click_on_header_button()
+
+    def test018_filter_by_changed_by(self):
+        """
+        Header: Roles & Permissions Approach: Make sure that you can filter by role changed by
+        LIMS-6507
+        :return:
+        """
+        self.base_selenium.click(element='header:roles_and_permissions_button')
+        random_role_name= self.generate_random_string()
+        self.header_page.create_new_role(role_name=random_role_name)
+
+        self.header_page.click_on_table_configuration_button()
+        self.base_selenium.click(element='roles_and_permissions:checked_role_changed_by')
+        self.base_selenium.click(element='roles_and_permissions:apply_btn')
+
+
+        self.base_selenium.click(element='general:menu_filter_view')
+        self.header_page.filter_user_drop_down(filter_name='roles_and_permissions:filter_changed_by',
+                                               filter_text=self.random_user_name)
+
+        roles_result = self.header_page.get_table_rows_data()
+        self.assertIn(self.random_user_name, roles_result[0])
+
 
 
 
