@@ -28,5 +28,7 @@ script:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test002_archive_test_units --tc-file=config.ini
-
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test003_search_audit_trail_0_changed_by --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test003_search_audit_trail_1_action --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test003_search_audit_trail_2_entity --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test003_search_audit_trail_3_entity_number --tc-file=config.ini
