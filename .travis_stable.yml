@@ -1,0 +1,29 @@
+language: python
+sudo: enabled
+dist: xenail
+group: edge
+
+python:
+  - "3.5"
+
+addons:
+  chrome: stable
+install:
+  - echo $(google-chrome --version)
+  - version=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE) &&
+    wget -N "https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip" -P ~/
+  - unzip ~/chromedriver_linux64.zip -d ~/
+  - rm ~/chromedriver_linux64.zip
+  - sudo mv -f ~/chromedriver /usr/local/share/
+  - sudo chmod +x /usr/local/share/chromedriver
+  - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+  - echo $(/usr/local/bin/chromedriver -v)
+  - sudo apt-get install -y xvfb xclip
+  - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
+
+script:
+  - export TESTS='test09_my_profile.py:'
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
+  #- echo $TESTS
+  - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test002_archive_test_units --tc-file=config.ini
