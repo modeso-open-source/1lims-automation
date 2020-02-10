@@ -17,21 +17,14 @@ install:
   - sudo mv -f ~/chromedriver /usr/local/share/
   - sudo chmod +x /usr/local/share/chromedriver
   - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-  - echo $(/usr/bin/chromedriver -v)
+  - echo $(/usr/local/bin/chromedriver -v)
   - sudo apt-get install -y xvfb xclip
   - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
 
 script:
-
-  - export TESTS='test08_usermanagement.py:'
-  #- export TESTS='test04_testunits.py:TestUnitsTestCases.test011_create_test_unit_with_random_category'
+  - export TESTS='test09_my_profile.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
 
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test002_audit_trail_filter_0_action_date --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test002_audit_trail_filter_1_changed_by --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test002_audit_trail_filter_2_action --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test002_audit_trail_filter_3_entity --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test06_audit_trail.py:AuditTrailTestCases.test002_audit_trail_filter_4_entity_number --tc-file=config.ini
-
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test005_delete_user --tc-file=config.ini
