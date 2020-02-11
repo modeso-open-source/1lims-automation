@@ -26,6 +26,7 @@ script:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
 
+
   
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
   #- xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test002_update_contact_with_save_cancel_btn_1_cancel --tc-file=config.ini
@@ -75,5 +76,5 @@ script:
  # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test005_delete_user --tc-file=config.ini
   #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test09_rolesandpermissions.py:HeaderTestCases.test015_filter_by_role_name --tc-file=config.ini
   - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test018_validate_order_no_exists --tc-file=config.ini
-  
+  #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test019_download_test_units_sheet --tc-file=config.ini
 
