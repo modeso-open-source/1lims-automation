@@ -22,7 +22,7 @@ install:
   - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
 
 script:
-  - export TESTS='test09_my_profile.py:'
+  - export TESTS='test06_orders.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
