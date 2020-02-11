@@ -74,4 +74,4 @@ script:
   #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test002_archive_test_units --tc-file=config.ini
  # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test005_delete_user --tc-file=config.ini
   #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test09_rolesandpermissions.py:HeaderTestCases.test015_filter_by_role_name --tc-file=config.ini
-   - xvfb-run -a nosetests-3.4 -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test018_validate_order_no_exists --tc-file=config.ini
+  
