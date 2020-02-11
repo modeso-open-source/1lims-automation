@@ -1,10 +1,10 @@
 language: python
 sudo: enabled
-dist: xenail
+dist: xenial
 group: edge
 
 python:
-  - "3.5"
+  - "3.7"
 
 install:
   #https://www.slimjet.com/chrome/google-chrome-old-version.php
@@ -24,7 +24,6 @@ install:
 script:
   - export TESTS='test09_my_profile.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
-  #- echo $TESTS
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
 
   
@@ -74,4 +73,4 @@ script:
  # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test023_duplicate_test_case --tc-file=config.ini
   #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test002_archive_test_units --tc-file=config.ini
  # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test08_usermanagement.py:HeaderTestCases.test005_delete_user --tc-file=config.ini
-
+  #- xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/header_tests/test09_rolesandpermissions.py:HeaderTestCases.test015_filter_by_role_name --tc-file=config.ini
