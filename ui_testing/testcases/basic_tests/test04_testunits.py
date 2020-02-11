@@ -625,15 +625,11 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Assert test unit name : {}'.format(testunit_name))
         self.assertEqual(new_name, testunit_name)
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-5525')
-    def test018_download_test_units_sheet(self):
+    def test019_download_test_units_sheet(self):
         """
-        New: Test unit: Limit of quantification Approach: Allow those fields to displayed in table view &
-        XSLX file ( upper limit & lower limit & unit )
+        I can download all the data in the table view in the excel sheet
 
-        LIMS:4166
-        LIMS-3672
-        :return:
+        LIMS-3672-case of all data
         """
         self.info(' * Download XSLX sheet')
         self.test_unit_page.download_xslx_sheet()
