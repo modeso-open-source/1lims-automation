@@ -76,16 +76,16 @@ class BaseTest(TestCase):
         tmp = []
         for item in data_list:
             if len(str(item)) > 0:
-                if re.search(r'\d{2}.\d{2}.\d{4},\s\d{1,2}:\d{1,2}\s(A|P)M', str(item)):                    
+                if re.search(r'\d{2}.\d{2}.\d{4},\s\d{1,2}:\d{1,2}\s(A|P)M', str(item)):
                     tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y, %H:%M %p'))
-                elif re.search(r'\d{2}.\d{2}.\d{4}', str(item)):
+                elif re.search(r'\d{2}\.\d{2}\.\d{4}', str(item)):
                     tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y'))
-                elif "-" == str(item):
+                elif str(item) in ["-", "nan", "N/A"]:
                     continue
                 elif ' ' == str(item)[-1]:
                     tmp.append(item[:-1])
                 else:
-                    tmp.append(str(item).replace(',', '&').replace("'", ""))
+                    tmp.append(str(item).replace(',', '&').replace("'", "").replace(' - ', '-'))
         return tmp
 
     def get_active_article_with_tst_plan(self, test_plan_status='complete'):
@@ -97,7 +97,8 @@ class BaseTest(TestCase):
 
         self.article_page.get_articles_page()
         for complete_test_plan_dict in complete_test_plans_dict:
-            self.base_selenium.LOGGER.info('Is {} article in active status?'.format(complete_test_plan_dict['Article Name']))
+            self.base_selenium.LOGGER.info(
+                'Is {} article in active status?'.format(complete_test_plan_dict['Article Name']))
             if self.article_page.is_article_in_table(value=complete_test_plan_dict['Article Name']):
                 self.base_selenium.LOGGER.info('Active.')
                 return complete_test_plan_dict
@@ -105,7 +106,7 @@ class BaseTest(TestCase):
                 self.base_selenium.LOGGER.info('Archived.')
         else:
             return {}
-        
+
     def get_multiple_active_article_with_tst_plan(self, test_plan_status='complete'):
         self.base_selenium.LOGGER.info('Get Active articles with {} test plans.'.format(test_plan_status))
         self.test_plan.get_test_plans_page()
@@ -116,7 +117,8 @@ class BaseTest(TestCase):
         self.article_page.get_articles_page()
         test_plans_list = []
         for complete_test_plan_dict in complete_test_plans_dict:
-            self.base_selenium.LOGGER.info('Is {} article in active status?'.format(complete_test_plan_dict['Article Name']))
+            self.base_selenium.LOGGER.info(
+                'Is {} article in active status?'.format(complete_test_plan_dict['Article Name']))
             if self.article_page.is_article_in_table(value=complete_test_plan_dict['Article Name']):
                 self.base_selenium.LOGGER.info('Active.')
                 test_plans_list.append(complete_test_plan_dict)
@@ -124,7 +126,7 @@ class BaseTest(TestCase):
                 self.base_selenium.LOGGER.info('Archived.')
         else:
             return {}
-        
+
         return test_plans_list
 
     def get_active_tst_unit_with_material_type(self, search, material_type='Raw Material'):
@@ -132,7 +134,7 @@ class BaseTest(TestCase):
         self.test_unit_page.get_test_units_page()
         test_units = self.test_unit_page.search(search)
         test_units_dict = [self.base_selenium.get_row_cells_dict_related_to_header(row=test_unit) for
-                                    test_unit in test_units[:-1]]
+                           test_unit in test_units[:-1]]
         for test_unit_dict in test_units_dict:
             if test_unit_dict['Type'] == search and material_type in test_unit_dict['Material Type']:
                 return test_unit_dict
@@ -157,6 +159,7 @@ class BaseTest(TestCase):
     Removes the data that was changed in the duplication process in order to compare
     between the objects to make sure that the duplication was done correcly.
     '''
+
     def remove_unduplicated_data(self, data_changed=[], first_element=[], second_element=[]):
         for data in data_changed:
             if data in first_element and data in second_element:
@@ -166,11 +169,10 @@ class BaseTest(TestCase):
                     del second_element[data]
 
         return first_element, second_element
-        
 
     def get_all_articles(self):
         articles_response = self.article_api.get_all_articles()
-        articles=articles_response.json()['articles']
+        articles = articles_response.json()['articles']
         return articles
 
     def get_all_test_plans(self):
@@ -184,10 +186,9 @@ class BaseTest(TestCase):
         return test_units
 
     def get_all_contacts(self):
-        contacts_response=self.contacts_api.get_all_contacts()
-        contacts= contacts_response.json()['contacts']
+        contacts_response = self.contacts_api.get_all_contacts()
+        contacts = contacts_response.json()['contacts']
         return contacts
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
-
