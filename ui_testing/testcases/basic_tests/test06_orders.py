@@ -614,7 +614,8 @@ class OrdersTestCases(BaseTest):
                 self.assertEqual(order_data[key].replace(
                     "'", ""), row_data[key].replace("'", ""))
             self.order_page.filter_reset()
-    # will continue with us 
+    # will continue with us
+    @skip('https://modeso.atlassian.net/browse/LIMS-4954')
     def test016_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
