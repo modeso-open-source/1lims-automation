@@ -10,6 +10,7 @@ from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
 from ui_testing.pages.base_pages import BasePages
 from ui_testing.pages.order_page import Order
+from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.audit_trail_page import AuditTrail
 from ui_testing.pages.contacts_page import Contacts
 from ui_testing.pages.my_profile_page import MyProfile
@@ -44,6 +45,7 @@ class BaseTest(TestCase):
         self.articles_page = Articles()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
+        self.orders_page = Orders()
         self.audit_trail_page = AuditTrail()
         self.header_page = Header()
         self.my_profile_page = MyProfile()

@@ -1886,3 +1886,29 @@ class OrdersTestCases(BaseTest):
         testunit_name = row_with_headers['Test Unit']
         self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
         self.assertIn(testunit_name, testunit_name)
+
+    def test01_archive_new_order_and_analysis(self):
+        all_orders = self.base_selenium.get_table_rows(element='orders:orders_table')
+        row_id = randint(0, len(all_orders) - 2)
+        main_order = self.base_selenium.get_row_cells_dict_related_to_header(row=all_orders[row_id])
+        sub_orders = self.orders_page.get_child_table_data(row_id)
+
+        # Get order number
+        order_number = main_order['Order No.']
+        self.base_selenium.LOGGER.info(" + Archive order with number : {}".format(order_number))
+
+        # Get analysis number
+        sub_order_number = sub_orders[0]['Analysis No.']
+
+        # Select and archive order
+        self.order_page.click_check_box(source=all_orders[row_id])
+        order_deleted = self.order_page.archive_selected_orders(
+            check_pop_up=True)
+        
+        self.order_page.sleep_tiny()
+        self.base_selenium.click(element='general:menu_filter_view')
+        self.base_selenium.set_text(element='orders:analysis_filter',value=sub_order_number)
+        self.order_page.sleep_tiny()
+        self.base_selenium.click(element='general:filter_btn')
+        self.order_page.sleep_tiny()
+
