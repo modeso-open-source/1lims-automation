@@ -1,4 +1,5 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.audit_trail_page import AuditTrail
 from parameterized import parameterized
 from unittest import skip
 import re
@@ -7,6 +8,7 @@ import re
 class AuditTrailTestCases(BaseTest):
     def setUp(self):
         super().setUp()
+        self.audit_trail_page = AuditTrail()
         self.login_page.login(
             username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')

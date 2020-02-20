@@ -105,6 +105,16 @@ class ArticleAPI(BaseAPI):
         if data['status'] == 1:
             return data['articles']
         return []
+
+    def get_active_articles_with_material_type(self):
+        data = {}
+        articles = self.get_all_articles().json()['articles']
+        for article in articles:
+            material_type = article['materialType']
+            if material_type not in data.keys():
+                data[material_type] = []
+            data[material_type].append(article['name'])
+        return data
     
     def list_testplans_by_article_and_materialtype(self, materialtype_id=1, article_id=1):
         api = '{}{}{}/{}'.format(self.url, self.END_POINTS['article_api']['list_testplans_by_article_and_materialtype'], article_id, materialtype_id) 

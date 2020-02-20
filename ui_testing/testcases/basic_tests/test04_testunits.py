@@ -1,5 +1,12 @@
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.articles_page import Articles
+from ui_testing.pages.testplan_page import TstPlan
+from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.base_pages import BasePages
+from api_testing.apis.test_unit_api import TestUnitAPI
+from api_testing.apis.article_api import ArticleAPI
+from api_testing.apis.test_plan_api import TestPlanAPI
+from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from unittest import skip
 from parameterized import parameterized
 import re, random
@@ -8,7 +15,14 @@ import re, random
 class TestUnitsTestCases(BaseTest):
     def setUp(self):
         super().setUp()
+        self.test_unit_page = TstUnit()
         self.articles_page = Articles()
+        self.test_plan = TstPlan()
+        self.base_page = BasePages()
+        self.article_api = ArticleAPI()
+        self.test_plan_api = TestPlanAPI()
+        self.test_unit_api = TestUnitAPI()
+        self.general_utilities_api = GeneralUtilitiesAPI()
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_unit_page.get_test_units_page()
@@ -681,7 +695,7 @@ class TestUnitsTestCases(BaseTest):
          LIMS-4420
         :return:
         """
-        active_articles_with_material_types = self.get_active_articles_with_material_type()
+        active_articles_with_material_types = self.article_api.get_active_articles_with_material_type()
         material_type = next(iter(active_articles_with_material_types))
         article = active_articles_with_material_types[material_type][0]
         test_unit_new_name = self.generate_random_string()
@@ -724,7 +738,7 @@ class TestUnitsTestCases(BaseTest):
         LIMS-3684
         :return:
         """
-        active_articles_with_material_types = self.get_active_articles_with_material_type()
+        active_articles_with_material_types = self.article_api.get_active_articles_with_material_type()
         material_type = next(iter(active_articles_with_material_types))
         article = active_articles_with_material_types[material_type][0]
         test_unit_name = self.generate_random_string()
@@ -828,7 +842,7 @@ class TestUnitsTestCases(BaseTest):
                                                              unit=unit_with_sub_or_super.replace('sub', '[sub]'))
         else:
             self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
-                                                             upper_limit='33',lower_limit='22', spec_or_quan='spec',
+                                                             upper_limit='33', lower_limit='22', spec_or_quan='spec',
                                                              unit=unit_with_sub_or_super.replace('super', '{super}'))
         self.test_unit_page.sleep_tiny()
         inserted_unit = self.test_unit_page.get_spec_unit()
@@ -1616,7 +1630,8 @@ class TestUnitsTestCases(BaseTest):
         Search Approach: Make sure that you can search then navigate to any other page
         LIMS-6201
         """
-        testunits = self.get_all_test_units()
+        test_units_response = self.test_unit_api.get_all_test_units()
+        testunits = test_units_response.json()['testUnits']
         testunit_name = random.choice(testunits)['name']
         search_results = self.test_unit_page.search(testunit_name)
         self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")

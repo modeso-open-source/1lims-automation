@@ -1,13 +1,23 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.base_pages import BasePages
+from ui_testing.pages.order_page import Order
+from ui_testing.pages.header_page import Header
+from api_testing.apis.users_api import UsersAPI
+from api_testing.apis.roles_api import RolesAPI
 from parameterized import parameterized
 import re
 from unittest import skip
-import time
+
 
 class HeaderTestCases(BaseTest):
-
     def setUp(self):
         super().setUp()
+        self.order_page = Order()
+        self.header_page = Header()
+        self.base_page = BasePages()
+        self.roles_api = RolesAPI()
+        self.users_api = UsersAPI()
+
         self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.header_page.click_on_header_button()
