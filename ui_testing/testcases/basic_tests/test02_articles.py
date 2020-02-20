@@ -8,7 +8,6 @@ import re
 from unittest import skip
 import random
 
-
 class ArticlesTestCases(BaseTest):
     def setUp(self):
         super().setUp()
@@ -565,15 +564,13 @@ class ArticlesTestCases(BaseTest):
         """
         New: Articles: XSLX File: I can download all the data in the table view in the excel sheet
 
-        LIMS:3589
-        :return:
+        LIMS:3589-case of all sheet
         """
-        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
+        self.info(' * Download XSLX sheet')
         self.article_page.download_xslx_sheet()
         rows_data = self.article_page.get_table_rows_data()
         for index in range(len(rows_data)):
-            self.base_selenium.LOGGER.info(
-                ' * Comparing the article no. {} '.format(index))
+            self.info(' * Comparing the article no. {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.article_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)
