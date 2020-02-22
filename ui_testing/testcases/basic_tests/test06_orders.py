@@ -1898,7 +1898,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(" + Archive order with number : {}".format(order_number))
 
         # Get analysis number
-        sub_order_number = sub_orders[0]['Analysis No.']
+        analysis_number = sub_orders[0]['Analysis No.']
 
         # Select and archive order
         self.order_page.click_check_box(source=all_orders[row_id])
@@ -1906,9 +1906,6 @@ class OrdersTestCases(BaseTest):
             check_pop_up=True)
         
         self.order_page.sleep_tiny()
-        self.base_selenium.click(element='general:menu_filter_view')
-        self.base_selenium.set_text(element='orders:analysis_filter',value=sub_order_number)
-        self.order_page.sleep_tiny()
-        self.base_selenium.click(element='general:filter_btn')
-        self.order_page.sleep_tiny()
-
+        self.orders_page.search_by_analysis_number(analysis_number)
+        self.assertFalse(
+                self.orders_page.is_order_in_table(value=analysis_number))
