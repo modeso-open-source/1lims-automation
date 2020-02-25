@@ -1887,7 +1887,13 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
         self.assertIn(testunit_name, testunit_name)
 
-    def test01_archive_new_order_and_analysis(self):
+    def test029_archive_new_order_and_analysis(self):
+        """
+        New: Orders: Form: Archive main order: Make sure when the user archive main order, the analysis corresponding to it will be archived also 
+        LIMS-6873
+        LIMS-6873
+         :return:
+         """
         all_orders = self.base_selenium.get_table_rows(element='orders:orders_table')
         row_id = randint(0, len(all_orders) - 2)
         main_order = self.base_selenium.get_row_cells_dict_related_to_header(row=all_orders[row_id])
