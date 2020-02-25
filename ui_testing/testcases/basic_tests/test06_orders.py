@@ -1894,23 +1894,25 @@ class OrdersTestCases(BaseTest):
         LIMS-6873
          :return:
          """
-        all_orders = self.base_selenium.get_table_rows(element='orders:orders_table')
+        all_orders = self.orders_api.get_all_orders(limit=20).json()['orders']
         row_id = randint(0, len(all_orders) - 2)
-        main_order = self.base_selenium.get_row_cells_dict_related_to_header(row=all_orders[row_id])
         sub_orders = self.orders_page.get_child_table_data(row_id)
 
-        # Get order number
-        order_number = main_order['Order No.']
+        # # Get order number
+        order_number = all_orders[row_id]['orderNo']
         self.base_selenium.LOGGER.info(" + Archive order with number : {}".format(order_number))
-
+    
         # Get analysis number
         analysis_number = sub_orders[0]['Analysis No.']
 
         # Select and archive order
-        self.order_page.click_check_box(source=all_orders[row_id])
+        rows = self.order_page.search(order_number)
+        self.order_page.click_check_box(source=rows[0])
         order_deleted = self.order_page.archive_selected_orders(
             check_pop_up=True)
-        
+            
+        # Refresh then search for the order by analysis number
+        self.base_selenium.refresh()
         self.order_page.sleep_tiny()
         self.orders_page.search_by_analysis_number(analysis_number)
         self.assertFalse(
