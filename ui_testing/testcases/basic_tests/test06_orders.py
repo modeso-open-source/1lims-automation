@@ -1906,13 +1906,14 @@ class OrdersTestCases(BaseTest):
         analysis_number = sub_orders[0]['Analysis No.']
 
         # Select and archive order
-        rows = self.order_page.search(order_number)
-        self.order_page.click_check_box(source=rows[0])
+        rows = self.base_selenium.get_table_rows(element='general:table')
+        order_row = rows[row_id]
+
+        self.order_page.click_check_box(source=order_row)
         order_deleted = self.order_page.archive_selected_orders(
             check_pop_up=True)
             
-        # Refresh then search for the order by analysis number
-        self.base_selenium.refresh()
+        # Search for the order by analysis number
         self.order_page.sleep_tiny()
         self.orders_page.search_by_analysis_number(analysis_number)
         self.assertFalse(
