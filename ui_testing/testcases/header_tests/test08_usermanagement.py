@@ -60,20 +60,21 @@ class HeaderTestCases(BaseTest):
         for user_name in user_names:
             self.assertTrue(self.header_page.is_user_in_table(value=user_name))
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-6384')
     def test003_user_search(self):
         """
-        Header:  User management:  Search Approach: Make sure that you can search by any field in the active table successfully
+        Header:  User management:  Search Approach: Make sure that you can search by
+        any field in the active table successfully
+
         LIMS-6082
-        :return:
         """
         self.base_selenium.click(element='header:user_management_button')
-        row = self.header_page.getsearch_random_user_row()
+        row = self.header_page.get_random_user_row()
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         for column in row_data:
-            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[column] == '':
+            if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) \
+                    or row_data[column] == '' or row_data[column] == '-':
                 continue
-            self.base_selenium.LOGGER.info(' + search for {} : {}'.format(column, row_data[column]))
+            self.info(' + search for {} : {}'.format(column, row_data[column]))
             search_results = self.header_page.search(row_data[column])
             self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
             for search_result in search_results:
