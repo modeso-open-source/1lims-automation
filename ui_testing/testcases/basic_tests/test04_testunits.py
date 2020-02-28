@@ -742,7 +742,6 @@ class TestUnitsTestCases(BaseTest):
         when I go to the test plan I found both of those with the same name
 
         LIMS-3684
-        :return:
         """
         active_articles_with_material_types = self.article_api.get_active_articles_with_material_type()
         material_type = next(iter(active_articles_with_material_types))
@@ -766,6 +765,7 @@ class TestUnitsTestCases(BaseTest):
                                                         material_type=material_type, category=category)
         self.test_unit_page.save(save_btn='general:save_form',
                                  logger_msg='save {} qualitative test unit'.format(test_unit_name))
+
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(name=test_unit_name, material_type=material_type, article=article)
         test_plan = self.test_plan.search(test_unit_name)[0]
@@ -775,7 +775,8 @@ class TestUnitsTestCases(BaseTest):
         test_units = self.base_selenium.get_drop_down_suggestion_list(element='test_plan:test_units',
                                                                       item_text=test_unit_name)
 
-        self.info('assert that all test units are in the suggestions list')
+        self.info('assert that 3 test units are in the suggestions list')
+        self.test_plan.sleep_tiny()
         self.assertEqual(len(test_units), 3)
 
     def test022_duplicate_test_case(self):
