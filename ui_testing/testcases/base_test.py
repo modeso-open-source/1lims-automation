@@ -3,6 +3,7 @@ from ui_testing.pages.base_selenium import BaseSelenium
 from uuid import uuid4
 from random import randint
 from ui_testing.pages.article_page import Article
+from ui_testing.pages.articles_page import Articles
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
@@ -11,6 +12,7 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.audit_trail_page import AuditTrail
 from ui_testing.pages.contacts_page import Contacts
+from ui_testing.pages.contact_page import Contact
 from ui_testing.pages.my_profile_page import MyProfile
 from ui_testing.pages.company_profile_page import CompanyProfile
 from api_testing.apis.test_unit_api import TestUnitAPI
