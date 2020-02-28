@@ -31,9 +31,9 @@ class TestUnitAPI(BaseAPI):
     def get_all_testunits_json(self):
         testunits = self.get_all_test_units().json()['testUnits']
         return testunits
-        
+
     def get_testunit_form_data(self, id=1):
-        api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['form_data'], str(id)) 
+        api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['form_data'], str(id))
         self.info('GET : {}'.format(api))
         response = self.session.get(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -42,9 +42,9 @@ class TestUnitAPI(BaseAPI):
             return data['testUnit']
         else:
             return False
-    
+
     def archive_testunits(self, ids=['1']):
-        api = '{}{}{}/archive'.format(self.url, self.END_POINTS['test_unit_api']['archive_testunits'], ','.join(ids)) 
+        api = '{}{}{}/archive'.format(self.url, self.END_POINTS['test_unit_api']['archive_testunits'], ','.join(ids))
         self.info('PUT : {}'.format(api))
         response = self.session.put(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -53,9 +53,9 @@ class TestUnitAPI(BaseAPI):
             return True
         else:
             return False
-    
+
     def restore_testunits(self, ids=['1']):
-        api = '{}{}{}/restore'.format(self.url, self.END_POINTS['test_unit_api']['restore_testunits'], ','.join(ids)) 
+        api = '{}{}{}/restore'.format(self.url, self.END_POINTS['test_unit_api']['restore_testunits'], ','.join(ids))
         self.info('PUT : {}'.format(api))
         response = self.session.put(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -64,9 +64,9 @@ class TestUnitAPI(BaseAPI):
             return True
         else:
             return False
-    
+
     def delete_archived_testunit(self, id=1):
-        api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['delete_testunit'], str(id)) 
+        api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['delete_testunit'], str(id))
         self.info('DELETE : {}'.format(api))
         response = self.session.delete(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -87,15 +87,15 @@ class TestUnitAPI(BaseAPI):
             return False
 
     def list_testunits_types(self):
-        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_types']) 
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_types'])
         self.info('GET : {}'.format(api))
         response = self.session.get(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
         return data
-    
+
     def list_testunits_concentrations(self):
-        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_concentrations']) 
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_concentrations'])
         self.info('GET : {}'.format(api))
         response = self.session.get(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -146,7 +146,7 @@ class TestUnitAPI(BaseAPI):
     """
 
     def create_qualitative_testunit(self, **kwargs):
-        
+
         random_category = self.generate_random_string()
         _payload = {
             'name': self.generate_random_string(),
@@ -187,20 +187,20 @@ class TestUnitAPI(BaseAPI):
                 'value': value
             })
         payload['textValueArray'] = values_arr
-        
-        
-        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit']) 
+
+
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit'])
         self.info('POST : {}'.format(api))
         response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
-        
+
         if data['status'] == 1:
             return payload
         else:
             return data['message']
-    
+
     def create_quantitative_testunit(self, **kwargs):
         random_category =self.generate_random_string()
         _payload = {
@@ -239,22 +239,22 @@ class TestUnitAPI(BaseAPI):
         if 'category' in kwargs:
             payload['selectedCategory'] = [kwargs['category']]
 
-        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit']) 
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit'])
         self.info('POST : {}'.format(api))
         response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
-        
+
         if data['status'] == 1:
             return payload
         else:
             return data['message']
 
-    
-    
+
+
     def create_mibi_testunit(self, **kwargs):
-                
+
         random_category =self.generate_random_string()
         _payload = {
             'name': self.generate_random_string(),
@@ -291,20 +291,20 @@ class TestUnitAPI(BaseAPI):
         if 'category' in kwargs:
             payload['selectedCategory'] = [kwargs['category']]
 
-        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit']) 
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit'])
         self.info('POST : {}'.format(api))
         response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
-        
+
         if data['status'] == 1:
             return payload
         else:
             return data['message']
 
     def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
-        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue) 
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue)
         self.info('GET : {}'.format(api))
         response = self.session.get(api, params='', headers=self.headers, verify=False)
         self.info('Status code: {}'.format(response.status_code))
@@ -312,4 +312,12 @@ class TestUnitAPI(BaseAPI):
         if data['status'] == 1:
             return data['testUnits']
         return []
-        
+
+    def get_testunit_with_empty_specification(self):
+        testunits_request = self.get_all_test_units(filter='{"typeName":2}').json()
+        testunits = testunits_request['testUnits']
+        testunits_name = []
+        for testunit in testunits:
+            if testunit['specifications'] == '':
+                testunits_name.append(testunit['name'])
+        return testunits_name
