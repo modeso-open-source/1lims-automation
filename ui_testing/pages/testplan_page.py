@@ -70,11 +70,13 @@ class TstPlan(TestPlans):
             self.base_selenium.LOGGER.info(' set upper : {}'.format(kwargs['upper']))
             elems = self.base_selenium.find_elements('general:col_6')
             upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
+            upper.clear()
             upper.send_keys(kwargs['upper'])
-        if  'lower' in kwargs:
+        if 'lower' in kwargs:
             self.base_selenium.LOGGER.info(' set lower : {}'.format(kwargs['lower']))
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
+            lower.clear()
             lower.send_keys(kwargs['lower'])
 
     def get_testunit_in_testplan_title_multiple_line_properties(self):
@@ -110,7 +112,7 @@ class TstPlan(TestPlans):
         return category_label_test_unit.get_attribute('textContent')
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
-        self.base_selenium.LOGGER.info(' Create new test plan')
+        self.info(' Create new test plan')
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
         self.article = article
@@ -133,7 +135,8 @@ class TstPlan(TestPlans):
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
             self.set_test_unit(test_unit=test_unit, **kwargs)
-            self.save(save_btn='test_plan:save_btn')
+            self.sleep_tiny()
+            self.save(save_btn='test_plan:save_and_complete')
         else:
             self.save()
 
