@@ -395,29 +395,35 @@ class TestUnitsTestCases(BaseTest):
         else:
             self.fail('Material type is not there')
 
-    @parameterized.expand([(True,), (False,)])
+    @parameterized.expand(['True', 'False'])
     def test011_create_test_unit_with_random_category(self, random):
         """
         User can create test unit with an random category
 
         LIMS-3682
         """
-        self.base_selenium.LOGGER.info("Create new test unit with random:{} category".format(random))
+        self.info("Create new test unit with random:{} category".format(random))
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
-        new_random_category = self.generate_random_string() if random else ""
+        if random == 'True':
+            new_random_category = self.generate_random_string()
+        else:
+            new_random_category = ''
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         category=new_random_category)
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('Get the category of it')
-        test_unit = self.test_unit_page.search(new_random_name)[0]
-        self.test_unit_page.open_edit_page(test_unit)
+        self.info('Get the category of it')
+        row = self.test_unit_page.search(new_random_name)[0]
+        self.test_unit_page.open_edit_page_by_css_selector(row)
 
         category = self.test_unit_page.get_category()
-        self.base_selenium.LOGGER.info('Assert category : {}'.format(category))
-        self.assertEqual(new_random_category, category) if random else self.assertTrue(category)
+        self.info('Assert category : {}'.format(category))
+        if random == 'True':
+            self.assertEqual(new_random_category, category)
+        else:
+            self.assertTrue(category)
 
     @parameterized.expand([('upper', 'spec'),
                            ('upper', 'quan'),
