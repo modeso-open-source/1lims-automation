@@ -12,6 +12,7 @@ from unittest import skip
 from parameterized import parameterized
 import random
 
+
 class TestPlansTestCases(BaseTest):
 
     def setUp(self):
@@ -536,7 +537,7 @@ class TestPlansTestCases(BaseTest):
 
         # get testplan data from an api call
         testplan_data = \
-        (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=testplan_number))[0]
+            (self.test_plan_api.get_testplan_with_filter(filter_option='number', filter_text=testplan_number))[0]
 
         # get information, material type and article
         testplan_name = testplan_data['testPlanName']
@@ -690,8 +691,7 @@ class TestPlansTestCases(BaseTest):
         random_user_name = self.generate_random_string()
         random_user_email = self.header_page.generate_random_email()
         random_user_password = self.generate_random_string()
-        self.base_selenium.LOGGER.info(
-            'Calling the users api to create a new user with username: {}'.format(random_user_name))
+        self.info('Calling the users api to create a new user with username: {}'.format(random_user_name))
         self.users_api.create_new_user(random_user_name, random_user_email, random_user_password)
 
         self.header_page.click_on_header_button()
@@ -700,20 +700,14 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_plan.get_test_plans_page()
 
-        testplans = self.test_plan_api.get_all_test_plans_json()
-        testplan = random.choice(testplans)
+        testplan_name = self.test_plan.create_new_test_plan()
 
-        testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
-                                                            article=(testplan['article'])[0])
-        self.base_selenium.LOGGER.info(
-            'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-                testplan_name, (testplan['article'])[0], testplan['materialType']))
+        self.info('New testplan is created successfully with name: {}'.format(testplan_name))
 
         self.base_page.set_all_configure_table_columns_to_specific_value(value=True)
 
-        testplan_found = self.test_plan.filter_by_element_and_get_results('Changed By',
-                                                                          'test_plans:testplan_changed_by_filter',
-                                                                          random_user_name, 'drop_down')
+        testplan_found = self.test_plan.filter_by_element_and_get_results(
+            'Changed By', 'test_plans:testplan_changed_by_filter', random_user_name, 'drop_down')
         self.assertEqual(len(testplan_found), 2)
         self.assertIn(random_user_name, testplan_found[0].text)
         self.assertIn(testplan_name, testplan_found[0].text)
@@ -785,4 +779,3 @@ class TestPlansTestCases(BaseTest):
         LIMS-6288
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
-
