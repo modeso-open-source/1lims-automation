@@ -3,7 +3,9 @@ from unittest import skip
 from parameterized import parameterized
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.order_page import Order
+from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.contacts_page import Contacts
+from api_testing.apis.orders_api import OrdersAPI
 from random import randint
 import time
 
@@ -13,6 +15,8 @@ class OrdersTestCases(BaseTest):
         super().setUp()
         self.order_page = Order()
         self.contacts_page = Contacts()
+        self.orders_api = OrdersAPI()
+        self.orders_page = Orders()
         self.login_page.login(
             username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
@@ -203,26 +207,27 @@ class OrdersTestCases(BaseTest):
         LIMS-3257
         """
         self.order_page.get_archived_items()
-        order_row = self.order_page.get_random_order_row()
+        archived_items = self.orders_api.get_all_orders(limit=20,deleted=1).json()['orders']
+        row_id = randint(0, len(archived_items))
+        order_number = archived_items[row_id]['orderNo']
+
+        rows = self.base_selenium.get_table_rows(element='general:table')
+        order_row = rows[row_id]
         self.order_page.click_check_box(source=order_row)
 
-        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=order_row)
-        analysis_numbers_list = order_data['Analysis No.'].split(',')
+        sub_orders = self.orders_page.get_child_table_data(row_id)
+        analysis_number = sub_orders[0]['Analysis No.']
 
         self.base_selenium.LOGGER.info(
-            ' + Delete order has number = {}'.format(order_data['Order No.']))
+            ' + Delete order has number = {}'.format(order_number))
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
-
-        self.analyses_page.get_analyses_page()
-        self.analyses_page.get_archived_items()
+        
         self.base_selenium.LOGGER.info(
-            ' + Is analysis number {} deleted successfully?'.format(analysis_numbers_list))
-        has_active_analysis = self.analyses_page.search_if_analysis_exist(
-            analysis_numbers_list)
-        self.base_selenium.LOGGER.info(' + {} '.format(has_active_analysis))
-        self.assertFalse(has_active_analysis)
+            ' + Search by analysis number = {}'.format(analysis_number))
+        self.orders_page.search_by_analysis_number(analysis_number)
+        self.assertFalse(
+                self.orders_page.is_order_in_table(value=analysis_number))
 
     # will continue with us    
     @parameterized.expand(['True', 'False'])
