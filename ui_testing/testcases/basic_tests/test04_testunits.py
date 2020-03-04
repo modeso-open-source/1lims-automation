@@ -84,62 +84,55 @@ class TestUnitsTestCases(BaseTest):
     def test004_check_version_after_update(self):
         """
         After I update any field then press on save , new version created in the active table.
+
         LIMS-3676
-        After the user edit any of the followings fields
-        test unit name
-        test unit number
-        category
-        method
-        iteration
-        materiel type
-        specification
-        the should updated successfully when I enter one more time
+
+        New: Test units: Edit Approach: User can edit in (test unit name & test unit number
+        & category & method & iteration & materiel type and the specification )
+
         LIMS-5288
         """
-
-        self.base_selenium.LOGGER.info('Generate random data for update')
+        self.info('Generate random data for update')
         new_random_number = self.generate_random_number(upper=100000)
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
         new_random_category = self.generate_random_string()
         new_random_iteration = self.generate_random_number(upper=4)
 
-        self.base_selenium.LOGGER.info('Getting data of the first testunit')
+        self.info('Getting data of the first testunit')
         testunits_records = self.test_unit_page.result_table()
         first_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunits_records[0])
-
         old_version = first_testunit_data['Version']
-        self.base_selenium.LOGGER.info('old version: {}'.format(old_version))
-        self.base_selenium.LOGGER.info('Open the first record to update it')
+        self.info('old version: {}'.format(old_version))
+
+        self.info('Open the first record to update it')
         self.test_unit_page.open_edit_page(row=testunits_records[0])
 
-        self.base_selenium.LOGGER.info('Set the new testunit number to be: {}'.format(new_random_number))
+        self.info('Set the new testunit number to be: {}'.format(new_random_number))
         self.test_unit_page.set_testunit_number(number=new_random_number)
 
-        self.base_selenium.LOGGER.info('Set the new testunit name to be: {}'.format(new_random_name))
+        self.info('Set the new testunit name to be: {}'.format(new_random_name))
         self.test_unit_page.set_testunit_name(name=new_random_name)
 
-        self.base_selenium.LOGGER.info('Set new material type')
+        self.info('Set new material type')
         self.test_unit_page.set_material_type()
         new_materialtypes = self.test_unit_page.get_material_type()
 
-        self.base_selenium.LOGGER.info('Set the new category to be: {}'.format(new_random_category))
+        self.info('Set the new category to be: {}'.format(new_random_category))
         self.test_unit_page.set_category(category=new_random_category)
 
-        self.base_selenium.LOGGER.info('Set the new testunit iteartions to be: {}'.format(new_random_iteration))
+        self.info('Set the new testunit iteartions to be: {}'.format(new_random_iteration))
         self.test_unit_page.set_testunit_iteration(iteration=new_random_iteration)
 
-        self.base_selenium.LOGGER.info('Set the method to be: {}'.format(new_random_method))
+        self.info('Set the method to be: {}'.format(new_random_method))
         self.test_unit_page.set_method(method=new_random_method)
 
-        self.base_selenium.LOGGER.info('pressing save and create new version')
+        self.info('pressing save and create new version')
         self.test_unit_page.save_and_create_new_version(confirm=True)
 
-        self.base_selenium.LOGGER.info('Refresh to make sure that the new data are saved')
+        self.info('Refresh to make sure that the new data are saved')
         self.base_selenium.refresh()
-        self.test_unit_page.sleep_small()
-
-        self.base_selenium.LOGGER.info('Getting testunit data after refresh')
+        self.info('Getting testunit data after refresh')
         updated_testunit_name = self.test_unit_page.get_testunit_name()
         update_testunit_number = self.test_unit_page.get_testunit_number()
         updated_material_types = self.test_unit_page.get_material_type()
@@ -147,38 +140,35 @@ class TestUnitsTestCases(BaseTest):
         updated_iterations = self.test_unit_page.get_testunit_iteration()
         updated_method = self.test_unit_page.get_method()
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit name is: {}, and should be {}'.format(new_random_name, updated_testunit_name))
+        self.info('+ Assert testunit name is: {}, and should be {}'.format(
+            new_random_name, updated_testunit_name))
         self.assertEqual(new_random_name, updated_testunit_name)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit number is: {}, and should be {}'.format(str(new_random_number), update_testunit_number))
+        self.info('+ Assert testunit number is: {}, and should be {}'.format(
+            str(new_random_number), update_testunit_number))
         self.assertEqual(str(new_random_number), update_testunit_number)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit materialTypes are: {}, and should be {}'.format(new_materialtypes,
-                                                                               updated_material_types))
+        self.info('+ Assert testunit materialTypes are: {}, and should be {}'.format(
+            new_materialtypes, updated_material_types))
         self.assertEqual(new_materialtypes, updated_material_types)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit category is: {}, and should be {}'.format(new_random_category, updated_category))
+        self.info('+ Assert testunit category is: {}, and should be {}'.format(
+            new_random_category, updated_category))
         self.assertEqual(new_random_category, updated_category)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit iterations is: {}, and should be {}'.format(str(new_random_iteration),
-                                                                           updated_iterations))
+        self.info('+ Assert testunit iterations is: {}, and should be {}'.format(
+            str(new_random_iteration), updated_iterations))
         self.assertEqual(str(new_random_iteration), updated_iterations)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit Method is: {}, and should be {}'.format(new_random_method, updated_method))
+        self.info('+ Assert testunit Method is: {}, and should be {}'.format(
+            new_random_method, updated_method))
         self.assertEqual(new_random_method, updated_method)
 
         self.test_unit_page.get_test_units_page()
         testunit_records = self.test_unit_page.result_table()
         first_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_records[0])
         new_version = first_testunit_data['Version']
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit version is: {}, new version: {}'.format(old_version, new_version))
+        self.info('+ Assert testunit version is: {}, new version: {}'.format(old_version, new_version))
         self.assertNotEqual(old_version, new_version)
 
     def test005_quantative_mibi_not_entering_dash_in_upper_limit(self):
