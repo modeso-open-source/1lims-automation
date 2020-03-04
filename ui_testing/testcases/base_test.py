@@ -3,29 +3,9 @@ from ui_testing.pages.base_selenium import BaseSelenium
 from uuid import uuid4
 from random import randint
 from ui_testing.pages.article_page import Article
-from ui_testing.pages.articles_page import Articles
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
-from ui_testing.pages.base_pages import BasePages
-from ui_testing.pages.order_page import Order
-from ui_testing.pages.orders_page import Orders
-from ui_testing.pages.audit_trail_page import AuditTrail
-from ui_testing.pages.contacts_page import Contacts
-from ui_testing.pages.contact_page import Contact
-from ui_testing.pages.my_profile_page import MyProfile
-from ui_testing.pages.company_profile_page import CompanyProfile
-from api_testing.apis.test_unit_api import TestUnitAPI
-from api_testing.apis.article_api import ArticleAPI
-from api_testing.apis.test_plan_api import TestPlanAPI
-from ui_testing.pages.header_page import Header
-from api_testing.apis.orders_api import OrdersAPI
-from ui_testing.pages.analysis_page import SingleAnalysisPage
-from api_testing.apis.contacts_api import ContactsAPI
-from api_testing.apis.users_api import UsersAPI
-from api_testing.apis.roles_api import RolesAPI
-from api_testing.apis.analysis_api import AnalysisAPI
-from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 import datetime, re
 
 
@@ -39,30 +19,6 @@ class BaseTest(TestCase):
         self.info('Test case : {}'.format(self._testMethodName))
         self.base_selenium.get_driver()
         self.login_page = Login()
-        self.test_plan = TstPlan()
-        self.article_page = Article()
-        self.contact_page = Contact()
-        self.articles_page = Articles()
-        self.test_unit_page = TstUnit()
-        self.order_page = Order()
-        self.orders_page = Orders()
-        self.audit_trail_page = AuditTrail()
-        self.header_page = Header()
-        self.my_profile_page = MyProfile()
-        self.base_page = BasePages()
-        self.contacts_page = Contacts()
-        self.company_profile_page = CompanyProfile()
-        self.article_api = ArticleAPI()
-        self.test_plan_api = TestPlanAPI()
-        self.test_unit_api = TestUnitAPI()
-        self.test_plan_api = TestPlanAPI()
-        self.orders_api = OrdersAPI()
-        self.analysis_api = AnalysisAPI()
-        self.single_analysis_page = SingleAnalysisPage()
-        self.contacts_api = ContactsAPI()
-        self.users_api = UsersAPI()
-        self.roles_api = RolesAPI()
-        self.general_utilities_api = GeneralUtilitiesAPI()
 
     def tearDown(self):
         self.base_selenium.quit_driver()
