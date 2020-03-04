@@ -3,9 +3,7 @@ from unittest import skip
 from parameterized import parameterized
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.order_page import Order
-from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.contacts_page import Contacts
-from api_testing.apis.orders_api import OrdersAPI
 from random import randint
 import time
 
@@ -15,8 +13,6 @@ class OrdersTestCases(BaseTest):
         super().setUp()
         self.order_page = Order()
         self.contacts_page = Contacts()
-        self.orders_api = OrdersAPI()
-        self.orders_page = Orders()
         self.login_page.login(
             username=self.base_selenium.username, password=self.base_selenium.password)
         self.base_selenium.wait_until_page_url_has(text='dashboard')
@@ -1894,35 +1890,3 @@ class OrdersTestCases(BaseTest):
         testunit_name = row_with_headers['Test Unit']
         self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
         self.assertIn(testunit_name, testunit_name)
-
-    def test029_archive_new_order_and_analysis(self):
-        """
-        New: Orders: Form: Archive main order: Make sure when the user archive main order, the analysis corresponding to it will be archived also 
-        LIMS-6873
-        LIMS-6873
-         :return:
-         """
-        all_orders = self.orders_api.get_all_orders(limit=20).json()['orders']
-        row_id = randint(0, len(all_orders) - 2)
-        sub_orders = self.orders_page.get_child_table_data(row_id)
-
-        # # Get order number
-        order_number = all_orders[row_id]['orderNo']
-        self.base_selenium.LOGGER.info(" + Archive order with number : {}".format(order_number))
-    
-        # Get analysis number
-        analysis_number = sub_orders[0]['Analysis No.']
-
-        # Select and archive order
-        rows = self.base_selenium.get_table_rows(element='general:table')
-        order_row = rows[row_id]
-
-        self.order_page.click_check_box(source=order_row)
-        order_deleted = self.order_page.archive_selected_orders(
-            check_pop_up=True)
-            
-        # Search for the order by analysis number
-        self.order_page.sleep_tiny()
-        self.orders_page.search_by_analysis_number(analysis_number)
-        self.assertFalse(
-                self.orders_page.is_order_in_table(value=analysis_number))

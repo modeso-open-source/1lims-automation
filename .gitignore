@@ -1,6 +1,5 @@
 .idea
 .log
-.vscode/
 .idea/*
 __pycache__/
 *.py[cod]
