@@ -32,7 +32,6 @@ elements = {
         'confirmation_pop_up': {
             'method': 'id',
             'value': 'swal2-title'},
-
         'confirm_pop': {'method': 'class_name',
                         'value': 'btn-success',
                         'order': 0},
@@ -340,7 +339,6 @@ elements = {
                        'value': 'selectedTestUnitsfield'},
         'add': {'method': 'id',
                 'value': 'new_testunit_add_button'},
-
         'save_btn': {'method': 'id',
                      'value': 'save_btn'},
         'save_and_complete': {'method': 'id',

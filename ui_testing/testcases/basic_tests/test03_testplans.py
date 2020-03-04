@@ -14,7 +14,6 @@ import random
 
 
 class TestPlansTestCases(BaseTest):
-
     def setUp(self):
         super().setUp()
         self.test_plan = TstPlan()
@@ -38,7 +37,6 @@ class TestPlansTestCases(BaseTest):
         It deletes the first test unit in the chosen test plan and saves this,
         then refreshes the page and checks if the deletion was done correctly.
         '''
-
         completed_test_plans = self.test_plan_api.get_completed_testplans(limit=500)
         testplan_name = random.choice(completed_test_plans)['testPlanName']
 
@@ -60,7 +58,7 @@ class TestPlansTestCases(BaseTest):
         self.test_plan.save_and_confirm_popup()
 
         # refresh the page to make sure the changes were saved correctly
-        self.base_selenium.LOGGER.info('Refreshing the page')
+        self.info('Refreshing the page')
         self.base_selenium.refresh()
         self.test_plan.sleep_small()
 
@@ -68,10 +66,9 @@ class TestPlansTestCases(BaseTest):
         all_testunits = self.test_plan.get_all_testunits_in_testplan()
 
         # checking if the data was saved correctly
-        self.base_selenium.LOGGER.info('Checking if the changes were saved successfully')
-        deleted_test_unit_found = self.test_plan.check_if_deleted_testunit_is_available(all_testunits=all_testunits,
-                                                                                        deleted_test_unit=deleted_test_unit)
-
+        self.info('Checking if the changes were saved successfully')
+        deleted_test_unit_found = self.test_plan.check_if_deleted_testunit_is_available(
+            all_testunits=all_testunits, deleted_test_unit=deleted_test_unit)
         self.assertFalse(deleted_test_unit_found)
 
     def test002_test_plan_inprogress_to_completed(self):
@@ -80,101 +77,78 @@ class TestPlansTestCases(BaseTest):
         When the testplan status is converted from 'In-Progress' to 'Completed', no new version created
         '''
 
-        self.base_selenium.LOGGER.info('Searching for test plans with In Progress status')
-        in_progress_testplans = self.test_plan_api.get_inprogress_testplans()
+        self.info('Searching for test plan with In Progress status')
+        in_progress_testplan = random.choice(self.test_plan_api.get_inprogress_testplans())
+        in_progress_testplan_name = in_progress_testplan['testPlanName']
+        in_progress_testplan_version = in_progress_testplan['version']
+        self.info('Navigating to edit page of testplan: {} with version: {}'.format(
+            in_progress_testplan_name, in_progress_testplan_version))
+        self.test_plan.get_test_plan_edit_page(name=in_progress_testplan_name)
 
-        if in_progress_testplans is not None:
-            self.base_selenium.LOGGER.info('Getting the first testplan')
-            in_progress_testplan = in_progress_testplans[0]
-            in_progress_testplan_name = in_progress_testplan['testPlanName']
-            in_progress_testplan_version = in_progress_testplan['version']
-            self.base_selenium.LOGGER.info(
-                'Navigating to edit page of testplan: {} with version: {}'.format(in_progress_testplan_name,
-                                                                                  in_progress_testplan_version))
-            self.test_plan.get_test_plan_edit_page(name=in_progress_testplan_name)
+        # go to step 2 and add testunit
+        self.info('Going to step 2 to add testunit to this test plan')
+        self.test_plan.set_test_unit()
+        self.info('Saving and completing the testplan')
+        self.test_plan.save(save_btn='test_plan:save_and_complete')
 
-            # go to step 2 and add testunit
-            self.base_selenium.LOGGER.info('Going to step 2 to add testunit to this test plan')
-            self.test_plan.set_test_unit()
-            self.base_selenium.LOGGER.info('Saving and completing the testplan')
-            self.test_plan.save(save_btn='test_plan:save_and_complete')
+        # go back to the active table
+        self.test_plan.get_test_plans_page()
 
-            # go back to the active table
-            self.test_plan.get_test_plans_page()
+        # get the testplan to check its version
+        self.info('Getting the currently changed testplan to check its status and version')
+        completed_testplan_version, testplan_row_data_status = \
+            self.test_plan.get_testplan_version_and_status(search_text=in_progress_testplan_name)
 
-            # get the testplan to check its version
-            self.base_selenium.LOGGER.info('Getting the currently changed testplan to check its status and version')
-            completed_testplan_version, testplan_row_data_status = self.test_plan.get_testplan_version_and_status(
-                search_text=in_progress_testplan_name)
-
-            self.assertEqual(in_progress_testplan_version, int(completed_testplan_version))
-            self.assertEqual(testplan_row_data_status, 'Completed')
+        self.assertEqual(in_progress_testplan_version, int(completed_testplan_version))
+        self.assertEqual(testplan_row_data_status, 'Completed')
 
     def test003_test_plan_completed_to_completed(self):
         '''
         LIMS-3501
         When the testplan status doesn't change and a new version is created
         '''
+        self.info('Searching for test plans with Completed status')
+        completed_testplan = random.choice(self.test_plan_api.get_completed_testplans(limit=500))
+        old_completed_testplan_name = completed_testplan['testPlanName']
+        old_completed_testplan_version = completed_testplan['version']
+        self.info('Navigating to edit page of testplan: {} with version: {}'.format(
+            old_completed_testplan_name, old_completed_testplan_version))
+        self.test_plan.get_test_plan_edit_page(name=old_completed_testplan_name)
 
-        self.base_selenium.LOGGER.info('Searching for test plans with Completed status')
-        completed_testplans = self.test_plan_api.get_completed_testplans(limit=500)
+        # go to step 2 and add testunit
+        self.info('Going to step 2 to add testunit to this test plan')
+        self.test_plan.set_test_unit()
+        self.test_plan.save_and_confirm_popup()
 
-        if completed_testplans is not None:
-            self.base_selenium.LOGGER.info('Getting the first testplan')
-            completed_testplan = completed_testplans[0]
-            old_completed_testplan_name = completed_testplan['testPlanName']
-            old_completed_testplan_version = completed_testplan['version']
-            self.base_selenium.LOGGER.info(
-                'Navigating to edit page of testplan: {} with version: {}'.format(old_completed_testplan_name,
-                                                                                  old_completed_testplan_version))
-            self.test_plan.get_test_plan_edit_page(name=old_completed_testplan_name)
+        # go back to the active table
+        self.test_plan.get_test_plans_page()
 
-            # go to step 2 and add testunit
-            self.base_selenium.LOGGER.info('Going to step 2 to add testunit to this test plan')
-            self.test_plan.set_test_unit(test_unit='a')
-            self.test_plan.save_and_confirm_popup()
+        # get the testplan to check its version
+        self.info('Getting the currently changed testplan to check its status and version')
+        inprogress_testplan_version, testplan_row_data_status = \
+            self.test_plan.get_testplan_version_and_status(search_text=old_completed_testplan_name)
 
-            # go back to the active table
-            self.test_plan.get_test_plans_page()
-
-            # get the testplan to check its version
-            self.base_selenium.LOGGER.info('Getting the currently changed testplan to check its status and version')
-            inprogress_testplan_version, testplan_row_data_status = self.test_plan.get_testplan_version_and_status(
-                search_text=old_completed_testplan_name)
-
-            self.assertGreater(int(inprogress_testplan_version), old_completed_testplan_version)
-            self.assertEqual(testplan_row_data_status, 'Completed')
+        self.assertGreater(int(inprogress_testplan_version), old_completed_testplan_version)
+        self.assertEqual(testplan_row_data_status, 'Completed')
 
     def test004_archive_test_plan_one_record(self):
         '''
         LIMS-3506 Case 1
         Archive one record
         '''
-
-        self.base_selenium.LOGGER.info('Choosing a random testplan table row')
-        row = self.test_plan.get_random_table_row('test_plans:test_plans_table')
-        row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
-        testplan_number = row_data['Test Plan No.']
-        self.test_plan.sleep_small()
+        self.info('Choosing a random testplan table row')
+        selected_test_plan = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
+        testplan_number = selected_test_plan['Test Plan No.']
 
         # archive and navigate to archived table
-        self.base_selenium.LOGGER.info('Testplan number: {} will be archived'.format(testplan_number))
-
-        self.base_selenium.LOGGER.info('Selecting the row')
-        self.test_plan.click_check_box(source=row)
-        self.test_plan.sleep_small()
-
-        self.base_selenium.LOGGER.info('Archiving the selected item and navigating to the archived items table')
+        self.info('Archiving the selected item and navigating to the archived items table')
         self.test_plan.archive_selected_items()
         self.test_plan.get_archived_items()
+        archived_row = self.test_plan.search(testplan_number)
 
-        self.test_plan.open_filter_menu()
-        self.test_plan.filter_by_testplan_number(testplan_number)
-        archived_row = self.test_plan.result_table()
-        self.test_plan.sleep_small()
-        self.base_selenium.LOGGER.info('Checking if testplan number: {} is archived correctly'.format(testplan_number))
-        self.assertIn(row_data['Test Plan Name'], archived_row[0].text)
-        self.base_selenium.LOGGER.info('Testplan number: {} is archived correctly'.format(testplan_number))
+        self.info('Checking if testplan number: {} is archived correctly'.format(testplan_number))
+        self.assertIn(selected_test_plan['Test Plan Name'], archived_row[0].text)
+        self.info('Testplan number: {} is archived correctly'.format(testplan_number))
 
     def test005_restore_test_plan_one_record(self):
         '''
@@ -336,36 +310,42 @@ class TestPlansTestCases(BaseTest):
         '''
         # get the maximum number given to the latest testplan
         latest_testplan_row_data = self.test_plan.get_the_latest_row_data()
-        largest_number = latest_testplan_row_data['Test Plan No.']
+        largest_number = latest_testplan_row_data['Test Plan No.'].replace("'", "")
         duplicated_test_plan_number = int(largest_number) + 1
-        self.base_selenium.LOGGER.info(
-            'The duplicated testplan should have the number: {}'.format(duplicated_test_plan_number))
+        self.info('The duplicated testplan should have the number: {}'.format(duplicated_test_plan_number))
 
-        self.base_selenium.LOGGER.info('Choosing a random testplan table row')
+        self.info('Choosing a random testplan table row')
         main_testplan_data = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
         testplan_number = main_testplan_data['Test Plan No.']
-        self.base_selenium.LOGGER.info('Testplan number: {} will be duplicated'.format(testplan_number))
-
-        self.test_plan.open_filter_menu()
-        self.test_plan.filter_by_testplan_number(testplan_number)
-
-        self.base_selenium.LOGGER.info('Saving the child data of the main testplan')
+        self.info('Testplan number: {} will be duplicated'.format(testplan_number))
+        #self.test_plan.open_filter_menu()
+        #self.test_plan.filter_by_testplan_number(testplan_number)
+        # if test plan in end of table of test plan, then I open filter when
+        # I get child table it reads other table realted to other test plan
+        # I need to adjust page so we don't need to scroll it first
+        # search function don't affect page height like filter
+        self.base_selenium.scroll()
+        self.test_plan.search(testplan_number)
+        self.info('Saving the child data of the main testplan')
         main_testplan_childtable_data = self.test_plan.get_child_table_data()
 
-        self.base_selenium.LOGGER.info('Duplicating testplan number: {}'.format(testplan_number))
+        self.info('Duplicating testplan number: {}'.format(testplan_number))
         self.test_plan.duplicate_selected_item()
 
         self.test_plan.duplicate_testplan(change=['name'])
-        self.test_plan.sleep_small()
+        self.test_plan.sleep_tiny()
 
-        duplicated_testplan_data, duplicated_testplan_childtable_data = self.test_plan.get_specific_testplan_data_and_childtable_data(
-            filter_by='number', filter_text=duplicated_test_plan_number)
+        duplicated_testplan_data, duplicated_testplan_childtable_data = \
+            self.test_plan.get_specific_testplan_data_and_childtable_data(
+                filter_by='number', filter_text=duplicated_test_plan_number)
+
         data_changed = ['Test Plan No.', 'Test Plan Name', 'Version', 'Changed On', 'Changed By', 'Created On']
-        main_testplan_data, duplicated_testplan_data = self.remove_unduplicated_data(data_changed=data_changed,
-                                                                                     first_element=main_testplan_data,
-                                                                                     second_element=duplicated_testplan_data)
+        main_testplan_data, duplicated_testplan_data = \
+            self.remove_unduplicated_data(data_changed=data_changed,
+                                          first_element=main_testplan_data,
+                                          second_element=duplicated_testplan_data)
 
-        self.base_selenium.LOGGER.info('Asserting that the data is duplicated correctly')
+        self.info('Asserting that the data is duplicated correctly')
         self.assertEqual(main_testplan_childtable_data, duplicated_testplan_childtable_data)
         self.assertEqual(main_testplan_data, duplicated_testplan_data)
 
@@ -636,52 +616,39 @@ class TestPlansTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Filtering by name was done successfully')
 
-    def test020_filter_by_testplan_status(self):
+    @parameterized.expand(['Completed', 'In Progress'])
+    def test020_filter_by_testplan_status(self,status):
         '''
         LIMS-6474
         User can filter with status
         '''
+        testplans_found = \
+            self.test_plan.filter_by_element_and_get_results('Status', 'test_plans:testplan_status_filter',
+                                                             status, 'drop_down')
 
-        testplans_found = self.test_plan.filter_by_element_and_get_results('Status',
-                                                                           'test_plans:testplan_status_filter',
-                                                                           'Completed', 'drop_down')
-        self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
-        results_found = True
+        if len(testplans_found):
+            results_found = True
+        else:
+            self.info("filter failed or no elements with this status!")
+
         while results_found:
             for tp in testplans_found:
                 if len(tp.text) > 0:
-                    self.assertIn('Completed', tp.text)
-                    self.assertNotIn('In Progress', tp.text)
+                    self.assertIn(status, tp.text)
+                    if status == "In Progress":
+                        self.assertNotIn('Completed', tp.text)
+                    else:
+                        self.assertNotIn('In Progress', tp.text)
+
             if self.base_page.is_next_page_button_enabled():
-                self.base_selenium.LOGGER.info('Navigating to the next page')
+                self.info('Navigating to the next page')
                 self.base_selenium.click('general:next_page')
-                self.test_plan.sleep_small()
+                self.test_plan.sleep_tiny()
                 testplans_found = self.test_plan.result_table()
             else:
                 results_found = False
 
-        self.base_selenium.LOGGER.info('Filtering by status completed was done successfully')
-
-        self.test_plan.sleep_small()
-
-        testplans_found = self.test_plan.filter_by_element_and_get_results('Status',
-                                                                           'test_plans:testplan_status_filter',
-                                                                           'In Progress', 'drop_down')
-        self.base_selenium.LOGGER.info('Checking if the results were filtered successfully')
-        results_found = True
-        while results_found:
-            for tp in testplans_found:
-                if len(tp.text) > 0:
-                    self.assertIn('In Progress', tp.text)
-                    self.assertNotIn('Completed', tp.text)
-            if self.base_page.is_next_page_button_enabled():
-                self.base_selenium.LOGGER.info('Navigating to the next page')
-                self.base_selenium.click('general:next_page')
-                self.test_plan.sleep_small()
-                testplans_found = self.test_plan.result_table()
-            else:
-                results_found = False
-        self.base_selenium.LOGGER.info('Filtering by status in progress was done successfully')
+        self.info('Filtering by status was done successfully')
 
     def test021_filter_by_testplan_changed_by(self):
         '''
