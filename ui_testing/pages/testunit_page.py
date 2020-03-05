@@ -2,7 +2,7 @@ from ui_testing.pages.testunits_page import TstUnits
 
 
 class TstUnit(TstUnits):
-
+    
     def set_method(self, method=''):
         self.base_selenium.LOGGER.info('Set testunit method to be: {}'.format(method))
         self.base_selenium.set_text(element='test_unit:method', value=method)
@@ -150,9 +150,9 @@ class TstUnit(TstUnits):
 
     def save_and_create_new_version(self, confirm=True):
         self.save(save_btn='general:save_and_complete', logger_msg='Save And Create New Version')
-        self.sleep_small()
+        self.sleep_tiny()
         self.confirm_popup(force=confirm)
-        self.sleep_small()
+        self.sleep_tiny()
 
     def save_and_return_overview(self):
         self.save(save_btn='general:save_form', logger_msg='Save And update the current version')
@@ -577,9 +577,3 @@ class TstUnit(TstUnits):
             testunit_formated['concentrations'] = testunit['concentrations']
             testunit_formated['textValue'] = ''
             return testunit_formated
-
-    
-
-
-
-
