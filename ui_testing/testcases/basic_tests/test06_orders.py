@@ -807,7 +807,7 @@ class OrdersTestCases(BaseTest):
         created_order = self.orders_api.create_new_order()
         self.order_page.click_create_order_button()
         self.order_page.set_new_order()
-        self.base_page.sleep_small()
+        self.order_page.sleep_small()
         self.order_page.set_order_number(no = created_order['orderNoWithYear'])
         self.base_selenium.LOGGER.info(
             'waiting fo validation message appear when I enter number already exists')
