@@ -784,15 +784,11 @@ class OrdersTestCases(BaseTest):
 
         LIMS-3406
         """
-        self.order_page.get_orders_page()
-        created_order = self.order_page.create_order_with_test_unit(material_type='r', article='a', contact='a',
-                                                                      test_units='')
-
-        self.order_page.get_orders_page()
+        created_order = self.orders_api.create_new_order()
         self.order_page.click_create_order_button()
         self.order_page.set_new_order()
         self.base_page.sleep_small()
-        self.order_page.set_order_number(no = created_order['orderNo'].replace("'", ""))
+        self.order_page.set_order_number(no = created_order['orderNoWithYear'])
         self.base_selenium.LOGGER.info(
             'waiting fo validation message appear when I enter number already exists')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
