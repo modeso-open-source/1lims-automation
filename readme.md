@@ -1,4 +1,4 @@
-### 1lims-autoamtion test suite: 
+# 1lims-autoamtion test suite: 
 
 A fully end-to-end test suite based on selenium and integreted with Travis as a CI/CD tool. The docs below will be focused on developing and contributing to this repo.
 
