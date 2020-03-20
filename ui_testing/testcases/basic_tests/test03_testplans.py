@@ -384,36 +384,37 @@ class TestPlansTestCases(BaseTest):
             self.assertEqual(old_completed_testplan_version + 1, int(inprogress_testplan_version))
             self.assertEqual(testplan_row_data_status, 'In Progress')
 
-    def test012_create_testplans_same_name_article_materialtype(self):
-        '''
+    @parameterized.expand(['same', 'all'])
+    def test012_create_testplans_same_name_article_materialtype(self, same):
+        """
         LIMS-3499
         Testing the creation of two testplans with the same name, material type
         and article, this shouldn't happen
-        '''
 
+        LIMS-3500
+        New: Test plan: Creation Approach: I can't create two test plans
+        with the same name & same materiel type & one with any article
+        and the other one all
+        """
         testplans = self.test_plan_api.get_all_test_plans_json()
         testplan = random.choice(testplans)
 
-        testplan_name = self.test_plan.create_new_test_plan(material_type=testplan['materialType'],
-                                                            article=(testplan['article'])[0])
-        self.base_selenium.LOGGER.info(
-            'New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-                testplan_name, (testplan['article'])[0], testplan['materialType']))
-
-        self.base_selenium.LOGGER.info(
-            'Attempting to create another testplan with the same data as the previously created one')
+        testplan_name = self.test_plan.create_new_test_plan(
+            material_type=testplan['materialType'], article=(testplan['article'])[0])
+        self.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
+            testplan_name, (testplan['article'])[0], testplan['materialType']))
 
         # create another testplan with the same data
-        self.test_plan.create_new_test_plan(name=testplan_name, material_type=testplan['materialType'],
-                                            article=(testplan['article'])[0])
+        if "same" == same:
+            article_name = (testplan['article'])[0]
+        else:
+            article_name = "All"
 
-        self.base_selenium.LOGGER.info(
-            'Waiting for the error message to make sure that validation forbids the creation of two testplans having the same name, material type and article')
+        self.test_plan.create_new_test_plan(
+            name=testplan_name, material_type=testplan['materialType'], article=article_name)
+        self.info('Waiting for the error message')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
-
-        self.base_selenium.LOGGER.info(
-            'Assert the error message to make sure that validation forbids the creation of two testplans having the same name, material type and article? {}'.format(
-                validation_result))
+        self.info('Assert the error message')
         self.assertTrue(validation_result)
 
     def test013_create_testplans_same_name_different_materialtype(self):

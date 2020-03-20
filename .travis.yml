@@ -25,7 +25,5 @@ script:
   - export TESTS='test09_my_profile.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
-  # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test017_create_quantative_with_limits_of_quantative_only_and_specification_only_0_quan --tc-file=config.ini
-  # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test04_testunits.py:TestUnitsTestCases.test017_create_quantative_with_limits_of_quantative_only_and_specification_only_1_spec --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test006_deleted_archived_order --tc-file=config.ini
-
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test03_testplans.py:TestPlansTestCases.test012_create_testplans_same_name_article_materialtype_0_same --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test03_testplans.py:TestPlansTestCases.test012_create_testplans_same_name_article_materialtype_1_all --tc-file=config.ini
