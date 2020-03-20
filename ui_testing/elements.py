@@ -313,7 +313,9 @@ elements = {
         'new_testunit': {'method': 'link_text',
                          'value': 'New Test Unit'},
         'qualitative_value': {'method': 'id',
-                              'value': 'textValueArrayfield'}
+                              'value': 'textValueArrayfield'},
+        'testunit_name_filter': {'method': 'id',
+                        'value': 'namefield'}
     },
 
     'test_plan': {

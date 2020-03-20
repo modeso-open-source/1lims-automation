@@ -924,20 +924,21 @@ class TestUnitsTestCases(BaseTest):
     @parameterized.expand(['Quantitative', 'Qualitative', 'MiBi'])
     def test_027_changing_testunit_type_update_fields_accordingly(self, testunit_type):
         """
-        New: Test unit: Type Approach: When I change type from edit mode, the values should changed according to this type that selected 
-        When I change type from edit mode, the values should changed according to this type that selected 
-        LIMS-3680
+        New: Test unit: Type Approach: When I change type from edit mode, the values should
+        changed according to this type that selected
 
         comment: this case will be handled in create
+
+        LIMS-3680
         """
 
         if testunit_type == 'MiBi':
             testunit_type = 'Quantitative MiBi'
 
-        self.base_selenium.LOGGER.info('open testunits in create')
+        self.info('open testunits in create')
         self.test_unit_page.click_create_new_testunit()
 
-        self.base_selenium.LOGGER.info('set the type to {}'.format(testunit_type))
+        self.info('set the type to {}'.format(testunit_type))
         self.test_unit_page.set_testunit_type(testunit_type=testunit_type)
         self.test_unit_page.sleep_tiny()
         self.base_selenium.LOGGER.info(
@@ -950,82 +951,33 @@ class TestUnitsTestCases(BaseTest):
         elif testunit_type == 'Quantitative MiBi':
             self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
-    def test_028_allow_user_to_change_between_specification_and_quantification(self):
+    @parameterized.expand(['quan', 'spec'])
+    def test_028_allow_user_to_change_between_specification_and_quantification(self, spec_or_quan):
         """
-        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
-        Allow user to change between the two options specification and limit of quantification from edit mode.
-        specification to quantifications
+        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between
+        the two options specification and limit of quantification from edit mode.
+
+        LIMS-4160
         """
-
-        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
-        self.assertEqual(testunits_request['status'], 1)
-        testunits = testunits_request['testUnits']
-        self.assertNotEqual(len(testunits), 0)
-        testunit_name = ''
-        for testunit in testunits:
-            if testunit['specifications'] != '' and testunit['quantification'] == '':
-                testunit_name = testunit['number']
-                break
-
-        if testunit_name == '':
-            self.base_selenium.LOGGER.info('there is no testunit with specification only value')
-            self.assertTrue(False)
-
-        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
-
-        self.test_unit_page.open_edit_page(row=testunit_record)
-
-        self.base_selenium.LOGGER.info('generate random lower/ upper limit')
-        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
-        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
-
-        self.base_selenium.LOGGER.info('switch to quantification')
-        self.test_unit_page.switch_from_spec_to_quan(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
-        self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
-        self.base_selenium.refresh()
-
-        self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
-        self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
-        self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
-
-    def test_029_allow_user_to_change_between_specification_and_quantification(self):
-        """
-        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
-        Allow user to change between the two options specification and limit of quantification from edit mode.
-
-        quantifications to specifications
-        """
-
-        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
-        self.assertEqual(testunits_request['status'], 1)
-        testunits = testunits_request['testUnits']
-        self.assertNotEqual(len(testunits), 0)
-        testunit_name = ''
-        for testunit in testunits:
-            if testunit['specifications'] == '' and testunit['quantification'] != '':
-                testunit_name = testunit['name']
-                break
-
-        if testunit_name == '':
-            self.base_selenium.LOGGER.info('there is no testunit with quantification only value')
-            self.assertTrue(False)
-
-        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
-
-        self.test_unit_page.open_edit_page(row=testunit_record)
-
-        self.base_selenium.LOGGER.info('generate random lower/ upper limit')
-        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
-        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
-
-        self.base_selenium.LOGGER.info('switch to specification')
-        self.test_unit_page.switch_from_quan_to_spec(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
-        self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
-        self.base_selenium.refresh()
-
-        self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
-        self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
-        self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
+        test_unit_id = self.test_unit_api.get_test_unit_with_spec_or_quan_only(spec_or_quan)
+        self.test_unit_page.open_test_unit_edit_page_by_id(id=test_unit_id)
+        
+        if spec_or_quan == 'spec':
+            self.info('switch to quantification')
+            self.test_unit_page.switch_from_spec_to_quan(lower_limit=50, upper_limit=100)
+            self.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
+            self.assertEqual(self.test_unit_page.get_quan_upper_limit(), '100')
+            self.assertEqual(self.test_unit_page.get_quan_lower_limit(), '50')
+        else:
+            self.info('switch to specification')
+            self.test_unit_page.switch_from_quan_to_spec(lower_limit=50, upper_limit=100)
+            self.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
+            self.assertEqual(self.test_unit_page.get_spec_upper_limit(), '100')
+            self.assertEqual(self.test_unit_page.get_spec_lower_limit(), '50')
 
     def test030_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
         """
@@ -1603,4 +1555,4 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-6288
         """
-        assert (self.test_unit_page.deselect_all_configurations(), False)
+        self.assertFalse(self.test_unit_page.deselect_all_configurations())

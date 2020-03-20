@@ -52,7 +52,7 @@ class BasePages:
         time.sleep(self.base_selenium.TIME_LARGE)
 
     def save(self, sleep=True, save_btn='general:save', logger_msg='save the changes'):
-        self.base_selenium.LOGGER.info(logger_msg)
+        self.info(logger_msg)
         if self.base_selenium.check_element_is_exist(element=save_btn):
             if sleep:
                 self.sleep_tiny()
