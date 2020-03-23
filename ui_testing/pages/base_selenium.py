@@ -331,6 +331,11 @@ class BaseSelenium:
             cancel = self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
             cancel.click()
 
+    def clear_single_select_drop_down(self, element):
+        self.wait_until_element_located(element)
+        clear_button = self.find_element_in_element(destination_element='general:clear_single_dropdown', source_element=element)
+        clear_button.click()
+
     def clear_items_with_text_in_drop_down(self, element, items_text=[]):
         # element is ng-select element
         # make sure that there are elements to b deleted

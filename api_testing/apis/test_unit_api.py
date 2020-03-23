@@ -6,12 +6,13 @@ class TestUnitAPI(BaseAPI):
         _payload = {"sort_value": "number",
                     "limit": 1000,
                     "start": 0,
-                    "sort_order": "DESC",
-                    "filter": "{}",
+                "sort_order": "DESC",
+                "filter": "{}",
                     "deleted": "0"}
         payload = self.update_payload(_payload, **kwargs)
         self.info('GET : {}'.format(api))
         response = self.session.get(api, params=payload, headers=self.headers, verify=False)
+        self.info(response)
         self.info('Status code: {}'.format(response.status_code))
         return response
 

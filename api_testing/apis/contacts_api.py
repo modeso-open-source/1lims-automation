@@ -131,15 +131,25 @@ class ContactsAPI(BaseAPI):
             Param: "skype": contact person skype 
             Param: "moreInfo": contact person information field
         """
+        random_contact_departments = self.generate_random_string()
         _payload = {
-            'departments' : [],
-            'departmentArray' : [],
-            'persons' : [],
-            'country' : '',
-            'dynamicFieldsValues' : []
-        }
+            "departments": [
+                {
+                    "display": random_contact_departments,
+                    "value": random_contact_departments,
+                    "id": "new",
+                    "text": random_contact_departments
+                }
+            ],
+            "departmentArray": [],
+            "persons": [],
+            "companyNo": self.generate_random_number(),
+            "name": self.generate_random_string(),
+            "isSupplier": "true",
+            "country": "",
+            "dynamicFieldsValues": []
+            }
 
-        
         payload = self.update_payload(_payload, **kwargs)
         api = '{}{}'.format(self.url, self.END_POINTS['contacts_api']['create_contact']) 
         self.info('POST : {}'.format(api))
@@ -147,9 +157,8 @@ class ContactsAPI(BaseAPI):
 
         self.info('Status code: {}'.format(response.status_code))
         data = response.json()
-        
         if data['status'] == 1:
-            return payload
+            return payload, data['company']['companyId']
         else:
             return data['message']
 
