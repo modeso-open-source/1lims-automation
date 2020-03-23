@@ -184,9 +184,9 @@ class TstPlan(TestPlans):
         self.base_selenium.click(element='test_plan:table_card_switcher')
 
     def save_and_confirm_popup(self):
-        self.save(save_btn='test_plan:save_btn')
+        self.save(save_btn='test_plan:save_btn', sleep=True)
         # press 'Ok' on the popup
-        self.base_selenium.LOGGER.info('Accepting the changes made')
+        self.info('Accepting the changes made')
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
 

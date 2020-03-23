@@ -71,67 +71,46 @@ class TestPlansTestCases(BaseTest):
             all_testunits=all_testunits, deleted_test_unit=deleted_test_unit)
         self.assertFalse(deleted_test_unit_found)
 
-    def test002_test_plan_inprogress_to_completed(self):
-        '''
+    @parameterized.expand(['InProgress', 'Completed'])
+    def test002_test_plan_edit_status(self, status):
+        """
+        Creation Approach: when the status converted from completed to completed, new version created
+        when the status converted from In-Progress to completed, no new version created
+
         LIMS-3502
-        When the testplan status is converted from 'In-Progress' to 'Completed', no new version created
-        '''
-
-        self.info('Searching for test plan with In Progress status')
-        in_progress_testplan = random.choice(self.test_plan_api.get_inprogress_testplans())
-        in_progress_testplan_name = in_progress_testplan['testPlanName']
-        in_progress_testplan_version = in_progress_testplan['version']
-        self.info('Navigating to edit page of testplan: {} with version: {}'.format(
-            in_progress_testplan_name, in_progress_testplan_version))
-        self.test_plan.get_test_plan_edit_page(name=in_progress_testplan_name)
-
-        # go to step 2 and add testunit
-        self.info('Going to step 2 to add testunit to this test plan')
-        self.test_plan.set_test_unit()
-        self.info('Saving and completing the testplan')
-        self.test_plan.save(save_btn='test_plan:save_and_complete')
-
-        # go back to the active table
-        self.test_plan.get_test_plans_page()
-
-        # get the testplan to check its version
-        self.info('Getting the currently changed testplan to check its status and version')
-        completed_testplan_version, testplan_row_data_status = \
-            self.test_plan.get_testplan_version_and_status(search_text=in_progress_testplan_name)
-
-        self.assertEqual(in_progress_testplan_version, int(completed_testplan_version))
-        self.assertEqual(testplan_row_data_status, 'Completed')
-
-    def test003_test_plan_completed_to_completed(self):
-        '''
         LIMS-3501
-        When the testplan status doesn't change and a new version is created
-        '''
-        self.info('Searching for test plans with Completed status')
-        completed_testplan = random.choice(self.test_plan_api.get_completed_testplans(limit=500))
-        old_completed_testplan_name = completed_testplan['testPlanName']
-        old_completed_testplan_version = completed_testplan['version']
-        self.info('Navigating to edit page of testplan: {} with version: {}'.format(
-            old_completed_testplan_name, old_completed_testplan_version))
-        self.test_plan.get_test_plan_edit_page(name=old_completed_testplan_name)
+        """
+        testplan = random.choice(self.test_plan_api.get_testplans_with_status(status=status))
+        testplan_name = testplan['testPlanName']
+        testplan_version = testplan['version']
+        self.info('Navigating to edit page of testplan: {} with version: {}'.format(testplan_name, testplan_version))
+        self.test_plan.get_test_plan_edit_page(name=testplan_name)
 
         # go to step 2 and add testunit
         self.info('Going to step 2 to add testunit to this test plan')
         self.test_plan.set_test_unit()
-        self.test_plan.save_and_confirm_popup()
+        if status == 'InProgress':
+            self.info('Saving and completing the testplan')
+            self.test_plan.save(save_btn='test_plan:save_and_complete', sleep=True)
+        else:
+            self.test_plan.save_and_confirm_popup()
 
         # go back to the active table
         self.test_plan.get_test_plans_page()
 
         # get the testplan to check its version
         self.info('Getting the currently changed testplan to check its status and version')
-        inprogress_testplan_version, testplan_row_data_status = \
-            self.test_plan.get_testplan_version_and_status(search_text=old_completed_testplan_name)
+        new_testplan_version, testplan_row_data_status = \
+            self.test_plan.get_testplan_version_and_status(search_text=testplan_name)
 
-        self.assertGreater(int(inprogress_testplan_version), old_completed_testplan_version)
+        if status == 'InProgress':
+            self.assertEqual(int(new_testplan_version), testplan_version)
+        else:
+            self.assertGreater(int(new_testplan_version), int(testplan_version))
+
         self.assertEqual(testplan_row_data_status, 'Completed')
 
-    def test004_archive_test_plan_one_record(self):
+    def test003_archive_test_plan_one_record(self):
         '''
         LIMS-3506 Case 1
         Archive one record
@@ -150,7 +129,7 @@ class TestPlansTestCases(BaseTest):
         self.assertIn(selected_test_plan['Test Plan Name'], archived_row[0].text)
         self.info('Testplan number: {} is archived correctly'.format(testplan_number))
 
-    def test005_restore_test_plan_one_record(self):
+    def test004_restore_test_plan_one_record(self):
         '''
         LIMS-3506 Case 1
         Restore one record
@@ -182,7 +161,7 @@ class TestPlansTestCases(BaseTest):
         self.assertIn(row_data['Test Plan Name'], restored_row[0].text)
         self.base_selenium.LOGGER.info('Testplan number: {} is restored correctly'.format(testplan_number))
 
-    def test006_archive_test_plan_multiple_records(self):
+    def test005_archive_test_plan_multiple_records(self):
         '''
         LIMS-3506 Case 2
         Archive and restore multiple records
@@ -214,7 +193,7 @@ class TestPlansTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('Testplan numbers: {} are archived correctly'.format(testplans_numbers))
 
-    def test007_restore_test_plan_multiple_records(self):
+    def test006_restore_test_plan_multiple_records(self):
         '''
         LIMS-3506 Case 2
         Archive and restore multiple records
@@ -243,7 +222,7 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Testplan numbers: {} are restored correctly'.format(testplans_numbers))
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6403')
-    def test008_exporting_test_plan_one_record(self):
+    def test007_exporting_test_plan_one_record(self):
         '''
         LIMS-3508 Case 1
         Exporting one record
@@ -271,7 +250,7 @@ class TestPlansTestCases(BaseTest):
                 self.assertIn(item, fixed_sheet_row_data)
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6403')
-    def test009_exporting_test_plan_multiple_records(self):
+    def test008_exporting_test_plan_multiple_records(self):
         '''
         LIMS-3508 Case 2
         Exporting multiple records
@@ -303,7 +282,7 @@ class TestPlansTestCases(BaseTest):
                 if item != '' and item != '-':
                     self.assertIn(item, fixed_sheet_row_data)
 
-    def test010_test_plan_duplicate(self):
+    def test009_test_plan_duplicate(self):
         '''
         LIMS-3679
         Duplicate a test plan
@@ -349,7 +328,7 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(main_testplan_childtable_data, duplicated_testplan_childtable_data)
         self.assertEqual(main_testplan_data, duplicated_testplan_data)
 
-    def test011_test_plan_completed_to_inprogress(self):
+    def test010_test_plan_completed_to_inprogress(self):
         '''
         LIMS-3503
         When the testplan status is converted from completed to in progress a new version is created
@@ -417,7 +396,7 @@ class TestPlansTestCases(BaseTest):
         self.info('Assert the error message')
         self.assertTrue(validation_result)
 
-    def test013_create_testplans_same_name_different_materialtype(self):
+    def test012_create_testplans_same_name_different_materialtype(self):
         '''
         LIMS-3498
         Testing the creation of two testplans with the same name, but different material type
@@ -447,7 +426,7 @@ class TestPlansTestCases(BaseTest):
         data = self.test_plan.search(testplan_name)
         self.assertGreaterEqual(len(data), 2)
 
-    def test014_create_testplans_same_name_materialtype_all_article(self):
+    def test013_create_testplans_same_name_materialtype_all_article(self):
         '''
         LIMS-3500
         New: Test plan: Creation Approach: I can't create two test plans
@@ -482,7 +461,7 @@ class TestPlansTestCases(BaseTest):
         self.assertTrue(validation_result)
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6405')
-    def test015_delete_used_testplan(self):
+    def test014_delete_used_testplan(self):
         '''
         LIMS-3509
         If a testplan is used, it can't be deleted
@@ -506,7 +485,7 @@ class TestPlansTestCases(BaseTest):
         # check for the error popup that this testplan is used and can't be deleted
         self.assertFalse(testplan_deleted)
 
-    def test016_archived_testplan_shouldnot_appear_in_order(self):
+    def test015_archived_testplan_shouldnot_appear_in_order(self):
         '''
         LIMS-3708
         In case a testplan is archived, it shouldn't appear when creating a new order
@@ -540,7 +519,7 @@ class TestPlansTestCases(BaseTest):
         suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]
         self.assertEqual(len(suborder_first_testplan), 0)
 
-    def test017_testunit_sub_super_scripts(self):
+    def test016_testunit_sub_super_scripts(self):
         '''
         LIMS-5796
         Create a testunit with sub/super scripts, use this testunit to create a testplan
@@ -575,7 +554,7 @@ class TestPlansTestCases(BaseTest):
         unit = self.base_selenium.find_element('test_plan:testunit_unit').text
         self.assertEqual(unit, testunit_unit_display)
 
-    def test018_filter_by_testplan_number(self):
+    def test017_filter_by_testplan_number(self):
         '''
         LIMS-6473
         User can filter with testplan number
@@ -590,7 +569,7 @@ class TestPlansTestCases(BaseTest):
         self.assertIn(str(random_testplan['number']), (testplan_found[0].text).replace("'", ""))
         self.base_selenium.LOGGER.info('Filtering by number was done successfully')
 
-    def test019_filter_by_testplan_name(self):
+    def test018_filter_by_testplan_name(self):
         '''
         LIMS-6470
         User can filter with testplan name
@@ -618,7 +597,7 @@ class TestPlansTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Filtering by name was done successfully')
 
     @parameterized.expand(['Completed', 'In Progress'])
-    def test020_filter_by_testplan_status(self,status):
+    def test019_filter_by_testplan_status(self,status):
         '''
         LIMS-6474
         User can filter with status
@@ -651,7 +630,7 @@ class TestPlansTestCases(BaseTest):
 
         self.info('Filtering by status was done successfully')
 
-    def test021_filter_by_testplan_changed_by(self):
+    def test020_filter_by_testplan_changed_by(self):
         '''
         LIMS-6475
         User can filter with changed by field
@@ -681,7 +660,7 @@ class TestPlansTestCases(BaseTest):
         self.assertIn(testplan_name, testplan_found[0].text)
 
     @parameterized.expand(['ok', 'cancel'])
-    def test022_create_approach_overview_button(self, ok):
+    def test021_create_approach_overview_button(self, ok):
         """
         Master data: Create: Overview button Approach: Make sure
         after I press on the overview button, it redirects me to the active table
@@ -702,7 +681,7 @@ class TestPlansTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), '{}testPlans/add'.format(self.base_selenium.url))
             self.info('clicking on Overview cancelled')
 
-    def test023_edit_approach_overview_button(self):
+    def test022_edit_approach_overview_button(self):
         """
         Edit: Overview Approach: Make sure after I press on
         the overview button, it redirects me to the active table
@@ -718,7 +697,7 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
         self.info('clicking on Overview confirmed')
 
-    def test024_testplans_search_then_navigate(self):
+    def test023_testplans_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
 
@@ -741,7 +720,7 @@ class TestPlansTestCases(BaseTest):
         self.articles_page.get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
-    def test025_hide_all_table_configurations(self):
+    def test024_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
         LIMS-6288

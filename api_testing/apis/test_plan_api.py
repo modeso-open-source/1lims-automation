@@ -33,6 +33,11 @@ class TestPlanAPI(BaseAPI):
         inprogress_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'InProgress']
         return inprogress_test_plans
 
+    def get_testplans_with_status(self, status):
+        all_test_plans = self.get_all_test_plans_json()
+        test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == status]
+        return test_plans
+
     def get_testunits_in_testplan(self, id):
         api = '{}{}{}'.format(self.url, self.END_POINTS['test_plan_api']['get_testunits_in_testplan'], id)
         self.info('GET : {}'.format(api))
