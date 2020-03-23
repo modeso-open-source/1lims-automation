@@ -283,50 +283,43 @@ class TestPlansTestCases(BaseTest):
                     self.assertIn(item, fixed_sheet_row_data)
 
     def test009_test_plan_duplicate(self):
-        '''
+        """
         LIMS-3679
         Duplicate a test plan
-        '''
+
+        LIMS-3679
+        """
         # get the maximum number given to the latest testplan
-        latest_testplan_row_data = self.test_plan.get_the_latest_row_data()
-        largest_number = latest_testplan_row_data['Test Plan No.'].replace("'", "")
-        duplicated_test_plan_number = int(largest_number) + 1
-        self.info('The duplicated testplan should have the number: {}'.format(duplicated_test_plan_number))
+        #latest_testplan_number = self.test_plan.get_the_latest_row_data()['Test Plan No.'].replace("'", "")
+        #duplicated_test_plan_number = int(latest_testplan_number) + 1
+        #self.info('The duplicated testplan should have the number: {}'.format(duplicated_test_plan_number))
 
         self.info('Choosing a random testplan table row')
-        main_testplan_data = self.test_plan.select_random_table_row(element='test_plans:test_plans_table')
-        testplan_number = main_testplan_data['Test Plan No.']
-        self.info('Testplan number: {} will be duplicated'.format(testplan_number))
-        #self.test_plan.open_filter_menu()
-        #self.test_plan.filter_by_testplan_number(testplan_number)
-        # if test plan in end of table of test plan, then I open filter when
-        # I get child table it reads other table realted to other test plan
-        # I need to adjust page so we don't need to scroll it first
-        # search function don't affect page height like filter
-        self.base_selenium.scroll()
-        self.test_plan.search(testplan_number)
-        self.info('Saving the child data of the main testplan')
-        main_testplan_childtable_data = self.test_plan.get_child_table_data()
+        testPlan = random.choice(self.test_plan_api.get_completed_testplans())
+        testunits = self.test_plan_api.get_testunits_in_testplan(id=testPlan['id'])
+        self.test_plan.open_filter_menu()
+        self.test_plan.filter_by_testplan_number(testPlan['number'])
+        self.test_plan.sleep_small()
+        self.test_plan.click_check_box(source=self.base_page.result_table()[0])
+        self.test_plan.sleep_small()
 
-        self.info('Duplicating testplan number: {}'.format(testplan_number))
+        self.info('Duplicating testplan number: {}'.format(testPlan['number']))
         self.test_plan.duplicate_selected_item()
-
-        self.test_plan.duplicate_testplan(change=['name'])
-        self.test_plan.sleep_tiny()
+        duplicated_test_plan_number = self.test_plan.duplicate_testplan(change=['name'])
 
         duplicated_testplan_data, duplicated_testplan_childtable_data = \
             self.test_plan.get_specific_testplan_data_and_childtable_data(
                 filter_by='number', filter_text=duplicated_test_plan_number)
-
-        data_changed = ['Test Plan No.', 'Test Plan Name', 'Version', 'Changed On', 'Changed By', 'Created On']
-        main_testplan_data, duplicated_testplan_data = \
-            self.remove_unduplicated_data(data_changed=data_changed,
-                                          first_element=main_testplan_data,
-                                          second_element=duplicated_testplan_data)
+        duplicated_test_units = []
+        for testunit in duplicated_testplan_childtable_data:
+            duplicated_test_units.append(testunit['Test Unit Name'])
 
         self.info('Asserting that the data is duplicated correctly')
-        self.assertEqual(main_testplan_childtable_data, duplicated_testplan_childtable_data)
-        self.assertEqual(main_testplan_data, duplicated_testplan_data)
+        self.assertEqual(testPlan['materialType'], duplicated_testplan_data['Material Type'])
+        self.assertEqual(testPlan['article'][0], duplicated_testplan_data['Article Name'])
+        self.assertEqual(testPlan['articleNo'][0], duplicated_testplan_data['Article No.'])
+        for testunit in testunits:
+            self.assertIn(testunit['name'], duplicated_test_units)
 
     def test010_test_plan_completed_to_inprogress(self):
         '''

@@ -247,8 +247,9 @@ class BasePages:
         headers = self.base_selenium.get_table_head_elements(element='general:table_child')
 
         child_table_data = []
-        for subrecord in range(0,len(rows_with_childtable)):
-            rows_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=rows_with_childtable[subrecord], table_element='general:table_child')
+        for subrecord in range(0, len(rows_with_childtable)):
+            rows_with_headers = self.base_selenium.get_row_cells_dict_related_to_header(
+                row=rows_with_childtable[subrecord], table_element='general:table_child')
             if rows_with_headers != {}:
                 child_table_data.append(rows_with_headers)
 

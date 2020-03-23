@@ -208,8 +208,11 @@ class TstPlan(TestPlans):
             if c == 'name':
                 duplicated_test_plan_name = self.generate_random_text()
                 self.set_test_plan(name=duplicated_test_plan_name)
-        self.save()
-        
+
+        no = self.get_no()
+        self.save(sleep=True)
+        return no
+
     def get_testunit_category_and_iterations(self, testplan_name):
         self.get_test_plan_edit_page(testplan_name)
         self.navigate_to_testunits_selection_page()
