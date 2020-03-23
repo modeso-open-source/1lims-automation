@@ -849,6 +849,8 @@ elements = {
                            'value': 'countryfield'},
         'type_filter': {'method': 'id',
                         'value': 'typefield'},
+        'contact_no_filter':{'method': 'id',
+                             'value': 'companyNofield'},
         'postalcode_filter': {'method': 'id',
                               'value': 'postal_codefield'},
         'contact_persons_table': {'method': 'id',
