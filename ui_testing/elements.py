@@ -204,7 +204,7 @@ elements = {
         'delete': {'method': 'link_text',
                    'value': 'Delete'},
         'right_menu': {'method': 'xpath',
-                       'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+                       'value': '//i[@class="flaticon-grid-menu-v2"]'},
         'alert_confirmation': {'method': 'id',
                                'value': 'noty_layout__topCenter'},
 
@@ -233,7 +233,6 @@ elements = {
                     'value': 'comment'},
         'name': {'method': 'id',
                  'value': 'namefield'},
-
         'filter_test_plan': {'method': 'id',
                              'value': 'testPlansfield'},
         'filter_created_at': {'method': 'id', 'value': 'start_createdAt'},

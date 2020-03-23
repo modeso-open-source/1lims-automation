@@ -1,6 +1,5 @@
 from api_testing.apis.base_api import BaseAPI
 
-
 class ArticleAPI(BaseAPI):
     def get_all_articles(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['article_api']['list_all_articles'])
@@ -134,3 +133,15 @@ class ArticleAPI(BaseAPI):
         if data['status'] == 1:
             return data['testPlans']
         return []
+
+    def get_articles_with_no_testplans(self,**kwargs):
+        response = self.get_all_articles(**kwargs)
+        all_articles = response.json()['articles']
+        articles = [article for article in all_articles if len(article['testPlanNames']) < 1]
+        return articles
+
+    def get_articles_with_testplans(self, **kwargs):
+        response = self.get_all_articles(**kwargs)
+        all_articles = response.json()['articles']
+        articles = [article for article in all_articles if len(article['testPlanNames']) >= 1]
+        return articles

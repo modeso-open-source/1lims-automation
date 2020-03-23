@@ -25,7 +25,7 @@ script:
   - export TESTS='test09_my_profile.py:'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test03_testplans.py:TestPlansTestCases.test001_test_plan_delete_testunit --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test03_testplans.py:TestPlansTestCases.test002_test_plan_edit_status_0_InProgress --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test03_testplans.py:TestPlansTestCases.test002_test_plan_edit_status_1_Completed --tc-file=config.ini
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test03_testplans.py:TestPlansTestCases.test003_archive_test_plan_one_record --tc-file=config.ini
+
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test005_cancel_button_edit_material_type_0_save --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test005_cancel_button_edit_material_type_1_cancel --tc-file=config.ini
+  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test014_article_search --tc-file=config.ini

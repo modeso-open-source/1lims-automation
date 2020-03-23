@@ -12,7 +12,6 @@ import random, time, os
 import pandas as pd
 from loguru import logger
 
-
 class BaseSelenium:
     TIME_TINY = 2
     TIME_SMALL = 5
@@ -442,6 +441,7 @@ class BaseSelenium:
             if len(_occurrences) == 1:
                 result.append(_occurrences[0])
         return result
+
 
     def _is_item_a_drop_down(self, item):
         """

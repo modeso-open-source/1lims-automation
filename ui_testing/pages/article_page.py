@@ -144,7 +144,6 @@ class Article(Articles):
         self.open_filter_menu()
         self.sleep_medium()
 
-
     def archive_restore_optional_fields(self, restore=False):
         self.sleep_small()
         self.info('+ Open article configuration')
