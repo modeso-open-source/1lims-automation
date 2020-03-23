@@ -184,9 +184,6 @@ class Order(Orders):
         rows = self.result_table()
         return rows[0]
 
-    def get_shipment_date(self):
-        return self.base_selenium.get_value(element='order:shipment_date')
-
     def get_test_date(self, row_id=None):
         # open the row in edit mode
         suborder_table_rows = self.base_selenium.get_table_rows(
@@ -209,11 +206,28 @@ class Order(Orders):
         test_date.send_keys(date)
         return date
 
-    def set_shipment_date(self, date=''):
-        if not date:
-            date = self.get_random_date()
-        self.base_selenium.set_text(element='order:shipment_date', value=date)
+    def get_shipment_date(self, row_id=None):
+        # open the row in edit mode
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
+        suborder_row = suborder_table_rows[row_id]
+        suborder_row.click()
+        self.info('Get the shipment date value')
+        # get the test_date field of the selected row
+        shipment_date = self.base_selenium.find_element_by_xpath('//*[@id="date_shipmentDate_{}"]'.format(row_id))
+        return shipment_date.get_attribute('value')
+
+    def set_shipment_date(self, date='', row_id=None):
+        # set random date
+        date = date or self.get_random_date()
+        self.info('Set the shipment date value to {}'.format(date))
+        # get the test_date field of the selected row
+        shipment_date = self.base_selenium.find_element_by_xpath('//*[@id="date_shipmentDate_{}"]'.format(row_id))
+        # update the field
+        shipment_date.clear()
+        shipment_date.send_keys(date)
         return date
+
 
     def get_departments(self):
         departments = self.base_selenium.get_text(
@@ -289,7 +303,7 @@ class Order(Orders):
         duplicate_element.click()
 
     # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
-    def get_suborder_data(self, sub_order_index=0):
+    def get_suborder_data(self):
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
         table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
         self.base_selenium.LOGGER.info('getting main order data')
@@ -377,7 +391,7 @@ class Order(Orders):
             self.set_test_unit(test_unit=testunit)
 
         if shipment_date:
-            pass
+            return self.set_shipment_date(row_id=sub_order_index)
         if test_date:
             return self.set_test_date(row_id=sub_order_index)
         if contacts:
@@ -391,7 +405,6 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' Set material type : {}'.format(material_type))
         self.base_selenium.update_item_value(item=row['materialType'],
                                              item_text=material_type.replace("'", ''))
-
     def update_article_suborder(self, row, article):
         self.base_selenium.LOGGER.info(' Set article name : {}'.format(article))
         self.base_selenium.update_item_value(item=row['article'],
@@ -466,6 +479,30 @@ class Order(Orders):
         self.base_selenium.click('order:analysis_tab')
         self.sleep_small()
 
+    def set_material_type_of_first_suborder(self, material_type='', sub_order_index=0):
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
+        suborder_row = suborder_table_rows[sub_order_index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        suborder_row.click()
+        if material_type:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:material_type', item_text=material_type)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:material_type')
+            return self.get_material_type_of_first_suborder()
+
+    def get_material_type_of_first_suborder(self, sub_order_index =0):
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
+        suborder_row = suborder_table_rows[sub_order_index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        suborder_row.click()
+        return self.base_selenium.get_text(element='order:material_type').split('\n')[0]
+
     def remove_article(self, testplans=''):
         self.base_selenium.LOGGER.info('clear article data')
         self.base_selenium.clear_single_select_drop_down(element='order:article')
@@ -474,3 +511,4 @@ class Order(Orders):
             self.sleep_tiny()
             self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
+

@@ -371,8 +371,10 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info(
             ' + Select random order with {} no.'.format(order_data['Order No.']))
+
         self.order_page.get_random_x(orders[0])
 
+        self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + Order url : {}'.format(order_url))
 
@@ -390,10 +392,10 @@ class OrdersTestCases(BaseTest):
             ' + Assert there is a new suborder with the same order no.')
         self.assertEqual(orders_records_after, orders_records_before + 1)
 
-        self.analyses_page.get_analyses_page()
+        self.single_analysis_page.get_analysis_page()
         self.base_selenium.LOGGER.info(
             ' + Assert There is an analysis for this new suborder.')
-        orders_analyess = self.analyses_page.search(order_data['Order No.'])
+        orders_analyess = self.single_analysis_page.search(order_data['Order No.'])
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=orders_analyess[0])
         self.assertEqual(
@@ -498,15 +500,13 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(
                 selected_order_data['Test Plans'], row_data['Test Plans'])
 
-    # will continue with us
-    def test014_update_order_material_type(self, save):
+    @parameterized.expand(['save_btn', 'cancel'])
+    def test014_update_first_order_material_type(self, save):
         """
-        New: Orders: Edit material type: Make sure that user able to change material type and related test plan &
+        New: Orders: Edit material type: Make sure that user able to change material type of the first suborder and related test plan &
         article.
-
-        New: Orders: Materiel type Approach: In case then material type updated then press on cancel button,
+        New: Orders: Materiel type Approach: In case then material type of the first suborder updated then press on cancel button,
         Nothing update when I enter one more time
-
         LIMS-4281
         LIMS-4282
         :return:
@@ -518,8 +518,8 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_random_order()
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        order_material_type = self.order_page.get_material_type()
-        self.order_page.set_material_type(
+        order_material_type = self.order_page.get_material_type_of_first_suborder()
+        self.order_page.set_material_type_of_first_suborder(
             material_type=test_plan_dict['Material Type'])
         self.order_page.confirm_popup(force=True)
         self.order_page.set_article(
@@ -529,10 +529,9 @@ class OrdersTestCases(BaseTest):
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
-            self.order_page.cancel(force=True, cancel_btn='order:cancel_btn')
-
+            self.order_page.cancel(force=True)
         self.base_selenium.get(url=order_url, sleep=5)
-        current_material_type = self.order_page.get_material_type()
+        current_material_type = self.order_page.get_material_type_of_first_suborder()
 
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
@@ -696,29 +695,44 @@ class OrdersTestCases(BaseTest):
         LIMS-4779
         :return:
         """
+        # open random order edit page
         self.order_page.get_random_order()
+        # open the url
         order_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        order_shipment_date = self.order_page.get_shipment_date()
-        shipment_date = self.order_page.set_shipment_date()
+        # get all the suborders
+        all_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        # get random suborder row_id
+        row_id = 0
+        if len(all_suborders) > 1:
+            row_id = randint(0, len(all_suborders) - 1)
+
+        # update the shipment date
+        new_shipment_date = self.order_page.update_suborder(sub_order_index=row_id, shipment_date=True)
+
+        # save or cancel
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
+            self.order_page.sleep_medium()
         else:
             self.order_page.cancel(force=True)
 
+        # refresh the page
+        self.info('reopen the edited order page')
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
-        current_shipment_date = self.order_page.get_shipment_date()
 
-        if 'save_btn' == save:
+        # get the saved shipment date
+        saved_shipment_date = self.order_page.get_suborder_data()['suborders'][row_id]['shipment_date']
+
+        # check if the shipment date changed or not
+        if 'cancel' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(current_shipment_date,
-                                                                                        shipment_date))
-            self.assertEqual(shipment_date, current_shipment_date)
+                ' + Assert {} (current_shipment_date) != {} (new_shipment_date)'.format(new_shipment_date, saved_shipment_date))
+            self.assertNotEqual(saved_shipment_date, new_shipment_date)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_shipment_date) == {} (order_shipment-date)'.format(current_shipment_date,
-                                                                                          order_shipment_date))
-            self.assertEqual(current_shipment_date, order_shipment_date)
+                ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(new_shipment_date, saved_shipment_date))
+            self.assertEqual(saved_shipment_date, new_shipment_date)
+
 
     # will continue with us
     def test018_validate_order_no_exists(self):
