@@ -1050,7 +1050,7 @@ class TestUnitsTestCases(BaseTest):
         testunit_testplan_formated = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
 
         active_article = {}
-        active_article_request = self.article_api.get_all_articles().json()['articles']
+        active_article_request = self.article_api.get_all_articles()[0]['articles']
         active_article = active_article_request[0]
 
         all_materialtypes = self.general_utilities_api.list_all_material_types()

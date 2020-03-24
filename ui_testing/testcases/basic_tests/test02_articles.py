@@ -1,3 +1,4 @@
+from api_testing.apis.article_api import ArticleAPI
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.testplan_page import TstPlan
@@ -5,9 +6,8 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.base_pages import BasePages
 from api_testing.apis.article_api import ArticleAPI
 from parameterized import parameterized
-import re
 from unittest import skip
-import random
+import random, re
 
 
 class ArticlesTestCases(BaseTest):
@@ -18,6 +18,7 @@ class ArticlesTestCases(BaseTest):
         self.test_plan = TstPlan()
         self.order_page = Order()
         self.base_page = BasePages()
+        self.article_api = ArticleAPI()
 
         self.login_page.login(
             username=self.base_selenium.username, password=self.base_selenium.password)
@@ -75,7 +76,7 @@ class ArticlesTestCases(BaseTest):
                 element1='article:default_filter_test_plan')
             self.default_filters_flags['test_plan'] = False
 
-        return super().tearDown()
+        super().tearDown()
 
     @parameterized.expand(['save', 'cancel'])
     def test001_cancel_button_edit_unit(self, save):
@@ -835,7 +836,7 @@ class ArticlesTestCases(BaseTest):
         LIMS-6201
         """
         articles_response = self.article_api.get_all_articles()
-        articles = articles_response.json()['articles']
+        articles = articles_response[0]['articles']
         article_name = random.choice(articles)['name']
         search_results = self.article_page.search(article_name)
         self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")

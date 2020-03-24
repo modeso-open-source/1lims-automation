@@ -57,7 +57,9 @@ class BaseSelenium:
             self.driver = webdriver.Chrome(chrome_options=options)
         else:
             if self.browser == 'chrome':
-                self.driver = webdriver.Chrome()
+                options = Options()
+                options.add_argument('--ignore-certificate-errors')
+                self.driver = webdriver.Chrome(chrome_options=options)
             elif self.browser == 'firefox':
                 self.driver = webdriver.Firefox()
             elif self.browser == 'ie':
