@@ -405,38 +405,41 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(
             orders_duplicate_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    # will change to dispaly it in the child table & in the export     
-    def test011_analysis_number_filter_and_export(self):
+    def test011_analysis_number_should_appear_in_the_child_table(self):
         """
         New: Orders: Analysis number should appear in the table view column
+        this it will change to display the analysis number in the order child table ( suborder )
+
         LIMS-2622
         :return:
         """
-        self.base_selenium.LOGGER.info(' Select Random Order')
-        order_row = self.order_page.get_random_order_row()
-        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=order_row)
-        analysis_number = order_data['Analysis No.'].split(',')[0]
-        analysis_filter_field = self.order_page.order_filters_element(
-            'Analysis No.')
-        self.order_page.open_filter_menu()
-        self.order_page.filter('Analysis No.', analysis_filter_field['element'], analysis_number,
-                               analysis_filter_field['type'])
-        last_rows = self.order_page.get_last_order_row()
-        order_data_after_filter = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=last_rows)
-        analysis_number_filter = order_data_after_filter['Analysis No.'].split(',')[
-            0]
-        self.base_selenium.LOGGER.info(
-            ' * Compare search result if last row has  analysis number = {}  '.format(analysis_number))
-        self.assertEqual(analysis_number_filter, analysis_number)
-        self.order_page.click_check_box(source=last_rows)
-        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
-        self.order_page.download_xslx_sheet()
-        sheet_values = self.order_page.sheet.iloc[0].values
-        self.base_selenium.LOGGER.info(
-            'Check if export of order has analyis number = {}  '.format(analysis_number))
-        self.assertIn(analysis_number, sheet_values)
+        # prepare order data
+        self.info('Create new order')
+        order_no = self.orders_api.get_auto_generated_order_no()
+        material_type = self.general_utilities_api.list_all_material_types()[0]
+        article = self.article_api.list_articles_by_materialtype(materialtype_id=material_type['id'])[0]
+        testunits = self.test_unit_api.list_testunit_by_name_and_material_type(materialtype_id=material_type['id'])[0]
+        test_date = self.test_unit_page.get_current_date_formated()
+        shipment_date = self.test_unit_page.get_current_date_formated()
+        current_year = self.test_unit_page.get_current_year()[2:]
+        contacts = self.contacts_api.get_all_contacts().json()['contacts'][0]
+
+        # create the order using the order data
+        self.orders_api.create_new_order(yearOption=1, orderNo=order_no, year=current_year,
+                                         testUnits=[testunits], testPlans=[], article=article,
+                                         materialType=material_type, shipmentDate=shipment_date,
+                                         testDate=test_date, contact=[contacts])
+        order_no_with_year = '{}-{}'.format(order_no, current_year)
+        self.info('Order {} created successfully'.format(order_no_with_year))
+
+        # search for the created order
+        self.info('Search for order {}'.format(order_no_with_year))
+        self.order_page.search(order_no_with_year)
+        # get the first suborder date form the table
+        suborder = self.order_page.get_child_table_data()[0]
+        # make sure that there is analysis No.
+        self.info('Make sure that the Analysis No. exist')
+        self.assertTrue(suborder['Analysis No.'])
 
     # will change that the duplicate many copies will be from the the child table not from the active table     
     def test012_duplicate_many_orders(self):
