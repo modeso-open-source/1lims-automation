@@ -29,7 +29,7 @@ class SingleAnalysisPage(AllAnalysesPage):
         return len(all_accordion_items)-1
 
     def navigate_to_order_tab(self):
-        self.base_selenium.click('order:orders_tab')
+        self.base_selenium.click('orders:analysis_order_tab')
         self.sleep_small()
 
     def get_all_analysis_records(self):

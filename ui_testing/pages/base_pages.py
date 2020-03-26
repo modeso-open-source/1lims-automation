@@ -85,10 +85,10 @@ class BasePages:
         filter.click()
 
     def filter_by(self, filter_element, filter_text, field_type='drop_down'):
-        if field_type=='drop_down':
+        if field_type =='drop_down':
             self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
         else:
-            self.base_selenium.set_text(element=filter_element, value = filter_text )
+            self.base_selenium.set_text(element=filter_element, value=filter_text)
 
     def filter_apply(self):
         self.base_selenium.click(element='general:filter_btn')
@@ -99,6 +99,7 @@ class BasePages:
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
+        self.sleep_tiny()
 
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')

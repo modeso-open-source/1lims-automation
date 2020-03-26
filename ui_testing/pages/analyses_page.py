@@ -5,7 +5,6 @@ class AllAnalysesPage(BasePages):
         super().__init__()
         self.analyses = "{}sample/analysis".format(self.base_selenium.url)
 
-
     def get_analysis_page(self):
         self.base_selenium.get(url=self.analyses)
         self.sleep_medium()
