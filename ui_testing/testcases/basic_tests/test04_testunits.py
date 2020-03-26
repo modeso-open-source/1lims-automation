@@ -1291,10 +1291,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         material_type='All')
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
 
         self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
         row = self.test_unit_page.search(value=new_random_name)[0]
@@ -1363,10 +1360,6 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         material_type='All')
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
 
         self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
         row = self.test_unit_page.search(value=new_random_name)[0]
@@ -1412,9 +1405,6 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.open_configurations()
         self.test_unit_page.open_testunit_name_configurations_options()
         old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=['method'])
-
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
 
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
@@ -1469,11 +1459,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         material_type='All')
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
-
+        
         self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
         row = self.test_unit_page.search(value=new_random_name)[0]
         new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
@@ -1556,3 +1542,104 @@ class TestUnitsTestCases(BaseTest):
         LIMS-6288
         """
         self.assertFalse(self.test_unit_page.deselect_all_configurations())
+
+    @parameterized.expand([('number', 'testunit_number_filter', 'Test Unit No.'),
+                           ('name', 'name_filter', 'Test Unit Name'),
+                           ('method', 'method_filter', 'Method'),
+                           ('createdAt', 'filter_created_at', 'Created On')])
+    def test042_filter_by_testunit_text_fields(self, filter_case, filter, header_name):
+        """
+        New: Test units: Filter Approach: Make sure you can filter by test unit no
+        LIMS-6430
+
+        New:  Test units: Filter Approach: Make sure you can filter by name
+        LIMS-6432
+
+        New:  Test units: Filter Approach: Make sure you can filter by method
+        LIMS-6434
+
+        New:  Test units: Filter Approach: Make sure you can filter by created on
+        LIMS-6431
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute=filter_case)
+        self.assertNotEqual(data_to_filter_with, False)
+        
+        if filter_case == 'createdAt':
+            data_to_filter_with = self.test_unit_page.convert_to_dot_date_format(date=data_to_filter_with)
+            
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:{}'.format(filter),
+                                                  filter_text=data_to_filter_with, field_type='text')
+        
+        table_records = self.test_unit_page.result_table()[:-1]
+        
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            self.assertIn(str(data_to_filter_with), row_data[header_name].replace("'", ""))
+
+    def test043_filter_by_testunit_unit_returns_only_correct_results(self):
+        """
+        New:  Test units: Filter Approach: Make sure you can filter by unit
+
+        LIMS-6427
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute='unit')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:spec_unit_filter', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.test_unit_page.result_table()
+        del table_records[-1]
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            self.assertEqual(row_data['Unit'].replace("'",""), str(data_to_filter_with.replace('{','').replace('}','').replace('[', '').replace(']','')))
+            
+
+    @parameterized.expand([('categoryName', 'category_filter', 'Category'),
+                           ('typeName', 'filter_type', 'Type'), 
+                           ('lastModifiedUser', 'filter_changed_by', 'Changed By')])
+    def test044_filter_by_testunit_drop_down_fields(self, filter_case, filter, header_name):
+        """
+        New:  Test units: Filter Approach: Make sure you can filter by category
+        LIMS-6429
+
+        New:  Test units: Filter Approach: Make sure you can filter by type
+        LIMS-6435
+
+        New:  Test units: Filter Approach: Make sure you can filter by changed by
+        LIMS-6428
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute=filter_case)
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:{}'.format(filter), filter_text=data_to_filter_with)
+        table_records = self.test_unit_page.result_table()
+
+        del table_records[-1]
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            self.assertIn(str(data_to_filter_with), row_data[header_name].replace("'",""))
+            
+            
+    def test045_filter_by_testunit_material_type_returns_only_correct_results(self):
+        """
+        New:  Test units: Filter Approach: Make sure you can filter by material type
+
+        LIMS-6433
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute='materialTypes')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with[0]))
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:filter_material_type', filter_text=data_to_filter_with[0])
+        table_records = self.test_unit_page.result_table()
+        del table_records[-1]
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            testunit_material_types = row_data['Material Type'].split(', ')[0]
+            self.assertEqual(testunit_material_types.replace("'",""), str(data_to_filter_with[0]))
+
+        

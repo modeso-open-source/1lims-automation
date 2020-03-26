@@ -28,4 +28,3 @@ script:
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
   # - xvfb-run -a nosetests-3.4 -vs --nologcapture ui_testing/testcases/header_tests/$TESTS --tc-file=config.ini
   - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test011_analysis_number_should_appear_in_the_child_table
-
