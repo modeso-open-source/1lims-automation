@@ -254,9 +254,10 @@ class OrdersTestCases(BaseTest):
         LIMS-3061
         :return:
         """
-        row = self.order_page.get_last_order_row()
+        orders = self.orders_api.get_all_orders(limit=1).json()['orders'][0]
+        rows = self.order_page.search(orders['orderNo'])
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=row)
+            row=rows[0])
         for column in row_data:
             search_by = row_data[column].split(',')[0]
             if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[
