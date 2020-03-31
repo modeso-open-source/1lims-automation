@@ -246,20 +246,18 @@ class ArticlesTestCases(BaseTest):
 
         LIMS-3668
         """
-        self.article_page.create_new_article(material_type='Raw Material')
+        create_response, _ = self.article_api.create_article()
         self.base_selenium.LOGGER.info(' Archive the article.')
-        self.article_page.archive_article(name=self.article_page.article_name)
+        archive_response, _ = self.article_api.archive_articles(ids=[str(create_response['article']['id'])])
         self.test_plan.get_test_plans_page()
         self.base_selenium.LOGGER.info(
             'Create test plan with the same material type.')
         self.test_plan.click_create_test_plan_button()
-        self.test_plan.set_material_type(
-            material_type=self.article_page.article_material_type)
+        self.test_plan.set_material_type(material_type="Raw Material")
         self.article_page.sleep_tiny()
         self.base_selenium.LOGGER.info(
             'Assert article is not existing in the list.')
-        self.assertFalse(self.test_plan.is_article_existing(
-            article=self.article_page.article_name))
+        self.assertFalse(self.test_plan.is_article_existing(article=create_response['article']['name']))
 
     @skip('refactor order page')
     def test007_archived_articles_shoudnt_dispaly_in_order(self):
@@ -285,14 +283,12 @@ class ArticlesTestCases(BaseTest):
 
         LIMS-3581
         """
-        self.article_page.create_new_article(material_type='Raw Material')
+        create_response, _ = self.article_api.create_article()
         self.test_plan.get_test_plans_page()
         self.test_plan.click_create_test_plan_button()
-        self.test_plan.set_material_type(
-            material_type=self.article_page.article_material_type)
+        self.test_plan.set_material_type(material_type="Raw Material")
         self.article_page.sleep_tiny()
-        self.assertTrue(self.test_plan.is_article_existing(
-            article=self.article_page.article_name))
+        self.assertTrue(self.test_plan.is_article_existing(article=create_response['article']['name']))
 
     def test009_create_article_with_test_plan_search_by_test_plan(self):
         """
@@ -398,7 +394,7 @@ class ArticlesTestCases(BaseTest):
                     row_data[column] == '-' or not (row_data[column]):
                 continue
             multiple_testplans = False
-            if "," in row_data[column]: # for multiple testplans only search for one of them
+            if "," in row_data[column]:  # for multiple testplans only search for one of them
                 row_data[column] = row_data[column].split(',', 1)[0]
                 multiple_testplans = True
 
