@@ -111,7 +111,7 @@ class BasePages:
         selected_rows_data = []
         selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
-        no_of_rows = randint(min(1, len(rows)-1), min(5, len(rows)-1))
+        no_of_rows = randint(min(2, len(rows)-1), min(5, len(rows)-1))
         count = 0
         self.info(' No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:

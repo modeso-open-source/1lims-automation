@@ -592,7 +592,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertNotIn('ng-valid', class_attr)
 
     @parameterized.expand([('quan'), ('spec')])
-    def test017_create_quantative_with_limits_of_quantative_only_and_specification_only(self,limits_type):
+    def test017_create_quantative_with_limits_of_quantative_only_and_specification_only(self, limits_type):
         """
         New:Test unit: Create Approach: User can create test unit with limits of quantification type only &
         with upper lower limits
@@ -686,7 +686,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='save new testunit')
 
         self.test_plan.get_test_plans_page()
-        testplan= self.test_plan.create_new_test_plan(
+        testplan = self.test_plan.create_new_test_plan(
             name=test_unit_new_name, material_type=material_type,
             test_unit=test_unit_new_name, article=article)
 
@@ -749,11 +749,11 @@ class TestUnitsTestCases(BaseTest):
         self.test_plan.sleep_tiny()
         self.assertEqual(len(test_units), 3)
 
-    def test022_duplicate_test_case(self):
+    def test022_duplicate_test_unit(self):
         """"
         New: Test unit: Duplication Approach: I can duplicate the test unit with only one record
 
-        LIMS-3678
+        LIMS-3678- case 1
         """
         # get the maximum number given to the latest testunit
         latest_testunit_row_data = self.test_unit_page.get_the_latest_row_data()
@@ -762,27 +762,42 @@ class TestUnitsTestCases(BaseTest):
         duplicated_test_unit_number = int(largest_number) + 1
         self.info('The duplicated testunit should have the number: {}'.format(duplicated_test_unit_number))
         self.info('Choosing a random testunit table row')
-
         random_test_unit = self.test_unit_page.select_random_table_row()
         test_unit_name = random_test_unit['Test Unit Name']
         self.info('test unit name : {}'.format(test_unit_name))
-        self.base_selenium.scroll()
         self.test_unit_page.duplicate_test_unit()
-        self.test_unit_page.sleep_tiny()
-        found_testunit = self.test_unit_page.search(test_unit_name)[0]
+        self.test_unit_page.sleep_small()
+        self.test_unit_page.apply_filter_scenario(
+            filter_element='test_unit:testunit_name', filter_text=test_unit_name, field_type='text')
+
+        found_testunit = self.test_unit_page.result_table()[0]
         found_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=found_testunit)
-        data_changed = ['Test Unit No.']
+        data_changed = ['Test Unit No.', 'Changed On', 'Created On', 'Version']
         random_test_unit, found_testunit_data = self.remove_unduplicated_data(
             data_changed=data_changed, first_element=random_test_unit, second_element=found_testunit_data)
 
         self.info('Asserting that the data is duplicated correctly')
         self.assertEqual(random_test_unit, found_testunit_data)
 
+    def test023_duplicate_multiple_test_units(self):
+        """"
+        New: Test unit: Duplication Approach: I can't duplicate multiple test units
+        LIMS-3678- case 2
+        """
+        self.info('Choosing a random testunit table rows')
+        self.test_unit_page.select_random_multiple_table_rows()
+        self.info('duplicate the selected test units')
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click('orders:duplicate')
+        error_msg = self.base_selenium.get_text(element='general:cant_delete_message')
+        self.assertIn('Can not duplicate more than one record at once', error_msg)
+
     @parameterized.expand([('unitsub', 'qualitative'),
                            ('unitsub', 'quantitative'),
                            ('unitsuper', 'qualitative'),
                            ('unitsuper', 'quantitative')])
-    def test023_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self, unit_with_sub_or_super, type):
+    def test024_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self, unit_with_sub_or_super, type):
         """
         New: Test unit: Export: Sub & Super scripts Approach: Allow user to see the
         sub & super scripts in the export file
@@ -842,7 +857,7 @@ class TestUnitsTestCases(BaseTest):
                 self.assertIn(item, fixed_sheet_row_data)
 
     @parameterized.expand(['quantitative', 'qualitative'])
-    def test024_create_test_unit_appears_in_version_table(self, unit_type):
+    def test025_create_test_unit_appears_in_version_table(self, unit_type):
         """
 
         New: Test unit: Versions Approach: After you create new record, all the columns should display in the version table
@@ -883,7 +898,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertIn(new_random_method, fixed_row_data)
 
     @parameterized.expand(['ok', 'cancel'])
-    def test025_create_approach_overview_button(self, ok):
+    def test026_create_approach_overview_button(self, ok):
         """
         Master data: Create: Overview button Approach: Make sure
         after I press on the overview button, it redirects me to the active table
@@ -904,7 +919,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits/add')
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
 
-    def test026_edit_approach_overview_button(self):
+    def test027_edit_approach_overview_button(self):
         """
         Edit: Overview Approach: Make sure after I press on
         the overview button, it redirects me to the active table
@@ -921,7 +936,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
     @parameterized.expand(['Quantitative', 'Qualitative', 'MiBi'])
-    def test_027_changing_testunit_type_update_fields_accordingly(self, testunit_type):
+    def test_028_changing_testunit_type_update_fields_accordingly(self, testunit_type):
         """
         New: Test unit: Type Approach: When I change type from edit mode, the values should
         changed according to this type that selected
@@ -951,7 +966,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
     @parameterized.expand(['quan', 'spec'])
-    def test_028_allow_user_to_change_between_specification_and_quantification(self, spec_or_quan):
+    def test_029_allow_user_to_change_between_specification_and_quantification(self, spec_or_quan):
         """
         New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between
         the two options specification and limit of quantification from edit mode.
@@ -960,7 +975,7 @@ class TestUnitsTestCases(BaseTest):
         """
         test_unit_id = self.test_unit_api.get_test_unit_with_spec_or_quan_only(spec_or_quan)
         self.test_unit_page.open_test_unit_edit_page_by_id(id=test_unit_id)
-        
+
         if spec_or_quan == 'spec':
             self.info('switch to quantification')
             self.test_unit_page.switch_from_spec_to_quan(lower_limit=50, upper_limit=100)
@@ -1104,7 +1119,7 @@ class TestUnitsTestCases(BaseTest):
         LIMS-4423
         """
         testunit_name = random.choice(self.test_unit_api.get_testunit_with_empty_specification())
-        
+
         self.info('generate random data to update testunit with')
         random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
         random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
@@ -1114,7 +1129,7 @@ class TestUnitsTestCases(BaseTest):
         testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
         version_value = int(testunit_data['Version'])
         updated_version = version_value + 1
-        
+
         self.info('open the testunit in edit form to update it')
         self.test_unit_page.open_edit_page(row=testunit_record)
         self.info('set upper limit to {}'.format(random_upper_limit))
@@ -1124,7 +1139,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('set unit limit to {}'.format(random_unit))
         self.test_unit_page.set_quan_unit(value=random_unit)
         self.test_unit_page.save_and_create_new_version()
-        
+
         self.info('refresh to make sure that data are saved correctly')
         self.base_selenium.refresh()
         self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
@@ -1139,7 +1154,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.sleep_small()
         self.info('version is {}, ant it should be {}'.format(
             testunit_data_after_update['Version'], str(updated_version)))
-        
+
         self.assertEqual(testunit_data_after_update['Version'], str(updated_version))
         self.assertEqual(testunit_data_after_update['Quantification Limit'],
                          str(random_lower_limit) + '-' + str(random_upper_limit))
@@ -1151,9 +1166,9 @@ class TestUnitsTestCases(BaseTest):
 
         version_counter = 1
         record_counter = 0
-        while record_counter < len(testunits_records_versions)-1:
+        while record_counter < len(testunits_records_versions) - 1:
             record_data = self.base_selenium.get_row_cells_dict_related_to_header(
-                    row=testunits_records_versions[record_counter])
+                row=testunits_records_versions[record_counter])
             self.assertEqual(record_data['Version'], str(version_counter))
 
             if version_counter == updated_version:
