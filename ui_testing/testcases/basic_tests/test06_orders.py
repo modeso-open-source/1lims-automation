@@ -1316,10 +1316,10 @@ class OrdersTestCases(BaseTest):
         #self.base_selenium.LOGGER.info('Update Test plans and press save to make sure that it is updated')
 
         #self.order_page.update_suborder(sub_order_index=3, test_plans=[new_testplan], form_view=False)
-        suborder_data_after_changing_testplans = #self.order_page.get_suborder_data(sub_order_index=3)
+        #suborder_data_after_changing_testplans = #self.order_page.get_suborder_data(sub_order_index=3)
 
         #self.base_selenium.LOGGER.info('Update test plans from {}, to {}'.format(suborder_data['test_plan'], suborder_data_after_changing_testplans['test_plan']))
-        self.order_page.save(save_btn="order:save_btn")
+        #self.order_page.save(save_btn="order:save_btn")
         
     ### SYNTAX ERROR ###
     # will continue with us
@@ -1447,7 +1447,7 @@ class OrdersTestCases(BaseTest):
     ### SYNTAX ERROR ###
 
     # will continue with us apply it from the second suborder & need test case number for it to apply from the second suborder
-    @parameterized.expand(['save_btn', 'cancel'])
+    #@parameterized.expand(['save_btn', 'cancel'])
     def test025_update_contact_departments(self, save):
         """
         Orders: department Approach: In case I update the department then press on save button
