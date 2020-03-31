@@ -1,15 +1,14 @@
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.company_profile_page import CompanyProfile
 from parameterized import parameterized
+from api_testing.apis.base_api import BaseAPI
 
 
 class CompanyProfileTestCases(BaseTest):
     def setUp(self):
         super().setUp()
         self.company_profile_page = CompanyProfile()
-        self.login_page.login(
-            username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.set_authorization(auth=BaseAPI().AUTHORIZATION_RESPONSE)
         self.company_profile_page.get_company_profile_page()
 
     def test001_user_can_search_in_the_country_field(self):

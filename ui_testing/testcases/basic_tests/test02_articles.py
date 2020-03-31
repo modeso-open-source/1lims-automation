@@ -1,9 +1,7 @@
-from api_testing.apis.article_api import ArticleAPI
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.article_page import Article
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.order_page import Order
-from ui_testing.pages.base_pages import BasePages
 from api_testing.apis.article_api import ArticleAPI
 from parameterized import parameterized
 from unittest import skip
@@ -17,12 +15,8 @@ class ArticlesTestCases(BaseTest):
         self.article_api = ArticleAPI()
         self.test_plan = TstPlan()
         self.order_page = Order()
-        self.base_page = BasePages()
-        self.article_api = ArticleAPI()
+        self.set_authorization(auth=self.article_api.AUTHORIZATION_RESPONSE)
 
-        self.login_page.login(
-            username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.article_page.get_articles_page()
         self.archived_optional_fields_flag = False
         self.default_filters_flags = {
@@ -213,8 +207,8 @@ class ArticlesTestCases(BaseTest):
     @parameterized.expand(['save', 'cancel'])
     def test005_cancel_button_edit_material_type(self, save):
         """
-        New: Article: Save/Cancel button: After I edit material_type 
-        then press on cancel button,a pop up will appear that the 
+        New: Article: Save/Cancel button: After I edit material_type
+        then press on cancel button,a pop up will appear that the
         data will not saved
 
         LIMS-3586
@@ -552,15 +546,15 @@ class ArticlesTestCases(BaseTest):
         self.base_selenium.click(element='articles:new_article')
         self.article_page.sleep_tiny()
         # click on Overview, this will display an alert to the user
-        self.base_page.click_overview()
+        self.article_page.click_overview()
         # switch to the alert
         if 'ok' == ok:
-            self.base_page.confirm_overview_pop_up()
+            self.article_page.confirm_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(),
                              '{}articles'.format(self.base_selenium.url))
             self.article_page.info('clicking on Overview confirmed')
         else:
-            self.base_page.cancel_overview_pop_up()
+            self.article_page.cancel_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(),
                              '{}articles/add'.format(self.base_selenium.url))
             self.article_page.info('clicking on Overview cancelled')
@@ -576,7 +570,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.info('article_url : {}'.format(article_url))
         # click on Overview, it will redirect you to articles' page
         self.article_page.info('click on Overview')
-        self.base_page.click_overview()
+        self.article_page.click_overview()
         self.article_page.sleep_small()
         self.assertEqual(self.base_selenium.get_url(),
                          '{}articles'.format(self.base_selenium.url))

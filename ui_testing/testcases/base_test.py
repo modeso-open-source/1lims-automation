@@ -18,7 +18,7 @@ class BaseTest(TestCase):
         print('\t')
         self.info('Test case : {}'.format(self._testMethodName))
         self.base_selenium.get_driver()
-        self.login_page = Login()
+        self.base_selenium.get(url=self.base_selenium.url)
 
     def tearDown(self):
         self.base_selenium.quit_driver()
@@ -120,3 +120,6 @@ class BaseTest(TestCase):
 
     def info(self, message):
         self.base_selenium.LOGGER.info(message)
+
+    def set_authorization(self, auth):
+        self.base_selenium.set_local_storage('modeso-auth-token', auth)

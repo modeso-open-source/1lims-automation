@@ -12,7 +12,7 @@ class BaseAPI:
     requests.packages.urllib3.disable_warnings()
 
     AUTHORIZATION = None
-
+    AUTHORIZATION_RESPONSE = None
     LOGGER = logger
 
     _instance = None
@@ -49,6 +49,7 @@ class BaseAPI:
                       'cache-control': "no-cache"}
             data = {'username': username, 'password': password}
             response = self.session.post(api, json=data, headers=header, verify=False)
+            BaseAPI.AUTHORIZATION_RESPONSE = response.json()['data']
             BaseAPI.AUTHORIZATION = 'Bearer {}'.format(response.json()['data']['sessionId'])
             self.info('session ID : {} .....'.format(response.json()['data']['sessionId'][:10]))
 
@@ -79,6 +80,10 @@ class BaseAPI:
     @staticmethod
     def get_current_date():
         return datetime.today().strftime('%Y-%m-%d')
+
+    @staticmethod
+    def get_current_year():
+        return str(datetime.now().year)
 
 
 def api_factory(method):

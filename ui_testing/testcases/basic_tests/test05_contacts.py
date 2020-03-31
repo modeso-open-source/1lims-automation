@@ -29,10 +29,9 @@ class ContactsTestCases(BaseTest):
         self.header_page = Header()
         self.base_page = BasePages()
 
-        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.set_authorization(auth=self.contacts_api.AUTHORIZATION_RESPONSE)
         self.contact_page.get_contacts_page()
-        table_fields = self.contacts_api.get_table_fields(component_id=3)
+        table_fields = self.contacts_api.get_table_fields(component_id=3)[0]['fields']
 
         if self.contact_page.check_for_hidden_table_fields(fields=table_fields):
             self.contact_page.set_all_configure_table_columns_to_specific_value(value=True,
@@ -282,7 +281,7 @@ class ContactsTestCases(BaseTest):
 
         LIMS-3565
         """
-        order_request = self.orders_api.get_all_orders().json()
+        order_request = self.orders_api.get_all_orders()
         self.assertEqual(order_request['status'], 1)
         orders_records = order_request['orders']
         self.assertNotEqual(len(orders_records), 0)
@@ -400,7 +399,7 @@ class ContactsTestCases(BaseTest):
         departments_list = new_updated_departments.split(', ')
 
         self.base_selenium.LOGGER.info('get order data of order with id {}'.format(order_id))
-        order_request = self.orders_api.get_order_by_id(id=order_id).json()
+        order_request = self.orders_api.get_order_by_id(id=order_id)
         self.assertEqual(order_request['status'], 1)
         order_data = order_request['orders']
         self.assertNotEqual(len(order_data), 0)
@@ -466,8 +465,8 @@ class ContactsTestCases(BaseTest):
 
         """
 
-        contacts_response = self.contacts_api.get_all_contacts()
-        contacts = contacts_response.json()['contacts']
+        contacts_response, _ = self.contacts_api.get_all_contacts()
+        contacts = contacts_response['contacts']
         contact_name = random.choice(contacts)['name']
         search_results = self.contact_page.search(contact_name)
         self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
@@ -491,7 +490,7 @@ class ContactsTestCases(BaseTest):
         LIMS-3569
         """
 
-        contact_request = self.contacts_api.get_all_contacts().json()
+        contact_request, _ = self.contacts_api.get_all_contacts()
         self.assertEqual(contact_request['status'], 1)
         self.assertNotEqual(contact_request['count'], 0)
         contacts_records = contact_request['contacts']

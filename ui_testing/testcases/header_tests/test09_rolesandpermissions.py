@@ -25,8 +25,7 @@ class HeaderTestCases(BaseTest):
         self.single_analysis_page = SingleAnalysisPage()
         self.users_api = UsersAPI()
 
-        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.set_authorization(auth=self.users_api.AUTHORIZATION_RESPONSE)
         self.header_page.click_on_header_button()
 
     def test001_archive_roles_and_permissions(self):

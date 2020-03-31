@@ -1,6 +1,9 @@
 from api_testing.apis.base_api import BaseAPI
+from api_testing.apis.base_api import api_factory
 
-class TestUnitAPI(BaseAPI):
+
+class TestUnitAPIFactory(BaseAPI):
+    @api_factory('get')
     def get_all_test_units(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_all_test_units'])
         _payload = {"sort_value": "number",
@@ -8,101 +11,80 @@ class TestUnitAPI(BaseAPI):
                     "start": 0,
                 "sort_order": "DESC",
                 "filter": "{}",
-                    "deleted": "0"}
-        payload = self.update_payload(_payload, **kwargs)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
-        self.info(response)
-        self.info('Status code: {}'.format(response.status_code))
-        return response
+                    "deleted": "0"
+                    }
+        return api, _payload
 
+    @api_factory('get')
     def report_sheet_get_list_table(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['report_sheet_get_list_table'])
         _payload = {'sort_value': 'id',
                     'limit': 5,
                     'start': 0,
                     'sort_order': 'asc',
-                    'filter': '{"id":2440}'}
-        payload = self.update_payload(_payload, **kwargs)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        return response
+                    'filter': '{"id":2440}'
+                    }
+        return api, {}
 
-    def get_all_testunits_json(self):
-        testunits = self.get_all_test_units().json()['testUnits']
-        return testunits
-
+    @api_factory('get')
     def get_testunit_form_data(self, id=1):
+        """
+        if success, response['testUnit']
+        :param id:
+        :return:
+        """
         api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['form_data'], str(id))
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1:
-            return data['testUnit']
-        else:
-            return False
+        return api, {}
 
+    @api_factory('put')
     def archive_testunits(self, ids=['1']):
+        """"
+        if success, response['message'] == 'delete_success'
+        """
         api = '{}{}{}/archive'.format(self.url, self.END_POINTS['test_unit_api']['archive_testunits'], ','.join(ids))
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message'] == 'delete_success':
-            return True
-        else:
-            return False
+        return api, {}
 
+    @api_factory('put')
     def restore_testunits(self, ids=['1']):
+        """
+         if success, response['message']=='operation_success'
+         :param ids:
+         :return:
+         """
         api = '{}{}{}/restore'.format(self.url, self.END_POINTS['test_unit_api']['restore_testunits'], ','.join(ids))
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message']=='operation_success':
-            return True
-        else:
-            return False
+        return api, {}
 
+    @api_factory('delete')
     def delete_archived_testunit(self, id=1):
+        """
+        if success, response['message']=='hard_delete_success'
+        :param id:
+        :return:
+        """
         api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['delete_testunit'], str(id))
-        self.info('DELETE : {}'.format(api))
-        response = self.session.delete(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message']=='hard_delete_success':
-            return True
-        else:
-            return False
+        return api, {}
 
-    def delete_active_testunit(self, id=1):
-        if self.archive_testunits(ids=[str(id)]):
-            if self.delete_archived_testunit(id=id):
-                return True
-            else:
-                self.restore_testunits(ids=[str(id)])
-                return False
-        else:
-            return False
-
+    @api_factory('get')
     def list_testunits_types(self):
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_types'])
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        return data
+        return api, {}
 
+    @api_factory('get')
     def list_testunits_concentrations(self):
+        """
+        if success, response['concentrations']
+        :return:
+        """
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_concentrations'])
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        return data['concentrations']
+        return api, {}
 
+    @api_factory('get')
+    def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
+        """
+        if success, response['testUnits']
+        """
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue)
+        return api, {}
 
     """
     NOTE testunits created without specific data, random data will be assigned, and in case of material type, All is assigned, and in case of iteration, 1 is assigned
@@ -146,8 +128,8 @@ class TestUnitAPI(BaseAPI):
     in case of MiBi, use upperLimit: to define mibi upper limit value
     """
 
+    @api_factory('post')
     def create_qualitative_testunit(self, **kwargs):
-
         random_category = self.generate_random_string()
         _payload = {
             'name': self.generate_random_string(),
@@ -188,20 +170,10 @@ class TestUnitAPI(BaseAPI):
                 'value': value
             })
         payload['textValueArray'] = values_arr
-
-
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit'])
-        self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
+        return api, payload
 
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-
-        if data['status'] == 1:
-            return payload
-        else:
-            return data['message']
-
+    @api_factory('post')
     def create_quantitative_testunit(self, **kwargs):
         random_category =self.generate_random_string()
         _payload = {
@@ -241,22 +213,11 @@ class TestUnitAPI(BaseAPI):
             payload['selectedCategory'] = [kwargs['category']]
 
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit'])
-        self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
+        return api, payload
 
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-
-        if data['status'] == 1:
-            return payload
-        else:
-            return data['message']
-
-
-
+    @api_factory('post')
     def create_mibi_testunit(self, **kwargs):
-
-        random_category =self.generate_random_string()
+        random_category = self.generate_random_string()
         _payload = {
             'name': self.generate_random_string(),
             'number': self.generate_random_number(),
@@ -293,26 +254,23 @@ class TestUnitAPI(BaseAPI):
             payload['selectedCategory'] = [kwargs['category']]
 
         api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['create_testunit'])
-        self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=payload, params='', headers=self.headers, verify=False)
+        return api, payload
 
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
 
-        if data['status'] == 1:
-            return payload
-        else:
-            return data['message']
+class TestUnitAPI(TestUnitAPIFactory):
+    def get_all_testunits_json(self):
+        response, _ = self.get_all_test_units()
+        testunits = response['testUnits']
+        return testunits
 
-    def list_testunit_by_name_and_material_type(self, materialtype_id, name='', negelectIsDeleted=0, searchableValue=''):
-        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1:
-            return data['testUnits']
-        return []
+    def get_test_unit_with_spec_or_quan_only(self, spec_or_quan):
+        response, _ = self.get_all_test_units(filter='{"typeName":2}')
+        testunits = response['testUnits']
+        for testunit in testunits:
+            if spec_or_quan == 'spec' and testunit['specifications'] != '' and testunit['quantification'] == '':
+                return testunit['id']
+            elif spec_or_quan == 'quan' and testunit['specifications'] == '' and testunit['quantification'] != '':
+                return testunit['id']
 
     def get_first_record_with_data_in_attribute(self, attribute):
         testunits_request = self.get_all_test_units().json()
@@ -324,7 +282,7 @@ class TestUnitAPI(BaseAPI):
                 return testunit[attribute]
         
     def get_testunit_with_empty_specification(self):
-        testunits_request = self.get_all_test_units(filter='{"typeName":2}').json()
+        testunits_request, _ = self.get_all_test_units(filter='{"typeName":2}')
         testunits = testunits_request['testUnits']
         testunits_name = []
         for testunit in testunits:
@@ -332,10 +290,12 @@ class TestUnitAPI(BaseAPI):
                 testunits_name.append(testunit['name'])
         return testunits_name
 
-    def get_test_unit_with_spec_or_quan_only(self, spec_or_quan):
-        testunits = self.get_all_test_units(filter='{"typeName":2}').json()['testUnits']
-        for testunit in testunits:
-            if spec_or_quan == 'spec' and testunit['specifications'] != '' and testunit['quantification'] == '':
-                return testunit['id']
-            elif spec_or_quan == 'quan' and testunit['specifications'] == '' and testunit['quantification'] != '':
-                return testunit['id']
+    def delete_active_testunit(self, id=1):
+        if self.archive_testunits(ids=[str(id)])[0]['message'] == 'delete_success':
+            if self.delete_archived_testunit(id=id)[0]['message'] == 'hard_delete_success':
+                return True
+            else:
+                self.restore_testunits(ids=[str(id)])
+                return False
+        else:
+            return False
