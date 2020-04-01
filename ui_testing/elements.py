@@ -3,8 +3,10 @@ elements = {
         'child_table_arrow': {'method': 'class_name',
                               'value': 'm-datatable__toggle-subtable',
                               'order': 0},
-        'table_child': {'method': 'class_name', 'value': 'dataTable', 'order': 1},
-
+        'table_child': {'method': 'class_name',
+                        'value': 'dataTable',
+                        'order': 1},
+        'table_menu_options': {'method': 'class_name', 'value': 'dropdown', 'order': 0},
         'span': {'method': 'tag_name',
                  'value': 'span',
                  'order': 0},
@@ -14,15 +16,10 @@ elements = {
         'tag': {'method': 'tag_name',
                 'value': 'tag',
                 'order': 0},
-
-        'search': {'method': 'id',
-                   'value': 'generalSearch'},
+        'search': {'method': 'xpath',
+                   'value': '//input[@id="generalSearch"]'},
         'table': {'method': 'id',
                   'value': 'table'},
-        'table_child': {"method": "class_name",
-                        "value": "dataTable",
-                        "order": 1
-                        },
         'save': {'method': 'class_name',
                  'value': 'btn-primary',
                  'order': 0},
@@ -75,9 +72,6 @@ elements = {
         'checkbox': {'method': 'class_name',
                      'value': 'm-checkbox',
                      'order': 0},
-        'child_table_arrow': {'method': 'class_name',
-                              'value': 'm-datatable__toggle-subtable',
-                              'order': 0},
         'label': {'method': 'tag_name',
                   'value': 'label',
                   'order': 0},
@@ -576,7 +570,8 @@ elements = {
         'test_date_filter': {'method': 'id',
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
-                                 'value': 'start_shipmentDate'}
+                                 'value': 'start_shipmentDate'},
+        'suborder_duplicate': {'method': 'id', 'value': 'child_table_duplicate'}
     },
 
     'audit_trail': {

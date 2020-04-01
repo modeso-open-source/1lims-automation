@@ -69,6 +69,15 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:duplicate')
         self.sleep_medium()
 
+    def duplicate_sub_order_from_table_overview(self, index=0, number_of_copies=1):
+        self.info('duplicate suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[index])
+        self.base_selenium.click(element='orders:suborder_duplicate')
+        self.base_selenium.set_text(element='orders:number_of_copies', value=number_of_copies)
+        self.base_selenium.click(element='orders:create_copies')
+        self.sleep_medium()
+
     def get_random_order(self):
         self.base_selenium.LOGGER.info(' + Get random order.')
         row = self.get_random_order_row()

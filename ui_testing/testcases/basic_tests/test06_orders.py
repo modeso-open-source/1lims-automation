@@ -2106,3 +2106,39 @@ class OrdersTestCases(BaseTest):
         self.info('checking order no of each analysis')
         for record in analysis_records:
             self.assertEqual(record['Order No.'], formated_order_no)
+
+    def test033_Duplicate_sub_order_and_cahange_materiel_type(self):
+        """
+        duplicate sub-order of any order then change the materiel type
+
+        LIMS-6277
+        """
+        # get the random main order data
+        orders, payload = self.orders_api.get_all_orders(limit=50)
+        main_order = random.choice(orders['orders'])
+        self.order_page.search(main_order['orderNo'])
+        self.order_page.get_child_table_data()
+        # duplicate the sub order of main order
+        self.order_page.duplicate_sub_order_from_table_overview()
+        # change material type
+        material_type = self.order_page.set_material_type()
+        self.info('Make sure that article and test units are empty')
+        self.assertEqual(self.base_selenium.get_value(element='order:article'), None)
+        self.assertEqual(self.base_selenium.get_value(element='order:test_unit'), None)
+        article = self.order_page.set_article()
+        test_unit = self.order_page.set_test_unit()
+        self.info('duplicated sub-order material is {}, article {}, and test_unit {}'.
+                  format(material_type, article, test_unit))
+        # save the duplicated order after edit
+        self.order_page.save(save_btn='order:save_btn', sleep=True)
+        # go back to the table view
+        self.order_page.get_orders_page()
+        # search for the created order no
+        self.order_page.search(main_order['orderNo'])
+        # get the search result text
+        child_data = self.order_page.get_child_table_data()
+        duplicated_suborder_data = child_data[0]
+        # check that it exists
+        self.assertEqual(duplicated_suborder_data['Material Type'], material_type)
+        self.assertEqual(duplicated_suborder_data['Article Name'], article)
+        self.assertEqual(duplicated_suborder_data['Test Units'], test_unit)

@@ -236,16 +236,27 @@ class BasePages:
         self._copy(value=value)
         self._paste(element=element)
 
+    def open_row_options(self, row):
+        self.info('open record options menu')
+        row_options = self.base_selenium.find_element_in_element(
+            destination_element='general:table_menu_options', source=row)
+        row_options.click()
+        self.sleep_tiny()
+
     def open_child_table(self, source):
-        childtable_arrow = self.base_selenium.find_element_in_element(destination_element='general:child_table_arrow', source=source)
+        childtable_arrow = self.base_selenium.find_element_in_element(
+            destination_element='general:child_table_arrow', source=source)
         childtable_arrow.click()
         self.sleep_medium()
 
     def get_child_table_data(self, index=0):
         rows = self.result_table()
         self.open_child_table(source=rows[index])
-        rows_with_childtable = self.result_table(element='general:table_child')
-        headers = self.base_selenium.get_table_head_elements(element='general:table_child')
+        return self.get_table_data()
+
+    def get_table_data(self, table_element='general:table_child'):
+        rows_with_childtable = self.result_table(element=table_element)
+        headers = self.base_selenium.get_table_head_elements(element=table_element)
 
         child_table_data = []
         for subrecord in range(0, len(rows_with_childtable)):
