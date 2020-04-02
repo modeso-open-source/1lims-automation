@@ -19,6 +19,11 @@ class Order(Orders):
         self.base_selenium.select_item_from_drop_down(
             element='order:order', item_text='Existing Order')
 
+    def open_suborder_edit(self, index=0):
+        element = '//table[@id="table-with-add"]//tbody//tr'.format([index])
+        self.base_selenium.click(element='//table[@id="table-with-add"]//tbody//tr[index]')
+        self.info("suborder table can be editted")
+
     def set_material_type(self, material_type=''):
         if material_type:
             self.base_selenium.select_item_from_drop_down(

@@ -1317,129 +1317,123 @@ class OrdersTestCases(BaseTest):
                                                                                      'test_plan']))
         self.order_page.save(save_btn="order:save_btn")
 
-    ### SYNTAX ERROR ###
-    # will continue with us
     # this bug will only affect the delete case, but the adding case is working fine
     # @skip('https://modeso.atlassian.net/browse/LIMS-4915')
     # @skip('https://modeso.atlassian.net/browse/LIMS-4916')
-    # @parameterized.expand(['add', 'delete'])
-    # def test021_update_suborder_testunits(self, save):
-    #     """
-    #     Try this on suborder number 5 for example:-
-    #     -When I delete test unit to update it message will appear 
-    #     ( This Test Unit will be removed from the corresponding analysis )
-    #     -Make sure the corresponding analysis records created according to this update in test unit.
+    @parameterized.expand(['add', 'delete'])
+    def test021_update_suborder_testunits(self, save):
+        """
+        Try this on suborder number 5 for example:-
+        -When I delete test unit to update it message will appear
+        ( This Test Unit will be removed from the corresponding analysis )
+        -Make sure the corresponding analysis records created according to this update in test unit.
 
-    #     LIMS-4269
+        LIMS-4269 case 2
+        """
+        orders, payload = self.orders_api.get_all_orders(limit=100)
+        order = random.choice(orders['orders'])
+        import ipdb;ipdb.set_trace()
+        self.orders_page.get_order_edit_page_by_id(id=order['id'])
+        self.order_page.get_suborder_table()
 
-    #     """
 
-    #     # create order with 2 suborders to make sure that update in the suborder is working
-    #     # order is create with Raw Material as a mteria type because it has multiple test units, and it won't affect the case logic, since the update is test unit related not material type related
-    #     self.base_selenium.LOGGER.info('Creating new order with 2 suborders')
-    #     order_no_created = self.order_page.create_new_order(multiple_suborders=1, material_type='Raw Material', test_units=['', ''])
+        if save == 'add':
+            # checking that when adding new test unit, the newly added test unit is added to the order's analysis instead of creating new analysis
+            self.info('Update the 2nd suborder by adding new test unit')
+            self.order_page.get_random_x(row=rows[1])
+            self.order_page.update_suborder(sub_order_index=1, test_units=[''])
+            suborder_testunits_before_refresh = self.order_page.get_suborder_data(sub_order_index=1)
+            suborder_testunits_before_refresh = suborder_testunits_before_refresh['test_unit'].split('|')
+            self.order_page.save(save_btn='order:save_btn')
 
-    #     rows = self.order_page.search(value=order_no_created)
-    #     selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
-    #     analysis_no = selected_order_data['Analysis No.']
-    #     order_no = selected_order_data['Order No.']
+            self.base_selenium.LOGGER.info('Refresh to make sure that data are saved correctly')
+            self.base_selenium.refresh(sleep=10)
 
-    #     if save == 'add':
-    #         # checking that when adding new test unit, the newly added test unit is added to the order's analysis instead of creating new analysis
-    #         self.base_selenium.LOGGER.info('Update the 2nd suborder by adding new test unit')
-    #         self.order_page.get_random_x(row=rows[1])
-    #         self.order_page.update_suborder(sub_order_index=1, test_units=[''])
-    #         suborder_testunits_before_refresh = self.order_page.get_suborder_data(sub_order_index=1)
-    #         suborder_testunits_before_refresh = suborder_testunits_before_refresh['test_unit'].split('|')
-    #         self.order_page.save(save_btn='order:save_btn')
+            self.base_selenium.LOGGER.info('Get suborder data to check it')
+            self.order_page.get_suborder_table()
+            suborder_testunits_after_refresh = self.order_page.get_suborder_data(sub_order_index=1)
+            suborder_testunits_after_refresh = suborder_testunits_after_refresh['test_unit'].split('|')
 
-    #         self.base_selenium.LOGGER.info('Refresh to make sure that data are saved correctly')
-    #         self.base_selenium.refresh(sleep=10)
+            self.base_selenium.LOGGER.info('+ Assert Test units: test units are: {}, and should be: {}'.
+                                           format(suborder_testunits_after_refresh, suborder_testunits_before_refresh))
 
-    #         self.base_selenium.LOGGER.info('Get suborder data to check it')
-    #         self.order_page.get_suborder_table()
-    #         suborder_testunits_after_refresh = self.order_page.get_suborder_data(sub_order_index=1)
-    #         suborder_testunits_after_refresh = suborder_testunits_after_refresh['test_unit'].split('|')
+            suborder_data_after_saving = self.order_page.get_suborder_data(sub_order_index=3)
+            # getting the length of the table, should be 2
+            self.base_selenium.LOGGER.info('Getting analysis page to check the data in this child table')
+            self.analyses_page.get_analyses_page()
 
-    #         self.base_selenium.LOGGER.info('+ Assert Test units: test units are: {}, and should be: {}'.format(suborder_testunits_after_refresh, suborder_testunits_before_refresh))
+            self.base_selenium.LOGGER.info('Filter with order no to check analysis count')
+            analysis_records=self.analyses_page.search(value=order_no)
+            analysis_count = len(analysis_records) -1
 
-    #     suborder_data_after_saving = self.order_page.get_suborder_data(sub_order_index=3)
-    #         # getting the length of the table, should be 2
-    #         self.base_selenium.LOGGER.info('Getting analysis page to check the data in this child table')
-    #         self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(
+            suborder_data_after_changing_data['material_types'], suborder_data_after_saving['material_types']))
+        self.assertEqual(suborder_data_after_changing_data['material_types'],
+                         suborder_data_after_saving['material_types'])
 
-    #         self.base_selenium.LOGGER.info('Filter with order no to check analysis count')
-    #         analysis_records=self.analyses_page.search(value=order_no)
-    #         analysis_count = len(analysis_records) -1
+        self.base_selenium.LOGGER.info(
+            '+Assert Compare Article, old: {}, new: {}'.format(suborder_data_after_changing_data['article'],
+                                                               suborder_data_after_saving['article']))
+        self.assertEqual(suborder_data_after_changing_data['article'], suborder_data_after_saving['article'])
 
-    #     self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(
-    #         suborder_data_after_changing_data['material_types'], suborder_data_after_saving['material_types']))
-    #     self.assertEqual(suborder_data_after_changing_data['material_types'],
-    #                      suborder_data_after_saving['material_types'])
+        self.base_selenium.LOGGER.info(
+            '+Assert Compare Test Plans, old: {}, new: {}'.format(suborder_data_after_changing_data['test_plan'],
+                                                                  suborder_data_after_saving['test_plan']))
+        self.assertEqual(suborder_data_after_changing_data['test_plan'], suborder_data_after_saving['test_plan'])
 
-    #     self.base_selenium.LOGGER.info(
-    #         '+Assert Compare Article, old: {}, new: {}'.format(suborder_data_after_changing_data['article'],
-    #                                                            suborder_data_after_saving['article']))
-    #     self.assertEqual(suborder_data_after_changing_data['article'], suborder_data_after_saving['article'])
+        self.base_selenium.LOGGER.info(
+            '+Assert Compare Test units, old: {}, new: {}'.format(suborder_data_after_changing_data['test_unit'],
+                                                                  suborder_data_after_saving['test_unit']))
+        self.assertEqual(suborder_data_after_changing_data['test_unit'], suborder_data_after_saving['test_unit'])
 
-    #     self.base_selenium.LOGGER.info(
-    #         '+Assert Compare Test Plans, old: {}, new: {}'.format(suborder_data_after_changing_data['test_plan'],
-    #                                                               suborder_data_after_saving['test_plan']))
-    #     self.assertEqual(suborder_data_after_changing_data['test_plan'], suborder_data_after_saving['test_plan'])
+        testplan_testunits.append(suborder_data_after_saving['test_unit'])
 
-    #     self.base_selenium.LOGGER.info(
-    #         '+Assert Compare Test units, old: {}, new: {}'.format(suborder_data_after_changing_data['test_unit'],
-    #                                                               suborder_data_after_saving['test_unit']))
-    #     self.assertEqual(suborder_data_after_changing_data['test_unit'], suborder_data_after_saving['test_unit'])
+        self.base_selenium.LOGGER.info('Get analysis page to make sure that update took place in analysis')
+        self.analyses_page.get_analyses_page()
 
-    #     testplan_testunits.append(suborder_data_after_saving['test_unit'])
+        self.base_selenium.LOGGER.info(
+            'Filter by order no: #{}, to make sure that no new analysis have been created'.format(
+                basic_order_data['Order No.']))
+        rows = self.analyses_page.search(value=basic_order_data['Order No.'])
+        self.base_selenium.LOGGER.info('Count of analysis is #{}, and it shpuld be {}'.format(len(rows) - 1, 4))
+        self.assertEqual(len(rows) - 1, 4)
 
-    #     self.base_selenium.LOGGER.info('Get analysis page to make sure that update took place in analysis')
-    #     self.analyses_page.get_analyses_page()
+        self.base_selenium.LOGGER.info(
+            'Filter by analysis no: #{}, to check the order data'.format(basic_order_data['Analysis No.']))
+        self.base_selenium.LOGGER.info('Get first row data, because it is the analysis of the updated order')
+        rows = self.analyses_page.search(value=basic_order_data['Analysis No.'])
 
-    #     self.base_selenium.LOGGER.info(
-    #         'Filter by order no: #{}, to make sure that no new analysis have been created'.format(
-    #             basic_order_data['Order No.']))
-    #     rows = self.analyses_page.search(value=basic_order_data['Order No.'])
-    #     self.base_selenium.LOGGER.info('Count of analysis is #{}, and it shpuld be {}'.format(len(rows) - 1, 4))
-    #     self.assertEqual(len(rows) - 1, 4)
+        analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
 
-    #     self.base_selenium.LOGGER.info(
-    #         'Filter by analysis no: #{}, to check the order data'.format(basic_order_data['Analysis No.']))
-    #     self.base_selenium.LOGGER.info('Get first row data, because it is the analysis of the updated order')
-    #     rows = self.analyses_page.search(value=basic_order_data['Analysis No.'])
+        self.base_selenium.LOGGER.info(
+            'Comparing analysis data with the updated order data to make sure that it is updated correctly')
 
-    #     analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+        self.base_selenium.LOGGER.info('+Assert Material type, should be: {}, and it is: {}'.format(new_material_type,
+                                                                                                    analysis_data[
+                                                                                                        'Material Type']))
+        self.assertEqual(new_material_type, analysis_data['Material Type'])
 
-    #     self.base_selenium.LOGGER.info(
-    #         'Comparing analysis data with the updated order data to make sure that it is updated correctly')
+        self.base_selenium.LOGGER.info(
+            '+Assert Article Name, should be: {}, and it is: {}'.format(new_article, analysis_data['Article Name']))
+        self.assertEqual(new_article, analysis_data['Article Name'])
 
-    #     self.base_selenium.LOGGER.info('+Assert Material type, should be: {}, and it is: {}'.format(new_material_type,
-    #                                                                                                 analysis_data[
-    #                                                                                                     'Material Type']))
-    #     self.assertEqual(new_material_type, analysis_data['Material Type'])
+        self.base_selenium.LOGGER.info(
+            '+Assert Test plans, should be: {}, and it is: {}'.format(suborder_data_after_saving['test_plan'],
+                                                                      analysis_data['Test Plans']))
+        self.assertEqual(suborder_data_after_saving['test_plan'], analysis_data['Test Plans'])
+        analysis_test_units = []
 
-    #     self.base_selenium.LOGGER.info(
-    #         '+Assert Article Name, should be: {}, and it is: {}'.format(new_article, analysis_data['Article Name']))
-    #     self.assertEqual(new_article, analysis_data['Article Name'])
+        for testunit in analysis_child_table:
+            analysis_test_units.append(testunit['Test Unit'])
 
-    #     self.base_selenium.LOGGER.info(
-    #         '+Assert Test plans, should be: {}, and it is: {}'.format(suborder_data_after_saving['test_plan'],
-    #                                                                   analysis_data['Test Plans']))
-    #     self.assertEqual(suborder_data_after_saving['test_plan'], analysis_data['Test Plans'])
-    #             analysis_test_units = []
+        self.base_selenium.LOGGER.info(
+            'analysis test units are: {}, and it should be: {}'.format(analysis_test_units, testplan_testunits))
+        self.assertEqual(set(analysis_test_units) == set(testplan_testunits), True)
 
-    #     for testunit in analysis_child_table:
-    #         analysis_test_units.append(testunit['Test Unit'])
-
-    #     self.base_selenium.LOGGER.info(
-    #         'analysis test units are: {}, and it should be: {}'.format(analysis_test_units, testplan_testunits))
-    #     self.assertEqual(set(analysis_test_units) == set(testplan_testunits), True)
-
-    # def test_test(self):
-    #     import ipdb; ipdb.set_trace()
-    #     suborder_data = self.order_page.get_suborder_data(sub_order_index=3)
-    ### SYNTAX ERROR ###
+    #def test_test(self):
+    #    import ipdb; ipdb.set_trace()
+    #    suborder_data = self.order_page.get_suborder_data(sub_order_index=3)
+    ## SYNTAX ERROR ###
 
     # will continue with us apply it from the second suborder & need test case number for it to apply from the second suborder
     @parameterized.expand(['save_btn', 'cancel'])
