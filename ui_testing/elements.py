@@ -1040,7 +1040,8 @@ elements = {
             'value': 'table-with-add'
         },
         'analysis_page_table': {'method': 'class_name', 'value': 'm_accordion_7', 'order': 0},
-        'headers': {'method': 'id', 'value': 'headers'}
+        'headers': {'method': 'id', 'value': 'headers'},
+        'analysis_no_filter': {'method': 'id', 'value': 'nofield'}
     },
 
     'company_profile': {

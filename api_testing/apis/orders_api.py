@@ -35,10 +35,12 @@ class OrdersAPI(BaseAPI):
         return api, {}
 
     @api_factory('get')
-    def get_suborder_by_order_id(self, id):
+    def get_suborder_by_order_id(self, id=1):
         """
+        param id: order ID
+        :return: response, payload
         """
-        api = '{}{}{}'.format(self.url,self.END_POINTS['orders_api']['get_suborder'], str(id))
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['get_suborder'], str(id)+'&deleted=0')
         return api, {}
 
     @api_factory('post')
@@ -160,8 +162,6 @@ class OrdersAPI(BaseAPI):
         api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['delete_suborder'], str(suborder_id))
         return api, {}
 
-
-
     @staticmethod
     def _format_payload(payload):
         if payload['testPlans']:
@@ -213,3 +213,26 @@ class OrdersAPI(BaseAPI):
 
         payload['materialTypeId'] = payload['materialType']['id']
         return payload
+
+class OrdersAPIUsage(OrdersAPI):
+    def get_order_with_feild_name(self, feild):
+        """
+
+        :param feild: must be in this list ['article', 'materialType','analysis','testPlans','testUnit']
+        :return: order, suborder
+        """
+        orders_data, payload = self.get_all_orders(limit=100)
+        orders = orders_data['orders']
+        for order in orders:
+            suborders_data, a = self.get_suborder_by_order_id(order['id'])
+            suborders = suborders_data['orders']
+            if len(suborders) == 1:
+                if suborders[0][feild]:
+                    return order, suborders, 0
+            elif len(suborders) == 0:
+                break
+            else:
+                for i in range(0, len(suborders)-1):
+                    if suborders[i][feild]:
+                        return order, suborders, i
+

@@ -4,6 +4,7 @@ from parameterized import parameterized
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
+from api_testing.apis.orders_api import OrdersAPIUsage
 from api_testing.apis.orders_api import OrdersAPI
 from ui_testing.pages.analysis_page import SingleAnalysisPage
 from ui_testing.pages.analysis_page import AllAnalysesPage
@@ -1320,117 +1321,83 @@ class OrdersTestCases(BaseTest):
     # this bug will only affect the delete case, but the adding case is working fine
     # @skip('https://modeso.atlassian.net/browse/LIMS-4915')
     # @skip('https://modeso.atlassian.net/browse/LIMS-4916')
-    @parameterized.expand(['add', 'delete'])
-    def test021_update_suborder_testunits(self, save):
+    def test021_update_suborder_testunits(self):
         """
-        Try this on suborder number 5 for example:-
         -When I delete test unit to update it message will appear
         ( This Test Unit will be removed from the corresponding analysis )
         -Make sure the corresponding analysis records created according to this update in test unit.
 
         LIMS-4269 case 2
         """
-        orders, payload = self.orders_api.get_all_orders(limit=100)
-        order = random.choice(orders['orders'])
-        import ipdb;ipdb.set_trace()
-        self.orders_page.get_order_edit_page_by_id(id=order['id'])
-        self.order_page.get_suborder_table()
+        self.orders_api_usage = OrdersAPIUsage()
+        order, sub_order, sub_order_index = self.orders_api_usage.get_order_with_feild_name(feild='testUnit')
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        suborder_before_refresh = \
+            self.order_page.update_suborder(sub_order_index=sub_order_index, test_units=[''], remove_old=True)
+        # checking that when adding new test unit, the newly added test unit is added to the
+        # order's analysis instead of creating new analysis
+        suborder_testunits_before_refresh = suborder_before_refresh['suborders'][sub_order_index]['testunits']
+        self.order_page.save(save_btn='order:save_btn')
+        self.info('Refresh to make sure that data are saved correctly')
+        self.base_selenium.refresh()
+        self.info('Get suborder data to check it')
+        suborder_after_refresh = self.order_page.get_suborder_data()['suborders'][sub_order_index]
+        suborder_testunits_after_refresh = suborder_after_refresh['testunits']
+        self.info('Assert Test units: test units are: {}, and should be: {}'.
+                  format(suborder_testunits_after_refresh, suborder_testunits_before_refresh))
+        self.assertEqual(suborder_testunits_after_refresh, suborder_testunits_before_refresh)
+
+        self.info('Getting analysis page to check the data in this child table')
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.info('Filter with order no to check analysis count')
+        self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
+                                                 filter_text=suborder_after_refresh['analysis_no'],field_type='text')
+
+        analysis_records = self.analyses_page.get_child_table_data()[0]
+        self.info('Assert analysis record test unit is {} as selected testunit {}'
+                  .format(analysis_records['Test Unit'], suborder_testunits_before_refresh[0]['name']))
+        self.assertEqual(analysis_records['Test Unit'], suborder_testunits_before_refresh[0]['name'])
+
+    def test022_update_suborder_testplans(self):
+        """
+        -When I delete test plan to update it message will appear
+        ( This Test Unit will be removed from the corresponding analysis )
+        -Make sure the corresponding analysis records created according to this update in test unit.
+
+        LIMS-4269 case 1
+        """
+        self.orders_api_usage = OrdersAPIUsage()
+        order, sub_order, sub_order_index = self.orders_api_usage.get_order_with_feild_name(feild='testPlans')
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        suborder_before_refresh = \
+            self.order_page.update_suborder(sub_order_index=sub_order_index, test_plans=[''], remove_old=True)
+        # checking that when adding new test unit, the newly added test plan is added to the
+        # order's analysis instead of creating new analysis
+        suborder_testplans_before_refresh = suborder_before_refresh['suborders'][sub_order_index]['testplans']
+        self.order_page.save(save_btn='order:save_btn')
+        self.info('Refresh to make sure that data are saved correctly')
+        self.base_selenium.refresh()
+        self.info('Get suborder data to check it')
+        suborder_after_refresh = self.order_page.get_suborder_data()['suborders'][sub_order_index]
+        suborder_testplans_after_refresh = suborder_after_refresh['testplans']
+        self.info('Assert Test plans are: {}, and should be: {}'.
+                  format(suborder_testplans_after_refresh, suborder_testplans_before_refresh))
+        self.assertEqual(suborder_testplans_after_refresh, suborder_testplans_before_refresh)
+
+        self.info('Getting analysis page to check the data in this child table')
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.info('Filter with order no to check analysis count')
+        self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
+                                                 filter_text=suborder_after_refresh['analysis_no'],field_type='text')
+
+        analysis_records = self.analyses_page.get_table_rows_data()
+        self.info('Assert analysis is updated with new testplan')
+        self.assertIn(suborder_testplans_before_refresh[0], analysis_records[0])
 
 
-        if save == 'add':
-            # checking that when adding new test unit, the newly added test unit is added to the order's analysis instead of creating new analysis
-            self.info('Update the 2nd suborder by adding new test unit')
-            self.order_page.get_random_x(row=rows[1])
-            self.order_page.update_suborder(sub_order_index=1, test_units=[''])
-            suborder_testunits_before_refresh = self.order_page.get_suborder_data(sub_order_index=1)
-            suborder_testunits_before_refresh = suborder_testunits_before_refresh['test_unit'].split('|')
-            self.order_page.save(save_btn='order:save_btn')
-
-            self.base_selenium.LOGGER.info('Refresh to make sure that data are saved correctly')
-            self.base_selenium.refresh(sleep=10)
-
-            self.base_selenium.LOGGER.info('Get suborder data to check it')
-            self.order_page.get_suborder_table()
-            suborder_testunits_after_refresh = self.order_page.get_suborder_data(sub_order_index=1)
-            suborder_testunits_after_refresh = suborder_testunits_after_refresh['test_unit'].split('|')
-
-            self.base_selenium.LOGGER.info('+ Assert Test units: test units are: {}, and should be: {}'.
-                                           format(suborder_testunits_after_refresh, suborder_testunits_before_refresh))
-
-            suborder_data_after_saving = self.order_page.get_suborder_data(sub_order_index=3)
-            # getting the length of the table, should be 2
-            self.base_selenium.LOGGER.info('Getting analysis page to check the data in this child table')
-            self.analyses_page.get_analyses_page()
-
-            self.base_selenium.LOGGER.info('Filter with order no to check analysis count')
-            analysis_records=self.analyses_page.search(value=order_no)
-            analysis_count = len(analysis_records) -1
-
-        self.base_selenium.LOGGER.info('+Assert Compare Material type, old: {}, new: {}'.format(
-            suborder_data_after_changing_data['material_types'], suborder_data_after_saving['material_types']))
-        self.assertEqual(suborder_data_after_changing_data['material_types'],
-                         suborder_data_after_saving['material_types'])
-
-        self.base_selenium.LOGGER.info(
-            '+Assert Compare Article, old: {}, new: {}'.format(suborder_data_after_changing_data['article'],
-                                                               suborder_data_after_saving['article']))
-        self.assertEqual(suborder_data_after_changing_data['article'], suborder_data_after_saving['article'])
-
-        self.base_selenium.LOGGER.info(
-            '+Assert Compare Test Plans, old: {}, new: {}'.format(suborder_data_after_changing_data['test_plan'],
-                                                                  suborder_data_after_saving['test_plan']))
-        self.assertEqual(suborder_data_after_changing_data['test_plan'], suborder_data_after_saving['test_plan'])
-
-        self.base_selenium.LOGGER.info(
-            '+Assert Compare Test units, old: {}, new: {}'.format(suborder_data_after_changing_data['test_unit'],
-                                                                  suborder_data_after_saving['test_unit']))
-        self.assertEqual(suborder_data_after_changing_data['test_unit'], suborder_data_after_saving['test_unit'])
-
-        testplan_testunits.append(suborder_data_after_saving['test_unit'])
-
-        self.base_selenium.LOGGER.info('Get analysis page to make sure that update took place in analysis')
-        self.analyses_page.get_analyses_page()
-
-        self.base_selenium.LOGGER.info(
-            'Filter by order no: #{}, to make sure that no new analysis have been created'.format(
-                basic_order_data['Order No.']))
-        rows = self.analyses_page.search(value=basic_order_data['Order No.'])
-        self.base_selenium.LOGGER.info('Count of analysis is #{}, and it shpuld be {}'.format(len(rows) - 1, 4))
-        self.assertEqual(len(rows) - 1, 4)
-
-        self.base_selenium.LOGGER.info(
-            'Filter by analysis no: #{}, to check the order data'.format(basic_order_data['Analysis No.']))
-        self.base_selenium.LOGGER.info('Get first row data, because it is the analysis of the updated order')
-        rows = self.analyses_page.search(value=basic_order_data['Analysis No.'])
-
-        analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
-
-        self.base_selenium.LOGGER.info(
-            'Comparing analysis data with the updated order data to make sure that it is updated correctly')
-
-        self.base_selenium.LOGGER.info('+Assert Material type, should be: {}, and it is: {}'.format(new_material_type,
-                                                                                                    analysis_data[
-                                                                                                        'Material Type']))
-        self.assertEqual(new_material_type, analysis_data['Material Type'])
-
-        self.base_selenium.LOGGER.info(
-            '+Assert Article Name, should be: {}, and it is: {}'.format(new_article, analysis_data['Article Name']))
-        self.assertEqual(new_article, analysis_data['Article Name'])
-
-        self.base_selenium.LOGGER.info(
-            '+Assert Test plans, should be: {}, and it is: {}'.format(suborder_data_after_saving['test_plan'],
-                                                                      analysis_data['Test Plans']))
-        self.assertEqual(suborder_data_after_saving['test_plan'], analysis_data['Test Plans'])
-        analysis_test_units = []
-
-        for testunit in analysis_child_table:
-            analysis_test_units.append(testunit['Test Unit'])
-
-        self.base_selenium.LOGGER.info(
-            'analysis test units are: {}, and it should be: {}'.format(analysis_test_units, testplan_testunits))
-        self.assertEqual(set(analysis_test_units) == set(testplan_testunits), True)
-
-    #def test_test(self):
+        #def test_test(self):
     #    import ipdb; ipdb.set_trace()
     #    suborder_data = self.order_page.get_suborder_data(sub_order_index=3)
     ## SYNTAX ERROR ###
