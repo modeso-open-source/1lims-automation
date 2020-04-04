@@ -1,8 +1,9 @@
 from api_testing.apis.base_api import BaseAPI
-import json
+from api_testing.apis.base_api import api_factory
 
 
-class RolesAPI(BaseAPI):
+class RolesAPIFactory(BaseAPI):
+    @api_factory('get')
     def get_all_roles(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['roles_api']['list_all_roles'])
         _payload = {"sort_value": "id",
@@ -11,85 +12,70 @@ class RolesAPI(BaseAPI):
                     "sort_order": "DESC",
                     "filter": "{}",
                     "deleted": "0"}
-        payload = self.update_payload(_payload, **kwargs)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        return response
+        return api, _payload
 
+    @api_factory('get')
     def get_role_form_data(self, id=1):
+        """
+        if success, response['role']
+        :param id:
+        :return:
+        """
         api = '{}{}{}/edit-view'.format(self.url, self.END_POINTS['roles_api']['form_data'], str(id)) 
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1:
-            return data['role']
-        else:
-            return False
-    
+        return api, {}
+
+    @api_factory('put')
     def archive_roles(self, ids=['1']):
+        """
+        if success, response['message'] == 'delete_success'
+        :param ids:
+        :return:
+        """
         api = '{}{}{}/archive'.format(self.url, self.END_POINTS['roles_api']['archive_roles'], ','.join(ids)) 
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message'] == 'delete_success':
-            return True
-        else:
-            return False
-    
+        return api, {}
+
+    @api_factory('put')
     def restore_roles(self, ids=['1']):
+        """
+        if success, response['message']=='restore_success'
+        :param ids:
+        :return:
+        """
         api = '{}{}{}/restore'.format(self.url, self.END_POINTS['roles_api']['restore_roles'], ','.join(ids)) 
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message']=='restore_success':
-            return True
-        else:
-            return False
-    
+        return api, {}
+
+    @api_factory('delete')
     def delete_archived_role(self, id=1):
+        """
+        if success, response['message']=='hard_delete_success'
+        :param id:
+        :return:
+        """
         api = '{}{}{}'.format(self.url, self.END_POINTS['roles_api']['delete_role'], str(id)) 
-        self.info('DELETE : {}'.format(api))
-        response = self.session.delete(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message']=='hard_delete_success':
-            return True
-        else:
-            return False
+        return api, {}
 
-    def delete_active_role(self, id=1):
-        if self.archive_roles(ids=[str(id)]):
-            if self.delete_archived_role(id=id):
-                return True
-            else:
-                self.restore_roles(ids=[str(id)])
-                return False
-        else:
-            return False
-
-    # this API call doesn't need kwargs as those are the only arguments sent 
+    @api_factory('post')
     def create_role(self, role_name='', permissions=[]):
 
         """
         permession list can be obtained using this API call
         general_utilities_api.list_all_permissions()
         """
-        request_body = {
+        _payload = {
             'name': role_name,
             'permissions': permissions
         }
         api = '{}{}'.format(self.url, self.END_POINTS['roles_api']['create_role']) 
-        self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=request_body, params='', headers=self.headers, verify=False)
+        return api, _payload
 
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        
-        if data['status'] == 1:
-            return request_body
+
+class RolesAPI(RolesAPIFactory):
+    def delete_active_role(self, id=1):
+        if self.archive_roles(ids=[str(id)])[0]['message'] == 'delete_success':
+            if self.delete_archived_role(id=id)[0]['meessage'] == 'hard_delete_success':
+                return True
+            else:
+                self.restore_roles(ids=[str(id)])
+                return False
         else:
-            return data['message']
+            return False

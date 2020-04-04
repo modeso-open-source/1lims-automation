@@ -1,26 +1,28 @@
 from api_testing.apis.base_api import BaseAPI
-import json
+from api_testing.apis.base_api import api_factory
 
-class UsersAPI(BaseAPI):
-    def create_new_user(self, user_name, email, password, **kwargs):
+
+class UsersAPIFactory(BaseAPI):
+    @api_factory('post')
+    def create_new_user(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['users_api']['list_all_users'])
-        body={}
-        body['username'] = user_name
-        body['email'] = email
-        body['role'] = {
-            'id': 1,
-            'text': 'Admin'
+        password = self.generate_random_string()
+        _payload = {
+            'username': self.generate_random_string(),
+            'email': self.generate_random_string()+"@gmial.com",
+            'role': {
+                'id': 1,
+                'text': 'Admin'
+            },
+            'password': password,
+            'confirmPassword': password,
+            'roleId': 1,
+            'roleChanged': True,
+            'hasOwnPermissions': False
         }
-        body['password'] = password
-        body['confirmPassword'] = password
-        body['roleId'] = 1
-        body['roleChanged'] = True
-        body['hasOwnPermissions'] = False
-        self.info('POST : {}'.format(api))
-        response = self.session.post(api, json=body, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        return response.json()['user']
+        return api, _payload
 
+    @api_factory('get')
     def get_all_users(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['users_api']['list_all_users'])
         _payload = {"sort_value": "userId",
@@ -29,59 +31,51 @@ class UsersAPI(BaseAPI):
                     "sort_order": "DESC",
                     "filter": "{}",
                     "deleted": "0"}
-        payload = self.update_payload(_payload, **kwargs)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        return response
+        return api, _payload
 
+    @api_factory('get')
     def get_user_form_data(self, id=1):
+        """
+        If success, response['user']
+        :param id:
+        :return:
+        """
         api = '{}{}{}'.format(self.url, self.END_POINTS['users_api']['form_data'], str(id)) 
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1:
-            return data['user']
-        else:
-            return False
-    
-    def archive_users(self, ids=['1']):
-        api = '{}{}{}/archive'.format(self.url, self.END_POINTS['users_api']['archive_users'], ','.join(ids)) 
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message'] == 'delete_success':
-            return True
-        else:
-            return False
-    
-    def restore_users(self, ids=['1']):
-        api = '{}{}{}/restore'.format(self.url, self.END_POINTS['users_api']['restore_users'], ','.join(ids)) 
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message']=='restore_success':
-            return True
-        else:
-            return False
-    
-    def delete_archived_user(self, id=1):
-        api = '{}{}{}'.format(self.url, self.END_POINTS['users_api']['delete_user'], str(id)) 
-        self.info('DELETE : {}'.format(api))
-        response = self.session.delete(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message']=='hard_delete_success':
-            return True
-        else:
-            return False
+        return api, {}
 
+    @api_factory('put')
+    def archive_users(self, ids=['1']):
+        """"
+        if success, response['message'] == 'delete_success'
+        """
+        api = '{}{}{}/archive'.format(self.url, self.END_POINTS['users_api']['archive_users'], ','.join(ids)) 
+        return api, {}
+
+    @api_factory('put')
+    def restore_users(self, ids=['1']):
+        """
+        if success, response['message']=='restore_success'
+        :param ids:
+        :return:
+        """
+        api = '{}{}{}/restore'.format(self.url, self.END_POINTS['users_api']['restore_users'], ','.join(ids)) 
+        return api, {}
+
+    @api_factory('delete')
+    def delete_archived_user(self, id=1):
+        """
+        if success, response['message']=='hard_delete_success'
+        :param id:
+        :return:
+        """
+        api = '{}{}{}'.format(self.url, self.END_POINTS['users_api']['delete_user'], str(id)) 
+        return api, {}
+
+
+class UsersAPI(UsersAPIFactory):
     def delete_active_user(self, id=1):
-        if self.archive_users(ids=[str(id)]):
-            if self.delete_archived_user(id=id):
+        if self.archive_users(ids=[str(id)])[0]['message'] == 'delete_success':
+            if self.delete_archived_user(id=id)[0]['message'] == 'hard_delete_success':
                 return True
             else:
                 self.restore_users(ids=[str(id)])

@@ -8,10 +8,9 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from ui_testing.elements import elements
-import random, time, os
+import random, time, os, json
 import pandas as pd
 from loguru import logger
-
 
 class BaseSelenium:
     TIME_TINY = 2
@@ -58,7 +57,9 @@ class BaseSelenium:
             self.driver = webdriver.Chrome(chrome_options=options)
         else:
             if self.browser == 'chrome':
-                self.driver = webdriver.Chrome()
+                options = Options()
+                options.add_argument('--ignore-certificate-errors')
+                self.driver = webdriver.Chrome(chrome_options=options)
             elif self.browser == 'firefox':
                 self.driver = webdriver.Firefox()
             elif self.browser == 'ie':
@@ -331,6 +332,11 @@ class BaseSelenium:
             cancel = self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
             cancel.click()
 
+    def clear_single_select_drop_down(self, element):
+        self.wait_until_element_located(element)
+        clear_button = self.find_element_in_element(destination_element='general:clear_single_dropdown', source_element=element)
+        clear_button.click()
+
     def clear_items_with_text_in_drop_down(self, element, items_text=[]):
         # element is ng-select element
         # make sure that there are elements to b deleted
@@ -393,9 +399,13 @@ class BaseSelenium:
 
         items = self.find_elements(element=options_element)
         if not item_text: #random selection
-            if len(items) <= 1:
+            if len(items) == 1 and items[0].text: #if only one item in list
+                    items[0].click()
+                    return True
+            elif len(items) <= 1:
                 self.LOGGER.info(' There is no drop-down options')
                 return False
+
             if avoid_duplicate:
                 items[random.choice(self._unique_index_list(data=items))].click()
                 return True
@@ -437,6 +447,7 @@ class BaseSelenium:
             if len(_occurrences) == 1:
                 result.append(_occurrences[0])
         return result
+
 
     def _is_item_a_drop_down(self, item):
         """
@@ -679,3 +690,7 @@ class BaseSelenium:
 
     def find_element_by_xpath(self, xpath=''):
         return self.driver.find_element_by_xpath(xpath)
+
+    def set_local_storage(self, key, value):
+        self.driver.execute_script("window.localStorage.setItem(arguments[0], arguments[1]);", key,
+                                   json.dumps(value))

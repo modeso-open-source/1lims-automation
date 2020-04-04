@@ -12,11 +12,10 @@ class BaseAPI:
     requests.packages.urllib3.disable_warnings()
 
     AUTHORIZATION = None
-
+    AUTHORIZATION_RESPONSE = None
     LOGGER = logger
 
     _instance = None
-
 
     def __new__(class_, *args, **kwargs):
         if not isinstance(class_._instance, class_):
@@ -31,7 +30,8 @@ class BaseAPI:
         self.password = config['site']['password']
 
         self.session = requests.Session()
-        self.headers = {'Content-Type': "application/json", 'Authorization': BaseAPI.AUTHORIZATION, 'Connection': "keep-alive",
+        self.headers = {'Content-Type': "application/json", 'Authorization': BaseAPI.AUTHORIZATION,
+                        'Connection': "keep-alive",
                         'cache-control': "no-cache"}
         self._get_authorized_session()
 
@@ -49,12 +49,12 @@ class BaseAPI:
                       'cache-control': "no-cache"}
             data = {'username': username, 'password': password}
             response = self.session.post(api, json=data, headers=header, verify=False)
+            BaseAPI.AUTHORIZATION_RESPONSE = response.json()['data']
             BaseAPI.AUTHORIZATION = 'Bearer {}'.format(response.json()['data']['sessionId'])
             self.info('session ID : {} .....'.format(response.json()['data']['sessionId'][:10]))
 
         self.headers['Authorization'] = BaseAPI.AUTHORIZATION
         return BaseAPI.AUTHORIZATION
-
 
     @staticmethod
     def update_payload(payload, **kwargs):
@@ -75,9 +75,33 @@ class BaseAPI:
 
     @staticmethod
     def generate_random_number(lower=1, upper=100000):
-        return randint(lower, upper) 
+        return randint(lower, upper)
 
     @staticmethod
     def get_current_date():
         return datetime.today().strftime('%Y-%m-%d')
-        
+
+    @staticmethod
+    def get_current_year():
+        return str(datetime.now().year)
+
+
+def api_factory(method):
+    if method not in ['get', 'post', 'put', 'delete']:
+        raise Exception("{} should be in ['get', 'post', 'put', 'delete']".format(method))
+
+    def api_request(func):
+        base_api = BaseAPI()
+
+        def wrapper(*args, **kwargs):
+            api, _payload = func(*args, **kwargs)
+            payload = base_api.update_payload(_payload, **kwargs)
+            base_api.info('GET : {}'.format(api))
+            response_json = base_api.session.__getattribute__(method)(api, params=payload, headers=base_api.headers,
+                                                                      verify=False).json()
+            base_api.info('Status code: {}'.format(response_json['status']))
+            return response_json, payload
+
+        return wrapper
+
+    return api_request

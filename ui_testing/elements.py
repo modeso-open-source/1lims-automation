@@ -4,7 +4,7 @@ elements = {
                               'value': 'm-datatable__toggle-subtable',
                               'order': 0},
         'table_child': {'method': 'class_name', 'value': 'dataTable', 'order': 1},
-
+        'table_menu_options': {'method': 'class_name', 'value': 'dropdown', 'order': 0},
         'span': {'method': 'tag_name',
                  'value': 'span',
                  'order': 0},
@@ -14,15 +14,10 @@ elements = {
         'tag': {'method': 'tag_name',
                 'value': 'tag',
                 'order': 0},
-
-        'search': {'method': 'id',
-                   'value': 'generalSearch'},
+        'search': {'method': 'xpath',
+                   'value': '//input[@id="generalSearch"]'},
         'table': {'method': 'id',
                   'value': 'table'},
-        'table_child': {"method": "class_name",
-                        "value": "dataTable",
-                        "order": 1
-                        },
         'save': {'method': 'class_name',
                  'value': 'btn-primary',
                  'order': 0},
@@ -32,7 +27,6 @@ elements = {
         'confirmation_pop_up': {
             'method': 'id',
             'value': 'swal2-title'},
-
         'confirm_pop': {'method': 'class_name',
                         'value': 'btn-success',
                         'order': 0},
@@ -54,6 +48,9 @@ elements = {
                   'order': 0},
         'menu_filter_view': {'method': 'id',
                              'value': 'custom-accordion-panel'},
+        'filter_button': {'method': 'class_name',
+                          'value': 'filter-btn',
+                          'order': 0},
         'filter': {'method': 'tag_name',
                    'value': 'span',
                    'order': 0},
@@ -73,9 +70,6 @@ elements = {
         'checkbox': {'method': 'class_name',
                      'value': 'm-checkbox',
                      'order': 0},
-        'child_table_arrow': {'method': 'class_name',
-                              'value': 'm-datatable__toggle-subtable',
-                              'order': 0},
         'label': {'method': 'tag_name',
                   'value': 'label',
                   'order': 0},
@@ -149,7 +143,14 @@ elements = {
         'remove_file': {'method': 'class_name', 'value': 'dz-remove', 'order': 0},
         'uploaded_file_name': {'method': 'xpath', 'value': '//span[@data-dz-name="" and last()]'},
         'pagination_button': {'method': 'xpath', 'value': '//button[@class="btn dropdown-toggle btn-default"]'},
-        'pagination_menu': {'method': 'xpath', 'value': '//ul[@class="dropdown-menu inner"]'}
+        'pagination_menu': {'method': 'xpath', 'value': '//ul[@class="dropdown-menu inner"]'},
+        'form_popup_warning_window': {'method': 'class_name', 'value': 'swal2-header', 'order': 0},
+        'confirmation_button': {'method': 'xpath',
+                                'value': '//button[@class="swal2-confirm btn btn-success m-btn m-btn--custom"]'},
+        'clear_single_dropdown': {'method': 'class_name', 'value': 'ng-clear-wrapper', 'order': 0},
+        'td': {'method': 'tag_name', 'value': 'td', 'order': 0},
+        'th': {'method': 'tag_name', 'value': 'th', 'order': 0},
+        'div': {'method': 'tag_name', 'value': 'div', 'order': 0}
 
     },
     'login': {
@@ -195,7 +196,7 @@ elements = {
         'delete': {'method': 'link_text',
                    'value': 'Delete'},
         'right_menu': {'method': 'xpath',
-                       'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+                       'value': '//i[@class="flaticon-grid-menu-v2"]'},
         'alert_confirmation': {'method': 'id',
                                'value': 'noty_layout__topCenter'},
 
@@ -224,7 +225,6 @@ elements = {
                     'value': 'comment'},
         'name': {'method': 'id',
                  'value': 'namefield'},
-
         'filter_test_plan': {'method': 'id',
                              'value': 'testPlansfield'},
         'filter_created_at': {'method': 'id', 'value': 'start_createdAt'},
@@ -311,7 +311,9 @@ elements = {
         'new_testunit': {'method': 'link_text',
                          'value': 'New Test Unit'},
         'qualitative_value': {'method': 'id',
-                              'value': 'textValueArrayfield'}
+                              'value': 'textValueArrayfield'},
+        'testunit_name_filter': {'method': 'id',
+                                 'value': 'namefield'}
     },
 
     'test_plan': {
@@ -337,7 +339,6 @@ elements = {
                        'value': 'selectedTestUnitsfield'},
         'add': {'method': 'id',
                 'value': 'new_testunit_add_button'},
-
         'save_btn': {'method': 'id',
                      'value': 'save_btn'},
         'save_and_complete': {'method': 'id',
@@ -507,6 +508,8 @@ elements = {
         'orders_edit_button': {'method': 'tag_name',
                                'value': 'a',
                                'order': 4},
+        'analysis_order_tab': {'method': 'xpath',
+                         'value': "//label[@class='btn tab']"},
         'new_order': {'method': 'link_text',
                       'value': 'New Order'},
         'right_menu': {'method': 'xpath',
@@ -543,7 +546,11 @@ elements = {
         'test_date_filter': {'method': 'id',
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
-                                 'value': 'start_shipmentDate'}
+                                 'value': 'start_shipmentDate'},
+        'mainorder_duplicate': {'method': 'id', 
+                                'value': 'main_table_duplicate'},
+        'suborder_duplicate': {'method': 'id', 
+                               'value': 'child_table_duplicate'}
     },
 
     'audit_trail': {
@@ -557,8 +564,10 @@ elements = {
     'order': {
         'order': {'method': 'id',
                   'value': 'orderTypefield'},
+        'suborder_table': {'method': 'xpath',
+                           'value': "//table[@id='table-with-add']"},
         'material_type': {'method': 'xpath',
-                          'value': '//td//*[@id="materialType"]'},
+                          'value': "//td//*[@id='materialType']"},
         'article': {'method': 'xpath',
                     'value': '//td//*[@id="article"]'},
         'departments': {'method': 'xpath',
@@ -607,7 +616,7 @@ elements = {
         'order_number_add_form': {'method': 'id',
                                   'value': 'selectedOrderNofield'},
         'shipment_date': {'method': 'id',
-                          'value': 'date_shipmentDate'},
+                          'value': 'date_shipmentDate_0'},
         'test_date': {'method': 'id',
                       'value': 'date_testDate'},
         'save': {'method': 'class_name',
@@ -621,15 +630,14 @@ elements = {
                         'value': 'icon-views',
                         'order': 0
                         },
-
         'suborder_list': {'method': 'class_name',
                           'value': 'flaticon-signs',
                           'order': 0},
-        'suborder_table': {'method': 'id',
-                           'value': 'table-with-add'},
-        'add_new_item': {'method': 'class_name',
-                         'value': 'addNewItem',
-                         'order': 0},
+        'add_new_item11': {'method': 'class_name',
+                           'value': 'addNewItem',
+                           'order': 0},
+        'add_new_item': {'method': 'link_text',
+                         'value': 'Add another item'},
         'order_no_error_message': {'method': 'xpath',
                                    'value': '//*[@id="field"]/div[3]/div/span'},
         'confirm_pop': {'method': 'class_name',
@@ -646,10 +654,7 @@ elements = {
         'filter_analysis_no': {
             'method': 'id',
             'value': 'nofield'
-        },
-        'analysis_tab': {'method': 'xpath',
-                         'value': "//span[@class='m-wizard__step-label'][contains(text(),'Analysis')]"
-                         }
+        }
     },
 
     'header': {
@@ -837,6 +842,8 @@ elements = {
                            'value': 'countryfield'},
         'type_filter': {'method': 'id',
                         'value': 'typefield'},
+        'contact_no_filter': {'method': 'id',
+                              'value': 'companyNofield'},
         'postalcode_filter': {'method': 'id',
                               'value': 'postal_codefield'},
         'contact_persons_table': {'method': 'id',
@@ -1011,6 +1018,8 @@ elements = {
             'method': 'id',
             'value': 'table-with-add'
         },
+        'analysis_page_table': {'method': 'class_name', 'value': 'm_accordion_7', 'order': 0},
+        'headers': {'method': 'id', 'value': 'headers'}
     },
 
     'company_profile': {

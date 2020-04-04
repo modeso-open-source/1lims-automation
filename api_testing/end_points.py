@@ -43,6 +43,7 @@ end_points = {
         'archive_suborder': '/api/orderInformation/',
         'restore_suborder': '/api/orderInformation/',
         'delete_suborder': '/api/orderInformation/',
+        'get_suborder': '/api/orders/get/subOrder/byMainOrderId?orderId='
     },
     'analysis_api': {
         'list_all_analysis': '/api/reportSheets',

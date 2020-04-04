@@ -12,6 +12,11 @@ class Orders(BasePages):
         self.base_selenium.get(url=self.orders_url)
         self.sleep_small()
 
+    def get_order_edit_page_by_id(self, id):
+        url_text = "{}sample/orders/" + str(id)
+        self.base_selenium.get(url=url_text.format(self.base_selenium.url))
+        self.sleep_small()
+
     def click_create_order_button(self):
         self.base_selenium.LOGGER.info('Press create order button')
         self.base_selenium.click(element='orders:new_order')
@@ -62,6 +67,21 @@ class Orders(BasePages):
         self.base_selenium.click(element='general:right_menu')
         self.sleep_tiny()
         self.base_selenium.click(element='orders:duplicate')
+        self.sleep_medium()
+
+    def duplicate_main_order_from_order_option(self, index=0):
+        self.info('duplicate suborder from the order\'s active table')
+        table_records = self.result_table(element='general:table')
+        self.open_row_options(row=table_records[index])
+        self.base_selenium.click(element='orders:mainorder_duplicate')
+
+    def duplicate_sub_order_from_table_overview(self, index=0, number_of_copies=1):
+        self.info('duplicate suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[index])
+        self.base_selenium.click(element='orders:suborder_duplicate')
+        self.base_selenium.set_text(element='orders:number_of_copies', value=number_of_copies)
+        self.base_selenium.click(element='orders:create_copies')
         self.sleep_medium()
 
     def get_random_order(self):
@@ -180,3 +200,19 @@ class Orders(BasePages):
         main_order['row_element'] = all_orders[row_id]
         # return the main order
         return main_order
+
+    def search_by_analysis_number(self,analysis_number):
+        self.base_selenium.click(element='general:filter_button')
+        self.base_selenium.set_text(element='orders:analysis_filter',value=analysis_number)
+        self.base_selenium.click(element='general:filter_btn')
+        time.sleep(self.base_selenium.TIME_MEDIUM)
+
+    def is_order_in_table(self,value):
+        results=self.base_selenium.get_table_rows(element='general:table')
+        if len(results) == 0:
+            return False
+        else:
+            if value in results[0].text:
+                return True
+            else:
+                return False 
