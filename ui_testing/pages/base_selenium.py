@@ -399,9 +399,13 @@ class BaseSelenium:
 
         items = self.find_elements(element=options_element)
         if not item_text: #random selection
-            if len(items) <= 1:
+            if len(items) == 1 and items[0].text: #if only one item in list
+                    items[0].click()
+                    return True
+            elif len(items) <= 1:
                 self.LOGGER.info(' There is no drop-down options')
                 return False
+
             if avoid_duplicate:
                 items[random.choice(self._unique_index_list(data=items))].click()
                 return True

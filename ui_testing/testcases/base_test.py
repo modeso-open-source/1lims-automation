@@ -122,4 +122,7 @@ class BaseTest(TestCase):
         self.base_selenium.LOGGER.info(message)
 
     def set_authorization(self, auth):
+        if "Admin" in auth['role']:
+            del auth['role']
+            auth['roles'] = ["Admin"]
         self.base_selenium.set_local_storage('modeso-auth-token', auth)
