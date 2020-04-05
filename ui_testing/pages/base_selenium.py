@@ -11,6 +11,8 @@ from ui_testing.elements import elements
 import random, time, os, json
 import pandas as pd
 from loguru import logger
+from contextlib import contextmanager
+
 
 class BaseSelenium:
     TIME_TINY = 2
@@ -20,7 +22,7 @@ class BaseSelenium:
     TIME_X_LARGE = 60
 
     IMPLICITLY_WAIT = 60
-    EXPLICITLY_WAIT = 120
+    EXPLICITLY_WAIT = 60
 
     LOGGER = logger
     #LOGGER.add('log_{time}.log', backtrace=False)
@@ -40,6 +42,14 @@ class BaseSelenium:
         self.headless_mode = config['browser']['headless_mode'].capitalize()
         self.remote_webdriver = config['browser']['remote_driver'].capitalize()
         self.elements = elements
+
+    @contextmanager
+    def _change_implicit_wait(self, new_value=0.001):
+        self.driver.implicitly_wait(new_value)
+        try:
+            yield
+        finally:
+            self.driver.implicitly_wait(BaseSelenium.IMPLICITLY_WAIT)
 
     def get_driver(self):
         if self.remote_webdriver == 'True':
@@ -143,13 +153,8 @@ class BaseSelenium:
         return element_value
 
     def get(self, url, sleep=0):
-        try:
-            self.driver.get(url)
-            time.sleep(sleep)
-        except Exception as e:
-            self.LOGGER.exception(' * %s Exception at get(%s) ' % (str(e), url))
-        else:
-            self.maximize_window()
+        self.driver.get(url)
+        time.sleep(sleep)
 
     def element_background_color(self, element):
         return str(self.find_element(element).value_of_css_property('background-color'))
@@ -163,78 +168,89 @@ class BaseSelenium:
     def wait_until_element_located(self, element):
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
-            return self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
+            with self._change_implicit_wait():
+                return self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
         else:
-            dom_element = self.find_element(element=element)
-            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
-            while True:
-                if dom_element.is_displayed():
-                    return dom_element
-                else:
-                    time.sleep(0.5)
-                if time.time() > end_time:
-                    break
-            raise TimeoutException()
+            with self._change_implicit_wait():
+                dom_element = self.find_element(element=element)
+                end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+                while True:
+                    if dom_element.is_displayed():
+                        return dom_element
+                    else:
+                        time.sleep(0.5)
+                    if time.time() > end_time:
+                        break
+                raise TimeoutException()
 
     def wait_until_element_is_not_displayed(self, element):
+        self.LOGGER.info('wait until element is not displayed')
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
-            return self.wait.until(EC.visibility_of_element_located((getattr(By, method), value)))
+            with self._change_implicit_wait():
+                return self.wait.until(EC.invisibility_of_element_located((getattr(By, method), value)))
         else:
-            dom_element = self.find_element(element=element)
-            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
-            while True:
-                if dom_element.is_displayed():
-                    time.sleep(0.5)
-                else:
-                    return dom_element
-                if time.time() > end_time:
-                    break
-            raise TimeoutException()
+            with self._change_implicit_wait():
+                dom_element = self.find_element(element=element)
+                end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+                while True:
+                    if dom_element.is_displayed():
+                        time.sleep(0.5)
+                    else:
+                        return
+                    if time.time() > end_time:
+                        break
+                raise TimeoutException("Element is still displayed")
 
     def wait_until_element_clickable(self, element):
+        self.LOGGER.info('wait until element clickable')
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
-            return self.wait.until(EC.element_to_be_clickable((getattr(By, method), value)))
+            with self._change_implicit_wait():
+                return self.wait.until(EC.element_to_be_clickable((getattr(By, method), value)))
         else:
-            dom_element = self.find_element(element=element)
-            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
-            while True:
-                if dom_element.is_displayed() and dom_element.is_enabled():
-                    return dom_element
-                else:
-                    time.sleep(0.5)
-                if time.time() > end_time:
-                    break
-            raise TimeoutException()
+            with self._change_implicit_wait():
+                end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+                while True:
+                    try:
+                        dom_element = self.find_element(element=element)
+                    except:
+                        time.sleep(0.5)
+                        if time.time() > end_time:
+                            break
+                        continue
+
+                    if dom_element.is_displayed() and dom_element.is_enabled():
+                        return dom_element
+                    else:
+                        time.sleep(0.5)
+                        if time.time() > end_time:
+                            break
+                raise TimeoutException("Element is not disabled or enabled")
 
     def wait_until_element_located_and_has_text(self, element, text):
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
-            return self.wait.until(EC.text_to_be_present_in_element((getattr(By, method), value), text))
+            with self._change_implicit_wait():
+                return self.wait.until(EC.text_to_be_present_in_element((getattr(By, method), value), text))
         else:
-            dom_element = self.find_element(element=element)
-            end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
-            while True:
-                if text in dom_element.text:
-                    return dom_element
-                else:
-                    time.sleep(0.5)
-                if time.time() > end_time:
-                    break
-            raise TimeoutException()
+            with self._change_implicit_wait():
+                dom_element = self.find_element(element=element)
+                end_time = time.time() + BaseSelenium.EXPLICITLY_WAIT
+                while True:
+                    if text in dom_element.text:
+                        return dom_element
+                    else:
+                        time.sleep(0.5)
+                    if time.time() > end_time:
+                        break
+                raise TimeoutException()
 
     def wait_element(self, element):
         try:
             self.wait_until_element_located(element)
             return True
         except:
-            return False
-
-    def wait_until_element_attribute_has_text(self, element, attribute, text):
-        if element.get_attribute(attribute) == text:
-            return True
-        else:
             return False
 
     def wait_until_page_title_is(self, text, timeout=15):
@@ -244,7 +260,7 @@ class BaseSelenium:
             else:
                 time.sleep(1)
         else:
-            return False
+            raise TimeoutException()
 
     def wait_until_page_url_has(self, text, timeout=15):
         for _ in range(timeout):
@@ -253,7 +269,7 @@ class BaseSelenium:
             else:
                 time.sleep(0.5)
         else:
-            return False
+            raise TimeoutException()
 
     def click(self, element):
         dom_element = self.wait_until_element_clickable(element=element)
@@ -447,7 +463,6 @@ class BaseSelenium:
             if len(_occurrences) == 1:
                 result.append(_occurrences[0])
         return result
-
 
     def _is_item_a_drop_down(self, item):
         """

@@ -8,9 +8,9 @@ class TestPlans(BasePages):
         self.test_plans_url = "{}testPlans".format(self.base_selenium.url)
 
     def get_test_plans_page(self):
-        self.base_selenium.LOGGER.info(' + Get test plans page.')
+        self.base_selenium.LOGGER.info(' Get test plans page.')
         self.base_selenium.get(url=self.test_plans_url)
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def get_random_test_plans(self):
         row = self.get_random_table_row('test_plans:test_plans_table')

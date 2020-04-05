@@ -10,7 +10,7 @@ class Orders(BasePages):
 
     def get_orders_page(self):
         self.base_selenium.get(url=self.orders_url)
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def get_order_edit_page_by_id(self, id):
         url_text = "{}sample/orders/" + str(id)

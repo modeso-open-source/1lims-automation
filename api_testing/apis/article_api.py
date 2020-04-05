@@ -50,8 +50,8 @@ class ArticleAPIFactory(BaseAPI):
             "No": self.generate_random_number(),
             "name": self.generate_random_string(),
             "materialType": {
-                    "id": 1,
-                    "text": "Raw Material"
+                "id": 1,
+                "text": "Raw Material"
             },
             "selectedMaterialType": [
                 {
@@ -62,6 +62,7 @@ class ArticleAPIFactory(BaseAPI):
             "materialTypeId": 1,
             "dynamicFieldsValues": []
         }
+
         return api, _payload
 
     @api_factory('get')
@@ -102,7 +103,7 @@ class ArticleAPI(ArticleAPIFactory):
             data[material_type].append(article['name'])
         return data
 
-    def get_articles_with_no_testplans(self,**kwargs):
+    def get_articles_with_no_testplans(self, **kwargs):
         response = self.get_all_articles(**kwargs)
         all_articles = response[0]['articles']
         articles = [article for article in all_articles if len(article['testPlanNames']) < 1]
@@ -113,4 +114,3 @@ class ArticleAPI(ArticleAPIFactory):
         all_articles = response.json()['articles']
         articles = [article for article in all_articles if len(article['testPlanNames']) >= 1]
         return articles
-
