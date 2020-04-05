@@ -1,5 +1,11 @@
 elements = {
     'general': {
+        'configuration_body': {'method': 'id',
+                               'value': 'body',
+                               'order': 0},
+        'loading': {'method': 'class_name',
+                    'value': 'm-blockui',
+                    'order': 0},
         'child_table_arrow': {'method': 'class_name',
                               'value': 'm-datatable__toggle-subtable',
                               'order': 0},

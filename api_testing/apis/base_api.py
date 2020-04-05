@@ -97,8 +97,12 @@ def api_factory(method):
             api, _payload = func(*args, **kwargs)
             payload = base_api.update_payload(_payload, **kwargs)
             base_api.info('GET : {}'.format(api))
-            response_json = base_api.session.__getattribute__(method)(api, params=payload, headers=base_api.headers,
-                                                                      verify=False).json()
+            if method in ["post"]:
+                response_json = base_api.session.post(api, json=payload, headers=base_api.headers,
+                                                      verify=False).json()
+            else:
+                response_json = base_api.session.__getattribute__(method)(api, params=payload, headers=base_api.headers,
+                                                                          verify=False).json()
             base_api.info('Status code: {}'.format(response_json['status']))
             return response_json, payload
 
