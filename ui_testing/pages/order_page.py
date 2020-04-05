@@ -520,3 +520,19 @@ class Order(Orders):
             self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
 
+    def set_random_test_unit(self, test_units='', sub_order_index=''):
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
+        suborder_row = suborder_table_rows[sub_order_index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        suborder_row.click()
+        if test_units:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:test_unit', item_text=test_units)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:test_unit')
+            return self.get_material_type_of_first_suborder()
+
+

@@ -4,6 +4,8 @@ from parameterized import parameterized
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
+from ui_testing.pages.testunits_page import TstUnits
+from ui_testing.pages.testunit_page import TstUnit
 from api_testing.apis.orders_api import OrdersAPI
 from ui_testing.pages.analysis_page import SingleAnalysisPage
 from ui_testing.pages.analysis_page import AllAnalysesPage
@@ -26,6 +28,8 @@ class OrdersTestCases(BaseTest):
         self.article_api = ArticleAPI()
         self.test_unit_api = TestUnitAPI()
         self.contacts_api = ContactsAPI()
+        self.test_unit_page = TstUnits()
+        self.test_units_page = TstUnit()
         self.single_analysis_page = SingleAnalysisPage()
         self.general_utilities_api = GeneralUtilitiesAPI()
         self.contacts_page = Contacts()
@@ -2095,3 +2099,46 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Material Type'], material_type)
         self.assertEqual(suborder_data['Article Name'], article)
         self.assertEqual(suborder_data['Test Units'], test_unit)
+
+    def test035_archived_test_unit_shoudnt_display_in_the_order_drop_down_list(self):
+        """
+        Archived test units shouldn't display in the order section section
+        LIMS-3710
+        :return:
+        """
+        self.test_unit_page.get_test_units_page()
+        # create new user with random data
+        self.base_selenium.LOGGER.info('select random test unit record')
+        testunits, payload = self.test_unit_api.get_all_test_units()
+        random_row = random.choice(testunits['testUnits'])
+        print(random_row)
+
+        testunit_name = random_row['name']
+        self.order_page.apply_filter_scenario(filter_element='test_units:testunit_name_filter', filter_text=testunit_name,
+                                              field_type='text')
+        row = self.test_unit_page.get_last_test_unit_row()
+        self.order_page.click_check_box(source=row)
+        self.test_unit_page.archive_selected_test_units()
+
+        self.order_page.get_orders_page()
+        # create new user with random data
+        self.base_selenium.LOGGER.info('select random order record')
+        orders, payload = self.orders_api.get_all_orders()
+        order_row = random.choice(orders['orders'])
+        print(order_row)
+
+        order_no = order_row['orderNo']
+        self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
+                                              field_type='text')
+
+        row = self.order_page.get_last_order_row()
+        self.orders_page.open_edit_page(row)
+
+        result = self.order_page.set_random_test_unit(test_units=testunit_name, sub_order_index=0)
+        self.assertFalse(result, 'no results found ')
+
+
+
+
+
+

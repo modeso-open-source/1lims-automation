@@ -185,3 +185,7 @@ class TstUnits(BasePages):
         self.sleep_tiny()
         return True
 
+    def get_last_test_unit_row(self):
+        rows = self.result_table()
+        return rows[0]
+
