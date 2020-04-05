@@ -145,8 +145,7 @@ class Article(Articles):
         self.sleep_medium()
 
     def archive_restore_optional_fields(self, restore=False):
-        self.sleep_small()
-        self.info('+ Open article configuration')
+        self.info('open article configuration')
         self.open_configuration()
         if restore:
             self.base_selenium.click(element='general:configurations_archived') # open the archived tab
