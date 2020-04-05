@@ -395,19 +395,18 @@ class Order(Orders):
         self.info(' Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
         for testplan in test_plans:
             if remove_old:
+                self.sleep_tiny()
                 self.clear_test_plan()
                 self.base_selenium.wait_element(element='general:form_popup_warning_window')
-                self.sleep_tiny()
                 self.base_selenium.click(element='general:confirmation_button')
-            self.sleep_tiny()
             self.set_test_plan(test_plan=testplan)
 
         self.info(' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
             if remove_old:
+                self.sleep_tiny()
                 self.clear_test_unit()
                 self.base_selenium.wait_element(element='general:form_popup_warning_window')
-                self.sleep_tiny()
                 self.base_selenium.click(element='general:confirmation_button')
             self.set_test_unit(test_unit=testunit)
 
