@@ -2102,16 +2102,14 @@ class OrdersTestCases(BaseTest):
 
     def test035_archived_test_unit_shoudnt_display_in_the_order_drop_down_list(self):
         """
-        Archived test units shouldn't display in the order section section
+        Orders: Archived Test unit: Archive Approach: Archived test units shouldn't appear in orders in the drop down list
         LIMS-3710
         :return:
         """
         self.test_unit_page.get_test_units_page()
-        # create new user with random data
         self.base_selenium.LOGGER.info('select random test unit record')
         testunits, payload = self.test_unit_api.get_all_test_units()
         random_row = random.choice(testunits['testUnits'])
-        print(random_row)
 
         testunit_name = random_row['name']
         self.order_page.apply_filter_scenario(filter_element='test_units:testunit_name_filter', filter_text=testunit_name,
@@ -2121,11 +2119,9 @@ class OrdersTestCases(BaseTest):
         self.test_unit_page.archive_selected_test_units()
 
         self.order_page.get_orders_page()
-        # create new user with random data
         self.base_selenium.LOGGER.info('select random order record')
         orders, payload = self.orders_api.get_all_orders()
         order_row = random.choice(orders['orders'])
-        print(order_row)
 
         order_no = order_row['orderNo']
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
