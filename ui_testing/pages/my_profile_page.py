@@ -1,6 +1,7 @@
 from ui_testing.pages.base_pages import BasePages
 from random import randint
 
+
 class MyProfile(BasePages):
     def __init__(self):
         super().__init__()
@@ -10,7 +11,7 @@ class MyProfile(BasePages):
     def get_my_profile_page(self):
         self.base_selenium.LOGGER.info(' + Get my profile page.')
         self.base_selenium.get(url=self.my_profile_url)
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def change_password(self, current_password, new_password, save=False):
         self.base_selenium.LOGGER.info(' + Change the password')

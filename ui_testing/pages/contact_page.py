@@ -1,21 +1,16 @@
 from ui_testing.pages.contacts_page import Contacts
-from random import randint
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from ui_testing.countries import countries
-import time
 
 
 class Contact(Contacts):
-
     def set_contact_name(self, name=''):
         # case contact name was not provided, it generates random text to be the contact name
         # returns the value of the name in case i generated a random text, so i have the value to be used later
         name = name or self.generate_random_text()
-        
         self.base_selenium.LOGGER.info('set contact name to be {}', name)
         self.base_selenium.set_text(element="contact:name", value=name)
-        
         return name
 
     def set_contact_number(self, no=''):
@@ -23,7 +18,6 @@ class Contact(Contacts):
         # returns the value of the name in case i generated a random text, so i have the value to be used later
         # random text function is used in case of number because of a requirement from the client that it should support text
         no = no or self.generate_random_text()
-
         self.base_selenium.LOGGER.info('set contact no to be {}', no)
         self.base_selenium.set_text(element="contact:no", value=no)
         
@@ -280,7 +274,7 @@ class Contact(Contacts):
     def get_contact_persons_page(self):
         self.base_selenium.LOGGER.info('switch to persons page')
         self.base_selenium.click(element='contact:contact_persons')
-        self.sleep_tiny()
+        self.wait_until_page_is_loaded()
 
     def create_update_contact_person(self, create=True, indexToEdit=-1, name='', position='', email='', phone='', skype='', info='', save=False):
         if create:

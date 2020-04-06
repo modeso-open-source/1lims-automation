@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 from random import randint
 
+
 class Order(Orders):
     def get_order(self):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]

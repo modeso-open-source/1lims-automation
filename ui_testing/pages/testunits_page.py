@@ -10,7 +10,7 @@ class TstUnits(BasePages):
     def get_test_units_page(self):
         self.base_selenium.LOGGER.info(' + Get test units page.')
         self.base_selenium.get(url=self.test_units_url)
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def get_random_test_units(self):
         row = self.get_random_test_units_row()

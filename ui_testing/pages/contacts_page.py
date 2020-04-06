@@ -9,7 +9,7 @@ class Contacts(BasePages):
 
     def get_contacts_page(self):
         self.base_selenium.get(url=self.contacts_url)
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def archive_contact(self, name='', random=False, force=True):
         if not random:

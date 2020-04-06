@@ -1,7 +1,7 @@
 from ui_testing.pages.analyses_page import AllAnalysesPage
 
-class SingleAnalysisPage(AllAnalysesPage):
 
+class SingleAnalysisPage(AllAnalysesPage):
     '''
     Opens the accordion for a specific analysis given its index
     '''
