@@ -82,11 +82,11 @@ class Order(Orders):
 
     def clear_test_plan(self):
         if self.get_test_plan():
-            self.base_selenium.clear_items_in_drop_down(element='order:test_plan')
+            self.base_selenium.clear_items_in_drop_down(element='order:test_plan', confirm_popup=True)
 
     def clear_test_unit(self):
         if self.get_test_unit():
-            self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
+            self.base_selenium.clear_items_in_drop_down(element='order:test_unit', confirm_popup=True)
 
     def set_test_unit(self, test_unit=''):
         if test_unit:
@@ -396,9 +396,6 @@ class Order(Orders):
         for testplan in test_plans:
             if remove_old:
                 self.clear_test_plan()
-                self.base_selenium.wait_element(element='general:form_popup_warning_window')
-                self.base_selenium.click(element='general:confirmation_button')
-                self.sleep_tiny()
             self.set_test_plan(test_plan=testplan)
             self.sleep_tiny()
            
@@ -406,9 +403,6 @@ class Order(Orders):
         for testunit in test_units:
             if remove_old:
                 self.clear_test_unit()
-                self.base_selenium.wait_element(element='general:form_popup_warning_window')
-                self.base_selenium.click(element='general:confirmation_button')
-                self.sleep_tiny()
             self.set_test_unit(test_unit=testunit)
             self.sleep_tiny()
 

@@ -210,3 +210,11 @@ class TestPlanAPI(TestPlanAPIFactory):
                 return False
         else:
             return False
+
+    def get_completed_testplans_with_article(self, article="all"):
+        api, payload = self.get_all_test_plans()
+        test_plans = api['testPlans']
+        completed_test_plans = [test_plan['testPlanName'] for test_plan in test_plans
+                                if test_plan['status'] == 'Completed' and test_plan['article'] == article]
+        return completed_test_plans
+

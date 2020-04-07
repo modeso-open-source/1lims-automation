@@ -7,7 +7,7 @@ from api_testing.apis.base_api import api_factory
 import random
 
 
-class OrdersAPI(BaseAPI):
+class OrdersAPIFactory(BaseAPI):
     @api_factory('get')
     def get_all_orders(self, **kwargs):
         """
@@ -214,10 +214,9 @@ class OrdersAPI(BaseAPI):
         payload['materialTypeId'] = payload['materialType']['id']
         return payload
 
-class OrdersAPIUsage(OrdersAPI):
+class OrdersAPI(OrdersAPIFactory):
     def get_order_with_feild_name(self, feild):
         """
-
         :param feild: must be in this list ['article', 'materialType','analysis','testPlans','testUnit']
         :return: order, suborder
         """
