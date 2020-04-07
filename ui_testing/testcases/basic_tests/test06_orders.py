@@ -1318,7 +1318,6 @@ class OrdersTestCases(BaseTest):
         self.info('Getting analysis page to check the data in this child table')
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
-        self.info('Filter with order no to check analysis count')
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
                                                  filter_text=suborder_after_refresh['analysis_no'],field_type='text')
 
@@ -1334,8 +1333,7 @@ class OrdersTestCases(BaseTest):
 
         LIMS-4269 case 2
         """
-        self.orders_api_usage = OrdersAPIUsage()
-        order, sub_order, sub_order_index = self.orders_api_usage.get_order_with_feild_name(feild='testUnit')
+        order, sub_order, sub_order_index = self.orders_api.get_order_with_feild_name(feild='testUnit')
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
         suborder_before_refresh = \
             self.order_page.update_suborder(sub_order_index=sub_order_index, test_units=[''], remove_old=True)
@@ -1355,7 +1353,6 @@ class OrdersTestCases(BaseTest):
         self.info('Getting analysis page to check the data in this child table')
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
-        self.info('Filter with order no to check analysis count')
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
                                                  filter_text=suborder_after_refresh['analysis_no'],field_type='text')
 
