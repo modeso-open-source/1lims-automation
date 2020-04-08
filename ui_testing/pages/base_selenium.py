@@ -184,7 +184,6 @@ class BaseSelenium:
                 raise TimeoutException()
 
     def wait_until_element_is_not_displayed(self, element):
-        self.LOGGER.info('wait until element is not displayed')
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
             with self._change_implicit_wait():
@@ -203,7 +202,6 @@ class BaseSelenium:
                 raise TimeoutException("Element is still displayed")
 
     def wait_until_element_clickable(self, element):
-        self.LOGGER.info('wait until element clickable')
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
             with self._change_implicit_wait():
@@ -368,6 +366,15 @@ class BaseSelenium:
             return True
         else:
             return False
+
+    def check_element_is_not_exist(self, element):
+        try:
+            self.wait_until_element_is_not_displayed(element)
+            return True
+        except TimeoutException:
+            return False
+        except:
+            return True
 
     def select_random_item(self, element):
         items = self.find_elements(element=element)
