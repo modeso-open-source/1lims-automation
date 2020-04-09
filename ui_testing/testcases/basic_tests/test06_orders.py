@@ -2106,21 +2106,12 @@ class OrdersTestCases(BaseTest):
         LIMS-3710
         :return:
         """
-        self.test_unit_page.get_test_units_page()
-        self.base_selenium.LOGGER.info('select random test unit record')
-        testunits, payload = self.test_unit_api.get_all_test_units()
+        testunits, payload = self.test_unit_api.get_all_test_units(limit=20, deleted=1)
         random_row = random.choice(testunits['testUnits'])
-
-        testunit_name = random_row['name']
-        self.order_page.apply_filter_scenario(filter_element='test_units:testunit_name_filter', filter_text=testunit_name,
-                                              field_type='text')
-        row = self.test_unit_page.get_last_test_unit_row()
-        self.order_page.click_check_box(source=row)
-        self.test_unit_page.archive_selected_test_units()
 
         self.order_page.get_orders_page()
         self.base_selenium.LOGGER.info('select random order record')
-        orders, payload = self.orders_api.get_all_orders()
+        orders, payload = self.orders_api.get_all_orders(limit=20)
         order_row = random.choice(orders['orders'])
 
         order_no = order_row['orderNo']
@@ -2130,7 +2121,7 @@ class OrdersTestCases(BaseTest):
         row = self.order_page.get_last_order_row()
         self.orders_page.open_edit_page(row)
 
-        result = self.order_page.set_random_test_unit(test_units=testunit_name, sub_order_index=0)
+        result = self.order_page.set_random_test_unit(test_units=random_row['name'], sub_order_index=0)
         self.assertFalse(result, 'no results found ')
 
 

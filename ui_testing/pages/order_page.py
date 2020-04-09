@@ -397,7 +397,7 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(
             ' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
-            self.set_test_unit(test_unit=testunit)
+            self.set_test_unit(test_units=testunit)
 
         if shipment_date:
             return self.set_shipment_date(row_id=sub_order_index)
