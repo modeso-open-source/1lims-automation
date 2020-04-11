@@ -84,6 +84,36 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:create_copies')
         self.sleep_medium()
 
+    def archive_sub_order_from_active_table(self, index=0):
+        self.info('archive suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[index])
+        self.base_selenium.click(element='orders:suborder_archive')
+        self.confirm_popup()
+
+    def delete_sub_order(self, analysis_no, confirm_popup=True):
+        self.info('navigate to archived order table')
+        self.get_archived_items()
+        sub_orders = self.get_table_data(table_element='general:table_child')
+        child_table_records = self.result_table(element='general:table_child')
+        index = 0
+        if len(sub_orders) == 1:
+            index = 0
+        else:   # in case that order has more than one archived suborder
+            for suborder in sub_orders:
+                if suborder['Analysis No.'] == analysis_no:
+                    break
+                index = index+1
+        self.info("delete suborder with index {} and analysis_no {}".format(index, analysis_no))
+        self.open_row_options(row=child_table_records[index])
+        self.base_selenium.click(element='orders:suborder_delete')
+        self.confirm_popup()
+        if confirm_popup:
+            self.confirm_popup()
+        else:
+            self.info('Cancel the popup')
+            self.cancel()
+
     def get_random_order(self):
         self.base_selenium.LOGGER.info(' + Get random order.')
         row = self.get_random_order_row()
