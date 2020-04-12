@@ -2128,8 +2128,56 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Article Name'].replace("'", ""), selected_test_plan['article'][0])
         self.assertEqual(suborder_data['Test Units'], test_unit)
         self.assertEqual(suborder_data['Test Plans'], selected_test_plan['testPlanName'])
+        
+    def test034_Duplicate_sub_order_and_cahange_materiel_type(self):
+        """
+        duplicate sub-order of any order then change the materiel type
 
-    def test034_delete_suborder(self):
+        LIMS-6227
+        """
+        self.info('get random main order data')
+        orders, payload = self.orders_api.get_all_orders(limit=50)
+        main_order = random.choice(orders['orders'])
+        self.order_page.search(main_order['orderNo'])
+        self.order_page.get_child_table_data()
+        self.info("duplicate the sub order of order {} from suborder's options".format(main_order['orderNo']))
+        self.order_page.duplicate_sub_order_from_table_overview()
+
+        old_material_type = self.order_page.get_material_type_of_first_suborder()
+        self.info('old material type of suborder is {}'.format(old_material_type))
+        self.info('get completed test plan with different material type')
+        self.test_plan_api = TestPlanAPI()
+        completed_test_plans = self.test_plan_api.get_completed_testplans()
+        for test_plan in completed_test_plans:
+            if test_plan['materialType'] != old_material_type:
+                selected_test_plan = test_plan
+                break
+        self.info('change material type of first suborder to {}'.format(selected_test_plan['materialType']))
+        self.order_page.set_material_type_of_first_suborder(material_type=selected_test_plan['materialType'])
+        self.info('Make sure that article, test unit, and test plan are empty')
+        self.assertEqual(self.base_selenium.get_value(element='order:article'), None)
+        self.assertEqual(self.base_selenium.get_value(element='order:test_unit'), None)
+        self.assertEqual(self.base_selenium.get_value(element='order:test_plan'), None)
+        self.info('set suborder new data')
+        self.order_page.set_article(article=selected_test_plan['article'][0])
+        test_unit = self.order_page.set_test_unit()
+        self.order_page.set_test_plan(test_plan=selected_test_plan['testPlanName'])
+        self.info('duplicated sub order material is {}, article {}, test_unit {} and test_plan {}'.
+                  format(selected_test_plan['materialType'], selected_test_plan['article'][0],
+                         test_unit, selected_test_plan['testPlanName']))
+        self.order_page.save(save_btn='order:save_btn', sleep=True)
+
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.order_page.search(main_order['orderNo'])
+        child_data = self.order_page.get_child_table_data()
+        duplicated_suborder_data = child_data[0]
+        self.assertEqual(duplicated_suborder_data['Material Type'], selected_test_plan['materialType'])
+        self.assertEqual(duplicated_suborder_data['Article Name'], selected_test_plan['article'][0])
+        self.assertEqual(duplicated_suborder_data['Test Units'], test_unit)
+        self.assertEqual(duplicated_suborder_data['Test Plans'], selected_test_plan['testPlanName'])
+
+    def test035_delete_suborder(self):
         """
          Delete sub order Approach: In case I have main order with multiple sub orders,
          make sure you can delete one of them
