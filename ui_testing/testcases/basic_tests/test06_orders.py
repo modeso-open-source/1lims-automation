@@ -1372,7 +1372,7 @@ class OrdersTestCases(BaseTest):
                                                  filter_text=suborder_after_refresh['analysis_no'],
                                                  field_type='text')
 
-        analysis_records = self.analyses_page.get_child_table_data()[sub_order_index]
+        analysis_records = self.analyses_page.get_child_table_data()[-1]
         self.info('Assert analysis record test unit is {} as selected testunit {}'
                   .format(analysis_records['Test Unit'], suborder_testunits_before_refresh[sub_order_index]['name']))
         self.assertEqual(analysis_records['Test Unit'], suborder_testunits_before_refresh[sub_order_index]['name'])
