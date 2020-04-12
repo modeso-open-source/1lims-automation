@@ -220,7 +220,7 @@ class OrdersAPI(OrdersAPIFactory):
         :param feild: must be in this list ['article', 'materialType','analysis','testPlans','testUnit']
         :return: order, suborder
         """
-        orders_data, payload = self.get_all_orders(limit=100)
+        orders_data, payload = self.get_all_orders(limit=50)
         orders = orders_data['orders']
         for order in orders:
             suborders_data, a = self.get_suborder_by_order_id(order['id'])

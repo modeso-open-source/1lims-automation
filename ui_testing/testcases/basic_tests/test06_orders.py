@@ -1295,35 +1295,47 @@ class OrdersTestCases(BaseTest):
         """
         self.test_plan_api = TestPlanAPI()
         order, sub_order, sub_order_index = self.orders_api.get_order_with_feild_name(feild='testPlans')
-        self.orders_page.get_order_edit_page_by_id(order['orderNo'])
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
         self.info("Edit order with order no. {}".format(order['orderNo']))
-        #get test plan completed not in progress
-        test_plans = self.test_plan_api.get_completed_testplans_with_article(article=sub_order[0]['article'])
-        test_plan = [test_plan for test_plan in test_plans if test_plan not in sub_order[0]['testPlans']]
-        suborder_before_refresh = \
+        # get test plan completed not in progress
+        self.info("get completed test plan with article {}".format(sub_order[sub_order_index]['article']))
+
+        test_plans_list = \
+            self.test_plan_api.get_completed_testplans_with_article(articleNo=sub_order[sub_order_index]['articleNo'])
+
+        test_plans_list_without_duplicate = \
+            [test_plan for test_plan in test_plans_list if test_plan not in sub_order[sub_order_index]['testPlans']]
+
+        test_plan = random.choice(test_plans_list_without_duplicate)
+        # if no completed test plans with that article and material type, change
+        # material type, article , test plan to random completed test plan data
+        if test_plans_list:
+            self.info("remove suborder test plan and update it to {}".format(test_plan))
             self.order_page.update_suborder(sub_order_index=sub_order_index, test_plans=[test_plan], remove_old=True)
-        # checking that when adding new test unit, the newly added test plan is added to the
+        else:
+            test_plan = random.choice(self.test_plan_api.get_completed_testplans())
+            self.info("update suborder article, material type,test plan ")
+            self.order_page.update_suborder(sub_order_index=sub_order_index, material_type=test_plan['materialType'],
+                                            articles=[test_plan['article']], test_plans=[test_plan], remove_old=True)
+        # checking that when adding new test plan, the newly added test plan is added to the
         # order's analysis instead of creating new analysis
-        suborder_testplans_before_refresh = suborder_before_refresh['suborders'][sub_order_index]['testplans']
         self.order_page.save(save_btn='order:save_btn')
-        self.info('Refresh to make sure that data are saved correctly')
+        self.info('Refresh to make sure that data are saved correctly and analysis no appeared')
         self.base_selenium.refresh()
-        self.info('Get suborder data to check it')
+        self.info('Get suborder data to check it updated correctly')
         suborder_after_refresh = self.order_page.get_suborder_data()['suborders'][sub_order_index]
         suborder_testplans_after_refresh = suborder_after_refresh['testplans']
-        self.info('Assert Test plans are: {}, and should be: {}'.
-                  format(suborder_testplans_after_refresh, suborder_testplans_before_refresh))
-        self.assertEqual(suborder_testplans_after_refresh, suborder_testplans_before_refresh)
-
+        self.info('Assert Test plan is: {}, and should be: {}'.format(suborder_testplans_after_refresh, [test_plan]))
+        self.assertEqual(suborder_testplans_after_refresh, [test_plan])
         self.info('Getting analysis page to check the data in this child table')
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
-                                                 filter_text=suborder_after_refresh['analysis_no'],field_type='text')
-
+                                                 filter_text=suborder_after_refresh['analysis_no'],
+                                                 field_type='text')
         analysis_records = self.analyses_page.get_table_rows_data()
         self.info('Assert analysis is updated with new testplan')
-        self.assertIn(suborder_testplans_before_refresh[0], analysis_records[0])
+        self.assertIn(test_plan, analysis_records[0])
 
     def test022_update_suborder_testunits(self):
         """
@@ -1335,6 +1347,8 @@ class OrdersTestCases(BaseTest):
         """
         order, sub_order, sub_order_index = self.orders_api.get_order_with_feild_name(feild='testUnit')
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        self.info("Edit order with order no. {}".format(order['orderNo']))
+        self.info("remove suborder test unit and select new random test unit")
         suborder_before_refresh = \
             self.order_page.update_suborder(sub_order_index=sub_order_index, test_units=[''], remove_old=True)
         # checking that when adding new test unit, the newly added test unit is added to the
@@ -1354,12 +1368,13 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
-                                                 filter_text=suborder_after_refresh['analysis_no'],field_type='text')
+                                                 filter_text=suborder_after_refresh['analysis_no'],
+                                                 field_type='text')
 
-        analysis_records = self.analyses_page.get_child_table_data()[0]
+        analysis_records = self.analyses_page.get_child_table_data()[sub_order_index]
         self.info('Assert analysis record test unit is {} as selected testunit {}'
-                  .format(analysis_records['Test Unit'], suborder_testunits_before_refresh[0]['name']))
-        self.assertEqual(analysis_records['Test Unit'], suborder_testunits_before_refresh[0]['name'])
+                  .format(analysis_records['Test Unit'], suborder_testunits_before_refresh[sub_order_index]['name']))
+        self.assertEqual(analysis_records['Test Unit'], suborder_testunits_before_refresh[sub_order_index]['name'])
 
         #def test_test(self):
     #    import ipdb; ipdb.set_trace()
