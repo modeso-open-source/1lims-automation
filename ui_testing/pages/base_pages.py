@@ -70,13 +70,13 @@ class BasePages:
         self.confirm_popup(force)
 
     def confirm_popup(self, force=True):
-        self.base_selenium.LOGGER.info('Confirming the popup')
+        self.base_selenium.LOGGER.info('confirming the popup')
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
             if force:
                 self.base_selenium.click(element='general:confirm_pop')
             else:
                 self.base_selenium.click(element='general:confirm_cancel')
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.sleep_small()
 
     def open_filter_menu(self):
         self.base_selenium.LOGGER.info(' Open Filter')
@@ -150,13 +150,13 @@ class BasePages:
         if xpath == '':
             xpath = '//span[@class="mr-auto"]/a'
         row.find_element_by_xpath(xpath).click()
-        self.sleep_small() # sleep for loading
+        self.wait_until_page_is_loaded()
 
     def open_edit_page_by_css_selector(self, row, css_selector=''):
         if css_selector == '':
             css_selector = '[title="Edit details"]'
         row.find_element_by_css_selector(css_selector).click()
-        self.sleep_small() # sleep for loading
+        self.wait_until_page_is_loaded()
 
     def get_archived_items(self):
         self.base_selenium.scroll()
@@ -268,6 +268,9 @@ class BasePages:
         return child_table_data
 
     def info(self, message):
+        if message[0] != " ":
+            message = " {}".format(message)
+        message = message.lower()
         self.base_selenium.LOGGER.info(message)
 
     def generate_random_email(self):
@@ -282,8 +285,13 @@ class BasePages:
     def open_configuration(self):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:configurations')
-        self.sleep_medium()
-        
+        self.base_selenium.wait_until_element_located(element='general:fields_panel')
+
+    def open_archived_configuration(self):
+        self.open_configuration()
+        self.sleep_tiny()
+        self.base_selenium.click(element='general:configurations_archived')
+
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
@@ -419,14 +427,6 @@ class BasePages:
             return False
         return True
 
-    def open_connection_with_database(self):
-        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
-        cursor = db.cursor()
-        return cursor, db
-
-    def close_connection_with_database(self, db):
-        db.close()
-
     def is_next_page_button_enabled(self, element='general:next_page'):
         _class = self.base_selenium.get_attribute('general:next_page', 'class')
         if 'disabled' in _class:
@@ -523,17 +523,13 @@ class BasePages:
         if limit_index >= 0:
             pagination_elements[limit_index].click()
         time.sleep(self.base_selenium.TIME_MEDIUM)
-        
-        
 
     def get_current_pagination_limit(self):
         return self.base_selenium.find_element(element='general:pagination_button').text.split('\n')[0]
 
-    # eslam, i'll need your check on this function
-    def wait_for_loading_msg(self):
-        self.base_selenium.LOGGER.info('wait for loading msg to disappear')
-        self.base_selenium.wait_element('general:loading_msg')
-        self.base_selenium.wait_until_element_is_not_displayed('general:loading_msg')
+    def wait_until_page_is_loaded(self):
+        self.base_selenium.LOGGER.info('wait until page is loaded')
+        self.base_selenium.wait_until_element_is_not_displayed('general:loading')
 
     def get_table_info_data(self):
         self.base_selenium.LOGGER.info('get table information')
@@ -561,3 +557,11 @@ class BasePages:
     def get_the_latest_row_data(self):
         latest_row = (self.result_table()[0])
         return self.base_selenium.get_row_cells_dict_related_to_header(latest_row)
+
+    def open_connection_with_database(self):
+        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
+        cursor = db.cursor()
+        return cursor, db
+
+    def close_connection_with_database(self, db):
+        db.close()

@@ -50,8 +50,8 @@ class ArticleAPIFactory(BaseAPI):
             "No": self.generate_random_number(),
             "name": self.generate_random_string(),
             "materialType": {
-                    "id": 1,
-                    "text": "Raw Material"
+                "id": 1,
+                "text": "Raw Material"
             },
             "selectedMaterialType": [
                 {
@@ -62,6 +62,7 @@ class ArticleAPIFactory(BaseAPI):
             "materialTypeId": 1,
             "dynamicFieldsValues": []
         }
+
         return api, _payload
 
     @api_factory('get')
@@ -77,6 +78,21 @@ class ArticleAPIFactory(BaseAPI):
                                          materialtype_id, is_archived, name)
         _payload = {}
         return api, _payload
+
+    @api_factory('get')
+    def get_field_config(self):
+        api = '{}{}'.format(self.url, self.END_POINTS['article_api']['get_field_config'])
+        return api, {}
+
+    @api_factory('put')
+    def archive_field_config(self, filed_id):
+        api = '{}{}{}'.format(self.url, self.END_POINTS['article_api']['archive_field_config'], filed_id)
+        return api, {}
+
+    @api_factory('put')
+    def restore_field_config(self, filed_id):
+        api = '{}{}{}'.format(self.url, self.END_POINTS['article_api']['restore_field_config'], filed_id)
+        return api, {}
 
 
 class ArticleAPI(ArticleAPIFactory):
@@ -102,7 +118,7 @@ class ArticleAPI(ArticleAPIFactory):
             data[material_type].append(article['name'])
         return data
 
-    def get_articles_with_no_testplans(self,**kwargs):
+    def get_articles_with_no_testplans(self, **kwargs):
         response = self.get_all_articles(**kwargs)
         all_articles = response[0]['articles']
         articles = [article for article in all_articles if len(article['testPlanNames']) < 1]
@@ -114,3 +130,30 @@ class ArticleAPI(ArticleAPIFactory):
         articles = [article for article in all_articles if len(article['testPlanNames']) >= 1]
         return articles
 
+    def archive_unit_config(self):
+        return self.archive_field_config(filed_id=5)
+
+    def restore_unit_config(self):
+        return self.restore_field_config(filed_id=5)
+
+    def archive_comment_config(self):
+        return self.archive_field_config(filed_id=7)
+
+    def restore_comment_config(self):
+        return self.restore_field_config(filed_id=7)
+
+    def archive_related_article_config(self):
+        return self.archive_field_config(filed_id=18)
+
+    def restore_related_article_config(self):
+        return self.restore_field_config(filed_id=18)
+
+    def archive_all_optional_fields(self):
+        self.archive_unit_config()
+        self.archive_comment_config()
+        self.archive_related_article_config()
+
+    def restore_all_optional_fields(self):
+        self.restore_unit_config()
+        self.restore_comment_config()
+        self.restore_related_article_config()

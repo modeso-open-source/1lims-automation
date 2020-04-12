@@ -35,7 +35,7 @@ class OrdersAPIFactory(BaseAPI):
         return api, {}
 
     @api_factory('get')
-    def get_suborder_by_order_id(self, id=1):
+    def get_suborder_by_order_id(self, id=0):
         """
         param id: order ID
         :return: response, payload
@@ -215,10 +215,18 @@ class OrdersAPIFactory(BaseAPI):
         return payload
 
 class OrdersAPI(OrdersAPIFactory):
+    def get_order_with_multiple_sub_orders(self):
+        api, payload = self.get_all_orders(limit=100)
+        all_orders = api['orders']
+        for order in all_orders:
+            suborder = self.get_suborder_by_order_id(id=order['orderId'])[0]['orders']
+            if len(suborder) > 1:
+                return order
+              
     def get_order_with_feild_name(self, feild):
         """
         :param feild: must be in this list ['article', 'materialType','analysis','testPlans','testUnit']
-        :return: order, suborder
+        :return: order, suborder, suborder_index
         """
         orders_data, payload = self.get_all_orders(limit=50)
         orders = orders_data['orders']
@@ -234,4 +242,3 @@ class OrdersAPI(OrdersAPIFactory):
                 for i in range(0, len(suborders)-1):
                     if suborders[i][feild]:
                         return order, suborders, i
-

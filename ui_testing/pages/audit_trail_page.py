@@ -7,7 +7,7 @@ class AuditTrail(BasePages):
 
     def get_audit_trails_page(self):
         self.base_selenium.get(url=self.audit_trails_url)
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def filter_audit_trail_by(self, filter_name , filter_text, field_type='drop_down'):
         self.base_selenium.LOGGER.info(' + Filter by test plan : {}'.format(filter_text))

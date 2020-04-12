@@ -1,5 +1,14 @@
 elements = {
     'general': {
+        'fields_panel': {'method': 'class_name',
+                         'value': 'fieldsPanel',
+                         'order': 0},
+        'configuration_body': {'method': 'id',
+                               'value': 'body',
+                               'order': 0},
+        'loading': {'method': 'class_name',
+                    'value': 'm-blockui',
+                    'order': 0},
         'child_table_arrow': {'method': 'class_name',
                               'value': 'm-datatable__toggle-subtable',
                               'order': 0},
@@ -250,8 +259,7 @@ elements = {
                   'value': 'field'},
         'field_items': {'method': 'class_name',
                         'value': 'padding',
-                        'order': -1}
-
+                        'order': -1},
     },
     'test_plans': {
         'test_plans_table': {'method': 'id',
@@ -509,7 +517,7 @@ elements = {
                                'value': 'a',
                                'order': 4},
         'analysis_order_tab': {'method': 'xpath',
-                         'value': "//label[@class='btn tab']"},
+                               'value': "//label[@class='btn tab']"},
         'new_order': {'method': 'link_text',
                       'value': 'New Order'},
         'right_menu': {'method': 'xpath',
@@ -547,10 +555,16 @@ elements = {
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
                                  'value': 'start_shipmentDate'},
-        'mainorder_duplicate': {'method': 'id', 
+        'mainorder_duplicate': {'method': 'id',
                                 'value': 'main_table_duplicate'},
         'suborder_duplicate': {'method': 'id', 
-                               'value': 'child_table_duplicate'}
+                               'value': 'child_table_duplicate'},
+        'suborder_archive': {'method': 'id',
+                             'value': 'child_table_archive'},
+        'suborder_delete': {'method': 'id',
+                             'value': 'child_table_delete'},
+        'confirm_delete': {'method':'xpath',
+                           'value': '//h2[@id="swal2-title"]'}
     },
 
     'audit_trail': {

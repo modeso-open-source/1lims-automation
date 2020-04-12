@@ -144,12 +144,35 @@ class Article(Articles):
         self.open_filter_menu()
         self.sleep_medium()
 
-    def archive_restore_optional_fields(self, restore=False):
-        self.sleep_small()
-        self.info('+ Open article configuration')
+    def is_field_active(self, field_name):
+        return field_name.lower() in self.base_selenium.get_text('general:configuration_body')
+
+    def is_field_restore(self, field_name):
+        return field_name.lower() in self.base_selenium.get_text('general:configuration_body')
+
+    def _archive_field(self, field_name):
+        self.base_selenium.click(element='articles:{}_field_options'.format(field_name))
+        self.info(' Archive field {}'.format(field_name))
+        self.base_selenium.click(element='articles:{}_field_archive'.format(field_name))
+        self.confirm_popup()
+
+    def archive_all_optional_fields(self):
+        self.info('open article configuration')
         self.open_configuration()
-        if restore:
-            self.base_selenium.click(element='general:configurations_archived') # open the archived tab
-        self.toggle_archive_field(field_name='unit', restore=restore)
-        self.toggle_archive_field(field_name='comment', restore=restore)
-        self.toggle_archive_field(field_name='related_article', restore=restore)
+        self._archive_field(field_name='unit')
+        self._archive_field(field_name='comment')
+        self._archive_field(field_name='related_article')
+
+    def _restore_field(self, field_name):
+        self.info(' restore field {}'.format(field_name))
+        self.base_selenium.click(element='articles:{}_field_options'.format(field_name))
+        self.base_selenium.click(element='articles:{}_field_restore'.format(field_name))
+        self.confirm_popup()
+
+    def restore_optional_fields(self):
+        self.info('open article configuration')
+        self.open_archived_configuration()
+        self._restore_field(field_name='unit')
+        self._restore_field(field_name='comment')
+        self._restore_field(field_name='related_article')
+

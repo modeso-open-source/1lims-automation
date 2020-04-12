@@ -163,8 +163,8 @@ class TestPlanAPIFactory(BaseAPI):
 
 class TestPlanAPI(TestPlanAPIFactory):
     def get_all_test_plans_json(self, **kwargs):
-        testplans_response = self.get_all_test_plans(**kwargs)
-        return testplans_response.json()['testPlans']
+        testplans_response, _ = self.get_all_test_plans(**kwargs)
+        return testplans_response['testPlans']
 
     def get_completed_testplans(self, **kwargs):
         response, _ = self.get_all_test_plans(**kwargs)
@@ -210,7 +210,7 @@ class TestPlanAPI(TestPlanAPIFactory):
                 return False
         else:
             return False
-
+          
     def get_completed_testplans_with_article(self, articleNo="all"):
         completed_test_plans = self.get_completed_testplans()
         test_plans = []
@@ -218,4 +218,3 @@ class TestPlanAPI(TestPlanAPIFactory):
             if test_plan['articleNo'] == [articleNo]:
                 test_plans.append(test_plan['testPlanName'])
         return test_plans
-
