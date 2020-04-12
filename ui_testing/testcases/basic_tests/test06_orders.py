@@ -1373,7 +1373,13 @@ class OrdersTestCases(BaseTest):
                                                  field_type='text')
 
         analysis_records = self.analyses_page.get_child_table_data()
-        self.assertIn(suborder_testunits_before_refresh[sub_order_index]['name'], analysis_records)
+        if len(analysis_records) > 1:
+            test_units = []
+            for a in analysis_records:
+                test_units.append(a['Test Unit'])
+        else:
+            test_units = analysis_records[0]['Test Unit']
+        self.assertIn(suborder_testunits_before_refresh[sub_order_index]['name'], test_units)
 
         #def test_test(self):
     #    import ipdb; ipdb.set_trace()
