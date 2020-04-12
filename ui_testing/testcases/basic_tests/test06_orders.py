@@ -1372,10 +1372,14 @@ class OrdersTestCases(BaseTest):
                                                  filter_text=suborder_after_refresh['analysis_no'],
                                                  field_type='text')
 
-        analysis_records = self.analyses_page.get_child_table_data()[-1]
+        analysis_records = self.analyses_page.get_child_table_data()
+        test_units = []
+        for analsyis in analysis_records:
+            test_units.append(analysis['Test Unit'])
+            
         self.info('Assert analysis record test unit is {} as selected testunit {}'
-                  .format(analysis_records['Test Unit'], suborder_testunits_before_refresh[sub_order_index]['name']))
-        self.assertEqual(analysis_records['Test Unit'], suborder_testunits_before_refresh[sub_order_index]['name'])
+                  .format(test_units, suborder_testunits_before_refresh[sub_order_index]['name']))
+        self.assertIn(suborder_testunits_before_refresh[sub_order_index]['name'], test_units)
 
         #def test_test(self):
     #    import ipdb; ipdb.set_trace()
