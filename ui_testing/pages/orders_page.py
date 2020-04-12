@@ -74,6 +74,7 @@ class Orders(BasePages):
         table_records = self.result_table(element='general:table')
         self.open_row_options(row=table_records[index])
         self.base_selenium.click(element='orders:mainorder_duplicate')
+        self.wait_until_page_is_loaded()
 
     def duplicate_sub_order_from_table_overview(self, index=0, number_of_copies=1):
         self.info('duplicate suborder from the order\'s active table')
