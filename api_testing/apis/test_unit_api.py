@@ -273,7 +273,7 @@ class TestUnitAPI(TestUnitAPIFactory):
                 return testunit['id']
 
     def get_first_record_with_data_in_attribute(self, attribute):
-        testunits_request = self.get_all_test_units().json()
+        testunits_request, _ = self.get_all_test_units()
         if (testunits_request['status'] != 1) or (testunits_request['count'] == 0):
             return False
         testunit_records = testunits_request['testUnits']
