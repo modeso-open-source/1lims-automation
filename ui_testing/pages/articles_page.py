@@ -83,15 +83,4 @@ class Articles(BasePages):
             return False
         return True
 
-    def toggle_archive_field(self, field_name, restore=False):
-        self.base_selenium.click(element='articles:{}_field_options'.format(field_name))
 
-        if restore:
-            self.base_selenium.LOGGER.info('+ Restore field {}'.format(field_name))
-            self.base_selenium.click(element='articles:{}_field_restore'.format(field_name))
-        else:    
-            self.base_selenium.LOGGER.info('+ Archive field {}'.format(field_name))
-            self.base_selenium.click(element='articles:{}_field_archive'.format(field_name))
-            
-        self.confirm_popup()
-        self.sleep_tiny()
