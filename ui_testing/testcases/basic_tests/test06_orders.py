@@ -28,8 +28,6 @@ class OrdersTestCases(BaseTest):
         self.article_api = ArticleAPI()
         self.test_unit_api = TestUnitAPI()
         self.contacts_api = ContactsAPI()
-        self.test_unit_page = TstUnits()
-        self.test_units_page = TstUnit()
         self.single_analysis_page = SingleAnalysisPage()
         self.general_utilities_api = GeneralUtilitiesAPI()
         self.contacts_page = Contacts()
@@ -2110,18 +2108,13 @@ class OrdersTestCases(BaseTest):
         random_row = random.choice(testunits['testUnits'])
 
         self.order_page.get_orders_page()
-        self.base_selenium.LOGGER.info('select random order record')
+        self.info('select random order record')
         orders, payload = self.orders_api.get_all_orders(limit=20)
         order_row = random.choice(orders['orders'])
 
-        order_no = order_row['orderNo']
-        self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
-                                              field_type='text')
+        self.orders_page.get_order_edit_page_by_id(id=order_row['id'])
 
-        row = self.order_page.get_last_order_row()
-        self.orders_page.open_edit_page(row)
-
-        result = self.order_page.set_random_test_unit(test_units=random_row['name'], sub_order_index=0)
+        result = self.order_page.update_suborder(test_units=[random_row['name']], sub_order_index=0)
         self.assertFalse(result, 'no results found ')
 
 

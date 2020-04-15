@@ -397,7 +397,8 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(
             ' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
-            self.set_test_unit(test_units=testunit)
+            self.set_test_unit(test_unit=testunit)
+            self.sleep_small()
 
         if shipment_date:
             return self.set_shipment_date(row_id=sub_order_index)
@@ -409,6 +410,7 @@ class Order(Orders):
             self.info(' Set departments : {}'.format(departments))
             self.set_departments(departments=departments)
             self.sleep_small()
+
 
     def update_material_type_suborder(self, row, material_type):
         self.base_selenium.LOGGER.info(' Set material type : {}'.format(material_type))
@@ -521,28 +523,6 @@ class Order(Orders):
             self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
 
-    def set_random_test_unit(self, test_units='', sub_order_index=''):
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        suborder_row.click()
-        if test_units:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:test_unit', item_text=test_units)
-        else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:test_unit')
-            return self.get_random_test_unit()
 
-    def get_random_test_unit(self, sub_order_index =''):
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        suborder_row.click()
-        return self.base_selenium.get_text(element='order:test_unit').split('\n')[0]
 
 
