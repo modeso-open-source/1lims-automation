@@ -223,3 +223,21 @@ class  OrdersAPI(OrdersAPIFactory):
             if len(suborder) > 1:
                 return order
 
+    def get_order_with_testunit_testplans(self):
+        """
+        :return: order, suborder,
+        """
+        orders_data, payload = self.get_all_orders(limit=50)
+        orders = orders_data['orders']
+        for order in orders:
+            suborders_data, a = self.get_suborder_by_order_id(order['id'])
+            suborders = suborders_data['orders']
+            if len(suborders) == 1:
+                if suborders[0]['testPlans'] and suborders[0]['testUnit']:
+                    return order, suborders
+            elif len(suborders) == 0:
+                break
+            else:
+                for i in range(0, len(suborders) - 1):
+                    if suborders[i]['testPlans'] and suborders[i]['testUnit']:
+                        return order, suborders

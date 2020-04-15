@@ -553,30 +553,31 @@ class OrdersTestCases(BaseTest):
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
 
-    # wiill continue with us
-    def test015_filter_by_any_fields(self):
+    @parameterized.expand(['orderNo', 'materialType', 'testDate', 'article', 'testPlans',
+                           'testUnit', 'createdAt', 'lastModifiedUser', 'shipmentDate', 'analysis'])
+    def test015_filter_by_any_fields(self, key):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
+
         LIMS-3495
         """
-        order_row = self.order_page.get_random_order_row()
-        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=order_row)
-        filter_fields_dict = self.order_page.order_filters_element()
-        self.order_page.open_filter_menu()
-        for key in filter_fields_dict:
-            field = filter_fields_dict[key]
-            self.order_page.filter(
-                key, field['element'], order_data[key], field['type'])
-            filtered_rows = self.order_page.result_table()
-            for index in range(len(filtered_rows) - 1):
-                row_data = self.base_selenium.get_row_cells_dict_related_to_header(
-                    row=filtered_rows[index])
-                self.base_selenium.LOGGER.info(
-                    ' Assert {} in  (table row: {}) == {} '.format(key, index + 1, order_data[key]))
-                self.assertEqual(order_data[key].replace(
-                    "'", ""), row_data[key].replace("'", ""))
-            self.order_page.filter_reset()
+        self.info('select random order using api')
+        order, suborder = self.orders_api.get_order_with_testunit_testplans()
+        order_data = suborder[0]
+        filter_element = self.order_page.order_filters_element(key=key)
+        if key == 'testPlans':
+            filter_value = order_data[key][0]
+        elif key == 'testUnit':
+            filter_value = order_data[key][0]['testUnit']['name']
+        else:
+            filter_value = order_data[key]
+
+        self.orders_page.apply_filter_scenario(filter_element=filter_element['element'], filter_text=filter_value, field_type=filter_element['type'])
+        main_order = self.order_page.get_random_main_order_with_sub_orders_data()
+        order_row_data = {**main_order, **main_order['suborders'][0]}
+        self.assertEqual(filter_value.lower(), order_row_data[key].lower().replace("'", "").replace('"', ''))
+
+
 
     # will continue with us
     def test016_validate_order_test_unit_test_plan(self):

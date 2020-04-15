@@ -150,14 +150,17 @@ class Orders(BasePages):
 
     # Return all filter fields used in order
     def order_filters_element(self, key='all'):
-        filter_fileds = {'Order No.': {'element': 'orders:order_filter', 'type': 'text'},
-                         'Analysis No.': {'element': 'orders:analysis_filter', 'type': 'text'},
+        filter_fileds = {'orderNo': {'element': 'orders:order_filter', 'type': 'text'},
+                         'analysis': {'element': 'orders:analysis_filter', 'type': 'text'},
                          'Contact Name': {'element': 'orders:contact_filter', 'type': 'drop_down'},
-                         'Changed By': {'element': 'orders:changed_by', 'type': 'drop_down'},
-                         'Material Type': {'element': 'orders:material_type_filter', 'type': 'drop_down'},
-                         'Article Name': {'element': 'orders:article_filter', 'type': 'drop_down'},
-                         'Changed On': {'element': 'orders:chnaged_on_filter', 'type': 'text'},
-                         'Shipment Date': {'element': 'orders:shipment_date_filter', 'type': 'text'}
+                         'lastModifiedUser': {'element': 'orders:changed_by', 'type': 'drop_down'},
+                         'materialType': {'element': 'orders:material_type_filter', 'type': 'drop_down'},
+                         'article': {'element': 'orders:article_filter', 'type': 'drop_down'},
+                         'shipmentDate': {'element': 'orders:shipment_date_filter', 'type': 'text'},
+                         'testDate': {'element': 'orders:test_date_filter', 'type': 'text'},
+                         'createdAt': {'element': 'orders:created_on_filter', 'type': 'text'},
+                         'testUnit': {'element': 'orders:test_units_filter', 'type': 'drop_down'},
+                         'testPlan': {'element': 'orders:test_plans_filter', 'type': 'drop_down'}
                          }
 
         if key == 'all':
