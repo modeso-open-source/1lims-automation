@@ -2175,7 +2175,33 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(duplicated_suborder_data['Test Units'], test_unit)
         self.assertEqual(duplicated_suborder_data['Test Plans'], selected_test_plan['testPlanName'])
 
+    def test035_delete_suborder(self):
+        """
+         Delete sub order Approach: In case I have main order with multiple sub orders,
+         make sure you can delete one of them
+         LIMS-6853
+        """
+        self.info('get random order with multiple suborders')
+        order = self.orders_api.get_order_with_multiple_sub_orders()
+        self.order_page.search(order['orderNo'])
 
+        self.info('archive first suborder')
+        suborder_data = self.order_page.get_child_table_data()[0]
+        self.order_page.archive_sub_order_from_active_table()
+        self.orders_page.delete_sub_order(analysis_no=suborder_data['Analysis No.'])
+
+        self.info('Navigate to order page to make sure that suborder is deleted and main order still active')
+        self.order_page.get_orders_page()
+        self.order_page.search(order['orderNo'])
+        suborders_after_delete = self.order_page.get_child_table_data()
+        self.assertNotIn(suborder_data['Analysis No.'], suborders_after_delete)
+        self.assertGreater(len(suborder_data), 0)
+
+        self.info('Navigate to Analysis page to make sure that analysis related to deleted suborder not found')
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
+                                                 filter_text=suborder_data['Analysis No.'], field_type='text')
+        self.assertEqual(len(self.order_page.result_table()), 1)
 
 
 
