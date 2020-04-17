@@ -160,7 +160,7 @@ class Orders(BasePages):
                          'testDate': {'element': 'orders:test_date_filter', 'type': 'text'},
                          'createdAt': {'element': 'orders:created_on_filter', 'type': 'text'},
                          'testUnit': {'element': 'orders:test_units_filter', 'type': 'drop_down'},
-                         'testPlan': {'element': 'orders:test_plans_filter', 'type': 'drop_down'}
+                         'testPlans': {'element': 'orders:test_plans_filter', 'type': 'drop_down'}
                          }
 
         if key == 'all':

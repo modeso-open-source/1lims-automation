@@ -38,7 +38,7 @@ class OrdersAPIFactory(BaseAPI):
     def get_suborder_by_order_id(self, id=0):
         """
         """
-        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['get_suborder'], str(id)+'&deleted=0')
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['get_suborder'], str(id) + '&deleted=0')
         return api, {}
 
     @api_factory('post')
@@ -160,8 +160,6 @@ class OrdersAPIFactory(BaseAPI):
         api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['delete_suborder'], str(suborder_id))
         return api, {}
 
-
-
     @staticmethod
     def _format_payload(payload):
         if payload['testPlans']:
@@ -214,7 +212,8 @@ class OrdersAPIFactory(BaseAPI):
         payload['materialTypeId'] = payload['materialType']['id']
         return payload
 
-class  OrdersAPI(OrdersAPIFactory):
+
+class OrdersAPI(OrdersAPIFactory):
     def get_order_with_multiple_sub_orders(self):
         api, payload = self.get_all_orders(limit=100)
         all_orders = api['orders']
@@ -241,3 +240,13 @@ class  OrdersAPI(OrdersAPIFactory):
                 for i in range(0, len(suborders) - 1):
                     if suborders[i]['testPlans'] and suborders[i]['testUnit']:
                         return order, suborders
+
+    def get_random_contact_in_order(self):
+        """
+        :return: contact name
+        """
+        orders_data, payload = self.get_all_orders(limit=50)
+        orders = orders_data['orders']
+        for order in orders:
+            if order['company']:
+                return order['company'][0]['name']

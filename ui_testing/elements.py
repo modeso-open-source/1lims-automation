@@ -539,6 +539,8 @@ elements = {
                             'value': 'orderNofield'},
         'analysis_filter': {'method': 'id',
                             'value': 'analysisfield'},
+        'analysis_result_filter': {'method': 'id',
+                            'value': 'analysisResultsfield'},
         'order_filter': {'method': 'id',
                          'value': 'orderNofield'},
         'contact_filter': {'method': 'id',

@@ -553,8 +553,8 @@ class OrdersTestCases(BaseTest):
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
 
-    @parameterized.expand(['orderNo', 'materialType', 'testDate', 'article', 'testPlans',
-                           'testUnit', 'createdAt', 'lastModifiedUser', 'shipmentDate', 'analysis'])
+    @parameterized.expand(['materialType', 'article', 'testPlans',
+                           'testUnit', 'lastModifiedUser', 'analysis'])
     def test015_filter_by_any_fields(self, key):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
@@ -565,17 +565,105 @@ class OrdersTestCases(BaseTest):
         order, suborder = self.orders_api.get_order_with_testunit_testplans()
         order_data = suborder[0]
         filter_element = self.order_page.order_filters_element(key=key)
+        # map key value to match api format with get_child_table format
         if key == 'testPlans':
             filter_value = order_data[key][0]
+            result_key = 'Test Plans'
         elif key == 'testUnit':
             filter_value = order_data[key][0]['testUnit']['name']
+            result_key = 'Test Units'
+        elif key == 'materialType':
+            filter_value = order_data[key]
+            result_key = 'Material Type'
+        elif key == 'article':
+            filter_value = order_data[key]
+            result_key = 'Article Name'
+        elif key == 'lastModifiedUser':
+            filter_value = order_data[key]
+            result_key = 'Changed By'
+        elif key == 'analysis':
+            filter_value = order_data[key]
+            result_key = 'Analysis No.'
         else:
             filter_value = order_data[key]
+            result_key = key
 
-        self.orders_page.apply_filter_scenario(filter_element=filter_element['element'], filter_text=filter_value, field_type=filter_element['type'])
-        main_order = self.order_page.get_random_main_order_with_sub_orders_data()
-        order_row_data = {**main_order, **main_order['suborders'][0]}
-        self.assertEqual(filter_value.lower(), order_row_data[key].lower().replace("'", "").replace('"', ''))
+        import ipdb;ipdb.set_trace()
+        self.orders_page.apply_filter_scenario(filter_element=filter_element['element'],
+                                               filter_text=filter_value, field_type=filter_element['type'])
+
+        order = self.orders_page.result_table()[0]
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder[result_key] == filter_value:
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test015_filter_by_order_No(self):
+        """
+            New: Orders: Filter Approach: I can filter by any order No.
+
+            LIMS-3495
+        """
+        self.info('select random order using api')
+        orders, _ = self.orders_api.get_all_orders()
+        order = random.choice(orders['orders'])
+        self.orders_page.filter_by_order_no(order['orderNo'])
+        result_order = self.orders_page.result_table()[0]
+        self.assertIn(order['orderNo'], result_order.text)
+
+    def test015_filter_by_Status(self):
+        """
+            New: Orders: Filter Approach: I can filter by status
+
+            LIMS-3495
+        """
+        self.orders_page.apply_filter_scenario(filter_element='orders:status_filter',
+                                               filter_text='Open', field_type='drop_down')
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Status'] == 'Open':
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test015_filter_by_analysis_result(self):
+        """
+            New: Orders: Filter Approach: I can filter by Analysis result
+
+            LIMS-3495
+        """
+        self.orders_page.apply_filter_scenario(filter_element='orders:analysis_result_filter',
+                                               filter_text='Conform', field_type='drop_down')
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        import ipdb;ipdb.set_trace()
+        for suborder in suborders:
+            if suborder['Analysis Results'].split(' (')[0] == 'Conform':
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test015_filter_contact(self):
+        """
+            New: Orders: Filter Approach: I can filter by contact
+
+            LIMS-3495
+        """
+        contact = self.orders_api.get_random_contact_in_order()
+        self.orders_page.apply_filter_scenario(filter_element='orders:contact_filter',
+                                               filter_text=contact, field_type='drop_down')
+        order = self.orders_page.result_table()[0]
+        self.assertIn(contact, order.text)
 
 
 
