@@ -7,7 +7,7 @@ from api_testing.apis.base_api import api_factory
 import random
 
 
-class OrdersAPI(BaseAPI):
+class OrdersAPIFactory(BaseAPI):
     @api_factory('get')
     def get_all_orders(self, **kwargs):
         """
@@ -35,10 +35,10 @@ class OrdersAPI(BaseAPI):
         return api, {}
 
     @api_factory('get')
-    def get_suborder_by_order_id(self, id):
+    def get_suborder_by_order_id(self, id=0):
         """
         """
-        api = '{}{}{}'.format(self.url,self.END_POINTS['orders_api']['get_suborder'], str(id))
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['get_suborder'], str(id)+'&deleted=0')
         return api, {}
 
     @api_factory('post')
@@ -213,3 +213,13 @@ class OrdersAPI(BaseAPI):
 
         payload['materialTypeId'] = payload['materialType']['id']
         return payload
+
+class  OrdersAPI(OrdersAPIFactory):
+    def get_order_with_multiple_sub_orders(self):
+        api, payload = self.get_all_orders(limit=100)
+        all_orders = api['orders']
+        for order in all_orders:
+            suborder = self.get_suborder_by_order_id(id=order['orderId'])[0]['orders']
+            if len(suborder) > 1:
+                return order
+
