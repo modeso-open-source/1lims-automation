@@ -10,6 +10,8 @@ from ui_testing.pages.analysis_page import AllAnalysesPage
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.contacts_api import ContactsAPI
+from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.testunits_page import TstUnits
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from ui_testing.pages.contacts_page import Contacts
 from random import randint
@@ -25,6 +27,8 @@ class OrdersTestCases(BaseTest):
         self.orders_api = OrdersAPI()
         self.article_api = ArticleAPI()
         self.test_unit_api = TestUnitAPI()
+        self.test_unit_page = TstUnit()
+        self.test_units_page = TstUnits()
         self.contacts_api = ContactsAPI()
         self.single_analysis_page = SingleAnalysisPage()
         self.general_utilities_api = GeneralUtilitiesAPI()
@@ -2106,14 +2110,13 @@ class OrdersTestCases(BaseTest):
         random_row = random.choice(testunits['testUnits'])
 
         self.order_page.get_orders_page()
+        self.base_selenium.click(element='orders:new_order')
+        self.order_page.set_new_order()
+        self.order_page.sleep_small()
+        self.order_page.set_material_type_of_first_suborder(material_type='r', sub_order_index=0)
         self.info('select random order record')
-        orders, payload = self.orders_api.get_all_orders(limit=20)
-        order_row = random.choice(orders['orders'])
 
-        self.orders_page.get_order_edit_page_by_id(id=order_row['id'])
-
-        result = self.order_page.update_suborder(test_units=[random_row['name']], sub_order_index=0)
-        self.assertFalse(result, 'no results found ')
-
-
+        self.info('Assert test unit is not existing in the list.')
+        self.assertFalse(self.order_page.is_testunit_existing(
+            test_unit=random_row['name']))
 

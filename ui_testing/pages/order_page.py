@@ -52,6 +52,11 @@ class Order(Orders):
         self.set_article(article=article)
         return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
 
+    def is_testunit_existing(self, test_unit):
+        self.set_test_unit(test_unit=test_unit)
+        return self.base_selenium.check_item_partially_in_items(element='order:test_unit', item_text=test_unit)
+
+
     def set_contact(self, contact=''):
         if contact:
             self.base_selenium.select_item_from_drop_down(
