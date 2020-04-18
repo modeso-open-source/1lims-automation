@@ -1,13 +1,17 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.my_profile_page import MyProfile
+from ui_testing.pages.header_page import Header
+from api_testing.apis.users_api import UsersAPI
 from parameterized import parameterized
 from api_testing.apis.base_api import BaseAPI
-import re
-from unittest import skip
 
 
 class MyProfileTestCases(BaseTest):
     def setUp(self):
         super().setUp()
+        self.header_page = Header()
+        self.my_profile_page = MyProfile()
+        self.users_api = UsersAPI()
         # generate random username/email & password
         self.username = self.generate_random_string()
         self.email = self.header_page.generate_random_email()
@@ -15,14 +19,8 @@ class MyProfileTestCases(BaseTest):
 
         # create new user
         self.info('Create User {}'.format(self.username))
-        user = self.users_api.create_new_user(self.username, self.email, self.current_password)
-
-        # uncomment with the tearDown
-        # self.userId = user['userId'] 
-
-        # login and navigate to profile page
-        self.login_page.login(username=self.username, password=self.current_password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.users_api.create_new_user(username=self.username, emai=self.email, password=self.current_password)
+        self.set_authorization(auth=self.users_api.AUTHORIZATION_RESPONSE)
         self.my_profile_page.get_my_profile_page()
 
     # Blocked by https://modeso.atlassian.net/browse/LIMS-6425
