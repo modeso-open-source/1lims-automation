@@ -52,13 +52,15 @@ class BasePages:
         time.sleep(self.base_selenium.TIME_LARGE)
 
     def save(self, sleep=True, save_btn='general:save', logger_msg='save the changes'):
-        self.base_selenium.LOGGER.info(logger_msg)
+        self.info(logger_msg)
         if self.base_selenium.check_element_is_exist(element=save_btn):
+            if sleep:
+                self.sleep_tiny()
             self.base_selenium.click(element=save_btn)
         else:            
             self.base_selenium.click(element='my_profile:save_button')
         if sleep:
-            time.sleep(self.base_selenium.TIME_MEDIUM)
+            self.sleep_tiny()
 
     def cancel(self, force=True):
         if self.base_selenium.check_element_is_exist(element='general:cancel'):
@@ -68,13 +70,13 @@ class BasePages:
         self.confirm_popup(force)
 
     def confirm_popup(self, force=True):
-        self.base_selenium.LOGGER.info('Confirming the popup')
+        self.base_selenium.LOGGER.info('confirming the popup')
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
             if force:
                 self.base_selenium.click(element='general:confirm_pop')
             else:
                 self.base_selenium.click(element='general:confirm_cancel')
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.sleep_small()
 
     def open_filter_menu(self):
         self.base_selenium.LOGGER.info(' Open Filter')
@@ -83,10 +85,10 @@ class BasePages:
         filter.click()
 
     def filter_by(self, filter_element, filter_text, field_type='drop_down'):
-        if field_type=='drop_down':
+        if field_type =='drop_down':
             self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
         else:
-            self.base_selenium.set_text(element=filter_element, value = filter_text )
+            self.base_selenium.set_text(element=filter_element, value=filter_text)
 
     def filter_apply(self):
         self.base_selenium.click(element='general:filter_btn')
@@ -97,6 +99,7 @@ class BasePages:
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
+        self.sleep_tiny()
 
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')
@@ -108,7 +111,7 @@ class BasePages:
         selected_rows_data = []
         selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
-        no_of_rows = randint(min(1, len(rows)-1), min(5, len(rows)-1))
+        no_of_rows = randint(min(2, len(rows)-1), min(5, len(rows)-1))
         count = 0
         self.info(' No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:
@@ -147,13 +150,13 @@ class BasePages:
         if xpath == '':
             xpath = '//span[@class="mr-auto"]/a'
         row.find_element_by_xpath(xpath).click()
-        self.sleep_small() # sleep for loading
+        self.wait_until_page_is_loaded()
 
     def open_edit_page_by_css_selector(self, row, css_selector=''):
         if css_selector == '':
             css_selector = '[title="Edit details"]'
         row.find_element_by_css_selector(css_selector).click()
-        self.sleep_small() # sleep for loading
+        self.wait_until_page_is_loaded()
 
     def get_archived_items(self):
         self.base_selenium.scroll()
@@ -233,26 +236,41 @@ class BasePages:
         self._copy(value=value)
         self._paste(element=element)
 
+    def open_row_options(self, row):
+        self.info('open record options menu')
+        row_options = self.base_selenium.find_element_in_element(
+            destination_element='general:table_menu_options', source=row)
+        row_options.click()
+        self.sleep_tiny()
+
     def open_child_table(self, source):
-        childtable_arrow = self.base_selenium.find_element_in_element(destination_element='general:child_table_arrow', source=source)
+        childtable_arrow = self.base_selenium.find_element_in_element(
+            destination_element='general:child_table_arrow', source=source)
         childtable_arrow.click()
         self.sleep_medium()
 
     def get_child_table_data(self, index=0):
         rows = self.result_table()
         self.open_child_table(source=rows[index])
-        rows_with_childtable = self.result_table(element='general:table_child')
-        headers = self.base_selenium.get_table_head_elements(element='general:table_child')
+        return self.get_table_data()
+
+    def get_table_data(self, table_element='general:table_child'):
+        rows_with_childtable = self.result_table(element=table_element)
+        headers = self.base_selenium.get_table_head_elements(element=table_element)
 
         child_table_data = []
-        for subrecord in range(0,len(rows_with_childtable)):
-            rows_with_headers=self.base_selenium.get_row_cells_dict_related_to_header(row=rows_with_childtable[subrecord], table_element='general:table_child')
+        for subrecord in range(0, len(rows_with_childtable)):
+            rows_with_headers = self.base_selenium.get_row_cells_dict_related_to_header(
+                row=rows_with_childtable[subrecord], table_element='general:table_child')
             if rows_with_headers != {}:
                 child_table_data.append(rows_with_headers)
 
         return child_table_data
 
     def info(self, message):
+        if message[0] != " ":
+            message = " {}".format(message)
+        message = message.lower()
         self.base_selenium.LOGGER.info(message)
 
     def generate_random_email(self):
@@ -267,8 +285,13 @@ class BasePages:
     def open_configuration(self):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:configurations')
-        self.sleep_medium()
-        
+        self.base_selenium.wait_until_element_located(element='general:fields_panel')
+
+    def open_archived_configuration(self):
+        self.open_configuration()
+        self.sleep_tiny()
+        self.base_selenium.click(element='general:configurations_archived')
+
     def open_configure_table(self):
         self.base_selenium.LOGGER.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
@@ -404,14 +427,6 @@ class BasePages:
             return False
         return True
 
-    def open_connection_with_database(self):
-        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
-        cursor = db.cursor()
-        return cursor, db
-
-    def close_connection_with_database(self, db):
-        db.close()
-
     def is_next_page_button_enabled(self, element='general:next_page'):
         _class = self.base_selenium.get_attribute('general:next_page', 'class')
         if 'disabled' in _class:
@@ -508,17 +523,13 @@ class BasePages:
         if limit_index >= 0:
             pagination_elements[limit_index].click()
         time.sleep(self.base_selenium.TIME_MEDIUM)
-        
-        
 
     def get_current_pagination_limit(self):
         return self.base_selenium.find_element(element='general:pagination_button').text.split('\n')[0]
 
-    # eslam, i'll need your check on this function
-    def wait_for_loading_msg(self):
-        self.base_selenium.LOGGER.info('wait for loading msg to disappear')
-        self.base_selenium.wait_element('general:loading_msg')
-        self.base_selenium.wait_until_element_is_not_displayed('general:loading_msg')
+    def wait_until_page_is_loaded(self):
+        self.base_selenium.LOGGER.info('wait until page is loaded')
+        self.base_selenium.wait_until_element_is_not_displayed('general:loading')
 
     def get_table_info_data(self):
         self.base_selenium.LOGGER.info('get table information')
@@ -542,16 +553,15 @@ class BasePages:
         date_parameters = date_in_days.split('-')
         date_parameters.reverse()
         return '.'.join(date_parameters)
-        
-    def get_current_date_formated(self):
-        current_time = datetime.datetime.now()
-        date = str(current_time.year)+'-'+str(current_time.month)+'-'+str(current_time.day)
-        return date
-
-    def get_current_year(self):
-        current_year = datetime.datetime.now()
-        return str(current_year.year)
 
     def get_the_latest_row_data(self):
         latest_row = (self.result_table()[0])
         return self.base_selenium.get_row_cells_dict_related_to_header(latest_row)
+
+    def open_connection_with_database(self):
+        db = pymysql.connect(host='52.28.249.166', user='root', passwd='modeso@test', database='automation')
+        cursor = db.cursor()
+        return cursor, db
+
+    def close_connection_with_database(self, db):
+        db.close()

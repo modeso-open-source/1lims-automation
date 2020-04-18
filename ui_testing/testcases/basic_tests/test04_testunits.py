@@ -1,5 +1,12 @@
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.articles_page import Articles
+from ui_testing.pages.testplan_page import TstPlan
+from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.base_pages import BasePages
+from api_testing.apis.test_unit_api import TestUnitAPI
+from api_testing.apis.article_api import ArticleAPI
+from api_testing.apis.test_plan_api import TestPlanAPI
+from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from unittest import skip
 from parameterized import parameterized
 import re, random
@@ -8,9 +15,15 @@ import re, random
 class TestUnitsTestCases(BaseTest):
     def setUp(self):
         super().setUp()
+        self.test_unit_page = TstUnit()
         self.articles_page = Articles()
-        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.test_plan = TstPlan()
+        self.base_page = BasePages()
+        self.article_api = ArticleAPI()
+        self.test_plan_api = TestPlanAPI()
+        self.test_unit_api = TestUnitAPI()
+        self.general_utilities_api = GeneralUtilitiesAPI()
+        self.set_authorization(auth=self.article_api.AUTHORIZATION_RESPONSE)
         self.test_unit_page.get_test_units_page()
 
     # @skip('https://modeso.atlassian.net/browse/LIMS-5237')
@@ -70,62 +83,55 @@ class TestUnitsTestCases(BaseTest):
     def test004_check_version_after_update(self):
         """
         After I update any field then press on save , new version created in the active table.
+
         LIMS-3676
-        After the user edit any of the followings fields
-        test unit name
-        test unit number
-        category
-        method
-        iteration
-        materiel type
-        specification
-        the should updated successfully when I enter one more time
+
+        New: Test units: Edit Approach: User can edit in (test unit name & test unit number
+        & category & method & iteration & materiel type and the specification )
+
         LIMS-5288
         """
-
-        self.base_selenium.LOGGER.info('Generate random data for update')
+        self.info('Generate random data for update')
         new_random_number = self.generate_random_number(upper=100000)
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
         new_random_category = self.generate_random_string()
         new_random_iteration = self.generate_random_number(upper=4)
 
-        self.base_selenium.LOGGER.info('Getting data of the first testunit')
+        self.info('Getting data of the first testunit')
         testunits_records = self.test_unit_page.result_table()
         first_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunits_records[0])
-
         old_version = first_testunit_data['Version']
-        self.base_selenium.LOGGER.info('old version: {}'.format(old_version))
-        self.base_selenium.LOGGER.info('Open the first record to update it')
+        self.info('old version: {}'.format(old_version))
+
+        self.info('Open the first record to update it')
         self.test_unit_page.open_edit_page(row=testunits_records[0])
 
-        self.base_selenium.LOGGER.info('Set the new testunit number to be: {}'.format(new_random_number))
+        self.info('Set the new testunit number to be: {}'.format(new_random_number))
         self.test_unit_page.set_testunit_number(number=new_random_number)
 
-        self.base_selenium.LOGGER.info('Set the new testunit name to be: {}'.format(new_random_name))
+        self.info('Set the new testunit name to be: {}'.format(new_random_name))
         self.test_unit_page.set_testunit_name(name=new_random_name)
 
-        self.base_selenium.LOGGER.info('Set new material type')
+        self.info('Set new material type')
         self.test_unit_page.set_material_type()
         new_materialtypes = self.test_unit_page.get_material_type()
 
-        self.base_selenium.LOGGER.info('Set the new category to be: {}'.format(new_random_category))
+        self.info('Set the new category to be: {}'.format(new_random_category))
         self.test_unit_page.set_category(category=new_random_category)
 
-        self.base_selenium.LOGGER.info('Set the new testunit iteartions to be: {}'.format(new_random_iteration))
+        self.info('Set the new testunit iteartions to be: {}'.format(new_random_iteration))
         self.test_unit_page.set_testunit_iteration(iteration=new_random_iteration)
 
-        self.base_selenium.LOGGER.info('Set the method to be: {}'.format(new_random_method))
+        self.info('Set the method to be: {}'.format(new_random_method))
         self.test_unit_page.set_method(method=new_random_method)
 
-        self.base_selenium.LOGGER.info('pressing save and create new version')
+        self.info('pressing save and create new version')
         self.test_unit_page.save_and_create_new_version(confirm=True)
 
-        self.base_selenium.LOGGER.info('Refresh to make sure that the new data are saved')
+        self.info('Refresh to make sure that the new data are saved')
         self.base_selenium.refresh()
-        self.test_unit_page.sleep_small()
-
-        self.base_selenium.LOGGER.info('Getting testunit data after refresh')
+        self.info('Getting testunit data after refresh')
         updated_testunit_name = self.test_unit_page.get_testunit_name()
         update_testunit_number = self.test_unit_page.get_testunit_number()
         updated_material_types = self.test_unit_page.get_material_type()
@@ -133,38 +139,35 @@ class TestUnitsTestCases(BaseTest):
         updated_iterations = self.test_unit_page.get_testunit_iteration()
         updated_method = self.test_unit_page.get_method()
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit name is: {}, and should be {}'.format(new_random_name, updated_testunit_name))
+        self.info('+ Assert testunit name is: {}, and should be {}'.format(
+            new_random_name, updated_testunit_name))
         self.assertEqual(new_random_name, updated_testunit_name)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit number is: {}, and should be {}'.format(str(new_random_number), update_testunit_number))
+        self.info('+ Assert testunit number is: {}, and should be {}'.format(
+            str(new_random_number), update_testunit_number))
         self.assertEqual(str(new_random_number), update_testunit_number)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit materialTypes are: {}, and should be {}'.format(new_materialtypes,
-                                                                               updated_material_types))
+        self.info('+ Assert testunit materialTypes are: {}, and should be {}'.format(
+            new_materialtypes, updated_material_types))
         self.assertEqual(new_materialtypes, updated_material_types)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit category is: {}, and should be {}'.format(new_random_category, updated_category))
+        self.info('+ Assert testunit category is: {}, and should be {}'.format(
+            new_random_category, updated_category))
         self.assertEqual(new_random_category, updated_category)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit iterations is: {}, and should be {}'.format(str(new_random_iteration),
-                                                                           updated_iterations))
+        self.info('+ Assert testunit iterations is: {}, and should be {}'.format(
+            str(new_random_iteration), updated_iterations))
         self.assertEqual(str(new_random_iteration), updated_iterations)
 
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit Method is: {}, and should be {}'.format(new_random_method, updated_method))
+        self.info('+ Assert testunit Method is: {}, and should be {}'.format(
+            new_random_method, updated_method))
         self.assertEqual(new_random_method, updated_method)
 
         self.test_unit_page.get_test_units_page()
         testunit_records = self.test_unit_page.result_table()
         first_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_records[0])
         new_version = first_testunit_data['Version']
-        self.base_selenium.LOGGER.info(
-            '+ Assert testunit version is: {}, new version: {}'.format(old_version, new_version))
+        self.info('+ Assert testunit version is: {}, new version: {}'.format(old_version, new_version))
         self.assertNotEqual(old_version, new_version)
 
     def test005_quantative_mibi_not_entering_dash_in_upper_limit(self):
@@ -381,29 +384,35 @@ class TestUnitsTestCases(BaseTest):
         else:
             self.fail('Material type is not there')
 
-    @parameterized.expand([(True,), (False,)])
+    @parameterized.expand(['True', 'False'])
     def test011_create_test_unit_with_random_category(self, random):
         """
         User can create test unit with an random category
 
         LIMS-3682
         """
-        self.base_selenium.LOGGER.info("Create new test unit with random:{} category".format(random))
+        self.info("Create new test unit with random:{} category".format(random))
         new_random_name = self.generate_random_string()
         new_random_method = self.generate_random_string()
-        new_random_category = self.generate_random_string() if random else ""
+        if random == 'True':
+            new_random_category = self.generate_random_string()
+        else:
+            new_random_category = ''
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         category=new_random_category)
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('Get the category of it')
-        test_unit = self.test_unit_page.search(new_random_name)[0]
-        self.test_unit_page.open_edit_page(test_unit)
+        self.info('Get the category of it')
+        row = self.test_unit_page.search(new_random_name)[0]
+        self.test_unit_page.open_edit_page_by_css_selector(row)
 
         category = self.test_unit_page.get_category()
-        self.base_selenium.LOGGER.info('Assert category : {}'.format(category))
-        self.assertEqual(new_random_category, category) if random else self.assertTrue(category)
+        self.info('Assert category : {}'.format(category))
+        if random == 'True':
+            self.assertEqual(new_random_category, category)
+        else:
+            self.assertTrue(category)
 
     @parameterized.expand([('upper', 'spec'),
                            ('upper', 'quan'),
@@ -583,57 +592,35 @@ class TestUnitsTestCases(BaseTest):
             self.assertNotIn('ng-valid', class_attr)
 
     @parameterized.expand([('quan'), ('spec')])
-    def test017_create_quantative_with_limits_of_quantative_only_and_specification_only(self):
+    def test017_create_quantative_with_limits_of_quantative_only_and_specification_only(self, limits_type):
         """
         New:Test unit: Create Approach: User can create test unit with limits of quantification type only &
         with upper lower limits
         New: Test unit: Creation Approach: User can create test units with Quantitative type with specification only
+
         LIMS-5427
         LIMS-4156
-        :return:
         """
-
         new_name = self.generate_random_string()
         new_method = self.generate_random_string()
         new_random_limit = self.generate_random_number()
-
         self.test_unit_page.create_quantitative_testunit(name=new_name, material_type='', category='',
                                                          upper_limit=new_random_limit, lower_limit=new_random_limit,
-                                                         spec_or_quan='quan', method=new_method)
+                                                         spec_or_quan=limits_type, method=new_method)
 
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-        self.base_selenium.LOGGER.info('Get the test unit of it')
+        self.info('Get the test unit of it')
         test_unit = self.test_unit_page.search(new_name)[0]
         self.test_unit_page.open_edit_page(test_unit)
         testunit_name = self.test_unit_page.get_testunit_name()
-        self.base_selenium.LOGGER.info('Assert test unit name : {}'.format(testunit_name))
+        self.info('Assert test unit name : {}'.format(testunit_name))
         self.assertEqual(new_name, testunit_name)
 
-        new_name = self.generate_random_string()
-        new_method = self.generate_random_string()
-        new_random_limit = self.generate_random_number()
-
-        self.test_unit_page.create_quantitative_testunit(name=new_name, material_type='', category='',
-                                                         upper_limit=new_random_limit, lower_limit=new_random_limit,
-                                                         spec_or_quan='spec', method=new_method)
-
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-        self.base_selenium.LOGGER.info('Get the test unit of it')
-        test_unit = self.test_unit_page.search(new_name)[0]
-        self.test_unit_page.open_edit_page(test_unit)
-        testunit_name = self.test_unit_page.get_testunit_name()
-        self.base_selenium.LOGGER.info('Assert test unit name : {}'.format(testunit_name))
-        self.assertEqual(new_name, testunit_name)
-
-    @skip('https://modeso.atlassian.net/browse/LIMS-5525')
-    def test018_download_test_units_sheet(self):
+    def test019_download_test_units_sheet(self):
         """
-        New: Test unit: Limit of quantification Approach: Allow those fields to displayed in table view &
-        XSLX file ( upper limit & lower limit & unit )
+        I can download all the data in the table view in the excel sheet
 
-        LIMS:4166
-        LIMS-3672
-        :return:
+        LIMS-3672-case of all data
         """
         self.info(' * Download XSLX sheet')
         self.test_unit_page.download_xslx_sheet()
@@ -679,46 +666,45 @@ class TestUnitsTestCases(BaseTest):
 
     def test020_change_quantification_limits_not_effect_test_plan(self):
         """
-        New: Test units/effect on test plan: Limits of quantification Approach: In case I make any edit in the limits
-         of quantification, this shouldn't effect on test plan
+        New: Test units/effect on test plan: Limits of quantification Approach: In case I
+        make any edit in the limits of quantification, this shouldn't effect on test plan
 
-         LIMS-4420
-        :return:
+        LIMS-4420
         """
-        active_articles_with_material_types = self.get_active_articles_with_material_type()
+        active_articles_with_material_types = self.article_api.get_active_articles_with_material_type()
         material_type = next(iter(active_articles_with_material_types))
         article = active_articles_with_material_types[material_type][0]
         test_unit_new_name = self.generate_random_string()
         new_method = self.generate_random_string()
         new_random_limit = self.generate_random_number()
 
-        self.test_unit_page.create_quantitative_testunit(name=test_unit_new_name, material_type=material_type,
-                                                         upper_limit=new_random_limit, lower_limit=new_random_limit,
-                                                         spec_or_quan='quan', method=new_method)
-        self.test_unit_page.sleep_tiny()
+        self.test_unit_page.create_quantitative_testunit(
+            name=test_unit_new_name, material_type=material_type,
+            upper_limit=new_random_limit, lower_limit=new_random_limit,
+            spec_or_quan='quan', method=new_method)
+
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='save new testunit')
 
         self.test_plan.get_test_plans_page()
-        self.test_plan.create_new_test_plan(name=test_unit_new_name, material_type=material_type,
-                                            test_unit=test_unit_new_name, article=article, upper=100, lower=10)
+        testplan = self.test_plan.create_new_test_plan(
+            name=test_unit_new_name, material_type=material_type,
+            test_unit=test_unit_new_name, article=article)
 
-        self.info('change upper limits of the test unut')
+        self.info('change upper limits of the test unit')
         self.test_unit_page.get_test_units_page()
         test_unit = self.test_unit_page.search(test_unit_new_name)[0]
         self.test_unit_page.open_edit_page(test_unit)
-
         self.test_unit_page.set_quan_upper_limit('10000')
         self.test_unit_page.set_quan_lower_limit('10000')
         self.test_unit_page.save(save_btn='general:save_form', logger_msg='save the changes')
 
         self.test_plan.get_test_plans_page()
-        test_plan = self.test_plan.search(test_unit_new_name)[0]
-        self.test_plan.open_edit_page(test_plan)
-
+        row = self.test_plan.search(testplan)[0]
+        self.test_plan.open_edit_page(row)
         upper, lower = self.test_plan.get_test_unit_limits()
         self.info('assert that limits have not changed')
-        self.assertEqual(upper, '100')
-        self.assertEqual(lower, '10')
+        self.assertEqual(upper.replace("'", ""), str(new_random_limit))
+        self.assertEqual(lower.replace("'", ""), str(new_random_limit))
 
     def test021_create_multi_test_units_with_same_name(self):
         """
@@ -726,9 +712,8 @@ class TestUnitsTestCases(BaseTest):
         when I go to the test plan I found both of those with the same name
 
         LIMS-3684
-        :return:
         """
-        active_articles_with_material_types = self.get_active_articles_with_material_type()
+        active_articles_with_material_types = self.article_api.get_active_articles_with_material_type()
         material_type = next(iter(active_articles_with_material_types))
         article = active_articles_with_material_types[material_type][0]
         test_unit_name = self.generate_random_string()
@@ -750,6 +735,7 @@ class TestUnitsTestCases(BaseTest):
                                                         material_type=material_type, category=category)
         self.test_unit_page.save(save_btn='general:save_form',
                                  logger_msg='save {} qualitative test unit'.format(test_unit_name))
+
         self.test_plan.get_test_plans_page()
         self.test_plan.create_new_test_plan(name=test_unit_name, material_type=material_type, article=article)
         test_plan = self.test_plan.search(test_unit_name)[0]
@@ -759,14 +745,15 @@ class TestUnitsTestCases(BaseTest):
         test_units = self.base_selenium.get_drop_down_suggestion_list(element='test_plan:test_units',
                                                                       item_text=test_unit_name)
 
-        self.info('assert that all test units are in the suggestions list')
+        self.info('assert that 3 test units are in the suggestions list')
+        self.test_plan.sleep_tiny()
         self.assertEqual(len(test_units), 3)
 
-    def test022_duplicate_test_case(self):
+    def test022_duplicate_test_unit(self):
         """"
         New: Test unit: Duplication Approach: I can duplicate the test unit with only one record
 
-        LIMS-3678
+        LIMS-3678- case 1
         """
         # get the maximum number given to the latest testunit
         latest_testunit_row_data = self.test_unit_page.get_the_latest_row_data()
@@ -775,27 +762,42 @@ class TestUnitsTestCases(BaseTest):
         duplicated_test_unit_number = int(largest_number) + 1
         self.info('The duplicated testunit should have the number: {}'.format(duplicated_test_unit_number))
         self.info('Choosing a random testunit table row')
-
         random_test_unit = self.test_unit_page.select_random_table_row()
         test_unit_name = random_test_unit['Test Unit Name']
         self.info('test unit name : {}'.format(test_unit_name))
-        self.base_selenium.scroll()
         self.test_unit_page.duplicate_test_unit()
-        self.test_unit_page.sleep_tiny()
-        found_testunit = self.test_unit_page.search(test_unit_name)[0]
+        self.test_unit_page.sleep_small()
+        self.test_unit_page.apply_filter_scenario(
+            filter_element='test_unit:testunit_name', filter_text=test_unit_name, field_type='text')
+
+        found_testunit = self.test_unit_page.result_table()[0]
         found_testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=found_testunit)
-        data_changed = ['Test Unit No.']
+        data_changed = ['Test Unit No.', 'Changed On', 'Created On', 'Version']
         random_test_unit, found_testunit_data = self.remove_unduplicated_data(
             data_changed=data_changed, first_element=random_test_unit, second_element=found_testunit_data)
 
         self.info('Asserting that the data is duplicated correctly')
         self.assertEqual(random_test_unit, found_testunit_data)
 
+    def test023_duplicate_multiple_test_units(self):
+        """"
+        New: Test unit: Duplication Approach: I can't duplicate multiple test units
+        LIMS-3678- case 2
+        """
+        self.info('Choosing a random testunit table rows')
+        self.test_unit_page.select_random_multiple_table_rows()
+        self.info('duplicate the selected test units')
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click('orders:duplicate')
+        error_msg = self.base_selenium.get_text(element='general:cant_delete_message')
+        self.assertIn('Can not duplicate more than one record at once', error_msg)
+
     @parameterized.expand([('unitsub', 'qualitative'),
                            ('unitsub', 'quantitative'),
                            ('unitsuper', 'qualitative'),
                            ('unitsuper', 'quantitative')])
-    def test023_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self, unit_with_sub_or_super, type):
+    def test024_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self, unit_with_sub_or_super, type):
         """
         New: Test unit: Export: Sub & Super scripts Approach: Allow user to see the
         sub & super scripts in the export file
@@ -832,7 +834,7 @@ class TestUnitsTestCases(BaseTest):
                                                              unit=unit_with_sub_or_super.replace('sub', '[sub]'))
         else:
             self.test_unit_page.create_quantitative_testunit(name=new_random_name, method=new_random_method,
-                                                             upper_limit='33',lower_limit='22', spec_or_quan='spec',
+                                                             upper_limit='33', lower_limit='22', spec_or_quan='spec',
                                                              unit=unit_with_sub_or_super.replace('super', '{super}'))
         self.test_unit_page.sleep_tiny()
         inserted_unit = self.test_unit_page.get_spec_unit()
@@ -855,7 +857,7 @@ class TestUnitsTestCases(BaseTest):
                 self.assertIn(item, fixed_sheet_row_data)
 
     @parameterized.expand(['quantitative', 'qualitative'])
-    def test024_create_test_unit_appears_in_version_table(self, unit_type):
+    def test025_create_test_unit_appears_in_version_table(self, unit_type):
         """
 
         New: Test unit: Versions Approach: After you create new record, all the columns should display in the version table
@@ -896,7 +898,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertIn(new_random_method, fixed_row_data)
 
     @parameterized.expand(['ok', 'cancel'])
-    def test025_create_approach_overview_button(self, ok):
+    def test026_create_approach_overview_button(self, ok):
         """
         Master data: Create: Overview button Approach: Make sure
         after I press on the overview button, it redirects me to the active table
@@ -917,7 +919,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), 'https://automation.1lims.com/testUnits/add')
             self.base_selenium.LOGGER.info('clicking on Overview cancelled')
 
-    def test026_edit_approach_overview_button(self):
+    def test027_edit_approach_overview_button(self):
         """
         Edit: Overview Approach: Make sure after I press on
         the overview button, it redirects me to the active table
@@ -934,22 +936,23 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('clicking on Overview confirmed')
 
     @parameterized.expand(['Quantitative', 'Qualitative', 'MiBi'])
-    def test_027_changing_testunit_type_update_fields_accordingly(self, testunit_type):
+    def test_028_changing_testunit_type_update_fields_accordingly(self, testunit_type):
         """
-        New: Test unit: Type Approach: When I change type from edit mode, the values should changed according to this type that selected 
-        When I change type from edit mode, the values should changed according to this type that selected 
-        LIMS-3680
+        New: Test unit: Type Approach: When I change type from edit mode, the values should
+        changed according to this type that selected
 
         comment: this case will be handled in create
+
+        LIMS-3680
         """
 
         if testunit_type == 'MiBi':
             testunit_type = 'Quantitative MiBi'
 
-        self.base_selenium.LOGGER.info('open testunits in create')
+        self.info('open testunits in create')
         self.test_unit_page.click_create_new_testunit()
 
-        self.base_selenium.LOGGER.info('set the type to {}'.format(testunit_type))
+        self.info('set the type to {}'.format(testunit_type))
         self.test_unit_page.set_testunit_type(testunit_type=testunit_type)
         self.test_unit_page.sleep_tiny()
         self.base_selenium.LOGGER.info(
@@ -962,82 +965,33 @@ class TestUnitsTestCases(BaseTest):
         elif testunit_type == 'Quantitative MiBi':
             self.assertTrue(self.test_unit_page.check_for_quantitative_mibi_fields())
 
-    def test_028_allow_user_to_change_between_specification_and_quantification(self):
+    @parameterized.expand(['quan', 'spec'])
+    def test_029_allow_user_to_change_between_specification_and_quantification(self, spec_or_quan):
         """
-        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
-        Allow user to change between the two options specification and limit of quantification from edit mode.
-        specification to quantifications
+        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between
+        the two options specification and limit of quantification from edit mode.
+
+        LIMS-4160
         """
+        test_unit_id = self.test_unit_api.get_test_unit_with_spec_or_quan_only(spec_or_quan)
+        self.test_unit_page.open_test_unit_edit_page_by_id(id=test_unit_id)
 
-        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
-        self.assertEqual(testunits_request['status'], 1)
-        testunits = testunits_request['testUnits']
-        self.assertNotEqual(len(testunits), 0)
-        testunit_name = ''
-        for testunit in testunits:
-            if testunit['specifications'] != '' and testunit['quantification'] == '':
-                testunit_name = testunit['number']
-                break
-
-        if testunit_name == '':
-            self.base_selenium.LOGGER.info('there is no testunit with specification only value')
-            self.assertTrue(False)
-
-        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
-
-        self.test_unit_page.open_edit_page(row=testunit_record)
-
-        self.base_selenium.LOGGER.info('generate random lower/ upper limit')
-        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
-        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
-
-        self.base_selenium.LOGGER.info('switch to quantification')
-        self.test_unit_page.switch_from_spec_to_quan(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
-        self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
-        self.base_selenium.refresh()
-
-        self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
-        self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
-        self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
-
-    def test_029_allow_user_to_change_between_specification_and_quantification(self):
-        """
-        New: Test unit: Edit mode:  Limit of quantification Approach: Allow user to change between the two options specification and limit of quantification from edit mode.
-        Allow user to change between the two options specification and limit of quantification from edit mode.
-
-        quantifications to specifications
-        """
-
-        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
-        self.assertEqual(testunits_request['status'], 1)
-        testunits = testunits_request['testUnits']
-        self.assertNotEqual(len(testunits), 0)
-        testunit_name = ''
-        for testunit in testunits:
-            if testunit['specifications'] == '' and testunit['quantification'] != '':
-                testunit_name = testunit['name']
-                break
-
-        if testunit_name == '':
-            self.base_selenium.LOGGER.info('there is no testunit with quantification only value')
-            self.assertTrue(False)
-
-        testunit_record = self.test_unit_page.search(value=testunit_name)[0]
-
-        self.test_unit_page.open_edit_page(row=testunit_record)
-
-        self.base_selenium.LOGGER.info('generate random lower/ upper limit')
-        random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
-        random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
-
-        self.base_selenium.LOGGER.info('switch to specification')
-        self.test_unit_page.switch_from_quan_to_spec(lower_limit=random_lower_limit, upper_limit=random_upper_limit)
-        self.base_selenium.LOGGER.info('refresh to make sure that data are updated successfully')
-        self.base_selenium.refresh()
-
-        self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
-        self.assertEqual(self.test_unit_page.get_spec_upper_limit(), str(random_upper_limit))
-        self.assertEqual(self.test_unit_page.get_spec_lower_limit(), str(random_lower_limit))
+        if spec_or_quan == 'spec':
+            self.info('switch to quantification')
+            self.test_unit_page.switch_from_spec_to_quan(lower_limit=50, upper_limit=100)
+            self.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'quan')
+            self.assertEqual(self.test_unit_page.get_quan_upper_limit(), '100')
+            self.assertEqual(self.test_unit_page.get_quan_lower_limit(), '50')
+        else:
+            self.info('switch to specification')
+            self.test_unit_page.switch_from_quan_to_spec(lower_limit=50, upper_limit=100)
+            self.info('refresh to make sure that data are updated successfully')
+            self.base_selenium.refresh()
+            self.assertEqual(self.test_unit_page.get_testunit_specification_type(), 'spec')
+            self.assertEqual(self.test_unit_page.get_spec_upper_limit(), '100')
+            self.assertEqual(self.test_unit_page.get_spec_lower_limit(), '50')
 
     def test030_allow_unit_field_to_be_displayed_in_case_of_mibi(self):
         """
@@ -1101,7 +1055,7 @@ class TestUnitsTestCases(BaseTest):
             'text': 'All'
         }]
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
-        testunit_id = self.test_unit_api.create_qualitative_testunit(name=new_random_name, number=new_random_number,
+        testunit_id, _ = self.test_unit_api.create_qualitative_testunit(name=new_random_name, number=new_random_number,
                                                                      method=new_random_method, category=category,
                                                                      selectedMaterialTypes=material_type,
                                                                      textValue=new_random_qualtitative_value)[
@@ -1110,10 +1064,10 @@ class TestUnitsTestCases(BaseTest):
         testunit_testplan_formated = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit_form_data)
 
         active_article = {}
-        active_article_request = self.article_api.get_all_articles().json()['articles']
+        active_article_request = self.article_api.get_all_articles()[0]['articles']
         active_article = active_article_request[0]
 
-        all_materialtypes = self.general_utilities_api.list_all_material_types()
+        all_materialtypes = self.general_utilities_api.list_all_material_types()['materialTypes']
 
         article_materialtype = list(filter(lambda x: x['name'] == active_article['materialType'], all_materialtypes))[0]
         article_object = [{
@@ -1158,28 +1112,15 @@ class TestUnitsTestCases(BaseTest):
 
     def test032_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
         """
-        New: Test unit: Limits of quantification Approach: Versions:
-        In case I edit any field in the limits of quantification and press on save and create new version,
+        New: Test unit: Limits of quantification Approach: Versions:In case I edit any field 
+        in the limits of quantification and press on save and create new version,
         new version should create & display in the active table & versions table
-
-        When I edit any field in limits of quantification and press on save and create new version ..new version created 
-        This version should displayed in the active/archive table 
-        This version should display in the versions table 
 
         LIMS-4423
         """
-        testunits_request = self.test_unit_api.get_all_test_units(filter='{"typeName":2}').json()
-        self.assertEqual(testunits_request['status'], 1)
-        testunits = testunits_request['testUnits']
-        self.assertNotEqual(len(testunits), 0)
+        testunit_name = random.choice(self.test_unit_api.get_testunit_with_empty_specification())
 
-        testunit_name = ''
-        for testunit in testunits:
-            if testunit['specifications'] == '':
-                testunit_name = testunit['name']
-                break
-
-        self.base_selenium.LOGGER.info('generate random data to update testunit with')
+        self.info('generate random data to update testunit with')
         random_upper_limit = self.test_unit_page.generate_random_number(lower=50, upper=100)
         random_lower_limit = self.test_unit_page.generate_random_number(lower=0, upper=49)
         random_unit = self.test_unit_page.generate_random_text()
@@ -1187,48 +1128,33 @@ class TestUnitsTestCases(BaseTest):
         testunit_record = self.test_unit_page.search(value=testunit_name)[0]
         testunit_data = self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_record)
         version_value = int(testunit_data['Version'])
-        self.base_selenium.LOGGER.info('open the testunit in edi form to update it')
+        updated_version = version_value + 1
+
+        self.info('open the testunit in edit form to update it')
         self.test_unit_page.open_edit_page(row=testunit_record)
-
-        self.base_selenium.LOGGER.info('set upper limit to {}'.format(random_upper_limit))
+        self.info('set upper limit to {}'.format(random_upper_limit))
         self.test_unit_page.set_quan_upper_limit(value=random_upper_limit)
-
-        self.base_selenium.LOGGER.info('set lower limit to {}'.format(random_lower_limit))
+        self.info('set lower limit to {}'.format(random_lower_limit))
         self.test_unit_page.set_quan_lower_limit(value=random_lower_limit)
-
-        self.base_selenium.LOGGER.info('set unit limit to {}'.format(random_unit))
+        self.info('set unit limit to {}'.format(random_unit))
         self.test_unit_page.set_quan_unit(value=random_unit)
-
-        self.test_unit_page.sleep_tiny()
         self.test_unit_page.save_and_create_new_version()
 
-        self.base_selenium.LOGGER.info('refresh to make sure that data are saved correctly')
+        self.info('refresh to make sure that data are saved correctly')
         self.base_selenium.refresh()
-
-        self.base_selenium.LOGGER.info(
-            'upper limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_upper_limit(),
-                                                            str(random_upper_limit)))
         self.assertEqual(self.test_unit_page.get_quan_upper_limit(), str(random_upper_limit))
-
-        self.base_selenium.LOGGER.info(
-            'lower limit is {}, and it should be {}'.format(self.test_unit_page.get_quan_lower_limit(),
-                                                            str(random_lower_limit)))
         self.assertEqual(self.test_unit_page.get_quan_lower_limit(), str(random_lower_limit))
-
-        self.base_selenium.LOGGER.info(
-            'unit is {}, and it should be {}'.format(self.test_unit_page.get_quan_unit(), str(random_unit)))
         self.assertEqual(self.test_unit_page.get_quan_unit(), str(random_unit))
 
+        self.info('making sure that version is updated successfully')
         self.test_unit_page.get_test_units_page()
-
         testunit_record_after_update = self.test_unit_page.search(value=testunit_name)[0]
         testunit_data_after_update = self.base_selenium.get_row_cells_dict_related_to_header(
             row=testunit_record_after_update)
+        self.test_unit_page.sleep_small()
+        self.info('version is {}, ant it should be {}'.format(
+            testunit_data_after_update['Version'], str(updated_version)))
 
-        self.base_selenium.LOGGER.info('making sure that version is updated successfully')
-        self.base_selenium.LOGGER.info(
-            'version is {}, ant it should be {}'.format(testunit_data_after_update['Version'], str(version_value + 1)))
-        updated_version = str(version_value + 1)
         self.assertEqual(testunit_data_after_update['Version'], str(updated_version))
         self.assertEqual(testunit_data_after_update['Quantification Limit'],
                          str(random_lower_limit) + '-' + str(random_upper_limit))
@@ -1379,10 +1305,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         material_type='All')
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
 
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
 
         self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
         row = self.test_unit_page.search(value=new_random_name)[0]
@@ -1451,10 +1374,6 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         material_type='All')
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
 
         self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
         row = self.test_unit_page.search(value=new_random_name)[0]
@@ -1500,9 +1419,6 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.open_configurations()
         self.test_unit_page.open_testunit_name_configurations_options()
         old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=['method'])
-
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
 
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
@@ -1557,11 +1473,7 @@ class TestUnitsTestCases(BaseTest):
         self.base_selenium.LOGGER.info('Create new testunit with qualitative and random generated data')
         self.test_unit_page.create_qualitative_testunit(name=new_random_name, method=new_random_method,
                                                         material_type='All')
-        self.test_unit_page.save(save_btn='general:save_form', logger_msg='Save new testunit')
-
-        self.base_selenium.LOGGER.info('Get testunits page')
-        self.test_unit_page.get_test_units_page()
-
+        
         self.base_selenium.LOGGER.info('Search by the testunit name {} to get number'.format(new_random_name))
         row = self.test_unit_page.search(value=new_random_name)[0]
         new_auto_generated_number = self.base_selenium.get_row_cell_text_related_to_header(row=row,
@@ -1620,7 +1532,8 @@ class TestUnitsTestCases(BaseTest):
         Search Approach: Make sure that you can search then navigate to any other page
         LIMS-6201
         """
-        testunits = self.get_all_test_units()
+        test_units_response = self.test_unit_api.get_all_test_units()
+        testunits = test_units_response.json()['testUnits']
         testunit_name = random.choice(testunits)['name']
         search_results = self.test_unit_page.search(testunit_name)
         self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
@@ -1642,4 +1555,105 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-6288
         """
-        assert (self.test_unit_page.deselect_all_configurations(), False)
+        self.assertFalse(self.test_unit_page.deselect_all_configurations())
+
+    @parameterized.expand([('number', 'testunit_number_filter', 'Test Unit No.'),
+                           ('name', 'name_filter', 'Test Unit Name'),
+                           ('method', 'method_filter', 'Method'),
+                           ('createdAt', 'filter_created_at', 'Created On')])
+    def test042_filter_by_testunit_text_fields(self, filter_case, filter, header_name):
+        """
+        New: Test units: Filter Approach: Make sure you can filter by test unit no
+        LIMS-6430
+
+        New:  Test units: Filter Approach: Make sure you can filter by name
+        LIMS-6432
+
+        New:  Test units: Filter Approach: Make sure you can filter by method
+        LIMS-6434
+
+        New:  Test units: Filter Approach: Make sure you can filter by created on
+        LIMS-6431
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute=filter_case)
+        self.assertNotEqual(data_to_filter_with, False)
+        
+        if filter_case == 'createdAt':
+            data_to_filter_with = self.test_unit_page.convert_to_dot_date_format(date=data_to_filter_with)
+            
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:{}'.format(filter),
+                                                  filter_text=data_to_filter_with, field_type='text')
+        
+        table_records = self.test_unit_page.result_table()[:-1]
+        
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            self.assertIn(str(data_to_filter_with), row_data[header_name].replace("'", ""))
+
+    def test043_filter_by_testunit_unit_returns_only_correct_results(self):
+        """
+        New:  Test units: Filter Approach: Make sure you can filter by unit
+
+        LIMS-6427
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute='unit')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:spec_unit_filter', filter_text=data_to_filter_with, field_type='text')
+        table_records = self.test_unit_page.result_table()
+        del table_records[-1]
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            self.assertEqual(row_data['Unit'].replace("'",""), str(data_to_filter_with.replace('{','').replace('}','').replace('[', '').replace(']','')))
+            
+
+    @parameterized.expand([('categoryName', 'category_filter', 'Category'),
+                           ('typeName', 'filter_type', 'Type'), 
+                           ('lastModifiedUser', 'filter_changed_by', 'Changed By')])
+    def test044_filter_by_testunit_drop_down_fields(self, filter_case, filter, header_name):
+        """
+        New:  Test units: Filter Approach: Make sure you can filter by category
+        LIMS-6429
+
+        New:  Test units: Filter Approach: Make sure you can filter by type
+        LIMS-6435
+
+        New:  Test units: Filter Approach: Make sure you can filter by changed by
+        LIMS-6428
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute=filter_case)
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:{}'.format(filter), filter_text=data_to_filter_with)
+        table_records = self.test_unit_page.result_table()
+
+        del table_records[-1]
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            self.assertIn(str(data_to_filter_with), row_data[header_name].replace("'",""))
+            
+            
+    def test045_filter_by_testunit_material_type_returns_only_correct_results(self):
+        """
+        New:  Test units: Filter Approach: Make sure you can filter by material type
+
+        LIMS-6433
+        """
+
+        data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute='materialTypes')
+        self.assertNotEqual(data_to_filter_with, False)
+        self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with[0]))
+        self.test_unit_page.apply_filter_scenario(filter_element='test_unit:filter_material_type', filter_text=data_to_filter_with[0])
+        table_records = self.test_unit_page.result_table()
+        del table_records[-1]
+        for record in table_records:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
+            testunit_material_types = row_data['Material Type'].split(', ')[0]
+            self.assertEqual(testunit_material_types.replace("'",""), str(data_to_filter_with[0]))
+
+        

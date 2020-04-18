@@ -10,7 +10,7 @@ class CompanyProfile(BasePages):
 
     def get_company_profile_page(self):
         self.base_selenium.get(url=self.company_profile_url)
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def get_field_value(self, field_name, field_type='text'):
         field_value = self.base_selenium.get_value(

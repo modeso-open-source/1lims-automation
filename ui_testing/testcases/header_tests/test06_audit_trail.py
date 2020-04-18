@@ -1,15 +1,15 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.audit_trail_page import AuditTrail
 from parameterized import parameterized
 from unittest import skip
-import re
+from api_testing.apis.base_api import BaseAPI
 
 
 class AuditTrailTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-        self.login_page.login(
-            username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.audit_trail_page = AuditTrail()
+        self.set_authorization(auth=BaseAPI().AUTHORIZATION_RESPONSE)
         self.audit_trail_page.get_audit_trails_page()
 
     @skip('https://modeso.atlassian.net/browse/LIMS-6399')

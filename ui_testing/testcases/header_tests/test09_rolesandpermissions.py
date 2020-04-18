@@ -1,15 +1,31 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.article_page import Article
+from ui_testing.pages.testplan_page import TstPlan
+from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.base_pages import BasePages
+from ui_testing.pages.order_page import Order
+from ui_testing.pages.contacts_page import Contacts
+from ui_testing.pages.header_page import Header
+from ui_testing.pages.analysis_page import SingleAnalysisPage
+from api_testing.apis.users_api import UsersAPI
 from parameterized import parameterized
-import re
-from unittest import skip
-import time
+import re, time
+
 
 class HeaderTestCases(BaseTest):
-
     def setUp(self):
         super().setUp()
-        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.header_page = Header()
+        self.test_plan = TstPlan()
+        self.article_page = Article()
+        self.test_unit_page = TstUnit()
+        self.order_page = Order()
+        self.base_page = BasePages()
+        self.contacts_page = Contacts()
+        self.single_analysis_page = SingleAnalysisPage()
+        self.users_api = UsersAPI()
+
+        self.set_authorization(auth=self.users_api.AUTHORIZATION_RESPONSE)
         self.header_page.click_on_header_button()
 
     def test001_archive_roles_and_permissions(self):
@@ -47,7 +63,7 @@ class HeaderTestCases(BaseTest):
         self.header_page.restore_entity(menu_element='roles_and_permissions:right_menu',
                                         restore_element='roles_and_permissions:restore')
         self.header_page.get_active_entities(menu_element='roles_and_permissions:right_menu',
-                                            active_element='roles_and_permissions:active')
+                                             active_element='roles_and_permissions:active')
         for role_name in role_names:
             self.assertTrue(self.header_page.is_role_in_table(value=role_name))
 
@@ -62,7 +78,7 @@ class HeaderTestCases(BaseTest):
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         for column in row_data:
             if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[column] == '':
-                 continue
+                continue
             self.base_selenium.LOGGER.info(' + search for {} : {}'.format(column, row_data[column]))
             search_results = self.header_page.search(row_data[column])
             self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
@@ -142,7 +158,7 @@ class HeaderTestCases(BaseTest):
             """
         self.base_selenium.click(element='header:roles_and_permissions_button')
         random_role_name = self.generate_random_string()
-        self.header_page.create_new_role(role_name =random_role_name)
+        self.header_page.create_new_role(role_name=random_role_name)
 
         self.base_selenium.LOGGER.info('make sure that that the user record created in the active table')
         created_role = self.header_page.search(random_role_name)[0]
@@ -208,25 +224,27 @@ class HeaderTestCases(BaseTest):
             fixed_sheet_row_data = self.fix_data_format(values)
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
-    
+
     @parameterized.expand(['10', '20', '25', '50', '100'])
     def test009_testing_table_pagination(self, pagination_limit):
         """
         Header: Active table: Pagination Approach; Make sure that I can set the pagination to display 10/20/25/50/100 records in each page 
         """
-        
+
         self.header_page.click_on_roles_permissions_button()
-        
+
         self.header_page.set_page_limit(limit=pagination_limit)
         table_info = self.header_page.get_table_info_data()
 
         self.base_selenium.LOGGER.info('get current table records count')
-        table_records_count = str(len(self.header_page.result_table()) -1)
+        table_records_count = str(len(self.header_page.result_table()) - 1)
 
-        self.base_selenium.LOGGER.info('table records count is {}, and it should be {}'.format(table_records_count, table_info['page_limit']))
+        self.base_selenium.LOGGER.info(
+            'table records count is {}, and it should be {}'.format(table_records_count, table_info['page_limit']))
         self.assertEqual(table_records_count, table_info['page_limit'])
 
-        self.base_selenium.LOGGER.info('current page limit is {}, and it should be {}'.format(table_info['pagination_limit'], pagination_limit))
+        self.base_selenium.LOGGER.info(
+            'current page limit is {}, and it should be {}'.format(table_info['pagination_limit'], pagination_limit))
         self.assertEqual(table_info['pagination_limit'], pagination_limit)
 
         if int(table_info['pagination_limit']) <= int(table_info['count']):
@@ -241,7 +259,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:roles_and_permissions_button')
         # create new role with random data
         role_random_name = self.generate_random_string()
-        self.header_page.create_new_role(role_name = role_random_name)
+        self.header_page.create_new_role(role_name=role_random_name)
         self.base_selenium.LOGGER.info(
             'search to make sure that the role created '.format(role_random_name))
         created_role = self.header_page.search(role_random_name)[0]
@@ -257,7 +275,7 @@ class HeaderTestCases(BaseTest):
 
         # navigate to the role page to delete it
         self.header_page.get_roles_page()
-        self.header_page.search(value =role_random_name)
+        self.header_page.search(value=role_random_name)
 
         self.header_page.select_all_records()
         # navigate to the archived table to delete it
@@ -291,7 +309,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:roles_and_permissions_button')
         # create new user with random data
         role_random_name = self.generate_random_string()
-        self.header_page.create_new_role(role_name = role_random_name)
+        self.header_page.create_new_role(role_name=role_random_name)
 
         self.base_selenium.LOGGER.info(
             'search to make sure that the role created '.format(role_random_name))
@@ -322,7 +340,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:roles_and_permissions_button')
         # create new user with random data
         role_random_name = self.generate_random_string()
-        self.header_page.create_new_role(role_name = role_random_name)
+        self.header_page.create_new_role(role_name=role_random_name)
 
         self.base_selenium.LOGGER.info(
             'search to make sure that the role created '.format(role_random_name))
@@ -346,7 +364,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:roles_and_permissions_button')
         # create role with random name with master data permissions
         random_role_name = self.generate_random_string()
-        self.header_page.create_role_with_mater_data_permissions(role_name = random_role_name)
+        self.header_page.create_role_with_mater_data_permissions(role_name=random_role_name)
 
         # go to the user section to create user with this role
         self.header_page.click_on_header_button()
@@ -387,7 +405,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.click(element='header:roles_and_permissions_button')
         # create role with random name with sample management permissions
         random_role_name = self.generate_random_string()
-        self.header_page.create_role_with_sample_management_permissions(role_name = random_role_name)
+        self.header_page.create_role_with_sample_management_permissions(role_name=random_role_name)
 
         # go to the user section to create user with this role
         self.header_page.click_on_header_button()
@@ -412,7 +430,7 @@ class HeaderTestCases(BaseTest):
         # make sure that all the master data pages appear(articles & test units & test plans & contacts)
         self.base_selenium.LOGGER.info('get the order url')
         self.assertTrue('Sample Management', self.order_page.get_orders_page())
-        self.base_selenium.LOGGER.info( 'get the analysis url')
+        self.base_selenium.LOGGER.info('get the analysis url')
         self.assertTrue('Sample Management', self.single_analysis_page.get_analysis_page())
 
     def test015_filter_by_role_name(self):
@@ -472,6 +490,7 @@ class HeaderTestCases(BaseTest):
         self.base_selenium.LOGGER.info('filter results displayed with the role created_on')
         self.base_selenium.click(element='roles_and_permissions:reset_btn')
 
+
 class LoginRandomUser(BaseTest):
 
     def setUp(self):
@@ -491,13 +510,12 @@ class LoginRandomUser(BaseTest):
         :return:
         """
         self.base_selenium.click(element='header:roles_and_permissions_button')
-        random_role_name= self.generate_random_string()
+        random_role_name = self.generate_random_string()
         self.header_page.create_new_role(role_name=random_role_name)
 
         self.header_page.click_on_table_configuration_button()
         self.base_selenium.click(element='roles_and_permissions:checked_role_changed_by')
         self.base_selenium.click(element='roles_and_permissions:apply_btn')
-
 
         self.base_selenium.click(element='general:menu_filter_view')
         self.header_page.filter_user_drop_down(filter_name='roles_and_permissions:filter_changed_by',
@@ -505,7 +523,3 @@ class LoginRandomUser(BaseTest):
 
         roles_result = self.header_page.get_table_rows_data()
         self.assertIn(self.random_user_name, roles_result[0])
-
-
-
-

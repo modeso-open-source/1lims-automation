@@ -1,16 +1,37 @@
 from ui_testing.testcases.base_test import BaseTest
+from ui_testing.pages.article_page import Article
+from ui_testing.pages.contact_page import Contact
+from ui_testing.pages.testplan_page import TstPlan
+from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.base_pages import BasePages
+from ui_testing.pages.order_page import Order
+from ui_testing.pages.contacts_page import Contacts
+from ui_testing.pages.header_page import Header
+from api_testing.apis.orders_api import OrdersAPI
+from api_testing.apis.contacts_api import ContactsAPI
 from parameterized import parameterized
 import re
 import random
 from unittest import skip
 
+
 class ContactsTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-        self.login_page.login(username=self.base_selenium.username, password=self.base_selenium.password)
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.contact_page = Contact()
+        self.contacts_page = Contacts()
+        self.contacts_api = ContactsAPI()
+        self.test_plan = TstPlan()
+        self.article_page = Article()
+        self.test_unit_page = TstUnit()
+        self.order_page = Order()
+        self.orders_api = OrdersAPI()
+        self.header_page = Header()
+        self.base_page = BasePages()
+
+        self.set_authorization(auth=self.contacts_api.AUTHORIZATION_RESPONSE)
         self.contact_page.get_contacts_page()
-        table_fields = self.contacts_api.get_table_fields(component_id=3)
+        table_fields = self.contacts_api.get_table_fields(component_id=3)[0]['fields']
 
         if self.contact_page.check_for_hidden_table_fields(fields=table_fields):
             self.contact_page.set_all_configure_table_columns_to_specific_value(value=True,
@@ -140,28 +161,32 @@ class ContactsTestCases(BaseTest):
                 self.assertIn(item, fixed_sheet_row_data)
 
     def test_007_create_contact_with_person(self):
+        """
+        New: Contact: Creation Approach: I can create new contact
+        successfully with contact person
+
+        LIMS-6386
+        """
         contact_data = self.contact_page.create_update_contact()
 
-        self.base_selenium.LOGGER.info('filter by contact no.: {} to get the record'.format(contact_data['Contact No']))
-        self.base_selenium.refresh()
+        self.info('filter by contact no.: {} to get the record'.format(contact_data['Contact No']))
+        self.order_page.apply_filter_scenario(
+            filter_element='contact:contact_no_filter', filter_text=contact_data['Contact No'], field_type='text')
+        self.contact_page.sleep_small()
+        contact_record = self.contact_page.result_table()[0]
 
-        contact_record = self.contact_page.search(value=contact_data['Contact No'])[0]
-        self.base_selenium.LOGGER.info('open the record in edit to compare the data')
-        self.contact_page.open_edit_page(row=contact_record)
-
+        self.info('open the record in edit to compare the data')
+        self.contact_page.open_edit_page_by_css_selector(row=contact_record)
         contact_data_after_create = self.contact_page.get_full_contact_data()
         self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_create,
                                                                     data_before_save=contact_data))
 
         self.contact_page.get_contact_persons_page()
-
         contact_persons_data_after_create = self.contact_page.get_contact_persons_data()
-
-        self.base_selenium.LOGGER.info('compare contact persons data after refresh')
-        self.assertTrue(
-            self.contact_page.compare_contact_persons_data(data_after_save=contact_persons_data_after_create,
-                                                           data_before_save=contact_data["contact_persons"]))
-        self.base_selenium.LOGGER.info('contact persons have been saved successfully')
+        self.info('compare contact persons data after refresh')
+        self.assertTrue(self.contact_page.compare_contact_persons_data(
+            data_after_save=contact_persons_data_after_create, data_before_save=contact_data["contact_persons"]))
+        self.info('contact persons have been saved successfully')
 
     def test_008_create_contact_person_from_edit_update_old_value(self):
         """
@@ -256,7 +281,7 @@ class ContactsTestCases(BaseTest):
 
         LIMS-3565
         """
-        order_request = self.orders_api.get_all_orders().json()
+        order_request = self.orders_api.get_all_orders()
         self.assertEqual(order_request['status'], 1)
         orders_records = order_request['orders']
         self.assertNotEqual(len(orders_records), 0)
@@ -374,7 +399,7 @@ class ContactsTestCases(BaseTest):
         departments_list = new_updated_departments.split(', ')
 
         self.base_selenium.LOGGER.info('get order data of order with id {}'.format(order_id))
-        order_request = self.orders_api.get_order_by_id(id=order_id).json()
+        order_request = self.orders_api.get_order_by_id(id=order_id)
         self.assertEqual(order_request['status'], 1)
         order_data = order_request['orders']
         self.assertNotEqual(len(order_data), 0)
@@ -439,7 +464,9 @@ class ContactsTestCases(BaseTest):
         LIMS-6201
 
         """
-        contacts = self.get_all_contacts()
+
+        contacts_response, _ = self.contacts_api.get_all_contacts()
+        contacts = contacts_response['contacts']
         contact_name = random.choice(contacts)['name']
         search_results = self.contact_page.search(contact_name)
         self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
@@ -463,7 +490,7 @@ class ContactsTestCases(BaseTest):
         LIMS-3569
         """
 
-        contact_request = self.contacts_api.get_all_contacts().json()
+        contact_request, _ = self.contacts_api.get_all_contacts()
         self.assertEqual(contact_request['status'], 1)
         self.assertNotEqual(contact_request['count'], 0)
         contacts_records = contact_request['contacts']
@@ -529,7 +556,7 @@ class ContactsTestCases(BaseTest):
         """
 
         data_to_filter_with = \
-        self.contacts_api.get_first_record_with_data_in_attribute(attribute='departments').split(',')[0]
+            self.contacts_api.get_first_record_with_data_in_attribute(attribute='departments').split(',')[0]
         self.assertNotEqual(data_to_filter_with, False)
         self.base_selenium.LOGGER.info('filter with {}'.format(data_to_filter_with))
         self.contact_page.apply_filter_scenario(filter_element='contact:departments', filter_text=data_to_filter_with)

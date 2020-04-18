@@ -2,6 +2,7 @@ from ui_testing.pages.base_selenium import BaseSelenium
 from selenium.common.exceptions import ElementClickInterceptedException
 import time
 
+
 class Login:
     def __init__(self):
         self.base_selenium = BaseSelenium()

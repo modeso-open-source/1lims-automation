@@ -1,8 +1,10 @@
 from api_testing.apis.base_api import BaseAPI
+from api_testing.apis.base_api import api_factory
 
 
 class AnalysisAPI(BaseAPI):
-    def get_all_orders(self, **kwargs):
+    @api_factory('get')
+    def get_all_analysis(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['analysis_api']['list_all_analysis'])
         _payload = {"sort_value": "no",
                     "limit": 1000,
@@ -10,41 +12,34 @@ class AnalysisAPI(BaseAPI):
                     "sort_order": "DESC",
                     "filter": "{}",
                     "deleted": "0"}
-        payload = self.update_payload(_payload, **kwargs)
-        self.info('GET : {}'.format(api))
-        response = self.session.get(api, params=payload, headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        return response
-    
+        return api, _payload
+
+    @api_factory('put')
     def archive_analysis(self, analysis_id):
+        """
+        If success, response['message'] == 'operation_success'
+        :param analysis_id:
+        :return:
+        """
         api = '{}{}{}/archive'.format(self.url, self.END_POINTS['analysis_api']['archive_analysis'], str(analysis_id)) 
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message'] == 'operation_success':
-            return True
-        else:
-            return False
-    
+        return api, {}
+
+    @api_factory('put')
     def restore_analysis(self, analysis_id):
+        """
+        If success, response['message'] == 'operation_success'
+        :param analysis_id:
+        :return:
+        """
         api = '{}{}{}/restore'.format(self.url, self.END_POINTS['analysis_api']['restore_analysis'], str(analysis_id)) 
-        self.info('PUT : {}'.format(api))
-        response = self.session.put(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message'] == 'operation_success':
-            return True
-        else:
-            return False
-    
+        return api, {}
+
+    @api_factory('delete')
     def delete_analysis(self, analysis_id):
+        """
+        If success, response['message'] == 'hard_delete_success'
+        :param analysis_id:
+        :return:
+        """
         api = '{}{}{}'.format(self.url, self.END_POINTS['analysis_api']['delete_analysis'], str(analysis_id)) 
-        self.info('DELETE : {}'.format(api))
-        response = self.session.delete(api, params='', headers=self.headers, verify=False)
-        self.info('Status code: {}'.format(response.status_code))
-        data = response.json()
-        if data['status'] == 1 and data['message'] == 'hard_delete_success':
-            return True
-        else:
-            return False
+        return api, {}
