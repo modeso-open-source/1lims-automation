@@ -240,7 +240,7 @@ class OrdersTestCases(BaseTest):
             ' + Search by analysis number = {}'.format(analysis_number))
         self.orders_page.search_by_analysis_number(analysis_number)
         self.assertFalse(
-        self.orders_page.is_order_in_table(value=analysis_number))
+            self.orders_page.is_order_in_table(value=analysis_number))
 
     # will continue with us    
     @parameterized.expand(['True', 'False'])
@@ -752,7 +752,7 @@ class OrdersTestCases(BaseTest):
 
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
 
-        self.order_page.set_order_number(no = random_order['orderNo'].replace("'", ""))
+        self.order_page.set_order_number(no=random_order['orderNo'].replace("'", ""))
         self.base_selenium.LOGGER.info(
             'waiting fo validation message appear when I enter number already exists')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
