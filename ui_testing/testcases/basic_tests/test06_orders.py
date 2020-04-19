@@ -672,34 +672,34 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
-    # @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
-    # def test021_filter_by_date(self, key):
-    #     """
-    #      I can filter by testDate, shipmentDate, or createdAt feilds
-    #
-    #      LIMS-3495
-    #     """
-    #     orders, _ = self.orders_api.get_all_orders()
-    #     order = random.choice(orders['orders'])
-    #     suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
-    #     filter_value = suborder['orders'][0][key]
-    #     filter_element = self.order_page.order_filters_element(key=key)
-    #     import ipdb;ipdb.set_trace()
-    #     self.orders_page.filter_by_date(first_filter_element=filter_element['element'][0],
-    #                                     first_filter_text=filter_value,
-    #                                     second_filter_element=filter_element['element'][1],
-    #                                     second_filter_text=filter_value)
-    #
-    #     suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
-    #     filter_key_found = False
-    #     for suborder in suborders:
-    #         if suborder[filter_element['result_key']] == filter_value:
-    #             filter_key_found = True
-    #             break
-    #
-    #     self.assertTrue(filter_key_found)
-    #     self.assertGreater(len(self.order_page.result_table()), 1)
-    #
+    @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
+    def test021_filter_by_date(self, key):
+        """
+         I can filter by testDate, shipmentDate, or createdAt feilds
+
+         LIMS-3495
+        """
+        orders, _ = self.orders_api.get_all_orders()
+        order = random.choice(orders['orders'])
+        suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
+        date_list = suborder['orders'][0][key].split('T')[0].split('-')
+        date_list.reverse()
+        filter_value = "{}.{}.{}".format(date_list[0], date_list[1], date_list[2])
+        filter_element = self.order_page.order_filters_element(key=key)
+        self.orders_page.filter_by_date(first_filter_element=filter_element['element'][0],
+                                        first_filter_text=filter_value,
+                                        second_filter_element=filter_element['element'][1],
+                                        second_filter_text=filter_value)
+
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder[filter_element['result_key']] == filter_value:
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
 
     # will continue with us
     def test016_validate_order_test_unit_test_plan(self):
