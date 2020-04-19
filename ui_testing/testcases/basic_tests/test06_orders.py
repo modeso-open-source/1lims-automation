@@ -598,7 +598,7 @@ class OrdersTestCases(BaseTest):
         order = random.choice(orders['orders'])
         self.info('filter by order No. {}'.format(order['orderNo']))
         self.orders_page.filter_by_order_no(order['orderNo'])
-        result_order = self.orders_page.result_table()[randint(0, 20)]
+        result_order = self.orders_page.result_table()[0]
         self.assertIn(order['orderNo'], result_order.text)
 
     def test017_filter_by_Status(self):
@@ -621,7 +621,7 @@ class OrdersTestCases(BaseTest):
 
     def test018_filter_by_analysis_result(self):
         """
-            New: Orders: Filter Approach: I can filter by Analysis result
+            I can filter by Analysis result
 
             LIMS-3495
         """
@@ -648,7 +648,7 @@ class OrdersTestCases(BaseTest):
         self.info('filter by contact {}'.format(contact))
         self.orders_page.apply_filter_scenario(filter_element='orders:contact_filter',
                                                filter_text=contact, field_type='drop_down')
-        order = self.orders_page.result_table()[randint(0, 10)]
+        order = self.orders_page.result_table()[0]
         self.assertIn(contact, order.text)
 
     def test020_filter_by_department(self):
