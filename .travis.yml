@@ -21,7 +21,7 @@ install:
   - sudo apt-get install -y xvfb xclip
   - pip3 install -r $TRAVIS_BUILD_DIR/ui_testing/requirements.txt
 
-scritest020_filter_departmentpt:
+script:
   - export TESTS='test08_usermanagement.py:'
   #- export TESTS='test04_testunits.py:TestUnitsTestCases.test011_create_test_unit_with_random_category'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
