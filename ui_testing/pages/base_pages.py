@@ -95,8 +95,6 @@ class BasePages:
         self.base_selenium.wait_element(element=first_filter_element)
         self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
         self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
-        import ipdb;ipdb.set_trace()
-        self.base_selenium.click(element=first_filter_element)
         self.filter_apply()
 
     def filter_apply(self):
