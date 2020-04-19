@@ -565,60 +565,45 @@ class OrdersTestCases(BaseTest):
         order, suborder = self.orders_api.get_order_with_testunit_testplans()
         order_data = suborder[0]
         filter_element = self.order_page.order_filters_element(key=key)
-        # map key value to match api format with get_child_table format
         if key == 'testPlans':
             filter_value = order_data[key][0]
-            result_key = 'Test Plans'
         elif key == 'testUnit':
             filter_value = order_data[key][0]['testUnit']['name']
-            result_key = 'Test Units'
-        elif key == 'materialType':
-            filter_value = order_data[key]
-            result_key = 'Material Type'
-        elif key == 'article':
-            filter_value = order_data[key]
-            result_key = 'Article Name'
-        elif key == 'lastModifiedUser':
-            filter_value = order_data[key]
-            result_key = 'Changed By'
-        elif key == 'analysis':
-            filter_value = order_data[key]
-            result_key = 'Analysis No.'
         else:
             filter_value = order_data[key]
-            result_key = key
 
-        import ipdb;ipdb.set_trace()
+        self.info('filter by {} with value {}'.format(key, filter_value))
+
         self.orders_page.apply_filter_scenario(filter_element=filter_element['element'],
                                                filter_text=filter_value, field_type=filter_element['type'])
 
-        order = self.orders_page.result_table()[0]
         suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
         for suborder in suborders:
-            if suborder[result_key] == filter_value:
+            if suborder[filter_element['result_key']] == filter_value:
                 filter_key_found = True
                 break
 
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
-    def test015_filter_by_order_No(self):
+    def test016_filter_by_order_No(self):
         """
-            New: Orders: Filter Approach: I can filter by any order No.
+        I can filter by any order No.
 
-            LIMS-3495
+        LIMS-3495
         """
         self.info('select random order using api')
         orders, _ = self.orders_api.get_all_orders()
         order = random.choice(orders['orders'])
+        self.info('filter by order No. {}'.format(order['orderNo']))
         self.orders_page.filter_by_order_no(order['orderNo'])
-        result_order = self.orders_page.result_table()[0]
+        result_order = self.orders_page.result_table()[randint(0, 20)]
         self.assertIn(order['orderNo'], result_order.text)
 
-    def test015_filter_by_Status(self):
+    def test017_filter_by_Status(self):
         """
-            New: Orders: Filter Approach: I can filter by status
+            I can filter by status
 
             LIMS-3495
         """
@@ -634,7 +619,7 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
-    def test015_filter_by_analysis_result(self):
+    def test018_filter_by_analysis_result(self):
         """
             New: Orders: Filter Approach: I can filter by Analysis result
 
@@ -644,7 +629,6 @@ class OrdersTestCases(BaseTest):
                                                filter_text='Conform', field_type='drop_down')
         suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
-        import ipdb;ipdb.set_trace()
         for suborder in suborders:
             if suborder['Analysis Results'].split(' (')[0] == 'Conform':
                 filter_key_found = True
@@ -653,19 +637,69 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
-    def test015_filter_contact(self):
+    def test019_filter_by_contact(self):
         """
             New: Orders: Filter Approach: I can filter by contact
 
             LIMS-3495
         """
+        self.info('get contact of random order')
         contact = self.orders_api.get_random_contact_in_order()
+        self.info('filter by contact {}'.format(contact))
         self.orders_page.apply_filter_scenario(filter_element='orders:contact_filter',
                                                filter_text=contact, field_type='drop_down')
-        order = self.orders_page.result_table()[0]
+        order = self.orders_page.result_table()[randint(0, 10)]
         self.assertIn(contact, order.text)
 
+    def test020_filter_by_department(self):
+        """
+            I can filter by department
 
+            LIMS-3495
+        """
+        self.info('get random order with department')
+        department = self.orders_api.get_random_department_in_order()
+        self.info('filter by department value {}'.format(department))
+        self.orders_page.apply_filter_scenario(filter_element='orders:departments_filter',
+                                               filter_text=department, field_type='text')
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Departments'] == department:
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    # @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
+    # def test021_filter_by_date(self, key):
+    #     """
+    #      I can filter by testDate, shipmentDate, or createdAt feilds
+    #
+    #      LIMS-3495
+    #     """
+    #     orders, _ = self.orders_api.get_all_orders()
+    #     order = random.choice(orders['orders'])
+    #     suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
+    #     filter_value = suborder['orders'][0][key]
+    #     filter_element = self.order_page.order_filters_element(key=key)
+    #     import ipdb;ipdb.set_trace()
+    #     self.orders_page.filter_by_date(first_filter_element=filter_element['element'][0],
+    #                                     first_filter_text=filter_value,
+    #                                     second_filter_element=filter_element['element'][1],
+    #                                     second_filter_text=filter_value)
+    #
+    #     suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
+    #     filter_key_found = False
+    #     for suborder in suborders:
+    #         if suborder[filter_element['result_key']] == filter_value:
+    #             filter_key_found = True
+    #             break
+    #
+    #     self.assertTrue(filter_key_found)
+    #     self.assertGreater(len(self.order_page.result_table()), 1)
+    #
 
     # will continue with us
     def test016_validate_order_test_unit_test_plan(self):

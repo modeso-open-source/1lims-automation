@@ -250,3 +250,22 @@ class OrdersAPI(OrdersAPIFactory):
         for order in orders:
             if order['company']:
                 return order['company'][0]['name']
+
+    def get_random_department_in_order(self):
+        """
+        :return: contact name
+        """
+        orders_data, payload = self.get_all_orders(limit=50)
+        orders = orders_data['orders']
+        for order in orders:
+            suborders_data, a = self.get_suborder_by_order_id(order['id'])
+            suborders = suborders_data['orders']
+            if len(suborders) == 1:
+                if suborders[0]['departments']:
+                    return suborders[0]['departments']
+            elif len(suborders) == 0:
+                break
+            else:
+                for i in range(0, len(suborders) - 1):
+                    if suborders[i]['departments']:
+                        return suborders[i]['departments']

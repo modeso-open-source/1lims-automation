@@ -151,16 +151,27 @@ class Orders(BasePages):
     # Return all filter fields used in order
     def order_filters_element(self, key='all'):
         filter_fileds = {'orderNo': {'element': 'orders:order_filter', 'type': 'text'},
-                         'analysis': {'element': 'orders:analysis_filter', 'type': 'text'},
+                         'analysis': {'element': 'orders:analysis_filter', 'type': 'text','result_key': 'Analysis No.'},
                          'Contact Name': {'element': 'orders:contact_filter', 'type': 'drop_down'},
-                         'lastModifiedUser': {'element': 'orders:changed_by', 'type': 'drop_down'},
-                         'materialType': {'element': 'orders:material_type_filter', 'type': 'drop_down'},
-                         'article': {'element': 'orders:article_filter', 'type': 'drop_down'},
-                         'shipmentDate': {'element': 'orders:shipment_date_filter', 'type': 'text'},
-                         'testDate': {'element': 'orders:test_date_filter', 'type': 'text'},
-                         'createdAt': {'element': 'orders:created_on_filter', 'type': 'text'},
-                         'testUnit': {'element': 'orders:test_units_filter', 'type': 'drop_down'},
-                         'testPlans': {'element': 'orders:test_plans_filter', 'type': 'drop_down'}
+                         'lastModifiedUser': {'element': 'orders:changed_by', 'type': 'drop_down',
+                                             'result_key':'Changed By'},
+                         'materialType': {'element': 'orders:material_type_filter', 'type': 'drop_down',
+                                          'result_key':'Material Type'},
+                         'article': {'element': 'orders:article_filter', 'type': 'drop_down',
+                                     'result_key': 'Article Name'},
+                         'shipmentDate': {'element': ['orders:shipment_date_filter', 'orders:shipment_date_filter_end'],
+                                          'type': 'text',
+                                          'result_key': 'Shipment Date'},
+                         'testDate': {'element': ['orders:test_date_filter', 'orders:test_date_filter_end'],
+                                      'type': 'text',
+                                      'result_key': 'Test Date'},
+                         'createdAt': {'element': ['orders:created_on_filter','orders:created_on_filter_end'],
+                                       'type': 'text',
+                                       'result_key': 'Created On'},
+                         'testUnit': {'element': 'orders:test_units_filter', 'type': 'drop_down',
+                                      'result_key': 'Test Units'},
+                         'testPlans': {'element': 'orders:test_plans_filter', 'type': 'drop_down',
+                                       'result_key': 'Test Plans'}
                          }
 
         if key == 'all':
