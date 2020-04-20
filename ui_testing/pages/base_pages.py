@@ -96,6 +96,7 @@ class BasePages:
         self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
         self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
         self.filter_apply()
+        self.wait_until_page_is_loaded()
 
     def filter_apply(self):
         self.base_selenium.click(element='general:filter_btn')
@@ -106,7 +107,7 @@ class BasePages:
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
-        self.sleep_tiny()
+        self.wait_until_page_is_loaded()
 
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')

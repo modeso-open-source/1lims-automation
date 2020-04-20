@@ -577,7 +577,8 @@ class OrdersTestCases(BaseTest):
         self.orders_page.apply_filter_scenario(filter_element=filter_element['element'],
                                                filter_text=filter_value, field_type=filter_element['type'])
 
-        suborders = self.orders_page.get_child_table_data()
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
         filter_key_found = False
         for suborder in suborders:
             if suborder[filter_element['result_key']] == filter_value:
@@ -607,9 +608,12 @@ class OrdersTestCases(BaseTest):
 
             LIMS-3495
         """
+        self.info("filter by status: Open")
         self.orders_page.apply_filter_scenario(filter_element='orders:status_filter',
                                                filter_text='Open', field_type='drop_down')
-        suborders = self.orders_page.get_child_table_data()
+
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
         filter_key_found = False
         for suborder in suborders:
             if suborder['Status'] == 'Open':
@@ -625,9 +629,12 @@ class OrdersTestCases(BaseTest):
 
             LIMS-3495
         """
+        self.info("filter by analysis_result: Conform")
         self.orders_page.apply_filter_scenario(filter_element='orders:analysis_result_filter',
                                                filter_text='Conform', field_type='drop_down')
-        suborders = self.orders_page.get_child_table_data()
+
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
         filter_key_found = False
         for suborder in suborders:
             if suborder['Analysis Results'].split(' (')[0] == 'Conform':
@@ -648,6 +655,7 @@ class OrdersTestCases(BaseTest):
         self.info('filter by contact {}'.format(contact))
         self.orders_page.apply_filter_scenario(filter_element='orders:contact_filter',
                                                filter_text=contact, field_type='drop_down')
+        self.info('get random suborder from result table to check that filter works')
         order = self.orders_page.result_table()[0]
         self.assertIn(contact, order.text)
 
@@ -662,7 +670,9 @@ class OrdersTestCases(BaseTest):
         self.info('filter by department value {}'.format(department))
         self.orders_page.apply_filter_scenario(filter_element='orders:departments_filter',
                                                filter_text=department, field_type='text')
-        suborders = self.orders_page.get_child_table_data()
+
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
         filter_key_found = False
         for suborder in suborders:
             if suborder['Departments'] == department:
@@ -675,11 +685,11 @@ class OrdersTestCases(BaseTest):
     @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
     def test021_filter_by_date(self, key):
         """
-         I can filter by testDate, shipmentDate, or createdAt feilds
+         I can filter by testDate, shipmentDate, or createdAt fields
 
          LIMS-3495
         """
-        orders, _ = self.orders_api.get_all_orders()
+        orders, _ = self.orders_api.get_all_orders(limit=20)
         order = random.choice(orders['orders'])
         suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
         date_list = suborder['orders'][0][key].split('T')[0].split('-')
@@ -691,7 +701,8 @@ class OrdersTestCases(BaseTest):
                                         second_filter_element=filter_element['element'][1],
                                         second_filter_text=filter_value)
 
-        suborders = self.orders_page.get_child_table_data()
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
         filter_key_found = False
         for suborder in suborders:
             if suborder[filter_element['result_key']] == filter_value:
