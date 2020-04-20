@@ -577,8 +577,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.apply_filter_scenario(filter_element=filter_element['element'],
                                                filter_text=filter_value, field_type=filter_element['type'])
 
-        self.info('get random suborder from result table to check that filter works')
-        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
+        suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
         for suborder in suborders:
             if suborder[filter_element['result_key']] == filter_value:
@@ -613,7 +612,7 @@ class OrdersTestCases(BaseTest):
                                                filter_text='Open', field_type='drop_down')
 
         self.info('get random suborder from result table to check that filter works')
-        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
         filter_key_found = False
         for suborder in suborders:
             if suborder['Status'] == 'Open':
@@ -634,7 +633,7 @@ class OrdersTestCases(BaseTest):
                                                filter_text='Conform', field_type='drop_down')
 
         self.info('get random suborder from result table to check that filter works')
-        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
         filter_key_found = False
         for suborder in suborders:
             if suborder['Analysis Results'].split(' (')[0] == 'Conform':
@@ -655,7 +654,6 @@ class OrdersTestCases(BaseTest):
         self.info('filter by contact {}'.format(contact))
         self.orders_page.apply_filter_scenario(filter_element='orders:contact_filter',
                                                filter_text=contact, field_type='drop_down')
-        self.info('get random suborder from result table to check that filter works')
         order = self.orders_page.result_table()[0]
         self.assertIn(contact, order.text)
 
@@ -671,8 +669,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.apply_filter_scenario(filter_element='orders:departments_filter',
                                                filter_text=department, field_type='text')
 
-        self.info('get random suborder from result table to check that filter works')
-        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
+        suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
         for suborder in suborders:
             if suborder['Departments'] == department:
@@ -701,8 +698,7 @@ class OrdersTestCases(BaseTest):
                                         second_filter_element=filter_element['element'][1],
                                         second_filter_text=filter_value)
 
-        self.info('get random suborder from result table to check that filter works')
-        suborders = self.orders_page.get_child_table_data(index=randint(0, 20))
+        suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
         for suborder in suborders:
             if suborder[filter_element['result_key']] == filter_value:
