@@ -8,7 +8,7 @@ class TestPlanAPIFactory(BaseAPI):
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
         _payload = {"sort_value": "number",
                     "limit": 100,
-                    "start": 1,
+                    "start": 0,
                     "sort_order": "DESC",
                     "filter": "{}",
                     "deleted": "0"}
@@ -34,7 +34,7 @@ class TestPlanAPIFactory(BaseAPI):
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_testplan_testunits'])
         _payload = {"sort_value": "id",
                     "limit": 100,
-                    "start": 1,
+                    "start": 0,
                     "sort_order": "DESC",
                     "filter": '{"id": ' + str(id) + '}'
                     }
@@ -210,3 +210,9 @@ class TestPlanAPI(TestPlanAPIFactory):
                 return False
         else:
             return False
+
+    def get_completed_testplans_with_material_and_same_article(self, material_type='Raw Material', article='all'):
+        all_test_plans = self.get_completed_testplans()
+        completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['materialType'] == material_type]
+        test_plan_same_article = [testplan for testplan in completed_test_plans if testplan['article'] == [article]]
+        return test_plan_same_article
