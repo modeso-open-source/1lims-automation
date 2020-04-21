@@ -7,7 +7,7 @@ class TestPlanAPIFactory(BaseAPI):
     def get_all_test_plans(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
         _payload = {"sort_value": "number",
-                    "limit": 1000,
+                    "limit": 100,
                     "start": 0,
                     "sort_order": "DESC",
                     "filter": "{}",
@@ -167,7 +167,7 @@ class TestPlanAPI(TestPlanAPIFactory):
         return testplans_response['testPlans']
 
     def get_completed_testplans(self, **kwargs):
-        response, _ = self.get_all_test_plans(**kwargs)
+        response, _ = self.get_all_test_plans(limit=1000)
         all_test_plans = response['testPlans']
         completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
         return completed_test_plans
@@ -211,11 +211,11 @@ class TestPlanAPI(TestPlanAPIFactory):
         else:
             return False
           
-    def get_completed_testplans_with_article(self, articleNo="all"):
+    def get_completed_testplans_with_article_no_and_same_material(self, material_type='Raw Material', articleNo="all"):
         completed_test_plans = self.get_completed_testplans()
         test_plans = []
         for test_plan in completed_test_plans:
-            if test_plan['articleNo'] == [articleNo]:
+            if test_plan['articleNo'][0] in [articleNo, 'all'] and test_plan['materialType'] == material_type:
                 test_plans.append(test_plan['testPlanName'])
         return test_plans
 

@@ -1300,9 +1300,10 @@ class OrdersTestCases(BaseTest):
         self.info("Edit order with order no. {}".format(order['orderNo']))
         # get test plan completed not in progress
         self.info("get completed test plan with article {}".format(sub_order[sub_order_index]['article']))
-
         test_plans_list = \
-            self.test_plan_api.get_completed_testplans_with_article(articleNo=sub_order[sub_order_index]['articleNo'])
+            self.test_plan_api.get_completed_testplans_with_article_no_and_same_material(
+                articleNo=sub_order[sub_order_index]['articleNo'],
+                material_type=sub_order[sub_order_index]['materialType'])
 
         test_plans_list_without_duplicate = \
             [test_plan for test_plan in test_plans_list if test_plan not in sub_order[sub_order_index]['testPlans']]
