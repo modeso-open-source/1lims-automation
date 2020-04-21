@@ -544,30 +544,6 @@ class Order(Orders):
     def get_contact_field(self):
         return self.base_selenium.get_text(element='order:contact').split('\n')[0]
 
-    def set_material_type_of_first_suborder(self, material_type='', sub_order_index=0):
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        suborder_row.click()
-        if material_type:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:material_type', item_text=material_type)
-        else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:material_type')
-            return self.get_material_type_of_first_suborder()
-
-    def get_material_type_of_first_suborder(self, sub_order_index =0):
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        suborder_row.click()
-        return self.base_selenium.get_text(element='order:material_type').split('\n')[0]
-
     def navigate_to_analysis_active_table(self):
         self.base_selenium.click(element='orders:analysis_tab')
         self.sleep_small()

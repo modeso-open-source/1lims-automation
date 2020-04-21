@@ -565,3 +565,7 @@ class BasePages:
 
     def close_connection_with_database(self, db):
         db.close()
+
+    def get_current_year(self):
+        current_year = datetime.datetime.now()
+        return str(current_year.year)

@@ -35,14 +35,12 @@ class OrdersTestCases(BaseTest):
         self.set_authorization(auth=self.contacts_api.AUTHORIZATION_RESPONSE)
         self.order_page.get_orders_page()
 
-    # will continue with us    
     @parameterized.expand(['save_btn', 'cancel'])
-    #@skip('https://modeso.atlassian.net/browse//LIMS-4768')
-    def test001_update_number_with_save_cancel_btn(self, save):
+    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
+    def test001_cancel_button_edit_no(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
         a pop up will appear that the data will be
-
         LIMS-5241
         :return:
         """
