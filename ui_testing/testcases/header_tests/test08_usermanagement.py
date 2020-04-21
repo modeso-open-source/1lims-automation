@@ -490,3 +490,14 @@ class LoginRandomUser(BaseTest):
         users_result = self.header_page.get_table_rows_data()
         self.assertIn(self.random_user_name, users_result[0])
 
+
+
+
+
+
+
+
+
+
+
+
