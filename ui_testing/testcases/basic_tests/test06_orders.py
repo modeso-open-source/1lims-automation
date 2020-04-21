@@ -1324,6 +1324,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.save(save_btn='order:save_btn')
         self.info('Refresh to make sure that data are saved correctly and analysis no appeared')
         self.base_selenium.refresh()
+        self.order_page.wait_until_page_is_loaded()
         self.info('Get suborder data to check it updated correctly')
         suborder_after_refresh = self.order_page.get_suborder_data()['suborders'][sub_order_index]
         suborder_testplans_after_refresh = suborder_after_refresh['testplans']
@@ -1359,6 +1360,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.save(save_btn='order:save_btn')
         self.info('Refresh to make sure that data are saved correctly')
         self.base_selenium.refresh()
+        self.order_page.wait_until_page_is_loaded()
         self.info('Get suborder data to check it')
         suborder_after_refresh = self.order_page.get_suborder_data()['suborders'][sub_order_index]
         suborder_testunits_after_refresh = suborder_after_refresh['testunits']
