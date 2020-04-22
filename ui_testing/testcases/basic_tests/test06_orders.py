@@ -211,7 +211,7 @@ class OrdersTestCases(BaseTest):
                 value=selected_order_data['Analysis No.']))
 
     # will continue with us
-    def test006_deleted_archived_order(self):
+    def test006_delete_main_order(self):
         """
         New: Order without/with article: Deleting of orders
         The user can hard delete any archived order
