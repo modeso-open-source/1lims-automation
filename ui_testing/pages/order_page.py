@@ -56,7 +56,6 @@ class Order(Orders):
         self.set_test_unit(test_unit=test_unit)
         return self.base_selenium.check_item_partially_in_items(element='order:test_unit', item_text=test_unit)
 
-
     def set_contact(self, contact=''):
         if contact:
             self.base_selenium.select_item_from_drop_down(
@@ -241,7 +240,6 @@ class Order(Orders):
         shipment_date.clear()
         shipment_date.send_keys(date)
         return date
-
 
     def get_departments(self):
         departments = self.base_selenium.get_text(
@@ -463,8 +461,6 @@ class Order(Orders):
         else:
             self.base_selenium.LOGGER.info('cancel archiving')
             self.base_selenium.click(element='articles:cancel_archive')
-
-
 
     def click_auto_fill(self):
         button = self.base_selenium.find_element_in_element(source_element='order:auto_fill_container',
