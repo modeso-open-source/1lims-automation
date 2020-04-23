@@ -28,3 +28,4 @@ script:
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
 
   - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test016_validate_order_test_unit_test_plan --tc-file=config.ini
+  

@@ -313,6 +313,7 @@ class Order(Orders):
                                                                        destination_element='order:duplicate_table_view')
         duplicate_element.click()
 
+
     # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
     def get_suborder_data(self):
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
@@ -532,7 +533,5 @@ class Order(Orders):
         suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
             row=suborder_row, table_element='order:suborder_table')
         return suborders_elements
-
-
 
 
