@@ -27,14 +27,5 @@ script:
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
 
-
   - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test035_archived_test_unit_shoudnt_display_in_the_order_drop_down_list
- # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test022_user_archive_optional_config_fields
- # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test023_user_restore_optional_config_fields
- # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test024_archive_optional_config_fields_effect__0_edit
- # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test024_archive_optional_config_fields_effect__1_create
- # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test025_restore_optional_config_fields_effect__0_edit
- # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test025_restore_optional_config_fields_effect__1_create
- # - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING --tc-file=config.ini ui_testing/testcases/basic_tests/test02_articles.py:ArticlesTestCases.test026_archive_optional_config_fields_does_not_effect_table
- # - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test034_Duplicate_sub_order_and_cahange_materiel_type
-
+ 
