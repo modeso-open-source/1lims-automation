@@ -132,24 +132,6 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' Order created with no : {} '.format(order_no))
         return self.get_suborder_data()
 
-    def create_order_with_test_unit(self, material_type='', article='', contact='', test_units=[''],
-                         multiple_suborders=0, departments=''):
-        self.base_selenium.LOGGER.info(' Create new order.')
-        self.click_create_order_button()
-        self.set_new_order()
-        self.set_contact(contact=contact)
-        self.sleep_small()
-        self.set_departments(departments=departments)
-        self.set_material_type(material_type=material_type)
-        self.sleep_small()
-        self.set_article(article=article)
-        self.sleep_small()
-        self.set_test_unit(test_unit=test_units)
-        order_no = self.get_no()
-        self.save(save_btn='order:save_btn')
-        self.base_selenium.LOGGER.info(' Order created with no : {} '.format(order_no))
-        return self.get_suborder_data()
-
     def create_existing_order(self, no='', material_type='', article='', contact='', test_units=[],
                               multiple_suborders=0):
         self.base_selenium.LOGGER.info(' Create new order.')
@@ -257,7 +239,6 @@ class Order(Orders):
         shipment_date.clear()
         shipment_date.send_keys(date)
         return date
-
 
     def get_departments(self):
         departments = self.base_selenium.get_text(
@@ -541,12 +522,16 @@ class Order(Orders):
             self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
 
-    def get_contact_field(self):
-        return self.base_selenium.get_text(element='order:contact').split('\n')[0]
-
     def navigate_to_analysis_active_table(self):
         self.base_selenium.click(element='orders:analysis_tab')
         self.sleep_small()
+
+    def get_data_first_row(self, index=0):
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = suborders[index]
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        return suborders_elements
 
 
 

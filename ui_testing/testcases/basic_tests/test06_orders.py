@@ -70,11 +70,10 @@ class OrdersTestCases(BaseTest):
 
     # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])
-    def test002_update_contact_with_save_cancel_btn(self, save):
+    def test002_cancel_button_edit_contact(self, save):
         """
         Orders: In case I update the contact then press on cancel button, a pop up should display with ( ok & cancel )
         buttons and when I press on cancel button, this update shouldn't submit
-
         LIMS-4764
         LIMS-4764
         :return:
@@ -83,9 +82,9 @@ class OrdersTestCases(BaseTest):
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
         self.order_page.sleep_tiny()
-        current_contact = self.order_page.get_contact_field()
+        current_contact = self.order_page.get_contact()
         self.order_page.set_contact()
-        new_contact = self.order_page.get_contact_field()
+        new_contact = self.order_page.get_contact()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -93,14 +92,14 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.get(url=order_url, sleep=5)
 
-        order_contact = self.order_page.get_contact_field()
+        order_contact = self.order_page.get_contact()
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (new_contact) == {} (order_contact)'.format(new_contact, order_contact))
             self.assertEqual(new_contact, order_contact)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_contact) == {} (order_contact)'.format(current_contact, order_contact))
+                    ' + Assert {} (current_contact) == {} (order_contact)'.format(current_contact, order_contact))
             self.assertEqual(current_contact, order_contact)
 
     # will continue with us
