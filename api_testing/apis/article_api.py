@@ -8,7 +8,7 @@ class ArticleAPIFactory(BaseAPI):
         api = '{}{}'.format(self.url, self.END_POINTS['article_api']['list_all_articles'])
         _payload = {"sort_value": "number",
                     "limit": 100,
-                    "start": 1,
+                    "start": 0,
                     "sort_order": "DESC",
                     "filter": "{}",
                     "deleted": "0"}
@@ -157,3 +157,7 @@ class ArticleAPI(ArticleAPIFactory):
         self.restore_unit_config()
         self.restore_comment_config()
         self.restore_related_article_config()
+
+    def quick_search_article(self, name):
+        _filter = '{{"quickSearch":"{}","columns":["name"]}}'.format(name)
+        return self.get_all_articles(filter=_filter)

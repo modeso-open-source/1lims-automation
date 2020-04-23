@@ -19,6 +19,7 @@ class BaseTest(TestCase):
         self.info('Test case : {}'.format(self._testMethodName))
         self.base_selenium.get_driver()
         self.base_selenium.get(url=self.base_selenium.url)
+        self.pass_refresh_feature()
 
     def tearDown(self):
         self.base_selenium.quit_driver()
@@ -126,3 +127,10 @@ class BaseTest(TestCase):
             del auth['role']
             auth['roles'] = ["Admin"]
         self.base_selenium.set_local_storage('modeso-auth-token', auth)
+
+    def pass_refresh_feature(self):
+        with self.base_selenium._change_implicit_wait():
+            try:
+                self.base_selenium.driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[2]/button')
+            except:
+                pass

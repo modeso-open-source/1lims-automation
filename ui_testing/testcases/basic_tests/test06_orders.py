@@ -2125,6 +2125,46 @@ class OrdersTestCases(BaseTest):
         self.info('Asset test unit is not existing in the list')
         self.assertFalse(self.order_page.is_testunit_existing(
             test_unit=test_unit['name']))
+
+    def test034_duplicate_sub_order_table_with_add(self):
+        """
+        Orders: User can duplicate any suborder from the order form ( table with add )
+        LIMS-3738
+        :return:
+        """
+        # get random order
+        self.info('select random record')
+        orders, payload = self.orders_api.get_all_orders(limit=20)
+        data_before_duplicate_main_order = random.choice(orders['orders'])
+
+        self.orders_page.get_order_edit_page_by_id(id=data_before_duplicate_main_order['id'])
+        data_before_duplicate = self.order_page.get_suborder_data()
+
+        self.order_page.duplicate_from_table_view(index_to_duplicate_from=0)
+        after_duplicate_order = self.order_page.get_suborder_data()
+
+        # make sure that the new order has same order No
+        self.assertEqual(data_before_duplicate['orderNo'].replace("'", ""), after_duplicate_order['orderNo'].replace("'", ""))
+        # compare the contacts between two records
+        self.assertCountEqual(data_before_duplicate['contacts'], after_duplicate_order['contacts'])
+        # compare the data of suborders data in both orders
+        self.assertNotEqual(data_before_duplicate['suborders'], after_duplicate_order['suborders'])
+
+        # save the duplicated order
+        self.order_page.save(save_btn='orders:save_order')
+        # go back to the table view
+        self.order_page.get_orders_page()
+        # search for the created order no
+        self.order_page.search(after_duplicate_order['orderNo'])
+        suborder_data = self.order_page.get_child_table_data()[0]
+        order_result = self.order_page.result_table()[0].text
+        # check that it exists
+        self.assertIn(after_duplicate_order['orderNo'].replace("'", ""), order_result.replace("'", ""))
+        self.order_page.navigate_to_analysis_tab()
+        self.order_page.search(suborder_data['Analysis No.'])
+        analysis_result = self.order_page.result_table()[0].text
+        self.assertIn(suborder_data['Analysis No.'].replace("'", ""), analysis_result.replace("'", ""))
+
              
     def test034_Duplicate_sub_order_and_cahange_materiel_type(self):
         """
