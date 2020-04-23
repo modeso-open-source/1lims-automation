@@ -2118,7 +2118,6 @@ class OrdersTestCases(BaseTest):
         testunits, payload = self.test_unit_api.get_all_test_units(limit=20, deleted=1)
         test_unit = random.choice(testunits['testUnits'])
 
-        self.order_page.get_orders_page()
         self.base_selenium.click(element='orders:new_order')
         self.order_page.set_new_order()
         self.order_page.sleep_small()
