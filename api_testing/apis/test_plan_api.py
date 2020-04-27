@@ -133,7 +133,6 @@ class TestPlanAPIFactory(BaseAPI):
             'dynamicFieldsValues': [],
             'testUnits': []
         }
-
         payload = self.update_payload(_payload, **kwargs)
         if 'testPlan' in kwargs:
             payload['selectedTestPlan'] = [kwargs['testPlan']]

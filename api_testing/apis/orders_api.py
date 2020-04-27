@@ -4,6 +4,7 @@ from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
+from ui_testing.pages.testunit_page import TstUnit
 from api_testing.apis.base_api import api_factory
 import random
 
@@ -51,19 +52,19 @@ class OrdersAPIFactory(BaseAPI):
         """
 
         order_no = self.get_auto_generated_order_no()[0]['id']
-        if 'testplan' not in kwargs.keys():
-            testplan = random.choice(TestPlanAPI().get_completed_testplans())
-            material_type = testplan['materialType']
-            material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
-            article = testplan['article'][0]
-            article_api = ArticleAPI()
-            if article == "all":
-                res, _ = article_api.get_all_articles(limit=20)
-            else:
-                res, _ = article_api.quick_search_article(name=article)
-            article_id = res['articles'][0]['id']
-            testunit = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
-                materialtype_id=material_type_id)[0]['testUnits'])
+
+        testplan = random.choice(TestPlanAPI().get_completed_testplans())
+        material_type = testplan['materialType']
+        material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
+        article = testplan['article'][0]
+        article_api = ArticleAPI()
+        if article == "all":
+            res, _ = article_api.get_all_articles(limit=20)
+        else:
+            res, _ = article_api.quick_search_article(name=article)
+        article_id = res['articles'][0]['id']
+        testunit = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
+            materialtype_id=material_type_id)[0]['testUnits'])
 
         test_date = self.get_current_date()
         shipment_date = self.get_current_date()
@@ -228,7 +229,6 @@ class OrdersAPIFactory(BaseAPI):
 
         return [payload]
 
-
 class OrdersAPI(OrdersAPIFactory):
     def get_order_with_multiple_sub_orders(self):
         api, payload = self.get_all_orders(limit=100)
@@ -238,3 +238,50 @@ class OrdersAPI(OrdersAPIFactory):
             if len(suborder) > 1:
                 return order
 
+    def create_order_with_double_test_plans(self):
+        testplan = random.choice(TestPlanAPI().get_completed_testplans())
+        material_type = testplan['materialType']
+        material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
+        article = testplan['article'][0]
+        article_api = ArticleAPI()
+        if article == "all":
+            res, _ = article_api.get_all_articles(limit=20)
+        else:
+            res, _ = article_api.quick_search_article(name=article)
+
+        article_id = res['articles'][0]['id']
+
+        testunit = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
+            materialtype_id=material_type_id)[0]['testUnits'])
+        testunit_data = TestUnitAPI().get_testunit_form_data(id=testunit['id'])[0]['testUnit']
+        formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
+
+        formatted_article = {'id': article_id, 'text': article}
+
+        formatted_material = {'id': material_type_id, 'text': material_type}
+
+        testplan2, _ = TestPlanAPI().create_testplan(
+            testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
+
+        second_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan2['testPlanDetails']['id'])
+
+        testPlan2 = {
+            'id': int(second_testPlan_data[0]['testPlan']['id']),
+            'testPlanName': second_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
+            'version': 1
+        }
+        testplan_list = [testplan, testPlan2]
+
+        testunit2 = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
+            materialtype_id=material_type_id)[0]['testUnits'])
+        testunit_list = [testunit, testunit2]
+
+        payload = {
+            'testPlans': testplan_list,
+            'testUnits': testunit_list,
+            'materialType': {"id": material_type_id, "text": material_type},
+            'materialTypeId': material_type_id,
+            'article': {'id': article_id, 'text': article},
+            'articleId': article_id
+        }
+        return self.create_new_order(**payload)

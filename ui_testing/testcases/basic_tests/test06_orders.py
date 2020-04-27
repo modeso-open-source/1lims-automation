@@ -2207,3 +2207,35 @@ class OrdersTestCases(BaseTest):
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
                                                  filter_text=suborder_data['Analysis No.'], field_type='text')
         self.assertEqual(len(self.order_page.result_table()), 1)
+
+    def test036_Duplicate_sub_order_with_multiple_testplans_and_testunits_delet_approach(self):
+        """
+        Duplicate suborder Approach: Duplicate any sub order then delete the units & test plans
+
+        LIMS-6852
+        """
+        self.info('create order data multiple testplans and test units')
+        response, payload = self.orders_api.create_order_with_double_test_plans()
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+        suborder_data_before_duplicate = self.orders_page.get_child_table_data()
+        test_plans = [suborder_data_before_duplicate[0]['Test Plans'].split(',\n')[0],
+                      suborder_data_before_duplicate[0]['Test Plans'].split(',\n')[1]]
+        test_units = [suborder_data_before_duplicate[0]['Test Units'].split(',\n')[0],
+                      suborder_data_before_duplicate[0]['Test Units'].split(',\n')[1]]
+        self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
+        self.orders_page.duplicate_sub_order_from_table_overview()
+        self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
+        self.base_selenium.clear_items_in_drop_down(element='order:test_unit', one_item_only=True)
+        self.order_page.save(save_btn='order:save')
+        self.order_page.wait_until_page_is_loaded()
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+        child_data = self.order_page.get_child_table_data()
+        duplicated_suborder_data = child_data[0]
+        self.assertEqual(len(child_data), 2)
+        self.assertEqual(duplicated_suborder_data['Article Name'], suborder_data_before_duplicate[0]['Article Name'])
+        self.assertEqual(duplicated_suborder_data['Material Type'], suborder_data_before_duplicate[0]['Material Type'])
+        self.assertIn(duplicated_suborder_data['Test Units'], test_units)
+        self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
+
