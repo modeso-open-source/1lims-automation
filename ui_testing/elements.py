@@ -650,8 +650,9 @@ elements = {
                           'value': 'flaticon-signs',
                           'order': 0},
         'add_new_item11': {'method': 'class_name',
-                           'value': 'addNewItem',
-                           'order': 0},
+                         'value': 'addNewItem',
+                         'order': 0},
+
         'add_new_item': {'method': 'link_text',
                          'value': 'Add another item'},
         'order_no_error_message': {'method': 'xpath',

@@ -69,9 +69,8 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
             self.assertEqual(current_no, order_no)
 
-    # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])
-    def test002_cancel_button_edit_contact(self, save):
+    def test002_update_contact_with_save_cancel_btn(self, save):
         """
         Orders: In case I update the contact then press on cancel button, a pop up should display with ( ok & cancel )
         buttons and when I press on cancel button, this update shouldn't submit
@@ -79,13 +78,15 @@ class OrdersTestCases(BaseTest):
         LIMS-4764
         :return:
         """
-        self.order_page.get_random_order()
+        orders, payload = self.orders_api.get_all_orders(limit=40)
+        random_order = random.choice(orders['orders'])
+
+        self.orders_page.get_order_edit_page_by_id(random_order['id'])
         order_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        self.order_page.sleep_tiny()
-        current_contact = self.order_page.get_contact()
+        self.info(' + order_url : {}'.format(order_url))
+        current_contact = self.order_page.get_contact_field()
         self.order_page.set_contact()
-        new_contact = self.order_page.get_contact()
+        new_contact = self.order_page.get_contact_field()
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -93,13 +94,13 @@ class OrdersTestCases(BaseTest):
 
         self.base_selenium.get(url=order_url, sleep=5)
 
-        order_contact = self.order_page.get_contact()
+        order_contact = self.order_page.get_contact_field()
         if 'save_btn' == save:
-            self.base_selenium.LOGGER.info(
+            self.info(
                 ' + Assert {} (new_contact) == {} (order_contact)'.format(new_contact, order_contact))
             self.assertEqual(new_contact, order_contact)
         else:
-            self.base_selenium.LOGGER.info(
+            self.info(
                 ' + Assert {} (current_contact) == {} (order_contact)'.format(current_contact, order_contact))
             self.assertEqual(current_contact, order_contact)
 
@@ -209,34 +210,32 @@ class OrdersTestCases(BaseTest):
                 value=selected_order_data['Analysis No.']))
 
     # will continue with us
-    def test006_deleted_archived_order(self):
+    def test006_delete_main_order(self):
         """
         New: Order without/with article: Deleting of orders
         The user can hard delete any archived order
         LIMS-3257
         """
-        self.order_page.get_archived_items()
-        archived_items = self.orders_api.get_all_orders(limit=20, deleted=1).json()['orders']
-        row_id = randint(0, len(archived_items))
-        order_number = archived_items[row_id]['orderNo']
+        orders, payload = self.orders_api.get_all_orders(limit=40, deleted=1)
+        random_order = random.choice(orders['orders'])
+        self.orders_page.get_archived_items()
+        order_row =self.orders_page.search(random_order['orderNo'])[0]
 
-        rows = self.base_selenium.get_table_rows(element='general:table')
-        order_row = rows[row_id]
         self.order_page.click_check_box(source=order_row)
 
-        sub_orders = self.orders_page.get_child_table_data(row_id)
-        analysis_number = sub_orders[0]['Analysis No.']
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            row=order_row)
+        order_number = order_data['Order No.'].split(',')
 
-        self.base_selenium.LOGGER.info(
-            ' + Delete order has number = {}'.format(order_number))
+        self.info(
+            ' + Delete order has number = {}'.format(order_data['Order No.']))
         self.order_page.delete_selected_item()
         self.assertFalse(self.order_page.confirm_popup())
-
-        self.base_selenium.LOGGER.info(
-            ' + Search by analysis number = {}'.format(analysis_number))
-        self.orders_page.search_by_analysis_number(analysis_number)
-        self.assertFalse(
-            self.orders_page.is_order_in_table(value=analysis_number))
+        deleted_order = self.orders_page.search(order_number)[0]
+        self.assertTrue(deleted_order.get_attribute("textContent"), 'No records found')
+        self.order_page.navigate_to_analysis_tab()
+        deleted_order = self.orders_page.search(order_number)[0]
+        self.assertTrue(deleted_order.get_attribute("textContent"), 'No records found')
 
     # will continue with us
     @parameterized.expand(['True', 'False'])
@@ -477,8 +476,8 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             ' Create order with 5 sub orders to make sure of the count of the created/ updated orders')
         order_no_created = self.order_page.create_new_order(material_type='r', article='a', contact='a',
-                                                            test_plans=['a'],
-                                                            test_units=['a'], multiple_suborders=5)
+                                                                test_plans=['a'],
+                                                                test_units=['a'], multiple_suborders=5)
         self.base_selenium.LOGGER.info(
             ' + orders_created_with_number : {}'.format(order_no_created))
         order_no_created = order_no_created.replace("'", '')
@@ -724,12 +723,12 @@ class OrdersTestCases(BaseTest):
         if 'cancel' == save:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_shipment_date) != {} (new_shipment_date)'.format(new_shipment_date,
-                                                                                        saved_shipment_date))
+                                                                                            saved_shipment_date))
             self.assertNotEqual(saved_shipment_date, new_shipment_date)
         else:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(new_shipment_date,
-                                                                                        saved_shipment_date))
+                                                                                            saved_shipment_date))
             self.assertEqual(saved_shipment_date, new_shipment_date)
 
     # will continue with us
