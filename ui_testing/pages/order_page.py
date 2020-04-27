@@ -9,7 +9,7 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:order').split('\n')[0]
 
     def get_order_number(self):
-        return self.base_selenium.get_value(element='order:no').split('\n')[0]
+        return self.base_selenium.get_text(element='order:order_number_add_form').split('\n')[0]
 
     def set_new_order(self):
         self.base_selenium.LOGGER.info('Set new order.')
@@ -138,11 +138,20 @@ class Order(Orders):
         self.set_existing_order()
         order_no = self.set_existing_number(no)
         self.set_material_type(material_type=material_type)
+
+        self.sleep_small()
         self.set_article(article=article)
+        self.sleep_small()
         self.set_contact(contact=contact)
+        self.sleep_small()
 
         for test_unit in test_units:
             self.set_test_unit(test_unit)
+
+        self.sleep_small()
+        self.save(save_btn='order:save_btn')
+        self.base_selenium.LOGGER.info(' Order created with no : {} '.format(order_no))
+        return order_no
 
     def create_existing_order_with_auto_fill(self, no=''):
         self.info(' Create new order.')

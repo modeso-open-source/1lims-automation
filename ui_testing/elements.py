@@ -555,6 +555,9 @@ elements = {
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
                                  'value': 'start_shipmentDate'},
+        'analysis_tab': {
+            'method': 'xpath',
+            'value': "//label[@class='btn tab']"},
         'mainorder_duplicate': {'method': 'id',
                                 'value': 'main_table_duplicate'},
         'suborder_duplicate': {'method': 'id', 

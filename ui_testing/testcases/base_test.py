@@ -6,6 +6,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.analysis_page import SingleAnalysisPage
 import datetime, re
 
 
@@ -105,6 +106,11 @@ class BaseTest(TestCase):
             if test_unit_dict['Type'] == search and material_type in test_unit_dict['Material Type']:
                 return test_unit_dict
         return {}
+
+    0
+
+
+
     '''
     Removes the data that was changed in the duplication process in order to compare
     between the objects to make sure that the duplication was done correcly.

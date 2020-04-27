@@ -5,12 +5,13 @@ from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from api_testing.apis.orders_api import OrdersAPI
-from ui_testing.pages.analysis_page import SingleAnalysisPage
 from ui_testing.pages.analysis_page import AllAnalysesPage
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_unit_api import TestUnitAPI
+from ui_testing.pages.analysis_page import SingleAnalysisPage
 from api_testing.apis.test_plan_api import TestPlanAPI
 from api_testing.apis.contacts_api import ContactsAPI
+from api_testing.apis.test_plan_api import TestPlanAPI
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from ui_testing.pages.contacts_page import Contacts
 from random import randint
@@ -21,17 +22,16 @@ class OrdersTestCases(BaseTest):
     def setUp(self):
         super().setUp()
         self.order_page = Order()
+        self.orders_api = OrdersAPI()
         self.orders_page = Orders()
         self.analyses_page = AllAnalysesPage()
-        self.orders_api = OrdersAPI()
         self.article_api = ArticleAPI()
         self.test_unit_api = TestUnitAPI()
-        self.contacts_api = ContactsAPI()
         self.single_analysis_page = SingleAnalysisPage()
+        self.test_plan_api = TestPlanAPI()
+        self.contacts_api = ContactsAPI()
         self.general_utilities_api = GeneralUtilitiesAPI()
         self.contacts_page = Contacts()
-        self.orders_api = OrdersAPI()
-        self.orders_page = Orders()
         self.set_authorization(auth=self.contacts_api.AUTHORIZATION_RESPONSE)
         self.order_page.get_orders_page()
 
@@ -498,7 +498,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.save(save_btn='order:save_btn')
         self.base_selenium.LOGGER.info(
             ' + order_updated_with_number : {}'.format(new_order_no))
-
+    
     @parameterized.expand(['save_btn', 'cancel'])
     def test014_update_first_order_material_type(self, save):
         """
@@ -848,35 +848,22 @@ class OrdersTestCases(BaseTest):
             self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, test_units_list)
 
-    # will continue with us
     def test021_create_existing_order_with_test_units(self):
         """
         New: Orders: Create an existing order with test units
         LIMS-3268
         """
-        self.base_selenium.LOGGER.info('Running test case to create an existing order with test units')
-        test_units_list = []
-        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Qualitative', material_type='All')
-        if test_unit_dict:
-            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative')
-        if test_unit_dict:
-            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative Mibi')
-        if test_unit_dict:
-            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(test_unit_dict['Test Unit Name'])
+        random_testunit, payload = self.test_unit_api.get_all_test_units(filter='{"materialTypes":"all"}')
+        random_name = random.choice(random_testunit['testUnits'])
 
         self.order_page.get_orders_page()
-        created_order = self.order_page.create_existing_order(no='', material_type='r', article='a', contact='a',
-                                                              test_units=test_units_list)
-
-        self.analyses_page.get_analyses_page()
+        created_order = self.order_page.create_existing_order(no='',material_type='s', article='a', contact='',
+                                                              test_units=[random_name['name']])
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
         self.base_selenium.LOGGER.info(
             'Assert There is an analysis for this new order.')
-        orders_analyess = self.analyses_page.search(created_order)
+        orders_analyess = self.analyses_page.search(value=created_order)
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=orders_analyess[0])
         self.assertEqual(
@@ -889,14 +876,14 @@ class OrdersTestCases(BaseTest):
                                                                                        table_element='general:table_child')
             testunit_name = row_with_headers['Test Unit']
             self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
-            self.assertIn(testunit_name, test_units_list)
-
+            self.assertIn(testunit_name, random_name['name'])
+            
     def test022_create_existing_order_with_test_units_and_change_material_type(self):
         """
         New: Orders with test units: Create a new order from an existing order with
         test units but change the material type
         LIMS-3269-case 1
-        """
+        """   
         order_no = self.order_page.create_existing_order_with_auto_fill()
         self.order_page.sleep_tiny()
 
@@ -1571,7 +1558,7 @@ class OrdersTestCases(BaseTest):
             '+ Assert test plan is: {}, and it should be {}'.format(analysis_test_plan_after_update,
                                                                     suborder_testplans[1]))
         self.assertEqual(analysis_test_plan_after_update, suborder_testplans[1])
-
+      
     ### SYNTAX ERROR ###
     # will continue with us ( apply it from the second order & need diff test case number for it
     # @parameterized.expand(['save_btn', 'cancel'])
@@ -2220,4 +2207,3 @@ class OrdersTestCases(BaseTest):
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
                                                  filter_text=suborder_data['Analysis No.'], field_type='text')
         self.assertEqual(len(self.order_page.result_table()), 1)
-
