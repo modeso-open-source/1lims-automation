@@ -67,3 +67,4 @@ class SingleAnalysisPage(AllAnalysesPage):
                     temp_record.append(cell.text)
             records_data.append(temp_record)
         return records_data
+
