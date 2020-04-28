@@ -140,6 +140,15 @@ class Orders(BasePages):
         self.base_selenium.LOGGER.info(' + Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
+        
+    def filter_by_date(self, first_filter_element, first_filter_text, second_filter_element, second_filter_text):
+        self.open_filter_menu()
+        self.sleep_small()
+        self.base_selenium.wait_element(element=first_filter_element)
+        self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
+        self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
+        self.filter_apply()
+        self.wait_until_page_is_loaded()
 
     def get_orders_duplicate_data(self, order_no):
         self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
