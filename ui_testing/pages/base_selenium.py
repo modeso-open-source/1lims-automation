@@ -337,7 +337,7 @@ class BaseSelenium:
         element.clear()
         element.send_keys(Keys.ENTER)
 
-    def clear_items_in_drop_down(self, element, confirm_popup=False):
+    def clear_items_in_drop_down(self, element, confirm_popup=False, one_item_only=False):
         # element is ng-select element
         # make sure that there are elements to b deleted
         self.wait_until_element_located(element)
@@ -349,7 +349,8 @@ class BaseSelenium:
             if confirm_popup:
                 self.wait_element(element='general:form_popup_warning_window')
                 self.click(element='general:confirmation_button')
-
+            if one_item_only:
+                break
 
     def clear_single_select_drop_down(self, element):
         self.wait_until_element_located(element)
