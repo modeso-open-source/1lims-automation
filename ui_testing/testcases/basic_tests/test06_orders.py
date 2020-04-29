@@ -2238,3 +2238,30 @@ class OrdersTestCases(BaseTest):
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-7722')
+    def test036_duplicate_main_order_with_testPlans_and_testUnits(self):
+        """
+        Duplicate main order Approach: duplicate order with test plan & test units
+
+        LIMS-4353
+        """
+        self.info('create order with multiple test plans and test units')
+        response, payload = self.orders_api.create_order_with_double_test_plans()
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+        self.orders_page.duplicate_main_order_from_order_option()
+        self.order_page.save(save_btn='order:save')
+        self.order_page.wait_until_page_is_loaded()
+        suborder_data = self.order_page.get_suborder_data()
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.assertTrue(self.orders_page.is_order_in_table(suborder_data['orderNo']))
+        orders_analyses = self.analyses_page.search(suborder_data['orderNo'])
+        duplicated_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
+        self.assertEqual(duplicated_order_data['Test Plans'], suborder_data['suborders'][0]['testplans'])
+        duplicated_suborder_data = self.order_page.get_child_table_data()
+        test_units_list = []
+        for suborder in duplicated_suborder_data:
+            test_units_list.append(suborder['Test Unit'])
+
+        self.assertIn(suborder_data['suborders'][0]['testunits'][0]['name'], test_units_list)
+        self.assertIn(suborder_data['suborders'][0]['testunits'][1]['name'], test_units_list)

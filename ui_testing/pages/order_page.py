@@ -343,10 +343,10 @@ class Order(Orders):
             rawTestunitArr = suborder_data['testUnits'].split(',\n')
 
             for testunit in rawTestunitArr:
-                if len(testunit.split(' No: ')) > 1:
+                if len(testunit.split(' Type: ')) > 1:
                     testunits.append({
-                        "name": testunit.split(' No: ')[0],
-                        "no": testunit.split(' No: ')[1]
+                        "name": testunit.split(' Type: ')[0],
+                        "no": testunit.split(' Type: ')[1]
                     })
                 else:
                     testunits = []
