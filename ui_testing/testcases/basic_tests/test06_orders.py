@@ -1262,14 +1262,14 @@ class OrdersTestCases(BaseTest):
 
         LIMS-4269 case 1
         """
-        self.test_plan_api = TestPlanAPI()
+        self.info("get random order with test plans")
         order, sub_order, sub_order_index = self.orders_api.get_order_with_feild_name(feild='testPlans')
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
         self.info("Edit order with order no. {}".format(order['orderNo']))
         # get test plan completed not in progress
         self.info("get completed test plan with article {}".format(sub_order[sub_order_index]['article']))
         test_plans_list = \
-            self.test_plan_api.get_completed_testplans_with_article_no_and_same_material(
+            TestPlanAPI().get_completed_testplans_with_article_no_and_same_material(
                 articleNo=sub_order[sub_order_index]['articleNo'],
                 material_type=sub_order[sub_order_index]['materialType'])
 
@@ -1306,7 +1306,7 @@ class OrdersTestCases(BaseTest):
                                                  field_type='text')
         analysis_records = self.analyses_page.get_table_rows_data()
         self.info('Assert analysis is updated with new testplan')
-        self.assertIn(test_plan, analysis_records[0])
+        self.assertIn(test_plan, analysis_records[0].replace("'",""))
 
     def test022_update_suborder_testunits(self):
         """
