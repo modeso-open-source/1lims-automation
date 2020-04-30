@@ -250,8 +250,6 @@ class OrdersAPI(OrdersAPIFactory):
             if len(suborders) == 1:
                 if suborders[0]['testPlans'] and suborders[0]['testUnit']:
                     return order, suborders
-            elif len(suborders) == 0:
-                break
             else:
                 for i in range(0, len(suborders) - 1):
                     if suborders[i]['testPlans'] and suborders[i]['testUnit']:
@@ -279,8 +277,6 @@ class OrdersAPI(OrdersAPIFactory):
             if len(suborders) == 1:
                 if suborders[0]['departments']:
                     return suborders[0]['departments']
-            elif len(suborders) == 0:
-                break
             else:
                 for i in range(0, len(suborders) - 1):
                     if suborders[i]['departments']:
