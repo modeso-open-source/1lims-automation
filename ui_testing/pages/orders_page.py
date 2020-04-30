@@ -148,7 +148,7 @@ class Orders(BasePages):
         self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
         self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
         self.filter_apply()
-        self.wait_until_page_is_loaded()
+        self.sleep_tiny()
 
     def get_orders_duplicate_data(self, order_no):
         self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
