@@ -247,13 +247,9 @@ class OrdersAPI(OrdersAPIFactory):
         for order in orders:
             suborders_data, a = self.get_suborder_by_order_id(order['id'])
             suborders = suborders_data['orders']
-            if len(suborders) == 1:
-                if suborders[0]['testPlans'] and suborders[0]['testUnit']:
+            for i in range(0, len(suborders) - 1):
+                if suborders[i]['testPlans'] and suborders[i]['testUnit']:
                     return order, suborders
-            else:
-                for i in range(0, len(suborders) - 1):
-                    if suborders[i]['testPlans'] and suborders[i]['testUnit']:
-                        return order, suborders
 
     def get_random_contact_in_order(self):
         """
@@ -269,18 +265,14 @@ class OrdersAPI(OrdersAPIFactory):
         """
         :return: contact name
         """
-        orders_data, payload = self.get_all_orders(limit=50)
+        orders_data, payload = self.get_all_orders()
         orders = orders_data['orders']
         for order in orders:
             suborders_data, a = self.get_suborder_by_order_id(order['id'])
             suborders = suborders_data['orders']
-            if len(suborders) == 1:
-                if suborders[0]['departments']:
-                    return suborders[0]['departments']
-            else:
-                for i in range(0, len(suborders) - 1):
-                    if suborders[i]['departments']:
-                        return suborders[i]['departments']
+            for i in range(0, len(suborders) - 1):
+                if suborders[i]['departments']:
+                    return suborders[i]['departments']
                       
     def create_order_with_double_test_plans(self):
         testplan = random.choice(TestPlanAPI().get_completed_testplans())

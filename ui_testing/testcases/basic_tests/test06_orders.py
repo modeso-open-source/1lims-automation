@@ -677,7 +677,7 @@ class OrdersTestCases(BaseTest):
 
          LIMS-3495
         """
-        orders, _ = self.orders_api.get_all_orders(limit=20)
+        orders, _ = self.orders_api.get_all_orders(limit=50)
         order = random.choice(orders['orders'])
         suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
         date_list = suborder['orders'][0][key].split('T')[0].split('-')

@@ -146,6 +146,7 @@ class Orders(BasePages):
         self.sleep_small()
         self.base_selenium.wait_element(element=first_filter_element)
         self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
+        self.sleep_tiny()
         self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
         self.filter_apply()
         self.sleep_tiny()
