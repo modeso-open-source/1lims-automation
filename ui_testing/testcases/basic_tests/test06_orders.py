@@ -1338,7 +1338,7 @@ class OrdersTestCases(BaseTest):
             if api['status'] == 1:
                 test_unit = test_unit_payload['name']
 
-        self.info("Edit order with order no. {}".format(order['orderNo']))
+        self.info("Edit order with order no. {} with test_unit {}".format(order['orderNo'], test_unit))
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
         self.info("remove suborder test unit and update it to {} ".format(test_unit))
 
@@ -1365,8 +1365,8 @@ class OrdersTestCases(BaseTest):
                                                  filter_text=suborder_after_refresh['analysis_no'],
                                                  field_type='text')
 
-        self.analyses_page.open_child_table()
-        analysis_records = self.analyses_page.get_table_data()
+        self.analyses_page.get_child_table_data()
+        analysis_records = self.analyses_page.get_child_table_data()
         test_units = []
         for analysis_record in analysis_records:
             test_units.append(analysis_record['Test Unit'])
