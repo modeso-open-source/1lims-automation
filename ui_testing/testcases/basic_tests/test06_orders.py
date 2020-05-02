@@ -9,7 +9,6 @@ from ui_testing.pages.analysis_page import AllAnalysesPage
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_unit_api import TestUnitAPI
 from ui_testing.pages.analysis_page import SingleAnalysisPage
-from api_testing.apis.test_plan_api import TestPlanAPI
 from api_testing.apis.contacts_api import ContactsAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
@@ -1263,41 +1262,52 @@ class OrdersTestCases(BaseTest):
         LIMS-4269 case 1
         """
         self.info("get random order with test plans")
-        order, sub_order, sub_order_index = self.orders_api.get_order_with_feild_name(feild='testPlans')
-        self.orders_page.get_order_edit_page_by_id(order['orderId'])
-        self.info("Edit order with order no. {}".format(order['orderNo']))
+        order, sub_order, sub_order_index = \
+            self.orders_api.get_order_with_field_name(field='testPlans', no_of_field=1)
+
         # get test plan completed not in progress
         self.info("get completed test plan with article {}".format(sub_order[sub_order_index]['article']))
-        test_plans_list = \
-            TestPlanAPI().get_completed_testplans_with_article_no_and_same_material(
-                articleNo=sub_order[sub_order_index]['articleNo'],
-                material_type=sub_order[sub_order_index]['materialType'])
+        test_plans = TestPlanAPI().get_completed_testplans_with_material_and_same_article(
+            article=sub_order[sub_order_index]['article'],
+            material_type=sub_order[sub_order_index]['materialType'])
 
-        test_plans_list_without_duplicate = \
-            [test_plan for test_plan in test_plans_list if test_plan not in sub_order[sub_order_index]['testPlans']]
-
-        test_plan = random.choice(test_plans_list_without_duplicate)
-        # if no completed test plans with that article and material type, change
-        # material type, article , test plan to random completed test plan data
-        if test_plans_list:
-            self.info("remove suborder test plan and update it to {}".format(test_plan))
-            self.order_page.update_suborder(sub_order_index=sub_order_index, test_plans=[test_plan], remove_old=True)
+        import ipdb;ipdb.set_trace()
+        if test_plans:
+            test_plans_list_without_duplicate = \
+                [test_plan['testPlanName'] for test_plan in test_plans if
+                 test_plan['testPlanName'] not in sub_order[sub_order_index]['testPlans']]
+            if test_plans_list_without_duplicate:
+                test_plan = random.choice(test_plans_list_without_duplicate)
+            else:
+                new_test_plan = TestPlanAPI().create_completed_testplan(
+                    material_type=sub_order[sub_order_index]['materialType'],
+                    article=sub_order[sub_order_index]['article'])
+                test_plan = new_test_plan['testPlanEntity']['name']
         else:
-            test_plan = random.choice(self.test_plan_api.get_completed_testplans())
-            self.info("update suborder article, material type,test plan ")
-            self.order_page.update_suborder(sub_order_index=sub_order_index, material_type=test_plan['materialType'],
-                                            articles=[test_plan['article']], test_plans=[test_plan], remove_old=True)
+            new_test_plan = TestPlanAPI().create_completed_testplan(
+                material_type=sub_order[sub_order_index]['materialType'],
+                article=sub_order[sub_order_index]['article'])
+            test_plan = new_test_plan['testPlanEntity']['name']
+
+        self.info("Edit order with order no. {}".format(order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+
+        self.info("remove suborder test plan and update it to {}".format(test_plan))
+        # index of suborder in api is revert of GUI
+        self.order_page.update_suborder(sub_order_index=int(len(sub_order)-1-sub_order_index),
+                                        test_plans=[test_plan], remove_old=True)
+        self.order_page.save(save_btn='order:save_btn', sleep=True)
         # checking that when adding new test plan, the newly added test plan is added to the
         # order's analysis instead of creating new analysis
-        self.order_page.save(save_btn='order:save_btn')
         self.info('Refresh to make sure that data are saved correctly and analysis no appeared')
         self.base_selenium.refresh()
         self.order_page.wait_until_page_is_loaded()
         self.info('Get suborder data to check it updated correctly')
-        suborder_after_refresh = self.order_page.get_suborder_data()['suborders'][sub_order_index]
-        suborder_testplans_after_refresh = suborder_after_refresh['testplans']
-        self.info('Assert Test plan is: {}, and should be: {}'.format(suborder_testplans_after_refresh, [test_plan]))
-        self.assertEqual(suborder_testplans_after_refresh, [test_plan])
+        suborder_after_refresh = \
+            self.order_page.get_suborder_data()['suborders'][int(len(sub_order)-1-sub_order_index)]
+        suborder_testplan_after_refresh = suborder_after_refresh['testplans']
+        self.info('Assert Test plan is: {}, and should be: {}'.format(suborder_testplan_after_refresh, [test_plan]))
+        self.assertCountEqual(suborder_testplan_after_refresh, [test_plan])
         self.info('Getting analysis page to check the data in this child table')
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
@@ -1305,8 +1315,8 @@ class OrdersTestCases(BaseTest):
                                                  filter_text=suborder_after_refresh['analysis_no'],
                                                  field_type='text')
         analysis_records = self.analyses_page.get_table_rows_data()
-        self.info('Assert analysis is updated with new testplan')
-        self.assertIn(test_plan, analysis_records[0].replace("'",""))
+        self.info('Assert analysis is updated with new test plan')
+        self.assertIn(test_plan, analysis_records[0].replace("'", ""))
 
     def test022_update_suborder_testunits(self):
         """
@@ -1316,25 +1326,38 @@ class OrdersTestCases(BaseTest):
 
         LIMS-4269 case 2
         """
-        order, sub_order, sub_order_index = self.orders_api.get_order_with_feild_name(feild='testUnit')
-        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        order, sub_order, sub_order_index = self.orders_api.get_order_with_field_name(field='testUnit', no_of_field=1)
+
+        test_unit_data = random.choice(TestUnitAPI().get_testunits_with_material_type(
+            material_type=sub_order[sub_order_index]['materialType']))
+        test_unit = test_unit_data['name']
+        if not test_unit:
+            material_id = GeneralUtilitiesAPI().get_material_id(sub_order[sub_order_index]['materialType'])
+            material_type_dict = {'id': material_id, 'text': sub_order[sub_order_index]['materialType']}
+            api, test_unit_payload = TestUnitAPI().create_qualitative_testunit(
+                materialTypeId=material_id, selectedMaterialTypes=[material_type_dict])
+            if api['status'] == 1:
+                test_unit = test_unit_payload['name']
+
         self.info("Edit order with order no. {}".format(order['orderNo']))
-        self.info("remove suborder test unit and select new random test unit")
-        suborder_before_refresh = \
-            self.order_page.update_suborder(sub_order_index=sub_order_index, test_units=[''], remove_old=True)
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        self.info("remove suborder test unit and update it to {} ".format(test_unit))
+
+        self.order_page.update_suborder(sub_order_index=int(len(sub_order)-1-sub_order_index),
+                                        test_units=[test_unit], remove_old=True)
         # checking that when adding new test unit, the newly added test unit is added to the
         # order's analysis instead of creating new analysis
-        suborder_testunits_before_refresh = suborder_before_refresh['suborders'][sub_order_index]['testunits']
         self.order_page.save(save_btn='order:save_btn')
         self.info('Refresh to make sure that data are saved correctly')
         self.base_selenium.refresh()
         self.order_page.wait_until_page_is_loaded()
         self.info('Get suborder data to check it')
-        suborder_after_refresh = self.order_page.get_suborder_data()['suborders'][sub_order_index]
-        suborder_testunits_after_refresh = suborder_after_refresh['testunits']
+        suborder_after_refresh = \
+            self.order_page.get_suborder_data()['suborders'][int(len(sub_order)-1-sub_order_index)]
+        suborder_testunits_after_refresh = suborder_after_refresh['testunits'][0]['name']
         self.info('Assert Test units: test units are: {}, and should be: {}'.
-                  format(suborder_testunits_after_refresh, suborder_testunits_before_refresh))
-        self.assertEqual(suborder_testunits_after_refresh, suborder_testunits_before_refresh)
+                  format(suborder_testunits_after_refresh, test_unit))
+        self.assertEqual(suborder_testunits_after_refresh, test_unit)
 
         self.info('Getting analysis page to check the data in this child table')
         self.order_page.get_orders_page()
@@ -1344,18 +1367,12 @@ class OrdersTestCases(BaseTest):
                                                  field_type='text')
 
         analysis_records = self.analyses_page.get_child_table_data()
-        if len(analysis_records) > 1:
-            test_units = []
-            for a in analysis_records:
-                test_units.append(a['Test Unit'])
+        test_units = []
+        for analysis_record in analysis_records:
+            test_units.append(analysis_record['Test Unit'])
         else:
             test_units = analysis_records[0]['Test Unit']
-        self.assertIn(suborder_testunits_before_refresh[sub_order_index]['name'], test_units)
-
-        #def test_test(self):
-    #    import ipdb; ipdb.set_trace()
-    #    suborder_data = self.order_page.get_suborder_data(sub_order_index=3)
-    ## SYNTAX ERROR ###
+        self.assertIn(test_unit, test_units)
 
     # will continue with us apply it from the second suborder & need test case number for it to apply from the second suborder
     @parameterized.expand(['save_btn', 'cancel'])

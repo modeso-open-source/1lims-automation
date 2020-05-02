@@ -471,7 +471,8 @@ class Order(Orders):
         archive_element.click()
         self.sleep_tiny()
         if check_pop_up:
-            c
+            self.base_selenium.LOGGER.info('confirm archiving')
+            self.base_selenium.click(element='articles:confirm_archive')
         else:
             self.base_selenium.LOGGER.info('cancel archiving')
             self.base_selenium.click(element='articles:cancel_archive')

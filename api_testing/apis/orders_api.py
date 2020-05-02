@@ -240,24 +240,21 @@ class OrdersAPI(OrdersAPIFactory):
             if len(suborder) > 1:
                 return order
               
-    def get_order_with_feild_name(self, feild):
+    def get_order_with_field_name(self, field, no_of_field):
         """
-        :param feild: must be in this list ['article', 'materialType','analysis','testPlans','testUnit']
+        :param field: must be in this list ['article', 'materialType','analysis','testPlans','testUnit']
         :return: order, suborder, suborder_index
         """
-        orders_data, payload = self.get_all_orders(limit=50)
+        orders_data, payload = self.get_all_orders()
         orders = orders_data['orders']
         for order in orders:
+            if order['id'] in [1122, 1121]: # remove this line after solving https://modeso.atlassian.net/browse/LIMS-7710
+                continue
             suborders_data, a = self.get_suborder_by_order_id(order['id'])
             suborders = suborders_data['orders']
-            if len(suborders) == 1:
-                if suborders[0][feild]:
-                    return order, suborders, 0
-            elif len(suborders) == 0:
-                break
-            else:
-                for i in range(0, len(suborders)-1):
-                    if suborders[i][feild]:
+            for i in range(0, len(suborders)-1):
+                if field in suborders[i].keys():
+                    if suborders[i][field] and len(suborders[i][field]) == int(no_of_field):
                         return order, suborders, i
 
     def create_order_with_double_test_plans(self):
