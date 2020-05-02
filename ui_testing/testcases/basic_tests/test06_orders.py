@@ -1365,7 +1365,6 @@ class OrdersTestCases(BaseTest):
                                                  filter_text=suborder_after_refresh['analysis_no'],
                                                  field_type='text')
 
-        self.analyses_page.get_child_table_data()
         analysis_records = self.analyses_page.get_child_table_data()
         test_units = []
         for analysis_record in analysis_records:
