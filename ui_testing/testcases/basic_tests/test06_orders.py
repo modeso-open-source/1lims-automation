@@ -1271,7 +1271,6 @@ class OrdersTestCases(BaseTest):
             article=sub_order[sub_order_index]['article'],
             material_type=sub_order[sub_order_index]['materialType'])
 
-        import ipdb;ipdb.set_trace()
         if test_plans:
             test_plans_list_without_duplicate = \
                 [test_plan['testPlanName'] for test_plan in test_plans if
