@@ -1567,8 +1567,6 @@ class OrdersTestCases(BaseTest):
             test_plan_data = random.choice(test_plans_without_duplicate)
             test_plan = test_plan_data['testPlanName']
             article = test_plan_data['article'][0]
-            if article == 'all':
-                article = ''
         else:
             article = ArticleAPI().get_aticle_with_material_type(suborder['materialType'])
             new_test_plan = TestPlanAPI().create_completed_testplan(
@@ -1577,39 +1575,42 @@ class OrdersTestCases(BaseTest):
 
         self.info('update order {} with article {}'.format(order['orderNo'], article))
         self.orders_page.get_order_edit_page_by_id(order['id'])
-        self.order_page.update_suborder(sub_order_index=suborder_update_index, articles=article)
+        if article == 'all':
+            self.order_page.update_suborder(sub_order_index=suborder_update_index, articles='')
+            article = self.order_page.get_article()
+        else:
+            self.order_page.update_suborder(sub_order_index=suborder_update_index, articles=article)
+
         self.info('assert test plan and articles are empty')
         self.orders_page.sleep_tiny()
         self.assertFalse(self.order_page.get_test_plan())
-        self.assertCountEqual([self.order_page.get_test_unit()], test_units)
+        if test_units:
+            self.assertCountEqual([self.order_page.get_test_unit()], test_units)
+        else:
+            self.assertFalse(self.order_page.get_test_unit())
 
         if save == 'save':
             self.order_page.set_test_plan(test_plan)
             self.info('save the changes then refresh')
             self.order_page.save(save_btn='order:save_btn')
-            self.base_selenium.refresh()
-            self.info('get order data after edit and refresh')
-            order_data_after_refresh = self.order_page.get_suborder_data()
-            suborder_after_refresh = order_data_after_refresh['suborders'][suborder_update_index]
-
-            self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
             self.order_page.get_orders_page()
-            self.order_page.navigate_to_analysis_tab()
-            self.analyses_page.filter_by_analysis_number(suborder_after_refresh['analysis_no'])
-            analyses = self.analyses_page.result_table()[0]
-            self.info('assert that article and test plan changed but test unit still the same')
-            self.assertIn(article, analyses.text)
-            self.assertIn(test_plan, analyses.text)
-            child_data = self.analyses_page.get_child_table_data()
-            result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
-            for test_unit in test_units:
-                self.assertIn(test_unit, result_test_units)
-
         else:
             self.order_page.cancel()
             self.order_page.confirm_popup()
-            self.orders_page.sleep_tiny()
-            self.assertEqual(self.base_selenium.get_url(), self.orders_page.orders_url)
+            article = suborder['article']
+            test_plan = suborder['testPlans'][0]
+
+        self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_analysis_number(suborder['analysis'])
+        analyses = self.analyses_page.result_table()[0]
+        self.info('assert that article and test plan changed but test unit still the same')
+        self.assertIn(article, analyses.text)
+        self.assertIn(test_plan, analyses.text)
+        child_data = self.analyses_page.get_child_table_data()
+        result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
+        for test_unit in test_units:
+            self.assertIn(test_unit, result_test_units)
 
     def test027_update_test_unit_with_add_more_in_form(self):
         """
