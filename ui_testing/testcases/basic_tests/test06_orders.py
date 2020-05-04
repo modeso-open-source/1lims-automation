@@ -1556,6 +1556,7 @@ class OrdersTestCases(BaseTest):
         suborders, _ = self.orders_api.get_suborder_by_order_id(order['id'])
         suborder = suborders['orders'][0]
         suborder_update_index = len(suborders['orders']) - 1
+        test_units = [test_unit['testUnit']['name'] for test_unit in suborder['testUnit']]
 
         self.info('get random completed test plan with different article')
         test_plans = TestPlanAPI().get_completed_testplans()
@@ -1563,8 +1564,9 @@ class OrdersTestCases(BaseTest):
                                         test_plan['materialType'] == suborder['materialType'] and
                                         suborder['article'] != test_plan['article'][0]]
         if test_plans_without_duplicate:
-            test_plan = random.choice(test_plans_without_duplicate)
-            article = test_plan['article'][0]
+            test_plan_data = random.choice(test_plans_without_duplicate)
+            test_plan = test_plan_data['testPlanName']
+            article = test_plan_data['article'][0]
             if article == 'all':
                 article = ''
         else:
@@ -1577,7 +1579,9 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_order_edit_page_by_id(order['id'])
         self.order_page.update_suborder(sub_order_index=suborder_update_index, articles=article)
         self.info('assert test plan and articles are empty')
+        self.orders_page.sleep_tiny()
         self.assertFalse(self.order_page.get_test_plan())
+        self.assertCountEqual([self.order_page.get_test_unit()], test_units)
 
         if save == 'save':
             self.order_page.set_test_plan(test_plan)
@@ -1593,8 +1597,13 @@ class OrdersTestCases(BaseTest):
             self.order_page.navigate_to_analysis_tab()
             self.analyses_page.filter_by_analysis_number(suborder_after_refresh['analysis_no'])
             analyses = self.analyses_page.result_table()[0]
+            self.info('assert that article and test plan changed but test unit still the same')
             self.assertIn(article, analyses.text)
             self.assertIn(test_plan, analyses.text)
+            child_data = self.analyses_page.get_child_table_data()
+            result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
+            for test_unit in test_units:
+                self.assertIn(test_unit, result_test_units)
 
         else:
             self.order_page.cancel()
@@ -1602,8 +1611,7 @@ class OrdersTestCases(BaseTest):
             self.orders_page.sleep_tiny()
             self.assertEqual(self.base_selenium.get_url(), self.orders_page.orders_url)
 
-
-def test027_update_test_unit_with_add_more_in_form(self):
+    def test027_update_test_unit_with_add_more_in_form(self):
         """
         New: Orders: Form: Update test unit: update test unit by add more &
         this effect should display in the child table of the analysis section.
