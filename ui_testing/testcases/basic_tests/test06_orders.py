@@ -565,13 +565,16 @@ class OrdersTestCases(BaseTest):
 
         self.info('filter by {} with value {}'.format(key, filter_value))
 
-        self.orders_page.apply_filter_scenario(filter_element=filter_element['element'],
-                                               filter_text=filter_value, field_type=filter_element['type'])
+        self.orders_page.apply_filter_scenario(
+            filter_element=filter_element['element'],
+            filter_text=filter_value,
+            field_type=filter_element['type'])
 
         suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
+        import ipdb;ipdb.set_trace()
         for suborder in suborders:
-            if suborder[filter_element['result_key']] == filter_value:
+            if filter_value in suborder[filter_element['result_key']].split(",\n"):
                 filter_key_found = True
                 break
 

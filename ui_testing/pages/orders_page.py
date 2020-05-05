@@ -143,9 +143,9 @@ class Orders(BasePages):
         
     def filter_by_date(self, first_filter_element, first_filter_text, second_filter_element, second_filter_text):
         self.open_filter_menu()
-        self.base_selenium.wait_element(element=first_filter_element)
+        self.base_selenium.wait_until_element_located(element=first_filter_element)
         self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
-        self.base_selenium.wait_element(element=second_filter_element)
+        self.base_selenium.wait_until_element_located(element=second_filter_element)
         self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
         self.filter_apply()
         self.sleep_tiny()

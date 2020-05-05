@@ -99,7 +99,6 @@ class BasePages:
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
-        self.wait_until_page_is_loaded()
 
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')
