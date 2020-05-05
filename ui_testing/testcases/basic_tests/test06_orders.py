@@ -572,7 +572,6 @@ class OrdersTestCases(BaseTest):
 
         suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
-        import ipdb;ipdb.set_trace()
         for suborder in suborders:
             if filter_value in suborder[filter_element['result_key']].split(",\n"):
                 filter_key_found = True
