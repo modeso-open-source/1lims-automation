@@ -238,7 +238,7 @@ class OrdersAPI(OrdersAPIFactory):
             if len(suborder) > 1:
                 return order
 
-    def create_order_with_double_test_plans(self):
+    def create_order_with_double_test_plans(self, only_test_plans=False):
         testplan = random.choice(TestPlanAPI().get_completed_testplans())
         material_type = testplan['materialType']
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
@@ -275,6 +275,9 @@ class OrdersAPI(OrdersAPIFactory):
         testunit2 = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
             materialtype_id=material_type_id)[0]['testUnits'])
         testunit_list = [testunit, testunit2]
+        # to create order with two testPlans only
+        if only_test_plans:
+            testunit_list = []
 
         payload = {
             'testPlans': testplan_list,

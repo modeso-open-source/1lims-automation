@@ -1037,7 +1037,9 @@ elements = {
         },
         'analysis_page_table': {'method': 'class_name', 'value': 'm_accordion_7', 'order': 0},
         'headers': {'method': 'id', 'value': 'headers'},
-        'analysis_no_filter': {'method': 'id', 'value': 'nofield'}
+        'analysis_no_filter': {'method': 'id', 'value': 'nofield'},
+        'order_no_filter': {'method': 'id', 'value': 'orderNofield'}
+
     },
 
     'company_profile': {

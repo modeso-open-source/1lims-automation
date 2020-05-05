@@ -2238,3 +2238,45 @@ class OrdersTestCases(BaseTest):
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
 
+    @parameterized.expand(['delete', 'add'])
+    def test037_update_sub_order_with_multiple_testplans(self, action):
+        """
+        Orders: Test plans: In case I have order record with multiple test plans and I updated them,
+        this update should reflect on the same analysis record without creating new one.
+
+        LIMS-4134
+        """
+        self.info('create order with two testplans')
+        response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
+        test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
+        test_units = [TestPlanAPI().get_testunits_in_testplan(payload[0]['testPlans'][0]['id'])[0]['name'],
+                      TestPlanAPI().get_testunits_in_testplan(payload[0]['testPlans'][1]['id'])[0]['name']]
+        self.info("seleced order has test plan {} with test unit {} and second test plan {} with test unit {}".
+                  format(test_plans[0], test_units[0], test_plans[1], test_units[1]))
+        self.info("edit the sub order of order {}".format(payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        suborder_before_edit = self.order_page.get_suborder_data()
+        self.info('Assert that selected order has one analysis record')
+        self.assertEqual(len(suborder_before_edit['suborders']), 1)
+        analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
+        if action == 'delete':
+            self.order_page.open_suborder_edit()
+            self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
+            self.order_page.confirm_popup()
+        self.order_page.save(save_btn='order:save', sleep=True)
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
+        self.assertEqual(len(self.analyses_page.result_table()), 1)
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        self.assertEqual(len([analysis_data['Test Plans']]), 1)
+        self.assertEqual(analysis_data['Analysis No.'], analysis_no)
+        for i in range(0, 1):
+            if analysis_data['Test Plans'] == test_plans[i]:
+                self.analyses_page.get_child_table_data()
+
+
+
+
+
