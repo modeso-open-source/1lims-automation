@@ -1595,8 +1595,8 @@ class OrdersTestCases(BaseTest):
             self.order_page.save(save_btn='order:save_btn')
             self.order_page.get_orders_page()
         else:
+            import ipdb;ipdb.set_trace()
             self.order_page.cancel()
-            self.order_page.confirm_popup()
             article = suborder['article']
             test_plan = suborder['testPlans'][0]
 
