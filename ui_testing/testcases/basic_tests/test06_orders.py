@@ -1603,10 +1603,11 @@ class OrdersTestCases(BaseTest):
         self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
         self.order_page.navigate_to_analysis_tab()
         self.analyses_page.filter_by_analysis_number(suborder['analysis'])
-        analyses = self.analyses_page.result_table()[0]
+        analyses = self.analyses_page.get_the_latest_row_data()
         self.info('assert that article and test plan changed but test unit still the same')
-        self.assertIn(article, analyses.text)
-        self.assertIn(test_plan, analyses.text)
+        self.assertEqual(article.replace(' ', ''), analyses['Article Name'].replace(' ', ''))
+        # due to this bug https://modeso.atlassian.net/browse/LIMSA-127 I can't use assert equal
+        self.assertIn(test_plan, analyses['Test Plans'])
         child_data = self.analyses_page.get_child_table_data()
         result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
         for test_unit in test_units:
