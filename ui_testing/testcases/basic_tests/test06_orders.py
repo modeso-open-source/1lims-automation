@@ -1555,6 +1555,7 @@ class OrdersTestCases(BaseTest):
         order = random.choice(orders['orders'])
         suborders, _ = self.orders_api.get_suborder_by_order_id(order['id'])
         suborder = suborders['orders'][0]
+        import ipdb; ipdb.set_trace()
         suborder_update_index = len(suborders['orders']) - 1
         test_units = [test_unit['testUnit']['name'] for test_unit in suborder['testUnit']]
 
@@ -1597,7 +1598,7 @@ class OrdersTestCases(BaseTest):
         else:
             self.order_page.cancel()
             article = suborder['article']
-            test_plan = suborder['testPlans'][0]
+            test_plans = suborder['testPlans']
 
         self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
         self.order_page.navigate_to_analysis_tab()
@@ -1605,8 +1606,13 @@ class OrdersTestCases(BaseTest):
         analyses = self.analyses_page.get_the_latest_row_data()
         self.info('assert that article and test plan changed but test unit still the same')
         self.assertEqual(article.replace(' ', ''), analyses['Article Name'].replace(' ', ''))
-        # due to this bug https://modeso.atlassian.net/browse/LIMSA-127 I can't use assert equal
-        self.assertIn(test_plan, analyses['Test Plans'].replace("'", ''))
+        if save == 'save':
+            # due to this bug https://modeso.atlassian.net/browse/LIMSA-127 I can't use assert equal
+            self.assertIn(test_plan, analyses['Test Plans'].replace("'", ''))
+        else:
+            for test_plan in test_plans:
+                self.assertIn(test_plan, analyses['Test Plans'].replace("'", ''))
+
         child_data = self.analyses_page.get_child_table_data()
         result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
         for testunit in test_units:
