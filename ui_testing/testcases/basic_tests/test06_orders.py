@@ -1555,7 +1555,6 @@ class OrdersTestCases(BaseTest):
         order = random.choice(orders['orders'])
         suborders, _ = self.orders_api.get_suborder_by_order_id(order['id'])
         suborder = suborders['orders'][0]
-        import ipdb; ipdb.set_trace()
         suborder_update_index = len(suborders['orders']) - 1
         test_units = [test_unit['testUnit']['name'] for test_unit in suborder['testUnit']]
 
