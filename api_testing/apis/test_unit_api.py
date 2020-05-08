@@ -13,6 +13,9 @@ class TestUnitAPIFactory(BaseAPI):
                 "filter": "{}",
                     "deleted": "0"
                     }
+        #for key in kwargs:
+         #   if key in _payload.keys():
+          #      _payload[key] = kwargs[key]
         return api, _payload
 
     @api_factory('get')
@@ -273,7 +276,7 @@ class TestUnitAPI(TestUnitAPIFactory):
                 return testunit['id']
 
     def get_first_record_with_data_in_attribute(self, attribute):
-        testunits_request = self.get_all_test_units().json()
+        testunits_request, _ = self.get_all_test_units()
         if (testunits_request['status'] != 1) or (testunits_request['count'] == 0):
             return False
         testunit_records = testunits_request['testUnits']
@@ -299,3 +302,10 @@ class TestUnitAPI(TestUnitAPIFactory):
                 return False
         else:
             return False
+
+    def get_testunits_with_material_type(self, material_type='Raw Material'):
+        all_test_units, _ = self.get_all_test_units()
+        test_units = all_test_units['testUnits']
+        selected_test_units = [test_unit for test_unit in test_units if test_unit['materialTypes'] == [material_type]]
+        return selected_test_units
+

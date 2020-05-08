@@ -1,5 +1,8 @@
 elements = {
     'general': {
+        'fields_panel': {'method': 'class_name',
+                         'value': 'fieldsPanel',
+                         'order': 0},
         'configuration_body': {'method': 'id',
                                'value': 'body',
                                'order': 0},
@@ -256,8 +259,7 @@ elements = {
                   'value': 'field'},
         'field_items': {'method': 'class_name',
                         'value': 'padding',
-                        'order': -1}
-
+                        'order': -1},
     },
     'test_plans': {
         'test_plans_table': {'method': 'id',
@@ -515,7 +517,7 @@ elements = {
                                'value': 'a',
                                'order': 4},
         'analysis_order_tab': {'method': 'xpath',
-                         'value': "//label[@class='btn tab']"},
+                               'value': "//label[@class='btn tab']"},
         'new_order': {'method': 'link_text',
                       'value': 'New Order'},
         'right_menu': {'method': 'xpath',
@@ -553,10 +555,19 @@ elements = {
                              'value': 'start_testDate'},
         'shipment_date_filter': {'method': 'id',
                                  'value': 'start_shipmentDate'},
-        'mainorder_duplicate': {'method': 'id', 
+        'analysis_tab': {
+            'method': 'xpath',
+            'value': "//label[@class='btn tab']"},
+        'mainorder_duplicate': {'method': 'id',
                                 'value': 'main_table_duplicate'},
         'suborder_duplicate': {'method': 'id', 
-                               'value': 'child_table_duplicate'}
+                               'value': 'child_table_duplicate'},
+        'suborder_archive': {'method': 'id',
+                             'value': 'child_table_archive'},
+        'suborder_delete': {'method': 'id',
+                             'value': 'child_table_delete'},
+        'confirm_delete': {'method':'xpath',
+                           'value': '//h2[@id="swal2-title"]'}
     },
 
     'audit_trail': {
@@ -625,9 +636,8 @@ elements = {
                           'value': 'date_shipmentDate_0'},
         'test_date': {'method': 'id',
                       'value': 'date_testDate'},
-        'save': {'method': 'class_name',
-                 'value': 'btn-primary',
-                 'order': 1},
+        'save': {'method': 'id',
+                 'value': 'button_save_order'},
         'duplicate_table_view': {'method': 'id',
                                  'value': 'duplicate_table_view'},
         'delete_table_view': {'method': 'id',
@@ -640,8 +650,9 @@ elements = {
                           'value': 'flaticon-signs',
                           'order': 0},
         'add_new_item11': {'method': 'class_name',
-                           'value': 'addNewItem',
-                           'order': 0},
+                         'value': 'addNewItem',
+                         'order': 0},
+
         'add_new_item': {'method': 'link_text',
                          'value': 'Add another item'},
         'order_no_error_message': {'method': 'xpath',
@@ -1025,7 +1036,8 @@ elements = {
             'value': 'table-with-add'
         },
         'analysis_page_table': {'method': 'class_name', 'value': 'm_accordion_7', 'order': 0},
-        'headers': {'method': 'id', 'value': 'headers'}
+        'headers': {'method': 'id', 'value': 'headers'},
+        'analysis_no_filter': {'method': 'id', 'value': 'nofield'}
     },
 
     'company_profile': {

@@ -184,7 +184,6 @@ class BaseSelenium:
                 raise TimeoutException()
 
     def wait_until_element_is_not_displayed(self, element):
-        self.LOGGER.info('wait until element is not displayed')
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
             with self._change_implicit_wait():
@@ -203,7 +202,6 @@ class BaseSelenium:
                 raise TimeoutException("Element is still displayed")
 
     def wait_until_element_clickable(self, element):
-        self.LOGGER.info('wait until element clickable')
         method, value, order = self.get_method_value_order(element=element)
         if order == 0:
             with self._change_implicit_wait():
@@ -339,7 +337,7 @@ class BaseSelenium:
         element.clear()
         element.send_keys(Keys.ENTER)
 
-    def clear_items_in_drop_down(self, element, items_text=[]):
+    def clear_items_in_drop_down(self, element, items_text=[], one_item_only=False):
         # element is ng-select element
         # make sure that there are elements to b deleted
         self.wait_until_element_located(element)
@@ -347,6 +345,8 @@ class BaseSelenium:
         for ng_value in ng_values:
             cancel = self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
             cancel.click()
+            if one_item_only:
+                break
 
     def clear_single_select_drop_down(self, element):
         self.wait_until_element_located(element)
@@ -368,6 +368,15 @@ class BaseSelenium:
             return True
         else:
             return False
+
+    def check_element_is_not_exist(self, element):
+        try:
+            self.wait_until_element_is_not_displayed(element)
+            return True
+        except TimeoutException:
+            return False
+        except:
+            return True
 
     def select_random_item(self, element):
         items = self.find_elements(element=element)

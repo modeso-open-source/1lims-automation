@@ -20,7 +20,6 @@ class TestPlansTestCases(BaseTest):
         self.articles_page = Articles()
         self.test_unit_page = TstUnit()
         self.order_page = Order()
-        self.header_page = Header()
         self.base_page = BasePages()
         self.test_plan_api = TestPlanAPI()
         self.users_api = UsersAPI()
@@ -627,6 +626,7 @@ class TestPlansTestCases(BaseTest):
         LIMS-6475
         User can filter with changed by field
         '''
+        self.header_page = Header()
         random_user_name = self.generate_random_string()
         random_user_email = self.header_page.generate_random_email()
         random_user_password = self.generate_random_string()
