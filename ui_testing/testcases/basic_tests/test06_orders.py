@@ -1595,7 +1595,6 @@ class OrdersTestCases(BaseTest):
             self.order_page.save(save_btn='order:save_btn')
             self.order_page.get_orders_page()
         else:
-            import ipdb;ipdb.set_trace()
             self.order_page.cancel()
             article = suborder['article']
             test_plan = suborder['testPlans'][0]
@@ -1607,11 +1606,11 @@ class OrdersTestCases(BaseTest):
         self.info('assert that article and test plan changed but test unit still the same')
         self.assertEqual(article.replace(' ', ''), analyses['Article Name'].replace(' ', ''))
         # due to this bug https://modeso.atlassian.net/browse/LIMSA-127 I can't use assert equal
-        self.assertIn(test_plan, analyses['Test Plans'])
+        self.assertIn(test_plan, analyses['Test Plans'].replace("'", ''))
         child_data = self.analyses_page.get_child_table_data()
         result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
-        for test_unit in test_units:
-            self.assertIn(test_unit, result_test_units)
+        for testunit in test_units:
+            self.assertIn(testunit, result_test_units)
 
     def test027_update_test_unit_with_add_more_in_form(self):
         """
