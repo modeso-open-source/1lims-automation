@@ -248,6 +248,14 @@ class Orders(BasePages):
         # return the main order
         return main_order
 
+
+    def get_orders_and_suborders_data(self, order_no):
+        self.base_selenium.LOGGER.info('Get orders and its suborders data having order number: {}.'.format(order_no))
+        orders = self.search(order_no)[:-1]
+        orders_data = self.get_child_table_data()
+
+        return orders_data, orders
+
     def search_by_analysis_number(self,analysis_number):
         self.base_selenium.click(element='general:filter_button')
         self.base_selenium.set_text(element='orders:analysis_filter',value=analysis_number)
@@ -263,3 +271,4 @@ class Orders(BasePages):
                 return True
             else:
                 return False 
+

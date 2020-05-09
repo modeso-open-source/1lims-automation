@@ -139,7 +139,25 @@ class OrdersTestCases(BaseTest):
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
 
-    # will change totally and implement the new behavior
+    def test004_archive_main_order(self):
+        '''
+        LIMS-6516
+        User can archive a main order
+        '''
+        orders, payload = self.orders_api.get_all_orders(limit=20)
+        order = random.choice(orders['orders'])
+        order_no = order['orderNo']
+        self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
+                                              field_type='text')
+        row = self.order_page.get_last_order_row()
+        self.order_page.click_check_box(source=row)
+        self.orders_page.archive_selected_items()
+
+        self.orders_page.get_archived_items()
+        self.orders_page.search(order_no)
+        results = self.order_page.result_table()[0].text
+        self.assertIn(order_no.replace("'", ""), results.replace("'", ""))
+
     def test004_archive_order(self):
         """
             New: Orders: Archive
