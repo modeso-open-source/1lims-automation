@@ -16,6 +16,7 @@ from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from ui_testing.pages.contacts_page import Contacts
 from random import randint
 import random
+import time
 
 
 class OrdersTestCases(BaseTest):
@@ -614,23 +615,23 @@ class OrdersTestCases(BaseTest):
         self.order_page.set_test_unit(test_unit='r')
         self.order_page.save(save_btn='order:save_btn')
 
-    # will continue wih us
     def test017_validate_order_test_unit_test_plan_edit_mode(self):
         """
         New: orders Test plan /test unit validation in edit mode
         LIMS-4826
         """
-        self.base_selenium.LOGGER.info(
-            ' Running test case to check that at least test unit or test plan is mandatory in order')
+        self.base_selenium.LOGGER.info(' Running test case to check that at least test unit or test plan is mandatory in order')
+        # Get random order
+        orders, payload = self.orders_api.get_all_orders(limit=20)
+        selected_order_record = random.choice(orders['orders'])
+        # Open random order edit page
+        self.orders_page.get_order_edit_page_by_id(id=selected_order_record['id'])
+        # edit suborder
+        self.base_selenium.LOGGER.info(' Remove all selected test plans and test units')
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[0]
+        suborder_row.click()
+        self.order_page.sleep_small()
 
-        # validate in edit mode, go to order over view
-        self.order_page.get_orders_page()
-        self.order_page.get_random_order()
-        order_url = self.base_selenium.get_url()
-        self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-
-        self.base_selenium.LOGGER.info(
-            ' Remove all selected test plans and test units')
         # delete test plan and test unit
         if self.order_page.get_test_plan():
             self.order_page.clear_test_plan()
@@ -641,10 +642,8 @@ class OrdersTestCases(BaseTest):
             self.order_page.confirm_popup(force=True)
 
         self.order_page.save(save_btn='order:save_btn')
-        # check both test plans and test units fields have error
-        test_plan_class_name = self.base_selenium.get_attribute(element="order:test_plan", attribute='class')
+        # the red border will display on the test unit only because one of them should be mandatory
         test_unit_class_name = self.base_selenium.get_attribute(element="order:test_unit", attribute='class')
-        self.assertIn('has-error', test_plan_class_name)
         self.assertIn('has-error', test_unit_class_name)
 
     @parameterized.expand(['save_btn', 'cancel'])
