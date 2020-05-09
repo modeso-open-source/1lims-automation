@@ -2189,3 +2189,22 @@ class OrdersTestCases(BaseTest):
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
 
+    def test037_duplicate_main_order_change_contact(self):
+        """
+        Duplicate from the main order Approach: Duplicate then change the contact
+
+        LIMS-6222
+        """
+        self.info('get random main order data')
+        orders, payload = self.orders_api.get_all_orders(limit=50)
+        main_order = random.choice(orders['orders'])
+        self.info("duplicate order No {}".format(main_order['orderNo']))
+        self.order_page.search(main_order['orderNo'])
+        self.order_page.duplicate_main_order_from_order_option()
+        new_contact = self.order_page.set_contact(contact='', remove_old=True)
+        duplicted_order_no = self.order_page.get_no()
+        self.order_page.save(save_btn='order:save')
+        self.orders_page.get_orders_page()
+        self.orders_page.filter_by_order_no(duplicted_order_no)
+        order = self.orders_page.get_the_latest_row_data()
+        self.assertEqual(new_contact[0]['name'], order['Contact Name'])
