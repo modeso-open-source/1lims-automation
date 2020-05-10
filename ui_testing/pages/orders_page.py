@@ -10,6 +10,11 @@ class Orders(BasePages):
 
     def get_orders_page(self):
         self.base_selenium.get(url=self.orders_url)
+        self.wait_until_page_is_loaded()
+
+    def get_order_edit_page_by_id(self, id):
+        url_text = "{}sample/orders/" + str(id)
+        self.base_selenium.get(url=url_text.format(self.base_selenium.url))
         self.sleep_small()
 
     def click_create_order_button(self):
@@ -64,6 +69,52 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:duplicate')
         self.sleep_medium()
 
+    def duplicate_main_order_from_order_option(self, index=0):
+        self.info('duplicate suborder from the order\'s active table')
+        table_records = self.result_table(element='general:table')
+        self.open_row_options(row=table_records[index])
+        self.base_selenium.click(element='orders:mainorder_duplicate')
+        self.wait_until_page_is_loaded()
+
+    def duplicate_sub_order_from_table_overview(self, index=0, number_of_copies=1):
+        self.info('duplicate suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[index])
+        self.base_selenium.click(element='orders:suborder_duplicate')
+        self.base_selenium.set_text(element='orders:number_of_copies', value=number_of_copies)
+        self.base_selenium.click(element='orders:create_copies')
+        self.sleep_medium()
+
+    def archive_sub_order_from_active_table(self, index=0):
+        self.info('archive suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[index])
+        self.base_selenium.click(element='orders:suborder_archive')
+        self.confirm_popup()
+
+    def delete_sub_order(self, analysis_no, confirm_popup=True):
+        self.info('navigate to archived order table')
+        self.get_archived_items()
+        sub_orders = self.get_table_data(table_element='general:table_child')
+        child_table_records = self.result_table(element='general:table_child')
+        index = 0
+        if len(sub_orders) == 1:
+            index = 0
+        else:   # in case that order has more than one archived suborder
+            for suborder in sub_orders:
+                if suborder['Analysis No.'] == analysis_no:
+                    break
+                index = index+1
+        self.info("delete suborder with index {} and analysis_no {}".format(index, analysis_no))
+        self.open_row_options(row=child_table_records[index])
+        self.base_selenium.click(element='orders:suborder_delete')
+        self.confirm_popup()
+        if confirm_popup:
+            self.confirm_popup()
+        else:
+            self.info('Cancel the popup')
+            self.cancel()
+
     def get_random_order(self):
         self.base_selenium.LOGGER.info(' + Get random order.')
         row = self.get_random_order_row()
@@ -113,6 +164,22 @@ class Orders(BasePages):
             return filter_fileds
         else:
             return filter_fileds[key]
+
+    def archive_table_suborder(self, index=0):
+        self.info('archive suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[0])
+        self.base_selenium.click('orders:suborder_archive')
+        self.confirm_popup()
+        self.sleep_small()
+    
+    def restore_table_suborder(self, index=0):
+        self.info('restore suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[0])
+        self.base_selenium.click('orders:suborder_restore')
+        self.confirm_popup()
+        self.sleep_small()
 
     def construct_main_order_from_table_view(self, order_row=None):
         order_data = {
@@ -180,3 +247,32 @@ class Orders(BasePages):
         main_order['row_element'] = all_orders[row_id]
         # return the main order
         return main_order
+
+    def get_orders_and_suborders_data(self, order_no):
+        self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
+        orders = self.search(order_no)[:-1]
+        orders_data = self.get_child_table_data()
+
+        return orders_data, orders
+
+
+    def navigate_to_analysis_active_table(self):
+        self.base_selenium.click(element='orders:analysis_tab')
+        self.sleep_small()
+        
+    def search_by_analysis_number(self,analysis_number):
+        self.base_selenium.click(element='general:filter_button')
+        self.base_selenium.set_text(element='orders:analysis_filter',value=analysis_number)
+        self.base_selenium.click(element='general:filter_btn')
+        time.sleep(self.base_selenium.TIME_MEDIUM)
+
+    def is_order_in_table(self,value):
+        results=self.base_selenium.get_table_rows(element='general:table')
+        if len(results) == 0:
+            return False
+        else:
+            if value in results[0].text:
+                return True
+            else:
+                return False 
+

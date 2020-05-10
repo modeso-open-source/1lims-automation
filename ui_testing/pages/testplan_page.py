@@ -70,11 +70,13 @@ class TstPlan(TestPlans):
             self.base_selenium.LOGGER.info(' set upper : {}'.format(kwargs['upper']))
             elems = self.base_selenium.find_elements('general:col_6')
             upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
+            upper.clear()
             upper.send_keys(kwargs['upper'])
-        if  'lower' in kwargs:
+        if 'lower' in kwargs:
             self.base_selenium.LOGGER.info(' set lower : {}'.format(kwargs['lower']))
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
+            lower.clear()
             lower.send_keys(kwargs['lower'])
 
     def get_testunit_in_testplan_title_multiple_line_properties(self):
@@ -110,7 +112,7 @@ class TstPlan(TestPlans):
         return category_label_test_unit.get_attribute('textContent')
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
-        self.base_selenium.LOGGER.info(' Create new test plan')
+        self.info(' Create new test plan')
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
         self.article = article
@@ -133,7 +135,8 @@ class TstPlan(TestPlans):
         if test_unit:
             self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
             self.set_test_unit(test_unit=test_unit, **kwargs)
-            self.save(save_btn='test_plan:save_btn')
+            self.sleep_tiny()
+            self.save(save_btn='test_plan:save_and_complete')
         else:
             self.save()
 
@@ -181,9 +184,9 @@ class TstPlan(TestPlans):
         self.base_selenium.click(element='test_plan:table_card_switcher')
 
     def save_and_confirm_popup(self):
-        self.save(save_btn='test_plan:save_btn')
+        self.save(save_btn='test_plan:save_btn', sleep=True)
         # press 'Ok' on the popup
-        self.base_selenium.LOGGER.info('Accepting the changes made')
+        self.info('Accepting the changes made')
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
 
@@ -205,8 +208,11 @@ class TstPlan(TestPlans):
             if c == 'name':
                 duplicated_test_plan_name = self.generate_random_text()
                 self.set_test_plan(name=duplicated_test_plan_name)
-        self.save()
-        
+
+        no = self.get_no()
+        self.save(sleep=True)
+        return no
+
     def get_testunit_category_and_iterations(self, testplan_name):
         self.get_test_plan_edit_page(testplan_name)
         self.navigate_to_testunits_selection_page()

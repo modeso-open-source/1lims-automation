@@ -7,7 +7,10 @@ end_points = {
         'delete_article': '/api/articles/',
         'create_article': '/api/articles',
         'list_articles_by_materialtype': '/api/articles/get/names/',
-        'list_testplans_by_article_and_materialtype': '/api/articles/get/testplans/'
+        'list_testplans_by_article_and_materialtype': '/api/articles/get/testplans/',
+        'get_field_config': '/api/field_data/2',
+        'archive_field_config': '/api/field_data/update/archive/',
+        'restore_field_config': '/api/field_data/update/restore/'
     },
     'test_unit_api': {
         'list_all_test_units': '/api/testUnits',
@@ -43,6 +46,7 @@ end_points = {
         'archive_suborder': '/api/orderInformation/',
         'restore_suborder': '/api/orderInformation/',
         'delete_suborder': '/api/orderInformation/',
+        'get_suborder': '/api/orders/get/subOrder/byMainOrderId?orderId='
     },
     'analysis_api': {
         'list_all_analysis': '/api/reportSheets',
