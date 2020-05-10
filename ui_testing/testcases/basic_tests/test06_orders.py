@@ -2220,6 +2220,8 @@ class OrdersTestCases(BaseTest):
                 duplicated_contacts_in_analyses[2] = duplicated_contacts_in_analyses[2].replace(' No: undefined', '')
                 self.assertCountEqual(duplicated_contacts, contacts)
                 self.base_selenium.refresh()
+                self.orders_page.wait_until_page_is_loaded()
+
 
 
 
