@@ -2212,15 +2212,17 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(len(duplicated_suborders), 5)
             analyses_numbers = [suborder['Analysis No.'] for suborder in duplicated_suborders]
             self.order_page.navigate_to_analysis_tab()
+            self.analyses_page.open_filter_menu()
             for analysis in analyses_numbers:
-                self.analyses_page.filter_by_analysis_number(analysis)
+                self.analyses_page.filter_by(
+                    filter_element='analysis_page:analysis_no_filter',filter_text=analysis, field_type='text')
+                self.analyses_page.filter_apply()
                 analysis_data = self.analyses_page.get_the_latest_row_data()
                 duplicated_contacts_in_analyses = analysis_data['Contact Name'].split(' No: undefined, ')
                 self.assertEqual(len(duplicated_contacts_in_analyses), 3)
                 duplicated_contacts_in_analyses[2] = duplicated_contacts_in_analyses[2].replace(' No: undefined', '')
                 self.assertCountEqual(duplicated_contacts, contacts)
-                self.base_selenium.refresh()
-                self.orders_page.wait_until_page_is_loaded()
+
 
 
 
