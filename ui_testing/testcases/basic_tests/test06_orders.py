@@ -2238,8 +2238,8 @@ class OrdersTestCases(BaseTest):
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
 
-    @parameterized.expand(['delete', 'add'])
-    def test037_update_sub_order_with_multiple_testplans(self, action):
+    # @parameterized.expand(['delete', 'add'])
+    def test037_update_sub_order_with_multiple_testplans(self, action='delete'):
         """
         Orders: Test plans: In case I have order record with multiple test plans and I updated them,
         this update should reflect on the same analysis record without creating new one.

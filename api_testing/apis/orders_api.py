@@ -229,6 +229,7 @@ class OrdersAPIFactory(BaseAPI):
 
         return [payload]
 
+
 class OrdersAPI(OrdersAPIFactory):
     def get_order_with_multiple_sub_orders(self):
         api, payload = self.get_all_orders(limit=100)
@@ -245,11 +246,17 @@ class OrdersAPI(OrdersAPIFactory):
         article = testplan['article'][0]
         article_api = ArticleAPI()
         if article == "all":
-            res, _ = article_api.get_all_articles(limit=20)
+            article = article_api.get_article_with_material_type(material_type=material_type)
+            res, _ = article_api.quick_search_article(name=article)
         else:
             res, _ = article_api.quick_search_article(name=article)
 
-        article_id = res['articles'][0]['id']
+        for _article in res['articles']:
+            if _article['materialType'] == material_type:
+                article_id = _article['id']
+                break
+        else:
+            raise Exception('There is no article with name: {} and material: {}'.format(article, material_type))
 
         testunit = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
             materialtype_id=material_type_id)[0]['testUnits'])
@@ -265,19 +272,28 @@ class OrdersAPI(OrdersAPIFactory):
 
         second_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan2['testPlanDetails']['id'])
 
+        testplan_formated = {
+            'id': testplan['id'],
+            'testPlanName': testplan['testPlanName'],
+            'version': 1
+        }
         testPlan2 = {
             'id': int(second_testPlan_data[0]['testPlan']['id']),
             'testPlanName': second_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
             'version': 1
         }
-        testplan_list = [testplan, testPlan2]
 
-        testunit2 = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
-            materialtype_id=material_type_id)[0]['testUnits'])
-        testunit_list = [testunit, testunit2]
-        # to create order with two testPlans only
-        if only_test_plans:
-            testunit_list = []
+        testplan_list = [testplan_formated, testPlan2]
+
+        testunit_list = []
+        if not only_test_plans:
+            testunit2 = random.choice(TestUnitAPI().list_testunit_by_name_and_material_type(
+                materialtype_id=material_type_id)[0]['testUnits'])
+            testunit_list = [testunit, testunit2]
+
+        self.info('test plan #1: name: {}, id: {}'.format(testplan_formated['testPlanName'], testplan_formated['id']))
+        self.info('test plan #2: name: {}, id: {}'.format(testPlan2['testPlanName'], testPlan2['id']))
+        self.info('article: name: {}, id: {}'.format(article, article_id))
 
         payload = {
             'testPlans': testplan_list,
