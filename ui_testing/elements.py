@@ -346,8 +346,12 @@ elements = {
                            'value': '[class="category-label"]'},
         'test_units': {'method': 'id',
                        'value': 'selectedTestUnitsfield'},
+        'test_unit': {'method': 'id',
+                       'value': 'selectedTestUnits'},
         'add': {'method': 'id',
                 'value': 'new_testunit_add_button'},
+        'check_btn': {'method': 'xpath',
+                'value': '//i[@class="la la-check"]'},
         'save_btn': {'method': 'id',
                      'value': 'save_btn'},
         'save_and_complete': {'method': 'id',
@@ -393,6 +397,11 @@ elements = {
         'testunit_category': {'method': 'class_name',
                               'value': 'category-label',
                               'order': 0},
+        'test_unit_category': {'method': 'class_name',
+                              'value': 'testunitCell-positioning',
+                               'order': 1},
+        'test_unit_iteration': {'method': 'xpath',
+                               'value': '//input[@placeholder="Iterations"]'},
         'testunit_iteration': {'method': 'id',
                                'value': 'testunit_iterations_value'},
         'testunit_unit': {'method': 'id',
@@ -405,6 +414,9 @@ elements = {
             'method': 'id',
             'value': 'quantification_lower_limit'
         },
+
+        'add_new_item': {'method': 'link_text',
+                         'value': 'Add another item'},
         'add_testunit_error_msg': {
             'method': 'xpath',
             'value': '//span[@class="m-form__help"]'

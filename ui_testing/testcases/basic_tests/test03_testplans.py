@@ -722,53 +722,39 @@ class TestPlansTestCases(BaseTest):
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-139')
     def test026_test_unit_update_version_in_testplan(self):
-        '''
+        """
         LIMS-3703
-        Create two testplans the first one with the testunit before updating its version, while
-        the second is after updating the version (category and iteration)
-        The updates should be only available in the second testplan
-        '''
-
-        # get all the testunits and choose a random testunit to create the first testplan with
+        Test plan: Test unit Approach: In case I update category & iteration of test unit that used in test plan with new version
+        ,when  go to test plan to add the same test unit , I found category & iteration updated
+        """
+        # select random test unit to create the test plan with it
         testunits, payload = self.test_unit_api.get_all_test_units(limited=20)
         testunit = random.choice(testunits['testUnits'])
-        print(testunit)
         self.info('A random test unit is chosen, its name: {}, category: {} and number of iterations: {}'.format(
             testunit['name'], testunit['categoryName'], testunit['iterations']))
 
-        # get all articles and choose a random one to take its information
-
-        articles, payload = self.article_api.get_all_articles(limited=40)
-        article = random.choice(articles['articles'])
-        print(article)
-        self.base_selenium.LOGGER.info('A random article is chosen, its name: {} and its material type: {}'.format(
-            article['name'], article['materialType']))
-
         # create the first testplan
-        diana=self.test_plan_api.create_testplan()
-        print(diana)
         first_testplan_name = self.test_plan.create_new_test_plan(
-            material_type=random_article['materialType'], article=random_article['name'], test_unit=random_testunit['name'])
-        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-            first_testplan_name, random_article['name'], random_article['materialType']))
+            material_type=testunit['materialTypes'][0], article='', test_unit=testunit['name'])
+        self.info('New testplan is created successfully with name: {}'.format(
+            first_testplan_name))
 
         # go to testplan edit to get the number of iterations and testunit category
-        first_testplan_testunit_category, first_testplan_testunit_iteration = self.test_plan.get_testunit_category_and_iterations(
+        first_testplan_testunit_category, first_testplan_testunit_iteration =self.test_plan.get_testunit_category_iterations(
             first_testplan_name)
-
         # go to testunits active table and search for this testunit-
         self.test_unit_page.get_test_units_page()
         self.base_selenium.LOGGER.info(
-            'Navigating to testunit {} edit page'.format(random_testunit['name']))
-        testunit = self.test_unit_page.search(value=random_testunit['name'])[0]
-        self.test_unit_page.open_edit_page(row=testunit)
+            'Navigating to test unit {} edit page'.format(testunit['name']))
+        testunit = self.test_unit_page.search(value=testunit['name'])
+        self.test_unit_page.open_edit_page(row=self.test_unit_page.result_table()[0])
 
-        # update the iteration and category
         new_iteration = str(int(first_testplan_testunit_iteration) + 1)
-        self.test_unit_page.update_testunit(
-            number=None, name=None, category='', iterations=new_iteration, random=False)
-        new_category = self.test_unit_page.get_category()
+        # update the iteration and category
+        new_category = self.test_unit_page.set_category('')
+        self.test_unit_page.set_testunit_iteration(new_iteration)
 
         # press save and complete to create a new version
         self.test_unit_page.save_and_create_new_version()
@@ -776,29 +762,28 @@ class TestPlansTestCases(BaseTest):
         # go back to testplans active table
         self.test_plan.get_test_plans_page()
 
-        # create new testplan with this testunit after creating the new version
+         #create new testplan with this testunit after creating the new version
         second_testplan_name = self.test_plan.create_new_test_plan(
-            material_type=random_article['materialType'], article=random_article['name'], test_unit=random_testunit['name'])
-        self.base_selenium.LOGGER.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-            second_testplan_name, random_article['name'], random_article['materialType']))
+            material_type=testunit["materialTypes"][0], article='', test_unit='')
+        self.info('New test plan is created successfully with name: {}'.format(
+            second_testplan_name))
 
         # check the iteration and category to be the same as the new version
         # go to testplan edit to get the number of iterations and testunit category
-        second_testplan_testunit_category, second_testplan_testunit_iteration = self.test_plan.get_testunit_category_and_iterations(
+        second_testplan_testunit_category, second_testplan_testunit_iteration = self.test_plan.get_testunit_category_iterations(
             second_testplan_name)
 
         self.base_selenium.LOGGER.info(
             'Asserting that the category of the testunit in the first testplan is not equal the category of the testunit in the second testplan')
         self.assertNotEqual(first_testplan_testunit_category,
-                            second_testplan_testunit_category)
+                        second_testplan_testunit_category)
         self.base_selenium.LOGGER.info(
             'Asserting that the iterations of the testunit in the first testplan is not equal the iterations of the testunit in the second testplan')
         self.assertNotEqual(first_testplan_testunit_iteration,
-                            second_testplan_testunit_iteration)
+                        second_testplan_testunit_iteration)
         self.base_selenium.LOGGER.info(
             'Asserting that the category of the testunit in the second testplan is the same as the updated category')
         self.assertEqual(second_testplan_testunit_category, new_category)
         self.base_selenium.LOGGER.info(
             'Asserting that the iterations of the testunit in the second testplan is the same as the updated iterations')
         self.assertEqual(second_testplan_testunit_iteration, new_iteration)
-
