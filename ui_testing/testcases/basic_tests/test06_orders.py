@@ -1249,9 +1249,9 @@ class OrdersTestCases(BaseTest):
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
                                                  filter_text=suborder_after_refresh['analysis_no'],
                                                  field_type='text')
-        analysis_records = self.analyses_page.get_table_rows_data()
+        analysis_records = self.analyses_page.get_the_latest_row_data()
         self.info('Assert analysis is updated with new test plan')
-        self.assertIn(test_plan, analysis_records[0].replace("'", ""))
+        self.assertIn(test_plan, analysis_records['Test Plans'])
 
     def test022_update_suborder_testunits(self):
         """
