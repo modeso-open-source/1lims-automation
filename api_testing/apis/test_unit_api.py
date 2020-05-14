@@ -13,6 +13,9 @@ class TestUnitAPIFactory(BaseAPI):
                 "filter": "{}",
                     "deleted": "0"
                     }
+        #for key in kwargs:
+         #   if key in _payload.keys():
+          #      _payload[key] = kwargs[key]
         return api, _payload
 
     @api_factory('get')
