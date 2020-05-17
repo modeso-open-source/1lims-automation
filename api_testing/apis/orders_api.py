@@ -120,7 +120,7 @@ class OrdersAPIFactory(BaseAPI):
         :param mainorder_id:
         :return: response, payload
         """
-        api = '{}{}{}/archive/mainOrder'.format(self.url, self.END_POINTS['orders_api']['archive_testunits'],
+        api = '{}{}{}/archive/mainOrder'.format(self.url, self.END_POINTS['orders_api']['archive_main_order'],
                                                 str(mainorder_id))
         return api, {}
 
