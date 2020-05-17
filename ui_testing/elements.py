@@ -571,9 +571,12 @@ elements = {
                              'value': 'start_testDate'},
         'test_date_filter_end': {'method': 'id', 'value': 'end_testDate'},
         'shipment_date_filter_end': {'method': 'id',
-                                     'value': 'end_shipmentDate'},
+                                     'value': 'end_shipmentDate',
+                                     'order': 1
+                                     },
         'shipment_date_filter': {'method': 'id',
-                                 'value': 'start_shipmentDate'},
+                                 'value': 'start_shipmentDate',
+                                 'order': 1},
         'analysis_tab': {
             'method': 'xpath',
             'value': "//label[@class='btn tab']"},
