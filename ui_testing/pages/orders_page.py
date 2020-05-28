@@ -165,6 +165,22 @@ class Orders(BasePages):
         else:
             return filter_fileds[key]
 
+    def archive_table_suborder(self, index=0):
+        self.info('archive suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[0])
+        self.base_selenium.click('orders:suborder_archive')
+        self.confirm_popup()
+        self.sleep_small()
+    
+    def restore_table_suborder(self, index=0):
+        self.info('restore suborder from the order\'s active table')
+        child_table_records = self.result_table(element='general:table_child')
+        self.open_row_options(row=child_table_records[0])
+        self.base_selenium.click('orders:suborder_restore')
+        self.confirm_popup()
+        self.sleep_small()
+
     def construct_main_order_from_table_view(self, order_row=None):
         order_data = {
             "orderNo": self.get_no(order_row),
@@ -232,6 +248,18 @@ class Orders(BasePages):
         # return the main order
         return main_order
 
+    def get_orders_and_suborders_data(self, order_no):
+        self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
+        orders = self.search(order_no)[:-1]
+        orders_data = self.get_child_table_data()
+
+        return orders_data, orders
+
+
+    def navigate_to_analysis_active_table(self):
+        self.base_selenium.click(element='orders:analysis_tab')
+        self.sleep_small()
+        
     def search_by_analysis_number(self,analysis_number):
         self.base_selenium.click(element='general:filter_button')
         self.base_selenium.set_text(element='orders:analysis_filter',value=analysis_number)
@@ -247,3 +275,4 @@ class Orders(BasePages):
                 return True
             else:
                 return False 
+
