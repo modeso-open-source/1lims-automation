@@ -143,10 +143,10 @@ class Orders(BasePages):
         
     def filter_by_date(self, first_filter_element, first_filter_text, second_filter_element, second_filter_text):
         self.open_filter_menu()
+        self.sleep_tiny()
         self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
-        self.sleep_small()
+        self.sleep_tiny()
         self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
-        self.sleep_medium()
         self.filter_apply()
 
     def get_orders_duplicate_data(self, order_no):
