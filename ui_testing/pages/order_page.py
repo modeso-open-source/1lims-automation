@@ -61,12 +61,12 @@ class Order(Orders):
                 element='order:contact')
             return self.get_contact()
 
-    def get_contact(self, order_row=None):
-        if order_row:
-            return list(map(lambda s: {"name": str(s), "no": None}, order_row['Contact Name'].split(',\n')))
+    def get_contact(self):
+        contacts = self.base_selenium.get_text(element='order:contact')
+        if "×" in contacts:
+            return contacts.replace("×", "").split('\n')
         else:
-            return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]},
-                            self.base_selenium.get_text(element='order:contact').split('\n')))
+            return []
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
@@ -339,10 +339,21 @@ class Order(Orders):
             rawTestunitArr = suborder_data['testUnits'].split(',\n')
 
             for testunit in rawTestunitArr:
-                if len(testunit.split(' Type:')) > 1:
+                if 'Type' in testunit:
+                    if len(testunit.split(' Type:')) > 1:
+                        testunits.append({
+                            "name": testunit.split(' Type: ')[0],
+                            "Type": testunit.split(' Type: ')[1]
+                        })
+                elif 'No' in testunit:
+                    if len(testunit.split(' No:')) > 1:
+                        testunits.append({
+                            "name": testunit.split(' No: ')[0],
+                            "No": testunit.split(' No: ')[1]
+                        })
+                elif len(rawTestunitArr):
                     testunits.append({
-                        "name": testunit.split(' Type: ')[0],
-                        "no": testunit.split(' Type: ')[1]
+                        "name": testunit
                     })
                 else:
                     testunits = []
@@ -386,6 +397,7 @@ class Order(Orders):
             row=suborder_row, table_element='order:suborder_table')
         contacts_record = 'contact with many departments'
         suborder_row.click()
+        self.base_selenium.scroll()
         if material_type:
             self.base_selenium.LOGGER.info(
                 ' Set material type : {}'.format(material_type))
@@ -410,6 +422,7 @@ class Order(Orders):
         for testunit in test_units:
             if remove_old:
                 self.clear_test_unit()
+                self.sleep_small()
             self.set_test_unit(test_unit=testunit)
             self.sleep_tiny()
 
@@ -423,8 +436,6 @@ class Order(Orders):
             self.info(' Set departments : {}'.format(departments))
             self.set_departments(departments=departments)
             self.sleep_small()
-
-        return self.get_suborder_data()
 
     def update_material_type_suborder(self, row, material_type):
         self.base_selenium.LOGGER.info(' Set material type : {}'.format(material_type))

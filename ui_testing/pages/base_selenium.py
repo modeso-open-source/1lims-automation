@@ -348,7 +348,7 @@ class BaseSelenium:
             cancel.click()
             if confirm_popup:
                 self.wait_element(element='general:form_popup_warning_window')
-                self.click(element='general:confirmation_button')
+                self.click(element='general:confirm_pop')
             if one_item_only:
                 break
 
