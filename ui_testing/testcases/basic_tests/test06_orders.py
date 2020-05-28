@@ -1504,8 +1504,9 @@ class OrdersTestCases(BaseTest):
             test_plan = test_plan_data['testPlanName']
             article = test_plan_data['article'][0]
         else:
-            article = ArticleAPI().get_aticle_with_material_type(suborder['materialType'])
-            formatted_article = {'id': article['id'], 'text': article['name']}
+            article_data = ArticleAPI().get_aticle_with_material_type(suborder['materialType'])
+            article = article_data['name']
+            formatted_article = {'id': article_data['id'], 'text': article}
             new_test_plan = TestPlanAPI().create_completed_testplan(
                 material_type=suborder['materialType'], formatted_article=formatted_article)
             test_plan = new_test_plan['testPlanEntity']['name']
