@@ -339,7 +339,7 @@ class BaseSelenium:
 
     def clear_items_in_drop_down(self, element, confirm_popup=False, one_item_only=False):
         # element is ng-select element
-        # make sure that there are elements to b deleted
+        # make sure that there are elements to be deleted
         self.wait_until_element_located(element)
         ng_values = self.find_element_in_element(destination_element='general:ng_values', source_element=element)
         ng_values.reverse()
@@ -348,7 +348,7 @@ class BaseSelenium:
             cancel.click()
             if confirm_popup:
                 self.wait_element(element='general:form_popup_warning_window')
-                self.click(element='general:confirm_pop')
+                self.click(element='order:confirm_pop')
             if one_item_only:
                 break
 

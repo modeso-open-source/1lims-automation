@@ -1194,14 +1194,16 @@ class OrdersTestCases(BaseTest):
 
         LIMS-4269 case 2
         """
+        self.info(" get random order with one test unit")
         order, sub_order, sub_order_index = self.orders_api.get_order_with_field_name(field='testUnit', no_of_field=1)
+        self.info("get new test unit with material_type {}".format(sub_order[sub_order_index]['materialType']))
         material_id = GeneralUtilitiesAPI().get_material_id(sub_order[sub_order_index]['materialType'])
         testunits = TestUnitAPI().list_testunit_by_name_and_material_type(materialtype_id=material_id)
         testunits_with_values = []
-        for testunit in testunits[0]['testUnits']:  # make sure test unit have value
+        for testunit in testunits[0]['testUnits']:  # make sure test unit differs from old one
             if testunit['name'] == sub_order[sub_order_index]['testUnit'][0]['testUnit']['name']:
                 continue
-            if testunit['typeName'] == ['Quantitative MiBi']:
+            if testunit['typeName'] == ['Quantitative MiBi']:  # make sure test unit have value
                 if testunit['mibiValue']:
                     testunits_with_values.append(testunit)
                     break
@@ -1213,17 +1215,19 @@ class OrdersTestCases(BaseTest):
                 if testunit['textValue']:
                     testunits_with_values.append(testunit)
                     break
-        # in case I have no test units with required material type and has values, create one
         if not testunits_with_values:
+            self.info(" No test unit with req. material type, so create one")
             api, testunit_payload = TestUnitAPI().create_quantitative_testunit()
             testunit_name = testunit_payload['name']
+            self.info("created test unit name is {}".format(testunit_name))
         else:
             testunit_name = random.choice[testunits_with_values]['name']
+            self.info("selected test unit name is {}".format(testunit_name))
 
-        self.info("Edit order with order no. {} with test_unit {}".format(order['orderNo'], testunit_name))
+        self.info("Edit sub-order {} in order no. {} with test_unit {}".format(
+            len(sub_order)-1-sub_order_index, order['orderNo'], testunit_name))
+        self.info("open order edit page")
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
-        self.info("remove suborder test unit and update it to {} ".format(testunit_name))
-
         self.order_page.update_suborder(sub_order_index=int(len(sub_order)-1-sub_order_index),
                                         test_units=[testunit_name], remove_old=True)
         # checking that when adding new test unit, the newly added test unit is added to the
@@ -1242,6 +1246,9 @@ class OrdersTestCases(BaseTest):
 
         self.info('Getting analysis page to check the data in this child table')
         self.order_page.get_orders_page()
+        self.orders_page.filter_by_analysis_number(suborder_after_refresh['analysis_no'])
+        sub_order_data = self.orders_page.get_child_table_data()[0]
+        self.assertEqual(sub_order_data['Test Units'], testunit_name)
         self.order_page.navigate_to_analysis_tab()
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
                                                  filter_text=suborder_after_refresh['analysis_no'],

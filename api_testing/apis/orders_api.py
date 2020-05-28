@@ -248,8 +248,6 @@ class OrdersAPI(OrdersAPIFactory):
         orders_data, payload = self.get_all_orders()
         orders = orders_data['orders']
         for order in orders:
-            if order['id'] in [1122, 1121]: # remove this line after solving https://modeso.atlassian.net/browse/LIMS-7710
-                continue
             suborders_data, a = self.get_suborder_by_order_id(order['id'])
             suborders = suborders_data['orders']
             for i in range(0, len(suborders)-1):

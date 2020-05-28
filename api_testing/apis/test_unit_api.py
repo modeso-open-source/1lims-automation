@@ -161,6 +161,7 @@ class TestUnitAPIFactory(BaseAPI):
             'iterations': '1'
         }
         payload = self.update_payload(_payload, **kwargs)
+
         if 'textValue' not in kwargs:
             payload['textValue'] = self.generate_random_string()
 

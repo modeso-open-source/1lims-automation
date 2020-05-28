@@ -84,7 +84,7 @@ class Order(Orders):
 
     def clear_test_plan(self):
         if self.get_test_plan():
-            self.base_selenium.clear_items_in_drop_down(element='order:test_plan', confirm_popup=True)
+            self.base_selenium.clear_items_in_drop_down(element='order:test_plan')
 
     def clear_test_unit(self):
         if self.get_test_unit():

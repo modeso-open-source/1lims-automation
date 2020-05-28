@@ -166,7 +166,7 @@ class TestPlanAPI(TestPlanAPIFactory):
         return testplans_response['testPlans']
 
     def get_completed_testplans(self, **kwargs):
-        response, _ = self.get_all_test_plans()
+        response, _ = self.get_all_test_plans(**kwargs)
         all_test_plans = response['testPlans']
         completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['status'] == 'Completed']
         return completed_test_plans
@@ -209,3 +209,9 @@ class TestPlanAPI(TestPlanAPIFactory):
                 return False
         else:
             return False
+
+    def get_completed_testplans_with_material_and_same_article(self, material_type='Raw Material', article='all'):
+        all_test_plans = self.get_completed_testplans()
+        completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['materialType'] == material_type]
+        test_plan_same_article = [testplan for testplan in completed_test_plans if testplan['article'] == [article]]
+        return test_plan_same_article
