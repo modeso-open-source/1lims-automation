@@ -1560,17 +1560,18 @@ class OrdersTestCases(BaseTest):
 
         self.info('get random completed test plan with different article')
         test_plans = TestPlanAPI().get_completed_testplans()
-        test_plans_without_duplicate = [test_plan for test_plan in test_plans if
+        test_plans_with_different_article = [test_plan for test_plan in test_plans if
                                         test_plan['materialType'] == suborder['materialType'] and
                                         suborder['article'] != test_plan['article'][0]]
-        if test_plans_without_duplicate:
-            test_plan_data = random.choice(test_plans_without_duplicate)
+        if test_plans_with_different_article:
+            test_plan_data = random.choice(test_plans_with_different_article)
             test_plan = test_plan_data['testPlanName']
             article = test_plan_data['article'][0]
         else:
             article = ArticleAPI().get_aticle_with_material_type(suborder['materialType'])
+            formatted_article = {'id': article['id'], 'text': article['name']}
             new_test_plan = TestPlanAPI().create_completed_testplan(
-                material_type=suborder['materialType'], article=article)
+                material_type=suborder['materialType'], formatted_article=formatted_article)
             test_plan = new_test_plan['testPlanEntity']['name']
 
         self.info('update order {} with article {}'.format(order['orderNo'], article))
