@@ -36,22 +36,23 @@ class OrdersTestCases(BaseTest):
         self.set_authorization(auth=self.contacts_api.AUTHORIZATION_RESPONSE)
         self.order_page.get_orders_page()
 
-    # will continue with us
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip('https://modeso.atlassian.net/browse//LIMS-4768')
-    def test001_cancel_button_edit_no(self, save):
+    def test001_edit_order_number_with_save_cancel_btn(self, save):
         """
         New: Orders: Save/Cancel button: After I edit no field then press on cancel button,
         a pop up will appear that the data will be
-        LIMS-5241
+        LIMS-7200
         :return:
         """
-        self.order_page.get_random_order()
+        orders, payload = self.orders_api.get_all_orders(limit=40)
+        random_order = random.choice(orders['orders'])
+
+        self.orders_page.get_order_edit_page_by_id(random_order['id'])
         order_url = self.base_selenium.get_url()
         self.base_selenium.LOGGER.info(' + order_url : {}'.format(order_url))
-        current_no = self.order_page.get_no()
-        new_no = self.generate_random_string()
-        self.order_page.set_no(new_no)
+        old_number = self.order_page.get_no()
+        new_number = self.generate_random_string()
+        self.order_page.set_no(new_number)
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
@@ -60,15 +61,15 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.get(
             url=order_url, sleep=self.base_selenium.TIME_MEDIUM)
 
-        order_no = self.order_page.get_no()
+        current_number = self.order_page.get_no()
         if 'save_btn' == save:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (new_no) == {} (order_no)'.format(new_no, order_no))
-            self.assertEqual(new_no, order_no)
+                ' + Assert {} (current_number) == {} (new_number)'.format(current_number, new_number))
+            self.assertNotEqual(current_number, new_number)
         else:
             self.base_selenium.LOGGER.info(
-                ' + Assert {} (current_no) == {} (order_no)'.format(current_no, order_no))
-            self.assertEqual(current_no, order_no)
+                ' + Assert {} (current_number) == {} (old_number)'.format(current_number, old_number))
+            self.assertEqual(current_number, old_number)
 
     @parameterized.expand(['save_btn', 'cancel'])
     def test002_update_contact_with_save_cancel_btn(self, save):
@@ -79,6 +80,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4764
         :return:
         """
+
         orders, payload = self.orders_api.get_all_orders(limit=40)
         random_order = random.choice(orders['orders'])
 
@@ -246,7 +248,7 @@ class OrdersTestCases(BaseTest):
         orders, payload = self.orders_api.get_all_orders(limit=40, deleted=1)
         random_order = random.choice(orders['orders'])
         self.orders_page.get_archived_items()
-        order_row =self.orders_page.search(random_order['orderNo'])[0]
+        order_row = self.orders_page.search(random_order['orderNo'])[0]
 
         self.order_page.click_check_box(source=order_row)
 
@@ -408,7 +410,7 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    # will change that the duplicate many copies will be from the the child table not from the active table     
+    # will change that the duplicate many copies will be from the the child table not from the active table
     def test012_duplicate_many_orders(self):
         """
         New: Orders: Duplication from active table Approach: When I duplicate order 5 times, it will create 5 analysis records with the same order number
@@ -693,7 +695,8 @@ class OrdersTestCases(BaseTest):
                 ' + Assert {} (current_test_date) == {} (new_test_date)'.format(new_test_date, saved_test_date))
             self.assertEqual(saved_test_date, new_test_date)
 
-    # will continue with us
+        # will continue with us
+
     @parameterized.expand(['save_btn', 'cancel'])
     def test017_update_shipment_date(self, save):
         """
@@ -734,12 +737,12 @@ class OrdersTestCases(BaseTest):
         if 'cancel' == save:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_shipment_date) != {} (new_shipment_date)'.format(new_shipment_date,
-                                                                                            saved_shipment_date))
+                                                                                        saved_shipment_date))
             self.assertNotEqual(saved_shipment_date, new_shipment_date)
         else:
             self.base_selenium.LOGGER.info(
                 ' + Assert {} (current_shipment_date) == {} (new_shipment_date)'.format(new_shipment_date,
-                                                                                            saved_shipment_date))
+                                                                                        saved_shipment_date))
             self.assertEqual(saved_shipment_date, new_shipment_date)
 
     # will continue with us
@@ -867,7 +870,7 @@ class OrdersTestCases(BaseTest):
         random_name = random.choice(random_testunit['testUnits'])
 
         self.order_page.get_orders_page()
-        created_order = self.order_page.create_existing_order(no='',material_type='s', article='a', contact='',
+        created_order = self.order_page.create_existing_order(no='', material_type='s', article='a', contact='',
                                                               test_units=[random_name['name']])
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
@@ -887,7 +890,7 @@ class OrdersTestCases(BaseTest):
             testunit_name = row_with_headers['Test Unit']
             self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, random_name['name'])
-            
+
     def test022_create_existing_order_with_test_units_and_change_material_type(self):
         """
         New: Orders with test units: Create a new order from an existing order with
@@ -1988,7 +1991,7 @@ class OrdersTestCases(BaseTest):
         self.info('order to be duplicated is {}, new order no is {}'.
                   format(main_order['orderNo'], duplicated_order_number))
         self.assertNotEqual(main_order['orderNo'], duplicated_order_number)
-        
+
         self.info('get material type of first suborder')
         old_material_type = self.order_page.get_material_type_of_first_suborder()
         self.info('get completed test plan with different material type')
@@ -2020,7 +2023,7 @@ class OrdersTestCases(BaseTest):
             suborder_data = child_data[-1]
         else:
             suborder_data = child_data[0]
-        
+
         self.info('Make sure that suborder data is correct')
         self.assertEqual(suborder_data['Material Type'], selected_test_plan['materialType'])
         self.assertEqual(suborder_data['Article Name'].replace("'", ""), selected_test_plan['article'][0])
