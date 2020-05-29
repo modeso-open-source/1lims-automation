@@ -2174,8 +2174,7 @@ class OrdersTestCases(BaseTest):
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
 
-    @parameterized.expand(['main_order', 'sub_order'])
-    def test036_Duplicate_order_with_multiple_contacts(self, case):
+    def test036_duplicate_main_order_with_multiple_contacts(self):
         """
         Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
         I duplicate from the main order or from the suborder
@@ -2187,45 +2186,54 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(response['status'], 1)
         contacts = [contact['text'] for contact in payload[0]['contact']]
         self.orders_page.filter_by_order_no(payload[0]['orderNo'])
-        if case == 'main_order':
-            self.info("duplicate the order {} from order's options".format(payload[0]['orderNo']))
-            self.orders_page.duplicate_main_order_from_order_option()
-            duplicated_order_no = self.order_page.get_no()
-            self.order_page.save(save_btn='order:save')
-            self.info("navigate to orders' active table and check that duplicated suborder found")
-            self.order_page.get_orders_page()
-            self.orders_page.filter_by_order_no(duplicated_order_no)
-        else:
-            self.order_page.get_child_table_data()
-            self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
-            self.orders_page.duplicate_sub_order_from_table_overview(number_of_copies=4)
-            self.base_selenium.refresh()
-            self.orders_page.wait_until_page_is_loaded()
-            self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+
+        self.info("duplicate the order {} from order's options".format(payload[0]['orderNo']))
+        self.orders_page.duplicate_main_order_from_order_option()
+        duplicated_order_no = self.order_page.get_no()
+        self.order_page.save(save_btn='order:save')
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.orders_page.filter_by_order_no(duplicated_order_no)
 
         duplicated_order_data = self.orders_page.get_the_latest_row_data()
         duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
         self.assertCountEqual(duplicated_contacts, contacts)
 
-        if case == 'sub_order':
-            duplicated_suborders = self.orders_page.get_child_table_data()
-            self.assertEqual(len(duplicated_suborders), 5)
-            analyses_numbers = [suborder['Analysis No.'] for suborder in duplicated_suborders]
-            self.order_page.navigate_to_analysis_tab()
-            self.analyses_page.open_filter_menu()
-            for analysis in analyses_numbers:
-                self.analyses_page.filter_by(
-                    filter_element='analysis_page:analysis_no_filter',filter_text=analysis, field_type='text')
-                self.analyses_page.filter_apply()
-                analysis_data = self.analyses_page.get_the_latest_row_data()
-                duplicated_contacts_in_analyses = analysis_data['Contact Name'].split(' No: undefined, ')
-                self.assertEqual(len(duplicated_contacts_in_analyses), 3)
-                duplicated_contacts_in_analyses[2] = duplicated_contacts_in_analyses[2].replace(' No: undefined', '')
-                self.assertCountEqual(duplicated_contacts, contacts)
+    def test037_duplicate_sub_order_with_multiple_contacts(self):
+        """
+        Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
+        I duplicate from the main order or from the suborder
 
+        LIMS-5816
+        """
+        self.info('create order with multiple contacts')
+        response, payload = self.orders_api.create_order_with_multiple_contacts()
+        self.assertEqual(response['status'], 1)
+        contacts = [contact['text'] for contact in payload[0]['contact']]
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
 
+        self.order_page.get_child_table_data()
+        self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
+        self.orders_page.duplicate_sub_order_from_table_overview(number_of_copies=4)
+        self.base_selenium.refresh()
+        self.orders_page.wait_until_page_is_loaded()
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
 
+        duplicated_order_data = self.orders_page.get_the_latest_row_data()
+        duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
+        self.assertCountEqual(duplicated_contacts, contacts)
 
-
-
-
+        duplicated_suborders = self.orders_page.get_child_table_data()
+        self.assertEqual(len(duplicated_suborders), 5)
+        analyses_numbers = [suborder['Analysis No.'] for suborder in duplicated_suborders]
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.open_filter_menu()
+        for analysis in analyses_numbers:
+            self.analyses_page.filter_by(
+                filter_element='analysis_page:analysis_no_filter',filter_text=analysis, field_type='text')
+            self.analyses_page.filter_apply()
+            analysis_data = self.analyses_page.get_the_latest_row_data()
+            duplicated_contacts_in_analyses = analysis_data['Contact Name'].split(' No: undefined, ')
+            self.assertEqual(len(duplicated_contacts_in_analyses), 3)
+            duplicated_contacts_in_analyses[2] = duplicated_contacts_in_analyses[2].replace(' No: undefined', '')
+            self.assertCountEqual(duplicated_contacts, contacts)
