@@ -2126,7 +2126,38 @@ class OrdersTestCases(BaseTest):
                                                  filter_text=suborder_data['Analysis No.'], field_type='text')
         self.assertEqual(len(self.order_page.result_table()), 1)
 
-    def test036_Duplicate_sub_order_with_multiple_testplans_and_testunits_delet_approach(self):
+    def test036_archive_new_order_and_analysis(self):
+        """
+        New: Orders Form: Archive main order: Make sure when the user archive main order,
+        the analysis corresponding to it will be archived also
+
+        LIMS-6873
+
+        """
+        self.info("select random order to archive")
+        orders, api = self.orders_api.get_all_orders(limit=20)
+        order = random.choice(orders['orders'])
+        suborder_data, api = self.orders_api.get_suborder_by_order_id(order['id'])
+        suborders = suborder_data['orders']
+        analysis_no_list = []
+        for suborder in suborders:
+            analysis_no_list.append(suborder['analysis'])
+
+        self.info(" Archive order with number : {}".format(order['orderNo']))
+        order_row = self.order_page.search(order['orderNo'])
+        self.order_page.click_check_box(source=order_row[0])
+        self.order_page.archive_selected_orders(check_pop_up=True)
+        self.info("Navigate to archived orders' table and filter by analysis no")
+        self.orders_page.get_archived_items()
+        self.orders_page.filter_by_analysis_number(analysis_no_list[0])
+        self.assertTrue(self.orders_page.is_order_in_table(value=order['orderNo']))
+        child_data = self.orders_page.get_child_table_data()
+        result_analysis = []
+        for suborder in child_data:
+            result_analysis.append(suborder['Analysis No.'].replace("'", ""))
+        self.assertCountEqual(result_analysis, analysis_no_list)
+
+    def test037_Duplicate_sub_order_with_multiple_testplans_and_testunits_delet_approach(self):
         """
         Duplicate suborder Approach: Duplicate any sub order then delete the units & test plans
 
@@ -2194,5 +2225,4 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
         self.assertEqual(suborder_data['Test Units'].split(',\n')[0], payload[0]['testUnits'][0]['name'])
         self.assertEqual(suborder_data['Test Units'].split(',\n')[1], payload[0]['testUnits'][1]['name'])
-
 
