@@ -61,12 +61,12 @@ class Order(Orders):
                 element='order:contact')
             return self.get_contact()
 
-    def get_contact(self, order_row=None):
-        if order_row:
-            return list(map(lambda s: {"name": str(s), "no": None}, order_row['Contact Name'].split(',\n')))
+    def get_contact(self):
+        contacts = self.base_selenium.get_text(element='order:contact')
+        if "×" in contacts:
+            return contacts.replace("×", "").split('\n')
         else:
-            return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]},
-                            self.base_selenium.get_text(element='order:contact').split('\n')))
+            return []
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
