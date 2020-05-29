@@ -1182,22 +1182,16 @@ class OrdersTestCases(BaseTest):
         self.info("get new test unit with material_type {}".format(sub_order[sub_order_index]['materialType']))
         material_id = GeneralUtilitiesAPI().get_material_id(sub_order[sub_order_index]['materialType'])
         testunits = TestUnitAPI().list_testunit_by_name_and_material_type(materialtype_id=material_id)
-        testunits_with_values = []
+        testunits_with_values = [] # make sure test unit have value
         for testunit in testunits[0]['testUnits']:  # make sure test unit differs from old one
-            if testunit['name'] == sub_order[sub_order_index]['testUnit'][0]['testUnit']['name']:
-                continue
-            if testunit['typeName'] == ['Quantitative MiBi']:  # make sure test unit have value
-                if testunit['mibiValue']:
+            if testunit['name'] != sub_order[sub_order_index]['testUnit'][0]['testUnit']['name']:
+                if testunit['typeName'] == 'Quantitative MiBi' and testunit['mibiValue']:
+                   testunits_with_values.append(testunit)
+                elif testunit['typeName'] == 'Quantitative' and testunit['lowerLimit'] and testunit['upperLimit']:
                     testunits_with_values.append(testunit)
-                    break
-            elif testunit['typeName'] == ['Quantitative']:
-                if testunit['lowerLimit'] and testunit['upperLimit']:
+                elif testunit['typeName'] == 'Qualitative' and testunit['textValue']:
                     testunits_with_values.append(testunit)
-                    break
-            elif testunit['typeName'] == ['Qualitative']:
-                if testunit['textValue']:
-                    testunits_with_values.append(testunit)
-                    break
+
         if not testunits_with_values:
             self.info(" No test unit with req. material type, so create one")
             api, testunit_payload = TestUnitAPI().create_quantitative_testunit()
@@ -1205,7 +1199,7 @@ class OrdersTestCases(BaseTest):
             testunit_name = testunit_payload['name']
             self.info("created test unit name is {}".format(testunit_name))
         else:
-            testunit_name = random.choice[testunits_with_values]['name']
+            testunit_name = random.choice(testunits_with_values)['name']
             self.info("selected test unit name is {}".format(testunit_name))
 
         self.info("Edit sub-order {} in order no. {} with test_unit {}".format(
