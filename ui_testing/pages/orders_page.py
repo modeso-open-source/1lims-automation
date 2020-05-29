@@ -137,7 +137,8 @@ class Orders(BasePages):
         filter.click()
 
     def filter_by_analysis_number(self, filter_text):
-        self.base_selenium.LOGGER.info(' + Filter by analysis number : {}'.format(filter_text))
+        self.open_filter_menu()
+        self.info(' + Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
 
