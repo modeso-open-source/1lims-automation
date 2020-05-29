@@ -2177,6 +2177,21 @@ class OrdersTestCases(BaseTest):
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
 
+    def test036_delete_multiple_orders(self):
+        """
+        Orders: Make sure that you can't delete multiple orders records at the same time
+
+        LIMS-6854
+        """
+        self.info("navigate to archived items' table")
+        self.orders_page.get_archived_items()
+        self.orders_page.select_random_multiple_table_rows()
+        self.orders_page.delete_selected_item(confirm_pop_up=False)
+        confirm_edit = self.base_selenium.check_element_is_exist(element="general:cant_delete_message")
+        confirm_edit_message = self.base_selenium.get_text(element="general:confirmation_pop_up")
+        self.assertTrue(confirm_edit)
+        self.assertIn('You cannot do this action on more than one record', confirm_edit_message)
+
     def test040_test_create_order(self):
         api, payload = self.orders_api.create_new_order()
         self.info(payload)
@@ -2199,4 +2214,5 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
         self.assertEqual(suborder_data['Test Units'].split(',\n')[0], payload[0]['testUnits'][0]['name'])
         self.assertEqual(suborder_data['Test Units'].split(',\n')[1], payload[0]['testUnits'][1]['name'])
+
 
