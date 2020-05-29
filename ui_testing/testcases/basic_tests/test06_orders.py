@@ -985,8 +985,6 @@ class OrdersTestCases(BaseTest):
         results = self.order_page.result_table(element='general:table_child')[0].text
         self.assertIn(suborders_data[0]['Analysis No.'].replace("'", ""), results.replace("'", ""))
 
-    # will continue with us
-    @skip('https://modeso.atlassian.net/browse/LIMS-4914')
     def test027_update_material_type(self):
         """
         Apply this on suborder number 5 for example:-
@@ -994,77 +992,59 @@ class OrdersTestCases(BaseTest):
         (All analysis created with this order and test plan will be deleted )
         -Once you press on OK button, the material type & article & test pan will delete
         -You can update it by choose another one and choose corresponding article & test plan
+
         LIMS-4264
         """
+        self.info('get random order')
+        orders, _ = self.orders_api.get_all_orders(limit=50)
+        order = random.choice(orders['orders'])
+        suborders, _ = self.orders_api.get_suborder_by_order_id(order['id'])
+        suborder = suborders['orders'][0]
+        suborder_update_index = len(suborders['orders']) - 1
 
-        # new random order data
-        basic_order_data = self.get_random_order_data()
-        new_material_type = basic_order_data['material_type']
-        new_article = basic_order_data['article_name']
-        new_testplan_name = basic_order_data['testplan']
-        testplan_testunits = basic_order_data['testunits_in_testplan']
+        self.info('get random completed test plan with different material type')
+        test_plans = TestPlanAPI().get_completed_testplans()
+        # I need to make sure that material type not equal '47d56b4399' due to this open bug
+        # https://modeso.atlassian.net/browse/LIMS-7710
+        test_plans_without_duplicate = [test_plan for test_plan in test_plans if
+                                        test_plan['materialType'] not in
+                                        [suborder['materialType'], '47d56b4399']]
+        test_plan = random.choice(test_plans_without_duplicate)
 
-        self.base_selenium.LOGGER.info('Create new order with intial data')
-        # initial data is static because it won't affect the test case, but the updating data is generated dynamically
-        self.order_page.create_new_order(multiple_suborders=3, test_plans=['tp1'], material_type='Raw Material',
-                                         test_units=[''])
+        self.info('update material type of order {} with {}'.format(order['orderNo'], test_plan['materialType']))
+        self.orders_page.get_order_edit_page_by_id(order['id'])
+        self.order_page.update_suborder(sub_order_index=suborder_update_index, material_type=test_plan['materialType'])
+        confirm_edit = self.base_selenium.check_element_is_exist(element="general:confirmation_pop_up")
+        confirm_edit_message = self.base_selenium.get_text(element="general:confirmation_pop_up")
+        self.assertTrue(confirm_edit)
+        self.assertIn('All analysis created with this order and test plan will be deleted', confirm_edit_message)
+        self.info('confirm pop_up')
+        self.orders_page.confirm_popup()
+        self.info('assert test plan and articles are empty')
+        self.assertFalse(self.order_page.get_test_plan())
+        self.assertEqual(self.order_page.get_article(), 'Search')  # empty article return 'Search'
+        self.info("set article to {} and test plan to {}".format(test_plan['article'][0], test_plan['testPlanName']))
+        if test_plan['article'][0] == 'all':
+            article = self.order_page.set_article('')
+        else:
+            self.order_page.set_article(test_plan['article'][0])
+            article = test_plan['article'][0]
 
-        self.base_selenium.LOGGER.info('Creating new order with 2 suborders')
-        order_no = self.order_page.create_new_order(multiple_suborders=1, test_plans=['tp1'],
-                                                    material_type='Raw Material')
-        self.base_selenium.LOGGER.info('Created new order with no #{}, and test plan {}'.format(order_no, 'tp1'))
-
-        # getting data of the created orders to make sure that everything created correctly
-        rows = self.order_page.result_table()
-        selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
-        analysis_no = selected_order_data['Analysis No.']
-
-        self.order_page.get_random_x(row=rows[1])
-        self.order_page.update_suborder(sub_order_index=1, test_plans=['tp2'])
-        self.base_selenium.LOGGER.info('Update order with test plans: {}'.format('tp2'))
-        sub_order_data = self.order_page.get_suborder_data(sub_order_index=1, test_plan=True)
-        suborder_testplans = sub_order_data['test_plan']
-        suborder_testplans = suborder_testplans.split('|')
-        self.base_selenium.LOGGER.info('order update and has test plans: {}'.format(suborder_testplans))
-
-        # getting the length of the table, should be 2
-        self.base_selenium.LOGGER.info(
-            'Get analysis page to filter with order no to make sure that new test plan did not trigger new analysis')
-        self.analyses_page.get_analyses_page()
-
-        self.base_selenium.LOGGER.info('Filter analysis page with order no: #{}'.format(order_no))
-        analysis_records = self.analyses_page.search(value=order_no)
-        analysis_count = len(analysis_records) - 1
-        self.base_selenium.LOGGER.info(
-            'comparing count of analysis triggered with this order after adding new test plan')
-        self.base_selenium.LOGGER.info('analysis triggered count: {}, and it should be 2'.format(analysis_count))
-        self.assertEqual(2, analysis_count)
-
-        # get analysis data to make sure that the newly added test plan is added to analysis
-        self.base_selenium.LOGGER.info(
-            'Check the test plans in analysis from active table compared with selected test plans in order')
-        selected_analysis_data = self.base_selenium.get_row_cells_dict_related_to_header(row=analysis_records[0])
-        analysis_test_plans = selected_analysis_data['Test Plans'].split(',')
-
-        self.base_selenium.LOGGER.info('+ Comapring test plans in analysis and order')
-        self.base_selenium.LOGGER.info(
-            '+ Assert order\'s testplans are: {}, analysis test plans are: {}'.format(suborder_testplans,
-                                                                                      analysis_test_plans))
-        self.assertEqual(set(analysis_test_plans) == set(suborder_testplans), True)
-
-        self.base_selenium.LOGGER.info('C omparing analysis status')
-        # making sure that the status remained open after adding new test plan
-        analysis_status = selected_analysis_data['Status']
-        analysis_no_from_analysis_table = selected_analysis_data['Analysis No.']
-        self.base_selenium.LOGGER.info(
-            'Analysis with no #{}, has status: {}'.format(analysis_no_from_analysis_table, analysis_status))
-        self.base_selenium.LOGGER.info(
-            '+ Assert analysis has status: {}, and it should be: {}'.format(analysis_status, 'Open'))
-        self.assertEqual(analysis_status, 'Open')
-
-        # get order data to be updated
-        self.base_selenium.LOGGER.info('Get order data to remove a test plan from the order')
+        self.order_page.set_test_plan(test_plan['testPlanName'])
+        self.info('save the changes then refresh')
+        self.order_page.save(save_btn='order:save_btn')
+        self.base_selenium.refresh()
+        self.info('get order data after edit and refresh')
+        order_data_after_refresh = self.order_page.get_suborder_data()
+        suborder_after_refresh = order_data_after_refresh['suborders'][suborder_update_index]
+        self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
         self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_analysis_number(suborder_after_refresh['analysis_no'])
+        analyses = self.analyses_page.result_table()[0]
+        self.assertIn(test_plan['materialType'], analyses.text)
+        self.assertIn(article, analyses.text)
+        self.assertIn(test_plan['testPlanName'], analyses.text)
 
     # will continue with us & then put the test case number for it
     def test026_update_suborder_article(self):
