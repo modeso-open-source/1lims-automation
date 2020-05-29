@@ -1201,6 +1201,7 @@ class OrdersTestCases(BaseTest):
         if not testunits_with_values:
             self.info(" No test unit with req. material type, so create one")
             api, testunit_payload = TestUnitAPI().create_quantitative_testunit()
+            self.assertEqual(api['status'], 1)
             testunit_name = testunit_payload['name']
             self.info("created test unit name is {}".format(testunit_name))
         else:

@@ -424,7 +424,7 @@ class Order(Orders):
                 self.clear_test_unit()
                 self.sleep_small()
             self.set_test_unit(test_unit=testunit)
-            self.sleep_tiny()
+            self.sleep_small()
 
         if shipment_date:
             return self.set_shipment_date(row_id=sub_order_index)

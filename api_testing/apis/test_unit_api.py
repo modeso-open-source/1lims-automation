@@ -86,7 +86,9 @@ class TestUnitAPIFactory(BaseAPI):
         """
         if success, response['testUnits']
         """
-        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue)
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(
+            self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'],
+            materialtype_id, name, negelectIsDeleted, searchableValue)
         return api, {}
 
     """
