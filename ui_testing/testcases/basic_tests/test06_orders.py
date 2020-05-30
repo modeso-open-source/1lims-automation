@@ -2209,7 +2209,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
         self.orders_page.filter_by_order_no(duplicated_order_no)
         duplicated_order_data = self.orders_page.get_the_latest_row_data()
-        duplicated_contacts = duplicated_order_data['Contact Name'].split(', ')
+        duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
         self.assertCountEqual(duplicated_contacts, contacts)
 
     def test037_duplicate_sub_order_with_multiple_contacts(self):
