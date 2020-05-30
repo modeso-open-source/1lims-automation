@@ -2208,9 +2208,8 @@ class OrdersTestCases(BaseTest):
         self.info("navigate to orders' active table and check that duplicated suborder found")
         self.order_page.get_orders_page()
         self.orders_page.filter_by_order_no(duplicated_order_no)
-
         duplicated_order_data = self.orders_page.get_the_latest_row_data()
-        duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
+        duplicated_contacts = duplicated_order_data['Contact Name'].split(', ')
         self.assertCountEqual(duplicated_contacts, contacts)
 
     def test037_duplicate_sub_order_with_multiple_contacts(self):
@@ -2244,13 +2243,13 @@ class OrdersTestCases(BaseTest):
         self.analyses_page.open_filter_menu()
         for analysis in analyses_numbers:
             self.analyses_page.filter_by(
-                filter_element='analysis_page:analysis_no_filter',filter_text=analysis, field_type='text')
+                filter_element='analysis_page:analysis_no_filter', filter_text=analysis, field_type='text')
             self.analyses_page.filter_apply()
             analysis_data = self.analyses_page.get_the_latest_row_data()
-            duplicated_contacts_in_analyses = analysis_data['Contact Name'].split(' No: undefined, ')
+            duplicated_contacts_in_analyses = analysis_data['Contact Name'].split(', ')
             self.assertEqual(len(duplicated_contacts_in_analyses), 3)
-            duplicated_contacts_in_analyses[2] = duplicated_contacts_in_analyses[2].replace(' No: undefined', '')
             self.assertCountEqual(duplicated_contacts, contacts)
+
 
     def test036_delete_multiple_orders(self):
         """
