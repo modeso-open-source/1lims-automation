@@ -15,4 +15,3 @@ class AllAnalysesPage(BasePages):
         self.open_filter_menu()
         self.filter_by(filter_element='analysis_page:analysis_no_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
-
