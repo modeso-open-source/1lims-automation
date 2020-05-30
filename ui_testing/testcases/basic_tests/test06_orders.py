@@ -2196,6 +2196,7 @@ class OrdersTestCases(BaseTest):
         """
         self.info('get random main order data')
         orders, payload = self.orders_api.get_all_orders(limit=50)
+        self.assertEqual(orders['status'], 1)
         main_order = random.choice(orders['orders'])
         self.info("duplicate order No {}".format(main_order['orderNo']))
         self.order_page.search(main_order['orderNo'])
@@ -2206,7 +2207,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_orders_page()
         self.orders_page.filter_by_order_no(duplicted_order_no)
         order = self.orders_page.get_the_latest_row_data()
-        self.assertEqual(new_contact[0]['name'], order['Contact Name'])
+        self.assertEqual(new_contact[0], order['Contact Name'])
 
     def test036_delete_multiple_orders(self):
         """
