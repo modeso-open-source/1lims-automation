@@ -1523,10 +1523,9 @@ class OrdersTestCases(BaseTest):
             self.order_page.update_suborder(sub_order_index=suborder_update_index, articles=article)
 
         self.info('assert test plan is empty')
-        self.orders_page.sleep_tiny()
         self.assertFalse(self.order_page.get_test_plan())
         if test_units:
-            self.assertCountEqual([self.order_page.get_test_unit()], test_units)
+            self.assertCountEqual(self.order_page.get_test_unit(), test_units)
         else:
             self.assertFalse(self.order_page.get_test_unit())
 
