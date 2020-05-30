@@ -61,12 +61,12 @@ class Order(Orders):
                 element='order:contact')
             return self.get_contact()
 
-    def get_contact(self, order_row=None):
-        if order_row:
-            return list(map(lambda s: {"name": str(s), "no": None}, order_row['Contact Name'].split(',\n')))
+    def get_contact(self):
+        contacts = self.base_selenium.get_text(element='order:contact')
+        if "×" in contacts:
+            return contacts.replace("×", "").split('\n')
         else:
-            return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]},
-                            self.base_selenium.get_text(element='order:contact').split('\n')))
+            return []
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
@@ -268,35 +268,30 @@ class Order(Orders):
         self.base_selenium.LOGGER.info(' Get suborder table list.')
         self.base_selenium.click(element='order:suborder_list')
 
-    def create_new_suborder(self, material_type='', article_name='', test_plan='', **kwargs):
-        self.get_suborder_table()
+    def create_new_suborder(self, material_type='', article_name='', test_plan='', test_unit='',
+                            add_new_suborder_btn='order:add_new_item'):
+        # self.get_suborder_table()
         rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
-
-        self.base_selenium.LOGGER.info(' Add new suborder.')
-        self.base_selenium.click(element='order:add_new_item')
-
+        self.info('Add new suborder.')
+        self.base_selenium.click(element=add_new_suborder_btn)
         rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = rows_after[len(rows_before)]
-
-        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(row=suborder_row,
-                                                                                             table_element='order:suborder_table')
-        self.base_selenium.LOGGER.info(' Set material type : {}'.format(material_type))
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Material Type: *'],
-                                             item_text=material_type.replace("'", ''))
-        self.base_selenium.LOGGER.info(' Set article name : {}'.format(article_name))
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Article: *'],
-                                             item_text=article_name.replace("'", ''))
-        self.base_selenium.LOGGER.info(' Set test plan : {}'.format(test_plan))
-        self.base_selenium.update_item_value(item=suborder_elements_dict['Test Plan: *'],
-                                             item_text=test_plan.replace("'", ''))
-
-        for key in kwargs:
-            if key in suborder_elements_dict.keys():
-                self.base_selenium.update_item_value(item=suborder_elements_dict[key], item_text=kwargs[key])
-            else:
-                self.base_selenium.LOGGER.info(' {} is not a header element!'.format(key))
-                self.base_selenium.LOGGER.info(' Header keys : {}'.format(suborder_elements_dict.keys()))
-
+        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        self.info('Set material type : {}'.format(material_type))
+        self.set_material_type(material_type)
+        self.sleep_tiny()
+        self.info('Set article name : {}'.format(article_name))
+        if article_name == 'all':
+            self.set_article('')
+        else:
+            self.set_article(article_name)
+        self.sleep_tiny()
+        self.info('Set test plan : {}'.format(test_plan))
+        self.set_test_plan(test_plan)
+        self.sleep_tiny()
+        self.set_test_unit(test_unit)
+        self.sleep_tiny()
         return self.get_suborder_data()
 
     def duplicate_from_table_view(self, number_of_duplicates=1, index_to_duplicate_from=0):

@@ -21,4 +21,3 @@ class AllAnalysesPage(BasePages):
         self.open_filter_menu()
         self.filter_by(filter_element='analysis_page:order_no_filter', filter_text=filter_text)
         self.filter_apply()
-
