@@ -2221,7 +2221,7 @@ class OrdersTestCases(BaseTest):
         """
         self.info('create order with multiple contacts')
         response, payload = self.orders_api.create_order_with_multiple_contacts()
-        self.assertEqual(response['status'], 1)
+        self.assertEqual(response['status'], 1, response)
         contacts = [contact['text'] for contact in payload[0]['contact']]
         self.orders_page.filter_by_order_no(payload[0]['orderNo'])
 
