@@ -55,21 +55,23 @@ class Order(Orders):
         self.set_article(article=article)
         return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
 
-    def set_contact(self, contact=''):
+    def set_contact(self, contact='', remove_old=False):
+        if remove_old:
+            self.base_selenium.clear_items_in_drop_down(element='order:contact')
         if contact:
             self.base_selenium.select_item_from_drop_down(
                 element='order:contact', item_text=contact)
         else:
             self.base_selenium.select_item_from_drop_down(
-                element='order:contact')
+                element='order:contact', avoid_duplicate=True)
             return self.get_contact()
 
-    def get_contact(self, order_row=None):
-        if order_row:
-            return list(map(lambda s: {"name": str(s), "no": None}, order_row['Contact Name'].split(',\n')))
+    def get_contact(self):
+        contacts = self.base_selenium.get_text(element='order:contact')
+        if "×" in contacts:
+            return contacts.replace("×", "").split('\n')
         else:
-            return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]},
-                            self.base_selenium.get_text(element='order:contact').split('\n')))
+            return []
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
