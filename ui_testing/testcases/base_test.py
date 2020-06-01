@@ -6,6 +6,7 @@ from ui_testing.pages.article_page import Article
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
+from ui_testing.pages.analysis_page import SingleAnalysisPage
 import datetime, re
 
 
@@ -19,6 +20,7 @@ class BaseTest(TestCase):
         self.info('Test case : {}'.format(self._testMethodName))
         self.base_selenium.get_driver()
         self.base_selenium.get(url=self.base_selenium.url)
+        self.pass_refresh_feature()
 
     def tearDown(self):
         self.base_selenium.quit_driver()
@@ -104,6 +106,8 @@ class BaseTest(TestCase):
             if test_unit_dict['Type'] == search and material_type in test_unit_dict['Material Type']:
                 return test_unit_dict
         return {}
+
+
     '''
     Removes the data that was changed in the duplication process in order to compare
     between the objects to make sure that the duplication was done correcly.
@@ -126,3 +130,10 @@ class BaseTest(TestCase):
             del auth['role']
             auth['roles'] = ["Admin"]
         self.base_selenium.set_local_storage('modeso-auth-token', auth)
+
+    def pass_refresh_feature(self):
+        with self.base_selenium._change_implicit_wait(new_value=2):
+            try:
+                self.base_selenium.driver.find_element_by_xpath("//button[@class='btn btn-primary']").click()
+            except:
+                pass

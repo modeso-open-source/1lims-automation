@@ -57,13 +57,19 @@ class BaseAPI:
         return BaseAPI.AUTHORIZATION
 
     @staticmethod
-    def update_payload(payload, **kwargs):
+    def _update_payload(payload, **kwargs):
         for key in kwargs:
             if key in payload.keys():
                 payload[key] = kwargs[key]
             else:
                 payload[key] = kwargs[key]
         return payload
+
+    @staticmethod
+    def update_payload(payload, **kwargs):
+        if type(payload) == list:
+            return [BaseAPI._update_payload(payload[0], **kwargs)]
+        return BaseAPI._update_payload(payload, **kwargs)
 
     @staticmethod
     def info(message):

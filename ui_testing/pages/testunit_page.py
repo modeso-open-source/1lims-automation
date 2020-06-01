@@ -573,7 +573,7 @@ class TstUnit(TstUnits):
             testunit_formated['mibiValue'] = testunit['upperLimit']
             testunit_formated['quantificationUpperLimit'] = ''
             testunit_formated['quantificationLowerLimit'] = ''
-            testunit_formated['concentrations'] = testunit['concentrations']
+            testunit_formated['concentrations'] = testunit['concentrationsNames']
             testunit_formated['textValue'] = ''
             return testunit_formated
 

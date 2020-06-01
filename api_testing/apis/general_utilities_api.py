@@ -39,3 +39,9 @@ class GeneralUtilitiesAPI(GeneralUtilitiesAPIFactory):
                     permissions_list.append(self.map_component_to_permission(component=item))
             return permissions_list
         return []
+
+    def get_material_id(self, material_type):
+        all_materials, _ = self.list_all_material_types()
+        for material in all_materials['materialTypes']:
+            if material['name'] == material_type:
+                return material['id']
