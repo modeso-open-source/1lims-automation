@@ -411,7 +411,7 @@ class Order(Orders):
             ' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
             self.set_test_unit(test_unit=testunit)
-            self.sleep_small()
+            
 
         if shipment_date:
             return self.set_shipment_date(row_id=sub_order_index)
@@ -534,8 +534,6 @@ class Order(Orders):
             self.sleep_tiny()
             self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
-
-
 
     def get_contact_field(self):
         return self.base_selenium.get_text(element='order:contact').split('\n')[0]

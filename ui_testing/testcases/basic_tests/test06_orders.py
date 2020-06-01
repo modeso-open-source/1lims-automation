@@ -143,7 +143,6 @@ class OrdersTestCases(BaseTest):
                                                                                       order_departments))
             self.assertEqual(current_departments, order_departments)
 
-    # will change totally and implement the new behavior
     def test004_archive_main_order(self):
         '''
         LIMS-6516
@@ -374,7 +373,6 @@ class OrdersTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    # will continue with us
     def test010_user_can_add_suborder(self):
         """
         New: Orders: Table view: Suborder Approach: User can add suborder from the main order
@@ -412,7 +410,7 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    # will change that the duplicate many copies will be from the the child table not from the active table
+    # will change that the duplicate many copies will be from the the child table not from the active tabl
     def test012_duplicate_many_orders(self):
         """
         New: Orders: Duplication from active table Approach: When I duplicate order 5 times, it will create 5 analysis records with the same order number
@@ -2020,7 +2018,7 @@ class OrdersTestCases(BaseTest):
         testunits, payload = self.test_unit_api.get_all_test_units(limit=20, deleted=1)
         test_unit = random.choice(testunits['testUnits'])
 
-        #self.order_page.get_orders_page()
+        self.order_page.get_orders_page()
         self.base_selenium.click(element='orders:new_order')
         self.order_page.set_new_order()
         self.order_page.sleep_small()
