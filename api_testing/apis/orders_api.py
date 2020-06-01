@@ -289,10 +289,10 @@ class OrdersAPI(OrdersAPIFactory):
                 testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
 
         second_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan2['testPlanDetails']['id'])
-
         testPlan2 = {
-            'id': int(second_testPlan_data[0]['testPlan']['testPlanEntity']['id']),
+            'id': int(second_testPlan_data[0]['testPlan']['testPlanEntity']['id']), #article_test_plan_id
             'testPlanName': second_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
+            'number': int(second_testPlan_data[0]['testPlan']['number']),
             'version': 1
         }
         testplan_list = [testplan, testPlan2]

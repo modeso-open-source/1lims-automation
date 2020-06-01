@@ -2203,9 +2203,51 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(confirm_edit)
         self.assertIn('You cannot do this action on more than one record', confirm_edit_message)
 
-        # @parameterized.expand(['delete', 'add'])
+    def test037_update_sub_order_with_multiple_testplans_only_delete_approach(self):
+        """
+        Orders: Test plans: In case I have order record with multiple test plans and I updated them,
+        this update should reflect on the same analysis record without creating new one.
 
-    def test037_update_sub_order_with_multiple_testplans(self, action='delete'):
+        LIMS-4134 case 1
+        """
+        self.info('create order with two testplans only')
+        response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
+        self.assertEqual(response['status'], 1)
+        test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
+        self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
+        test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
+                      TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
+        self.info("Edit order {}".format(payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        suborder_before_edit = self.order_page.get_suborder_data()
+        self.info('Assert that selected order has one analysis record')
+        self.assertEqual(len(suborder_before_edit['suborders']), 1)
+        analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
+        self.order_page.open_suborder_edit(sub_order_index=0)
+        self.info("remove only one test plan")
+        self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
+        self.info("confirm pop_up")
+        self.order_page.confirm_popup()
+        self.order_page.save(save_btn='order:save_btn', sleep=True)
+        self.info("navigate to analysis' active table and check that pld analysis edited without creating new analysis")
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
+        self.assertEqual(len(self.analyses_page.result_table())-1, 1)
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        found_test_plans = analysis_data['Test Plans'].split(', ')
+        self.info("assert that only one test plan found and analysis no not changed")
+        self.assertEqual(len(found_test_plans), 1)
+        self.assertEqual(analysis_data['Analysis No.'], analysis_no)
+        suborder_data = self.analyses_page.get_child_table_data()
+        self.assertEqual(len(suborder_data), 1)
+        for test_plan in test_plans:
+            for test_unit in test_units:
+                if found_test_plans == test_plan:
+                    self.info("assert that test unit related to deleted test plan removed from analysis")
+                    self.assertEqual(test_unit, suborder_data['Test Unit'])
+
+    def test038_update_sub_order_with_multiple_testplans_only_add_approach(self):
         """
         Orders: Test plans: In case I have order record with multiple test plans and I updated them,
         this update should reflect on the same analysis record without creating new one.
@@ -2213,32 +2255,59 @@ class OrdersTestCases(BaseTest):
         LIMS-4134
         """
         self.info('create order with two testplans only')
-        import ipdb;ipdb.set_trace()
         response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
         self.assertEqual(response['status'], 1)
         test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
-        self.info("seleced order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
-        test_units = [TestPlanAPI().get_testunits_in_testplan(payload[0]['selectedTestPlans'][0]['id']),
-                      TestPlanAPI().get_testunits_in_testplan(payload[0]['selectedTestPlans'][1]['id'])]
+        self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
+        test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
+                      TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
+
+        article_no = ArticleAPI().get_article_form_data(id=payload[0]['article']['id'])[0]['article']['No']
+        self.info("get new completed test plan with article {} No: {} and material_type {}".format(
+            payload[0]['article']['text'], article_no, payload[0]['materialType']['text']))
+
+        completed_test_plans = TestPlanAPI().get_completed_testplans_with_material_and_same_article(
+            material_type=payload[0]['materialType']['text'], article=payload[0]['article']['text'],
+            articleNo=article_no)
+        completed_test_plans_without_old = [testplan for testplan in completed_test_plans
+                                            if testplan['testPlanName'] not in test_plans]
+
+        if completed_test_plans_without_old:
+            test_plan_data = random.choice(completed_test_plans_without_old)
+            test_plan = test_plan_data['testPlanName']
+            test_unit_data = TestPlanAPI().get_testunits_in_testplan(id=test_plan_data['id'])
+            test_unit = test_unit_data[0]['name']
+        else:
+            self.info("There is no completed test plan so create it ")
+            formatted_article = {'id': payload[0]['article']['id'], 'text': payload[0]['article']['text']}
+            new_test_plan = TestPlanAPI().create_completed_testplan(
+                material_type=payload[0]['materialType']['text'], formatted_article=formatted_article)
+            test_plan = new_test_plan['testPlanEntity']['name']
+            test_unit = new_test_plan['specifications'][0]['name']
+            self.info("completed test plan created with name {} and test unit {}".format(test_plan, test_unit))
+
+        test_plans.append(test_plan)
+        test_units.append(test_unit)
+
         self.info("edit the sub order of order {}".format(payload[0]['orderNo']))
         self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
         suborder_before_edit = self.order_page.get_suborder_data()
         self.info('Assert that selected order has one analysis record')
         self.assertEqual(len(suborder_before_edit['suborders']), 1)
         analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
-        if action == 'delete':
-            self.order_page.open_suborder_edit()
-            self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
-            self.order_page.confirm_popup()
-        self.order_page.save(save_btn='order:save', sleep=True)
+        self.order_page.update_suborder(test_plans=[test_plan])
+        self.order_page.save(save_btn='order:save_btn')
         self.info("navigate to orders' active table and check that duplicated suborder found")
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
         self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
         self.assertEqual(len(self.analyses_page.result_table())-1, 1)
         analysis_data = self.analyses_page.get_the_latest_row_data()
-        self.assertEqual(len([analysis_data['Test Plans']]), 1)
+        found_test_plans = analysis_data['Test Plans'].split(', ')
+        self.assertEqual(len(found_test_plans), 3)
         self.assertEqual(analysis_data['Analysis No.'], analysis_no)
-        for i in range(0, 1):
-            if analysis_data['Test Plans'] == test_plans[i]:
-                self.analyses_page.get_child_table_data()
+        suborder_data = self.analyses_page.get_child_table_data()
+        found_test_units = [testunit['Test Unit'] for testunit in suborder_data]
+        self.assertEqual(len(found_test_units), 3)
+        self.assertCountEqual(test_plans, found_test_plans)
+        self.assertCountEqual(test_units, found_test_units)
