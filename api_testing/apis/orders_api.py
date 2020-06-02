@@ -302,3 +302,25 @@ class OrdersAPI(OrdersAPIFactory):
             'articleId': article_id
         }
         return self.create_new_order(**payload)
+
+    def create_order_with_multiple_contacts(self):
+        contacts = ContactsAPI().get_all_contacts()[0]['contacts']
+        first_contact = contacts[0]
+        second_contact = contacts[1]
+        third_contact = contacts[2]
+        payload = {
+            'contact': [
+                {"id": first_contact['id'],
+                 "text": first_contact['name'],
+                 'No': first_contact['companyNo']},
+                {"id": second_contact['id'],
+                 "text": second_contact['name'],
+                 'No': second_contact['companyNo']},
+                {"id": third_contact['id'],
+                 "text": third_contact['name'],
+                 'No': third_contact['companyNo']}
+
+            ]
+
+        }
+        return self.create_new_order(**payload)
