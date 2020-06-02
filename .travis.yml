@@ -8,7 +8,7 @@ python:
 
 install:
   #https://www.slimjet.com/chrome/google-chrome-old-version.php
-  - wget -N "https://www.slimjet.com/chrome/download-chrome.php?file=files%2F79.0.3945.88%2Fgoogle-chrome-stable_current_amd64.deb" -O ~/google-chrome-stable_current_amd64.deb
+  - wget -N --no-check-certificate "https://www.slimjet.com/chrome/download-chrome.php?file=files%2F79.0.3945.88%2Fgoogle-chrome-stable_current_amd64.deb" -O ~/google-chrome-stable_current_amd64.deb
   - sudo apt install -y ~/google-chrome-stable_current_amd64.deb
   - echo $(google-chrome --version)
   - wget -N "https://chromedriver.storage.googleapis.com/79.0.3945.36/chromedriver_linux64.zip" -P ~/
@@ -26,4 +26,5 @@ script:
   #- export TESTS='test04_testunits.py:TestUnitsTestCases.test011_create_test_unit_with_random_category'
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
   - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
-  - xvfb-run -a nosetests-3.4 -vs --logging-level=WARNING ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test017_validate_order_test_unit_test_plan_edit_mode --tc-file=config.ini
+  - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test037_duplicate_main_order_change_contact
+

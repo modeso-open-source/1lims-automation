@@ -107,9 +107,6 @@ class BaseTest(TestCase):
                 return test_unit_dict
         return {}
 
-    0
-
-
 
     '''
     Removes the data that was changed in the duplication process in order to compare
@@ -135,8 +132,8 @@ class BaseTest(TestCase):
         self.base_selenium.set_local_storage('modeso-auth-token', auth)
 
     def pass_refresh_feature(self):
-        with self.base_selenium._change_implicit_wait():
+        with self.base_selenium._change_implicit_wait(new_value=2):
             try:
-                self.base_selenium.driver.find_element_by_xpath('/html/body/div[3]/div/div[2]/div[2]/button')
+                self.base_selenium.driver.find_element_by_xpath("//button[@class='btn btn-primary']").click()
             except:
                 pass
