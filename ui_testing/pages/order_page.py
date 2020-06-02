@@ -391,7 +391,7 @@ class Order(Orders):
                 ' Set material type : {}'.format(material_type))
             self.set_material_type(material_type=material_type)
             self.sleep_small()
-        if articles:
+        if articles or articles == '':
             self.remove_article(testplans=suborder_elements_dict['testPlans'])
             self.info('Set article name : {}'.format(articles))
             self.set_article(article=articles)

@@ -1477,13 +1477,13 @@ class OrdersTestCases(BaseTest):
                                                                     suborder_testplans[1]))
         self.assertEqual(analysis_test_plan_after_update, suborder_testplans[1])
 
-    @parameterized.expand(['save', 'cancel'])
-    def test025_update_article(self, save):
+    @skip("https://modeso.atlassian.net/browse/LIMSA-127")
+    def test025_update_order_article(self):
         """
         New: Orders: Edit Approach: I can update the article successfully and press on ok button
         then press on cancel button, Nothing updated
 
-        LIMS-4297
+        LIMS-4297 - save case
 
         New: Orders: Edit Approach: I can update the article filed successfully with save button
 
@@ -1514,6 +1514,7 @@ class OrdersTestCases(BaseTest):
                 material_type=suborder['materialType'], formatted_article=formatted_article)
             test_plan = new_test_plan['testPlanEntity']['name']
 
+        test_plans = [test_plan]
         self.info('update order {} with article {}'.format(order['orderNo'], article))
         self.orders_page.get_order_edit_page_by_id(order['id'])
         if article == 'all':
@@ -1529,29 +1530,61 @@ class OrdersTestCases(BaseTest):
         else:
             self.assertFalse(self.order_page.get_test_unit())
 
-        if save == 'save':
-            self.order_page.set_test_plan(test_plan)
-            self.info('save the changes then refresh')
-            self.order_page.save(save_btn='order:save_btn')
-            self.order_page.get_orders_page()
-        else:
-            self.order_page.cancel()
-            article = suborder['article']
-            test_plans = suborder['testPlans']
+        self.order_page.set_test_plan(test_plan)
+        self.info('save the changes then refresh')
+        self.order_page.save(save_btn='order:save_btn')
+        self.order_page.get_orders_page()
 
         self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
         self.order_page.navigate_to_analysis_tab()
         self.analyses_page.filter_by_analysis_number(suborder['analysis'])
         analyses = self.analyses_page.get_the_latest_row_data()
+        analyses_test_plans = analyses['Test Plans'].replace("'", '').split(", ")
         self.info('assert that article and test plan changed but test unit still the same')
         self.assertEqual(article.replace(' ', ''), analyses['Article Name'].replace(' ', ''))
-        if save == 'save':
-            # due to this bug https://modeso.atlassian.net/browse/LIMSA-127 I can't use assert equal
-            self.assertIn(test_plan, analyses['Test Plans'].replace("'", ''))
-        else:
-            for test_plan in test_plans:
-                self.assertIn(test_plan, analyses['Test Plans'].replace("'", ''))
+        self.assertCountEqual(test_plans, analyses_test_plans)
+        child_data = self.analyses_page.get_child_table_data()
+        result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
+        for testunit in test_units:
+            self.assertIn(testunit, result_test_units)
 
+    def test026_update_order_article_cancel_approach(self):
+        """
+        New: Orders: Edit Approach: I can update the article successfully and press on ok button
+        then press on cancel button, Nothing updated
+
+        LIMS-4297 - cancel case
+        """
+        self.info('get random order')
+        orders, _ = self.orders_api.get_all_orders(limit=50)
+        order = random.choice(orders['orders'])
+        suborders, _ = self.orders_api.get_suborder_by_order_id(order['id'])
+        suborder = suborders['orders'][0]
+        suborder_update_index = len(suborders['orders']) - 1
+        test_units = [test_unit['testUnit']['name'] for test_unit in suborder['testUnit']]
+
+        self.info('update order {} with random article'.format(order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        self.order_page.sleep_tiny()
+        self.order_page.update_suborder(sub_order_index=suborder_update_index, articles='')
+        self.info('assert test plan is empty')
+        self.assertFalse(self.order_page.get_test_plan())
+        if test_units:
+            self.assertCountEqual(self.order_page.get_test_unit(), test_units)
+        else:
+            self.assertCountEqual(self.order_page.get_test_unit(), ['Search'])
+        self.order_page.cancel()
+        self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_analysis_number(suborder['analysis'])
+        analyses = self.analyses_page.get_the_latest_row_data()
+        analyses_test_plans = analyses['Test Plans'].replace("'", '').split(", ")
+        self.info('assert that article, test plan and test unit still the same')
+        self.assertEqual(suborder['article'].replace(' ', ''), analyses['Article Name'].replace(' ', ''))
+        if suborder['testPlans']:
+            self.assertCountEqual(suborder['testPlans'], analyses_test_plans)
+        else:
+            self.assertCountEqual(['-'], analyses_test_plans)
         child_data = self.analyses_page.get_child_table_data()
         result_test_units = [test_unit['Test Unit'] for test_unit in child_data]
         for testunit in test_units:
