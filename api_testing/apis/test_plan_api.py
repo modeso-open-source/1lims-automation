@@ -228,20 +228,16 @@ class TestPlanAPI(TestPlanAPIFactory):
 
         selected_test_unit_id = []
         for testunit in testunits[0]['testUnits']: # make sure test unit have value
-            if testunit['typeName'] == ['Quantitative MiBi']:
-                if testunit['mibiValue']:
-                    selected_test_unit_id = [testunit['id']]
-                    break
-            elif testunit['typeName'] == ['Quantitative']:
-                if testunit['lowerLimit'] and testunit['upperLimit']:
-                    selected_test_unit_id = [testunit['id']]
-                    break
-            elif testunit['typeName'] == ['Qualitative']:
-                if testunit['textValue']:
-                    selected_test_unit_id = [testunit['id']]
-                    break
-            else:
-                continue
+            if testunit['typeName'] == ['Quantitative MiBi'] and testunit['mibiValue']:
+                selected_test_unit_id = [testunit['id']]
+                break
+            elif testunit['typeName'] == ['Quantitative'] and testunit['lowerLimit'] and testunit['upperLimit']:
+                selected_test_unit_id = [testunit['id']]
+                break
+            elif testunit['typeName'] == ['Qualitative'] and testunit['textValue']:
+                selected_test_unit_id = [testunit['id']]
+                break
+
         # in case I have no test units with required material type and has values, create one
         if not selected_test_unit_id:
             api, testunit_payload = TestUnitAPI().create_quantitative_testunit()
