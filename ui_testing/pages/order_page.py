@@ -127,6 +127,7 @@ class Order(Orders):
             self.set_test_plan(test_plan=test_plan)
         for test_unit in test_units:
             self.set_test_unit(test_unit)
+        self.sleep_small()
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
