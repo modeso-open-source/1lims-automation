@@ -80,8 +80,9 @@ class BaseSelenium:
                 self.driver = webdriver.Safari
         self.driver.implicitly_wait(BaseSelenium.IMPLICITLY_WAIT)
         # self.driver.set_window_position(0, 0)
-        # self.driver.set_window_size(1800, 1200)
-        self.driver.maximize_window()
+
+        self.driver.set_window_size(1800, 1200)
+        # self.driver.maximize_window()
         self.wait = WebDriverWait(self.driver, BaseSelenium.EXPLICITLY_WAIT)
 
     def quit_driver(self):
