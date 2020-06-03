@@ -52,13 +52,15 @@ class Order(Orders):
         self.set_article(article=article)
         return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
 
-    def set_contact(self, contact=''):
+    def set_contact(self, contact='', remove_old=False):
+        if remove_old:
+            self.base_selenium.clear_items_in_drop_down(element='order:contact')
         if contact:
             self.base_selenium.select_item_from_drop_down(
                 element='order:contact', item_text=contact)
         else:
             self.base_selenium.select_item_from_drop_down(
-                element='order:contact')
+                element='order:contact', avoid_duplicate=True)
             return self.get_contact()
 
     def get_contact(self):
@@ -124,6 +126,7 @@ class Order(Orders):
             self.set_test_plan(test_plan=test_plan)
         for test_unit in test_units:
             self.set_test_unit(test_unit)
+        self.sleep_small()
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
