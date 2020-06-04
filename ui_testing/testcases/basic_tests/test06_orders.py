@@ -2326,9 +2326,9 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
         self.assertTrue(self.orders_page.is_order_in_table(duplicated_order_no))
-        orders_analyses = self.analyses_page.search(duplicated_order_no)
-        duplicated_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
-        self.assertCountEqual(duplicated_order_data['Test Plans'].split(', '), test_plans)
+        self.analyses_page.search(duplicated_order_no)
+        duplicated_test_plans = self.analyses_page.get_the_latest_row_data()['Test Plans'].split(', ')
+        self.assertCountEqual(duplicated_test_plans, test_plans)
         duplicated_suborder_data = self.order_page.get_child_table_data()
-        test_units_list = [testunit['Test Unit'] for testunit in duplicated_suborder_data]
-        self.assertCountEqual(test_units, test_units_list)
+        duplicated_test_units = [testunit['Test Unit'] for testunit in duplicated_suborder_data]
+        self.assertCountEqual(test_units, duplicated_test_units)
