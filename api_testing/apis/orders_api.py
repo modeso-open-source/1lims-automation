@@ -362,3 +362,22 @@ class OrdersAPI(OrdersAPIFactory):
         }
         return self.create_new_order(**payload)
 
+    def create_order_with_department(self):
+        contact = random.choice(ContactsAPI().get_contacts_with_department())
+        department_data = ContactsAPI().get_contact_form_data(contact['id'])[0]['contact']['departments'][0]
+        payload = {
+            'contact': [
+                {"id": contact['id'],
+                 "text": contact['name'],
+                 'No': contact['companyNo']},
+            ],
+            'departments': [{"id": department_data['id'], "text": department_data['name'],
+                             "group": contact['id'], "groupName": contact['name']}],
+        }
+        return self.create_new_order(**payload)
+
+
+
+
+
+

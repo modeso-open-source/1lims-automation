@@ -671,8 +671,10 @@ class OrdersTestCases(BaseTest):
 
             LIMS-3495
         """
-        self.info('get random order with department')
-        department = self.orders_api.get_random_department_in_order()
+        self.info('get create order with department')
+        api, payload = self.orders_api.create_order_with_department()
+        self.assertEqual(api['status'], 1)
+        department = payload[0]['departments'][0]['text']
         self.info('filter by department value {}'.format(department))
         self.orders_page.apply_filter_scenario(filter_element='orders:departments_filter',
                                                filter_text=department, field_type='text')
