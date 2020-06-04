@@ -57,10 +57,16 @@ class BasePages:
             if sleep:
                 self.sleep_tiny()
             self.base_selenium.click(element=save_btn)
-        else:            
+        else:
             self.base_selenium.click(element='my_profile:save_button')
         if sleep:
             self.sleep_tiny()
+
+    def save_and_wait(self, save_btn='general:save'):
+        self.save(save_btn=save_btn)
+        self.info('Refresh to make sure that data are saved correctly')
+        self.base_selenium.refresh()
+        self.wait_until_page_is_loaded()
 
     def cancel(self, force=True):
         if self.base_selenium.check_element_is_exist(element='general:cancel'):
