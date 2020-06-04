@@ -333,10 +333,9 @@ class TestUnitAPI(TestUnitAPIFactory):
         if not testunits_with_values:
             self.info(" No test unit with req. material type, so create one")
             api, testunit_payload = self.create_quantitative_testunit()
-            testunit_name = testunit_payload['name']
-            self.info("created test unit name is {}".format(testunit_name))
+            if api('status') == 1:
+                return testunit_payload
         else:
-            testunit_name = random.choice(testunits_with_values)['name']
-            self.info("selected test unit name is {}".format(testunit_name))
+            testunit = random.choice(testunits_with_values)
+            return testunit
 
-        return testunit_name

@@ -1173,7 +1173,7 @@ class OrdersTestCases(BaseTest):
 
         new_test_unit_name = TestUnitAPI().get_test_unit_name_with_value_with_material_type(
             material_type=sub_order[sub_order_index]['materialType'], avoid_duplicate=True,
-            duplicated_test_unit=sub_order[sub_order_index]['testUnit'][0]['testUnit']['name'])
+            duplicated_test_unit=sub_order[sub_order_index]['testUnit'][0]['testUnit']['name'])['name']
 
         self.info("Edit sub-order {} in order no. {} with test_unit {}".format(
             len(sub_order)-1-sub_order_index, order['orderNo'], new_test_unit_name))
