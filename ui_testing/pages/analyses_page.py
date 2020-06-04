@@ -10,3 +10,8 @@ class AllAnalysesPage(BasePages):
         self.base_selenium.get(url=self.analyses)
         self.wait_until_page_is_loaded()
 
+    def filter_by_analysis_number(self, filter_text):
+        self.info('Filter by analysis number : {}'.format(filter_text))
+        self.open_filter_menu()
+        self.filter_by(filter_element='analysis_page:analysis_no_filter', filter_text=filter_text, field_type='text')
+        self.filter_apply()
