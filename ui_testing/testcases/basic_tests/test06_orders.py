@@ -1168,65 +1168,41 @@ class OrdersTestCases(BaseTest):
         self.info(" get random order with one test unit")
         order, sub_order, sub_order_index = self.orders_api.get_order_with_field_name(field='testUnit', no_of_field=1)
         self.info("get new test unit with material_type {}".format(sub_order[sub_order_index]['materialType']))
-        material_id = GeneralUtilitiesAPI().get_material_id(sub_order[sub_order_index]['materialType'])
-        testunits = TestUnitAPI().list_testunit_by_name_and_material_type(materialtype_id=material_id)
-        testunits_with_values = [] # make sure test unit have value
-        for testunit in testunits[0]['testUnits']:  # make sure test unit differs from old one
-            if testunit['name'] != sub_order[sub_order_index]['testUnit'][0]['testUnit']['name']:
-                if testunit['typeName'] == 'Quantitative MiBi' and testunit['mibiValue']:
-                   testunits_with_values.append(testunit)
-                elif testunit['typeName'] == 'Quantitative' and testunit['lowerLimit'] and testunit['upperLimit']:
-                    testunits_with_values.append(testunit)
-                elif testunit['typeName'] == 'Qualitative' and testunit['textValue']:
-                    testunits_with_values.append(testunit)
 
-        if not testunits_with_values:
-            self.info(" No test unit with req. material type, so create one")
-            api, testunit_payload = TestUnitAPI().create_quantitative_testunit()
-            self.assertEqual(api['status'], 1)
-            testunit_name = testunit_payload['name']
-            self.info("created test unit name is {}".format(testunit_name))
-        else:
-            testunit_name = random.choice(testunits_with_values)['name']
-            self.info("selected test unit name is {}".format(testunit_name))
+        new_test_unit_name = TestUnitAPI().get_test_unit_name_with_value_with_material_type(
+            material_type=sub_order[sub_order_index]['materialType'], avoid_duplicate=True,
+            duplicated_test_unit=sub_order[sub_order_index]['testUnit'][0]['testUnit']['name'])
 
         self.info("Edit sub-order {} in order no. {} with test_unit {}".format(
-            len(sub_order)-1-sub_order_index, order['orderNo'], testunit_name))
+            len(sub_order)-1-sub_order_index, order['orderNo'], new_test_unit_name))
         self.info("open order edit page")
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
         self.order_page.update_suborder(sub_order_index=int(len(sub_order)-1-sub_order_index),
-                                        test_units=[testunit_name], remove_old=True)
+                                        test_units=[new_test_unit_name], remove_old=True)
         # checking that when adding new test unit, the newly added test unit is added to the
         # order's analysis instead of creating new analysis
-        self.order_page.save(save_btn='order:save_btn')
-        self.info('Refresh to make sure that data are saved correctly')
-        self.base_selenium.refresh()
-        self.order_page.wait_until_page_is_loaded()
+        self.order_page.save_and_wait(save_btn='order:save_btn')
         self.info('Get suborder data to check it')
-        suborder_after_refresh = \
-            self.order_page.get_suborder_data()['suborders'][int(len(sub_order)-1-sub_order_index)]
-        suborder_testunits_after_refresh = suborder_after_refresh['testunits'][0]['name']
+        suborder_testunits_after_edit = self.orders_api.get_suborder_by_order_id(
+            order['orderId'])[0]['orders'][sub_order_index]['testUnit']
+        testunits_after_edit = [testunit['testUnit']['name'] for testunit in suborder_testunits_after_edit]
+        self.assertEqual(len(testunits_after_edit), 1)
         self.info('Assert Test units: test units are: {}, and should be: {}'.
-                  format(suborder_testunits_after_refresh, testunit_name))
-        self.assertEqual(suborder_testunits_after_refresh, testunit_name)
+                  format(testunits_after_edit, new_test_unit_name))
+        self.assertEqual(testunits_after_edit[0], new_test_unit_name)
 
         self.info('Getting analysis page to check the data in this child table')
         self.order_page.get_orders_page()
-        self.orders_page.filter_by_analysis_number(suborder_after_refresh['analysis_no'])
+        self.orders_page.filter_by_analysis_number(sub_order[sub_order_index]['analysis'])
         sub_order_data = self.orders_page.get_child_table_data()[0]
-        self.assertEqual(sub_order_data['Test Units'], testunit_name)
+        self.assertEqual(sub_order_data['Test Units'], new_test_unit_name)
         self.order_page.navigate_to_analysis_tab()
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
-                                                 filter_text=suborder_after_refresh['analysis_no'],
+                                                 filter_text=sub_order[sub_order_index]['analysis'],
                                                  field_type='text')
         analysis_records = self.analyses_page.get_child_table_data()
-        test_units = []
-        if len(analysis_records) > 1:
-            for analysis_record in analysis_records:
-                test_units.append(analysis_record['Test Unit'])
-        else:
-            test_units = analysis_records[0]['Test Unit']
-        self.assertIn(testunit_name, test_units)
+        test_units = [analysis_record['Test Unit'] for analysis_record in analysis_records]
+        self.assertIn(new_test_unit_name, test_units)
 
     # will continue with us apply it from the second suborder & need test case number for it to apply from the second suborder
     @parameterized.expand(['save_btn', 'cancel'])
