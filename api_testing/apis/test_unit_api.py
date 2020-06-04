@@ -88,7 +88,9 @@ class TestUnitAPIFactory(BaseAPI):
         """
         if success, response['testUnits']
         """
-        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue)
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(
+            self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'],
+            materialtype_id, name, negelectIsDeleted, searchableValue)
         return api, {}
 
     """
@@ -315,6 +317,7 @@ class TestUnitAPI(TestUnitAPIFactory):
                                                          avoid_duplicate=False, duplicated_test_unit=''):
         material_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testunits = TestUnitAPI().list_testunit_by_name_and_material_type(materialtype_id=material_id)[0]['testUnits']
+
         if avoid_duplicate:  # make sure test unit differs from old one
             testunits = [testunit for testunit in testunits if testunit['name'] != duplicated_test_unit]
         testunits_with_values = []  # make sure test unit have value
