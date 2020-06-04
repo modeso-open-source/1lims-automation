@@ -2005,12 +2005,14 @@ class OrdersTestCases(BaseTest):
         """
         testunits, payload = self.test_unit_api.get_all_test_units(limit=20, deleted=1)
         test_unit = random.choice(testunits['testUnits'])
+        self.info('random test unit: {}'.format(test_unit['name']))
 
         self.order_page.get_orders_page()
         self.base_selenium.click(element='orders:new_order')
         self.order_page.set_new_order()
         self.order_page.sleep_small()
         self.order_page.set_material_type_of_first_suborder(material_type='r', sub_order_index=0)
+
         self.info('Asset test unit is not existing in the list')
         self.assertFalse(self.order_page.is_testunit_existing(
             test_unit=test_unit['name']))
