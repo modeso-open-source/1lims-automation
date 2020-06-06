@@ -11,6 +11,9 @@ class Order(Orders):
     def get_order_number(self):
         return self.base_selenium.get_text(element='order:order_number_add_form').split('\n')[0]
 
+    def set_order_number(self, no):
+        self.base_selenium.set_text(element="order:order_number", value=no)
+
     def set_new_order(self):
         self.base_selenium.LOGGER.info('Set new order.')
         self.base_selenium.select_item_from_drop_down(
@@ -91,7 +94,7 @@ class Order(Orders):
 
     def clear_test_unit(self):
         if self.get_test_unit():
-            self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
+            self.base_selenium.clear_items_in_drop_down(element='order:test_unit', confirm_popup=True)
 
     def set_test_unit(self, test_unit=''):
         if test_unit:
@@ -126,8 +129,9 @@ class Order(Orders):
         for test_plan in test_plans:
             self.set_test_plan(test_plan=test_plan)
         for test_unit in test_units:
-            self.set_test_unit(test_unit)
+            self.set_test_unit(test_unit=test_unit)
         self.sleep_small()
+        
         if multiple_suborders > 0:
             self.get_suborder_table()
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
@@ -151,7 +155,7 @@ class Order(Orders):
         self.sleep_small()
 
         for test_unit in test_units:
-            self.set_test_unit(test_unit)
+            self.set_test_unit(test_unit=test_unit)
 
         self.sleep_small()
         self.save(save_btn='order:save_btn')
@@ -333,19 +337,31 @@ class Order(Orders):
         suborders_data = []
         self.base_selenium.LOGGER.info('getting suborders data')
         for suborder in table_suborders:
-            suborder_data = self.base_selenium.get_row_cells_id_dict_related_to_header(row=suborder,
-                                                                                       table_element='order:suborder_table')
-            article = {"name": suborder_data['article'].split(' No:')[0],
-                       "no": suborder_data['article'].split(' No:')[1]} if len(
-                suborder_data['article'].split(' No:')) > 1 else '-'
-            testunits = []
+            suborder_data = self.base_selenium.get_row_cells_id_dict_related_to_header(
+                row=suborder, table_element='order:suborder_table')
+            article = \
+                {"name": suborder_data['article'].split(' No:')[0], "no": suborder_data['article']
+                    .split(' No:')[1]} if len(suborder_data['article'].split(' No:')) > 1 else '-'
+
+            testunits =[]
             rawTestunitArr = suborder_data['testUnits'].split(',\n')
 
             for testunit in rawTestunitArr:
-                if len(testunit.split(' No: ')) > 1:
+                if 'Type' in testunit:
+                    if len(testunit.split(' Type:')) > 1:
+                        testunits.append({
+                            "name": testunit.split(' Type: ')[0],
+                            "Type": testunit.split(' Type: ')[1]
+                        })
+                elif 'No' in testunit:
+                    if len(testunit.split(' No:')) > 1:
+                        testunits.append({
+                            "name": testunit.split(' No: ')[0],
+                            "No": testunit.split(' No: ')[1]
+                        })
+                elif len(rawTestunitArr):
                     testunits.append({
-                        "name": testunit.split(' No: ')[0],
-                        "no": testunit.split(' No: ')[1]
+                        "name": testunit
                     })
                 else:
                     testunits = []
@@ -381,15 +397,15 @@ class Order(Orders):
                                              item_text=testunit_name.replace("'", ''))
 
     def update_suborder(self, sub_order_index=0, contacts=False, departments=[], material_type=False, articles=False,
-                        test_plans=[], test_units=[], shipment_date=False, test_date=False):
+                        test_plans=[], test_units=[], shipment_date=False, test_date=False, remove_old=False):
 
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
+        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborder_table_rows[sub_order_index]
         suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
             row=suborder_row, table_element='order:suborder_table')
         contacts_record = 'contact with many departments'
         suborder_row.click()
+        self.base_selenium.scroll()
         if material_type:
             self.base_selenium.LOGGER.info(
                 ' Set material type : {}'.format(material_type))
@@ -401,14 +417,22 @@ class Order(Orders):
                 ' Set article name : {}'.format(articles))
             self.set_article(article=articles)
             self.sleep_small()
-        self.base_selenium.LOGGER.info(
-            ' Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
+
+        self.info(' Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
         for testplan in test_plans:
+            if remove_old:
+                self.clear_test_plan()
+                self.sleep_tiny()
             self.set_test_plan(test_plan=testplan)
-        self.base_selenium.LOGGER.info(
-            ' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
+            self.sleep_tiny()
+           
+        self.info(' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
+            if remove_old:
+                self.clear_test_unit()
+                self.sleep_small()
             self.set_test_unit(test_unit=testunit)
+            self.sleep_small()
 
         if shipment_date:
             return self.set_shipment_date(row_id=sub_order_index)
