@@ -1419,7 +1419,7 @@ class OrdersTestCases(BaseTest):
             test_plan = test_plan_data['testPlanName']
             article = test_plan_data['article'][0]
         else:
-            article_data = ArticleAPI().get_aticle_with_material_type(suborder['materialType'])
+            article_data = ArticleAPI().get_article_with_material_type(suborder['materialType'])
             article = article_data['name']
             formatted_article = {'id': article_data['id'], 'text': article}
             new_test_plan = TestPlanAPI().create_completed_testplan(
@@ -1477,7 +1477,6 @@ class OrdersTestCases(BaseTest):
 
         self.info('update order {} with random article'.format(order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
-        self.order_page.sleep_tiny()
         self.order_page.update_suborder(sub_order_index=suborder_update_index, articles='')
         self.info('assert test plan is empty')
         self.assertFalse(self.order_page.get_test_plan())
