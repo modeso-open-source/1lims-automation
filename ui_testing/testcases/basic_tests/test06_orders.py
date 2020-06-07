@@ -606,7 +606,7 @@ class OrdersTestCases(BaseTest):
         self.info('filter by order No. {}'.format(order['orderNo']))
         self.orders_page.filter_by_order_no(order['orderNo'])
         result_order = self.orders_page.result_table()[0]
-        self.assertIn(order['orderNo'], result_order.text)
+        self.assertIn(order['orderNo'], result_order.text.replace("'", ""))
 
     def test017_filter_by_Status(self):
         """
