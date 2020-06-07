@@ -729,17 +729,16 @@ class TestPlansTestCases(BaseTest):
         Test plan: Test unit Approach: In case I update category & iteration of test unit that used in test plan with new version
         ,when  go to test plan to add the same test unit , I found category & iteration updated
         """
-        payload = self.test_plan_api.create_testplan()['testPlan']
-        print(payload)
         # select random test unit to create the test plan with it
         testunits, payload = self.test_unit_api.get_all_test_units(limited=20)
         testunit = random.choice(testunits['testUnits'])
+        print(testunit)
         self.info('A random test unit is chosen, its name: {}, category: {} and number of iterations: {}'.format(
             testunit['name'], testunit['categoryName'], testunit['iterations']))
 
         # create the first testplan
-        payload = self.test_plan_api.create_testplan()
-        print(first_testplan_name)
+        payload = self.test_plan_api.create_testplan(testunit['materialTypes'][0],selectedArticles='All',testunits=testunit['name'], )
+        print(payload)
         #first_testplan_name = self.test_plan.create_new_test_plan(
             #material_type=testunit['materialTypes'][0], article='', test_unit=testunit['name'])
         self.info('New testplan is created successfully with name: {}'.format(
