@@ -2453,6 +2453,7 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(response['status'], 1)
         test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
         test_units = [testunit['name'] for testunit in payload[0]['selectedTestUnits']]
+        import ipdb;ipdb.set_trace()
         test_units.extend(TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']))
         test_units.extend(TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number']))
         self.info("created order has test plans {} ".format(test_plans))
