@@ -23,9 +23,10 @@ class Order(Orders):
         self.base_selenium.select_item_from_drop_down(
             element='order:order', item_text='Existing Order')
 
-    def open_suborder_edit(self):
-        self.base_selenium.click(element='order:suborder_table')
-        self.info("suborder table can be editted")
+    def open_suborder_edit(self, sub_order_index=0):
+        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = suborder_table_rows[sub_order_index]
+        suborder_row.click()
 
     def set_material_type(self, material_type=''):
         if material_type:
