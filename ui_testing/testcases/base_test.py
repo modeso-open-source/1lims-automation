@@ -23,8 +23,17 @@ class BaseTest(TestCase):
         self.pass_refresh_feature()
 
     def tearDown(self):
+        self.screen_shot()
         self.base_selenium.quit_driver()
         self.info('TearDown. \t')
+
+    def screen_shot(self):
+        try:
+            method, error = self._outcome.errors[0]
+            if error:
+                self.base_selenium.driver.get_screenshot_as_file("screenshot_" + method._testMethodName + ".png")
+        except:
+            pass
 
     def generate_random_string(self):
         return str(uuid4()).replace("-", "")[:10]
