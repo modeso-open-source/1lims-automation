@@ -251,6 +251,42 @@ class OrdersAPI(OrdersAPIFactory):
                             and len(suborders[i][field]) == int(no_of_field):
                         return order, suborders, i
 
+    def get_order_with_testunit_testplans(self):
+        """
+        :return: order, suborder,
+        """
+        orders_data, payload = self.get_all_orders(limit=50)
+        orders = orders_data['orders']
+        for order in orders:
+            suborders_data, a = self.get_suborder_by_order_id(order['id'])
+            suborders = suborders_data['orders']
+            for i in range(0, len(suborders) - 1):
+                if suborders[i]['testPlans'] and suborders[i]['testUnit']:
+                    return order, suborders
+
+    def get_random_contact_in_order(self):
+        """
+        :return: contact name
+        """
+        orders_data, payload = self.get_all_orders(limit=50)
+        orders = orders_data['orders']
+        for order in orders:
+            if order['company']:
+                return order['company'][0]['name']
+
+    def get_random_department_in_order(self):
+        """
+        :return: contact name
+        """
+        orders_data, payload = self.get_all_orders()
+        orders = orders_data['orders']
+        for order in orders:
+            suborders_data, a = self.get_suborder_by_order_id(order['id'])
+            suborders = suborders_data['orders']
+            for i in range(0, len(suborders) - 1):
+                if suborders[i]['departments']:
+                    return suborders[i]['departments']
+                      
     def create_order_with_double_test_plans(self, only_test_plans=False):
         testplan = random.choice(TestPlanAPI().get_completed_testplans())
         testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
@@ -346,3 +382,23 @@ class OrdersAPI(OrdersAPIFactory):
 
         }
         return self.create_new_order(**payload)
+
+    def create_order_with_department(self):
+        contact = random.choice(ContactsAPI().get_contacts_with_department())
+        department_data = ContactsAPI().get_contact_form_data(contact['id'])[0]['contact']['departments'][0]
+        payload = {
+            'contact': [
+                {"id": contact['id'],
+                 "text": contact['name'],
+                 'No': contact['companyNo']},
+            ],
+            'departments': [{"id": department_data['id'], "text": department_data['name'],
+                             "group": contact['id'], "groupName": contact['name']}],
+        }
+        return self.create_new_order(**payload)
+
+
+
+
+
+

@@ -558,30 +558,164 @@ class OrdersTestCases(BaseTest):
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
 
-    # wiill continue with us
-    def test015_filter_by_any_fields(self):
+    @parameterized.expand(['materialType', 'article', 'testPlans',
+                           'testUnit', 'lastModifiedUser', 'analysis'])
+    def test015_filter_by_any_fields(self, key):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
+
         LIMS-3495
         """
-        order_row = self.order_page.get_random_order_row()
-        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=order_row)
-        filter_fields_dict = self.order_page.order_filters_element()
-        self.order_page.open_filter_menu()
-        for key in filter_fields_dict:
-            field = filter_fields_dict[key]
-            self.order_page.filter(
-                key, field['element'], order_data[key], field['type'])
-            filtered_rows = self.order_page.result_table()
-            for index in range(len(filtered_rows) - 1):
-                row_data = self.base_selenium.get_row_cells_dict_related_to_header(
-                    row=filtered_rows[index])
-                self.base_selenium.LOGGER.info(
-                    ' Assert {} in  (table row: {}) == {} '.format(key, index + 1, order_data[key]))
-                self.assertEqual(order_data[key].replace(
-                    "'", ""), row_data[key].replace("'", ""))
-            self.order_page.filter_reset()
+        self.info('select random order using api')
+        order, suborder = self.orders_api.get_order_with_testunit_testplans()
+        order_data = suborder[0]
+        filter_element = self.order_page.order_filters_element(key=key)
+        if key == 'testPlans':
+            filter_value = order_data[key][0]
+        elif key == 'testUnit':
+            filter_value = order_data[key][0]['testUnit']['name']
+        else:
+            filter_value = order_data[key]
+
+        self.info('filter by {} with value {}'.format(key, filter_value))
+
+        self.orders_page.apply_filter_scenario(
+            filter_element=filter_element['element'],
+            filter_text=filter_value,
+            field_type=filter_element['type'])
+
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if filter_value in suborder[filter_element['result_key']].split(",\n"):
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test016_filter_by_order_No(self):
+        """
+        I can filter by any order No.
+
+        LIMS-3495
+        """
+        self.info('select random order using api')
+        orders, _ = self.orders_api.get_all_orders()
+        order = random.choice(orders['orders'])
+        self.info('filter by order No. {}'.format(order['orderNo']))
+        self.orders_page.filter_by_order_no(order['orderNo'])
+        result_order = self.orders_page.result_table()[0]
+        self.assertIn(order['orderNo'], result_order.text.replace("'", ""))
+
+    def test017_filter_by_Status(self):
+        """
+            I can filter by status
+
+            LIMS-3495
+        """
+        self.info("filter by status: Open")
+        self.orders_page.apply_filter_scenario(filter_element='orders:status_filter',
+                                               filter_text='Open', field_type='drop_down')
+
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Status'] == 'Open':
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test018_filter_by_analysis_result(self):
+        """
+            I can filter by Analysis result
+
+            LIMS-3495
+        """
+        self.info("filter by analysis_result: Conform")
+        self.orders_page.apply_filter_scenario(filter_element='orders:analysis_result_filter',
+                                               filter_text='Conform', field_type='drop_down')
+
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Analysis Results'].split(' (')[0] == 'Conform':
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test019_filter_by_contact(self):
+        """
+            New: Orders: Filter Approach: I can filter by contact
+
+            LIMS-3495
+        """
+        self.info('get contact of random order')
+        contact = self.orders_api.get_random_contact_in_order()
+        self.info('filter by contact {}'.format(contact))
+        self.orders_page.apply_filter_scenario(filter_element='orders:contact_filter',
+                                               filter_text=contact, field_type='drop_down')
+        order = self.orders_page.result_table()[0]
+        self.assertIn(contact, order.text)
+
+    def test020_filter_by_department(self):
+        """
+            I can filter by department
+
+            LIMS-3495
+        """
+        self.info('get create order with department')
+        api, payload = self.orders_api.create_order_with_department()
+        self.assertEqual(api['status'], 1)
+        department = payload[0]['departments'][0]['text']
+        self.info('filter by department value {}'.format(department))
+        self.orders_page.apply_filter_scenario(filter_element='orders:departments_filter',
+                                               filter_text=department, field_type='text')
+
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Departments'] == department:
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
+    def test021_filter_by_date(self, key):
+        """
+         I can filter by testDate, shipmentDate, or createdAt fields
+
+         LIMS-3495
+        """
+        orders, _ = self.orders_api.get_all_orders(limit=20)
+        order = random.choice(orders['orders'])
+        suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
+        date_list = suborder['orders'][0][key].split('T')[0].split('-')
+        date_list.reverse()
+        filter_value = "{}.{}.{}".format(date_list[0], date_list[1], date_list[2])
+        filter_element = self.order_page.order_filters_element(key=key)
+        self.orders_page.filter_by_date(first_filter_element=filter_element['element'][0],
+                                        first_filter_text=filter_value,
+                                        second_filter_element=filter_element['element'][1],
+                                        second_filter_text=filter_value)
+
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder[filter_element['result_key']] == filter_value:
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
 
     # will continue with us
     def test016_validate_order_test_unit_test_plan(self):

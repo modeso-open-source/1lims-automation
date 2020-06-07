@@ -142,6 +142,14 @@ class Orders(BasePages):
         self.info(' + Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
+        
+    def filter_by_date(self, first_filter_element, first_filter_text, second_filter_element, second_filter_text):
+        self.open_filter_menu()
+        self.sleep_tiny()
+        self.base_selenium.set_text(element=first_filter_element, value=first_filter_text)
+        self.sleep_tiny()
+        self.base_selenium.set_text(element=second_filter_element, value=second_filter_text)
+        self.filter_apply()
 
     def get_orders_duplicate_data(self, order_no):
         self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
@@ -152,14 +160,28 @@ class Orders(BasePages):
 
     # Return all filter fields used in order
     def order_filters_element(self, key='all'):
-        filter_fileds = {'Order No.': {'element': 'orders:order_filter', 'type': 'text'},
-                         'Analysis No.': {'element': 'orders:analysis_filter', 'type': 'text'},
+        filter_fileds = {'orderNo': {'element': 'orders:order_filter', 'type': 'text'},
+                         'analysis': {'element': 'orders:analysis_filter', 'type': 'text','result_key': 'Analysis No.'},
                          'Contact Name': {'element': 'orders:contact_filter', 'type': 'drop_down'},
-                         'Changed By': {'element': 'orders:changed_by', 'type': 'drop_down'},
-                         'Material Type': {'element': 'orders:material_type_filter', 'type': 'drop_down'},
-                         'Article Name': {'element': 'orders:article_filter', 'type': 'drop_down'},
-                         'Changed On': {'element': 'orders:chnaged_on_filter', 'type': 'text'},
-                         'Shipment Date': {'element': 'orders:shipment_date_filter', 'type': 'text'}
+                         'lastModifiedUser': {'element': 'orders:changed_by', 'type': 'drop_down',
+                                             'result_key':'Changed By'},
+                         'materialType': {'element': 'orders:material_type_filter', 'type': 'drop_down',
+                                          'result_key':'Material Type'},
+                         'article': {'element': 'orders:article_filter', 'type': 'drop_down',
+                                     'result_key': 'Article Name'},
+                         'shipmentDate': {'element': ['orders:shipment_date_filter', 'orders:shipment_date_filter_end'],
+                                          'type': 'text',
+                                          'result_key': 'Shipment Date'},
+                         'testDate': {'element': ['orders:test_date_filter', 'orders:test_date_filter_end'],
+                                      'type': 'text',
+                                      'result_key': 'Test Date'},
+                         'createdAt': {'element': ['orders:created_on_filter','orders:created_on_filter_end'],
+                                       'type': 'text',
+                                       'result_key': 'Created On'},
+                         'testUnit': {'element': 'orders:test_units_filter', 'type': 'drop_down',
+                                      'result_key': 'Test Units'},
+                         'testPlans': {'element': 'orders:test_plans_filter', 'type': 'drop_down',
+                                       'result_key': 'Test Plans'}
                          }
 
         if key == 'all':
