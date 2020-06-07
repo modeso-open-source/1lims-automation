@@ -28,7 +28,6 @@ class OrdersAPIFactory(BaseAPI):
     @api_factory('get')
     def get_order_by_id(self, id=1, **kwargs):
         """
-
         :param id: order ID
         :param kwargs:
         :return: response, payload
@@ -252,7 +251,7 @@ class OrdersAPI(OrdersAPIFactory):
                             and len(suborders[i][field]) == int(no_of_field):
                         return order, suborders, i
 
-    def create_order_with_double_test_plans(self):
+    def create_order_with_double_test_plans(self, only_test_plans=False):
         testplan = random.choice(TestPlanAPI().get_completed_testplans())
         testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
         testplan['id'] = testplan_form_data['testPlan']['testPlanEntity']['id']
@@ -261,28 +260,7 @@ class OrdersAPI(OrdersAPIFactory):
         material_type = testplan['materialType']
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testunit1 = testplan_form_data['testPlan']['specifications'][0]
-        testunit_data = TestUnitAPI().get_testunit_form_data(id=testunit1['id'])[0]['testUnit']
-        formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
 
-        formatted_article = {'id': article_id, 'text': article}
-
-        formatted_material = {'id': material_type_id, 'text': material_type}
-
-        testplan2, _ = TestPlanAPI().create_testplan(
-            testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
-
-        if testplan2['status'] != 1:
-            testplan2, _ = TestPlanAPI().create_testplan(
-                testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
-
-        second_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan2['testPlanDetails']['id'])
-
-        testPlan2 = {
-            'id': int(second_testPlan_data[0]['testPlan']['testPlanEntity']['id']),
-            'testPlanName': second_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
-            'version': 1
-        }
-        testplan_list = [testplan, testPlan2]
 
         testunits = TestUnitAPI().list_testunit_by_name_and_material_type(materialtype_id=material_type_id)
         selected_test_unit_list = []
@@ -309,8 +287,33 @@ class OrdersAPI(OrdersAPIFactory):
 
         testunit2 = selected_test_unit_list[0]
 
+        if only_test_plans:
+            testunit_list = []
+        else:
+            testunit_list = [testunit1, testunit2]
 
-        testunit_list = [testunit1, testunit2]
+        testunit_data = TestUnitAPI().get_testunit_form_data(id=testunit2['id'])[0]['testUnit']
+        formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
+
+        formatted_article = {'id': article_id, 'text': article}
+
+        formatted_material = {'id': material_type_id, 'text': material_type}
+
+        testplan2, _ = TestPlanAPI().create_testplan(
+            testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
+
+        if testplan2['status'] != 1:
+            testplan2, _ = TestPlanAPI().create_testplan(
+                testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
+
+        second_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan2['testPlanDetails']['id'])
+        testPlan2 = {
+            'id': int(second_testPlan_data[0]['testPlan']['testPlanEntity']['id']), #article_test_plan_id
+            'testPlanName': second_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
+            'number': int(second_testPlan_data[0]['testPlan']['number']),
+            'version': 1
+        }
+        testplan_list = [testplan, testPlan2]
 
         payload = {
             'testPlans': testplan_list,
