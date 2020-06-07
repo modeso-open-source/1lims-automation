@@ -176,11 +176,12 @@ class BasePages:
         self.base_selenium.click(element='general:restore')
         self.confirm_popup()
 
-    def delete_selected_item(self):
+    def delete_selected_item(self, confirm_pop_up=True):
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:delete')
-        self.confirm_popup()
+        if confirm_pop_up:
+            self.confirm_popup()
 
     def archive_selected_items(self):
         self.base_selenium.scroll()

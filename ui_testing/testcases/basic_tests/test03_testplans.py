@@ -722,13 +722,15 @@ class TestPlansTestCases(BaseTest):
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-139')
+    #@skip('https://modeso.atlassian.net/browse/LIMSA-139')
     def test026_test_unit_update_version_in_testplan(self):
         """
         LIMS-3703
         Test plan: Test unit Approach: In case I update category & iteration of test unit that used in test plan with new version
         ,when  go to test plan to add the same test unit , I found category & iteration updated
         """
+        payload = self.test_plan_api.create_testplan()['testPlan']
+        print(payload)
         # select random test unit to create the test plan with it
         testunits, payload = self.test_unit_api.get_all_test_units(limited=20)
         testunit = random.choice(testunits['testUnits'])
@@ -736,8 +738,10 @@ class TestPlansTestCases(BaseTest):
             testunit['name'], testunit['categoryName'], testunit['iterations']))
 
         # create the first testplan
-        first_testplan_name = self.test_plan.create_new_test_plan(
-            material_type=testunit['materialTypes'][0], article='', test_unit=testunit['name'])
+        payload = self.test_plan_api.create_testplan()
+        print(first_testplan_name)
+        #first_testplan_name = self.test_plan.create_new_test_plan(
+            #material_type=testunit['materialTypes'][0], article='', test_unit=testunit['name'])
         self.info('New testplan is created successfully with name: {}'.format(
             first_testplan_name))
 

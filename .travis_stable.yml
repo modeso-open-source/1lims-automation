@@ -1,6 +1,6 @@
 language: python
 sudo: enabled
-dist: xenail
+dist: xenial
 group: edge
 
 python:
