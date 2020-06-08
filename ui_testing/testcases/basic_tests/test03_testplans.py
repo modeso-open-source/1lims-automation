@@ -732,21 +732,25 @@ class TestPlansTestCases(BaseTest):
         # select random test unit to create the test plan with it
         testunits, payload = self.test_unit_api.get_all_test_units(limited=20)
         testunit = random.choice(testunits['testUnits'])
-        print(testunit)
         self.info('A random test unit is chosen, its name: {}, category: {} and number of iterations: {}'.format(
             testunit['name'], testunit['categoryName'], testunit['iterations']))
 
         # create the first testplan
-        payload = self.test_plan_api.create_testplan(testunit['materialTypes'][0],selectedArticles='All',testunits=testunit['name'], )
-        print(payload)
+        diana = self.test_plan_api.create_testplan()
+        print(diana)
+        api, payload = self.test_plan_api.create_testplan(materialType=testunit['materialTypes'],selectedArticles='All',testunits=testunit['name'])
+        #print(api)
+        #print(payload)
         #first_testplan_name = self.test_plan.create_new_test_plan(
             #material_type=testunit['materialTypes'][0], article='', test_unit=testunit['name'])
-        self.info('New testplan is created successfully with name: {}'.format(
-            first_testplan_name))
+        #self.info('New testplan is created successfully with name: {}'.format(
+          #  payload[0]['testPlan']))
 
         # go to testplan edit to get the number of iterations and testunit category
         first_testplan_testunit_category, first_testplan_testunit_iteration =self.test_plan.get_testunit_category_iterations(
-            first_testplan_name)
+            payload['testplan_name'])
+        print(first_testplan_testunit_iteration)
+        print(first_testplan_testunit_category)
         # go to testunits active table and search for this testunit-
         self.test_unit_page.get_test_units_page()
         self.base_selenium.LOGGER.info(

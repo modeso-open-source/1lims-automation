@@ -108,16 +108,17 @@ class TestPlanAPIFactory(BaseAPI):
         using testunit id, select testunit form data through api call: test_unit_api.get_testunit_form_data(id=#testunit_id)
         and then use the return of this mapping function test_unit_page.map_testunit_to_testplan_format(testunit=formdata_testunit) to add it to the testunits array
         """
-        testplan_name = self.generate_random_string()
+        #testplan_name = self.generate_random_string()
         _payload = {
             'number': self.generate_random_number(),
+            'testplan_name' : self.generate_random_string(),
             'testPlan': {
                 'id': 'new',
-                'text': testplan_name
+                'text': 'testplan_name'
             },
             'selectedTestPlan': {
                 'id': 'new',
-                'text': testplan_name
+                'text': 'testplan_name'
             },
             'selectedArticles': [{
                 'id': -1,
