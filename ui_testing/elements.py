@@ -544,6 +544,8 @@ elements = {
                             'value': 'orderNofield'},
         'analysis_filter': {'method': 'id',
                             'value': 'analysisfield'},
+        'analysis_result_filter': {'method': 'id',
+                            'value': 'analysisResultsfield'},
         'order_filter': {'method': 'id',
                          'value': 'orderNofield'},
         'contact_filter': {'method': 'id',
@@ -554,12 +556,27 @@ elements = {
                                  'value': 'materialTypefield'},
         'article_filter': {'method': 'id',
                            'value': 'articlefield'},
-        'chnaged_on_filter': {'method': 'id',
-                              'value': 'start_createdAt'},
+        'test_plans_filter': {'method': 'id',
+                              'value': 'testPlanfield'},
+        'test_units_filter': {'method': 'id',
+                              'value': 'testUnitfield'},
+        'status_filter': {'method': 'id',
+                          'value': 'status_idfield'},
+        'departments_filter': {'method': 'id', 'value': 'departmentsfield'},
+        'created_on_filter': {'method': 'id',
+                              'value': "start_createdAt"},
+        'created_on_filter_end': {'method': 'id',
+                                  'value': 'end_createdAt'},
         'test_date_filter': {'method': 'id',
                              'value': 'start_testDate'},
+        'test_date_filter_end': {'method': 'id', 'value': 'end_testDate'},
+        'shipment_date_filter_end': {'method': 'id',
+                                     'value': 'end_shipmentDate',
+                                     'order': 1
+                                     },
         'shipment_date_filter': {'method': 'id',
-                                 'value': 'start_shipmentDate'},
+                                 'value': 'start_shipmentDate',
+                                 'order': 1},
         'analysis_tab': {
             'method': 'xpath',
             'value': "//label[@class='btn tab']"},
@@ -1053,7 +1070,9 @@ elements = {
         },
         'analysis_page_table': {'method': 'class_name', 'value': 'm_accordion_7', 'order': 0},
         'headers': {'method': 'id', 'value': 'headers'},
-        'analysis_no_filter': {'method': 'id', 'value': 'nofield'}
+        'analysis_no_filter': {'method': 'id', 'value': 'nofield'},
+        'order_no_filter': {'method': 'id', 'value': 'orderNofield'}
+
     },
 
     'company_profile': {

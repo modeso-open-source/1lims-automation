@@ -105,7 +105,6 @@ class BasePages:
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
-        self.sleep_tiny()
 
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')
@@ -572,3 +571,8 @@ class BasePages:
 
     def close_connection_with_database(self, db):
         db.close()
+
+    def get_current_year(self):
+        current_year = datetime.datetime.now()
+        return str(current_year.year)
+
