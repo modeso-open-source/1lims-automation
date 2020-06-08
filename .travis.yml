@@ -29,5 +29,3 @@ script:
 
   - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test035_archived_test_unit_shoudnt_display_in_the_order_drop_down_list
 
-
-
