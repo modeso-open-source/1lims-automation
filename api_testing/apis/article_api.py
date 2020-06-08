@@ -165,16 +165,16 @@ class ArticleAPI(ArticleAPIFactory):
 
     def get_article_with_material_type(self, material_type):
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
-        articles, payload = self.get_all_articles()
+        articles, payload = self.get_all_articles(limit=500)
         self.info("search for article with material type {}".format(material_type))
         for article in articles['articles']:
             if article['materialType'] == material_type:
-                return article
+                return article['name']
 
-        self.info("No article with requested material type, So create article")
+        self.info("No article with requested material type, So create atricle")
         materialType = {"id": material_type_id, "text": material_type}
         api, payload = self.create_article(materialType=materialType,
                                            selectedMaterialType=[materialType],
                                            materialTypeId=int(material_type_id))
         if api['status'] == 1:
-            return api['article']
+            return api['article']['name']

@@ -558,30 +558,164 @@ class OrdersTestCases(BaseTest):
                                                                                           order_material_type))
             self.assertEqual(current_material_type, order_material_type)
 
-    # wiill continue with us
-    def test015_filter_by_any_fields(self):
+    @parameterized.expand(['materialType', 'article', 'testPlans',
+                           'testUnit', 'lastModifiedUser', 'analysis'])
+    def test015_filter_by_any_fields(self, key):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
+
         LIMS-3495
         """
-        order_row = self.order_page.get_random_order_row()
-        order_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=order_row)
-        filter_fields_dict = self.order_page.order_filters_element()
-        self.order_page.open_filter_menu()
-        for key in filter_fields_dict:
-            field = filter_fields_dict[key]
-            self.order_page.filter(
-                key, field['element'], order_data[key], field['type'])
-            filtered_rows = self.order_page.result_table()
-            for index in range(len(filtered_rows) - 1):
-                row_data = self.base_selenium.get_row_cells_dict_related_to_header(
-                    row=filtered_rows[index])
-                self.base_selenium.LOGGER.info(
-                    ' Assert {} in  (table row: {}) == {} '.format(key, index + 1, order_data[key]))
-                self.assertEqual(order_data[key].replace(
-                    "'", ""), row_data[key].replace("'", ""))
-            self.order_page.filter_reset()
+        self.info('select random order using api')
+        order, suborder = self.orders_api.get_order_with_testunit_testplans()
+        order_data = suborder[0]
+        filter_element = self.order_page.order_filters_element(key=key)
+        if key == 'testPlans':
+            filter_value = order_data[key][0]
+        elif key == 'testUnit':
+            filter_value = order_data[key][0]['testUnit']['name']
+        else:
+            filter_value = order_data[key]
+
+        self.info('filter by {} with value {}'.format(key, filter_value))
+
+        self.orders_page.apply_filter_scenario(
+            filter_element=filter_element['element'],
+            filter_text=filter_value,
+            field_type=filter_element['type'])
+
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if filter_value in suborder[filter_element['result_key']].split(",\n"):
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test016_filter_by_order_No(self):
+        """
+        I can filter by any order No.
+
+        LIMS-3495
+        """
+        self.info('select random order using api')
+        orders, _ = self.orders_api.get_all_orders()
+        order = random.choice(orders['orders'])
+        self.info('filter by order No. {}'.format(order['orderNo']))
+        self.orders_page.filter_by_order_no(order['orderNo'])
+        result_order = self.orders_page.result_table()[0]
+        self.assertIn(order['orderNo'], result_order.text.replace("'", ""))
+
+    def test017_filter_by_Status(self):
+        """
+            I can filter by status
+
+            LIMS-3495
+        """
+        self.info("filter by status: Open")
+        self.orders_page.apply_filter_scenario(filter_element='orders:status_filter',
+                                               filter_text='Open', field_type='drop_down')
+
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Status'] == 'Open':
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test018_filter_by_analysis_result(self):
+        """
+            I can filter by Analysis result
+
+            LIMS-3495
+        """
+        self.info("filter by analysis_result: Conform")
+        self.orders_page.apply_filter_scenario(filter_element='orders:analysis_result_filter',
+                                               filter_text='Conform', field_type='drop_down')
+
+        self.info('get random suborder from result table to check that filter works')
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Analysis Results'].split(' (')[0] == 'Conform':
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    def test019_filter_by_contact(self):
+        """
+            New: Orders: Filter Approach: I can filter by contact
+
+            LIMS-3495
+        """
+        self.info('get contact of random order')
+        contact = self.orders_api.get_random_contact_in_order()
+        self.info('filter by contact {}'.format(contact))
+        self.orders_page.apply_filter_scenario(filter_element='orders:contact_filter',
+                                               filter_text=contact, field_type='drop_down')
+        order = self.orders_page.result_table()[0]
+        self.assertIn(contact, order.text)
+
+    def test020_filter_by_department(self):
+        """
+            I can filter by department
+
+            LIMS-3495
+        """
+        self.info('get create order with department')
+        api, payload = self.orders_api.create_order_with_department()
+        self.assertEqual(api['status'], 1)
+        department = payload[0]['departments'][0]['text']
+        self.info('filter by department value {}'.format(department))
+        self.orders_page.apply_filter_scenario(filter_element='orders:departments_filter',
+                                               filter_text=department, field_type='text')
+
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder['Departments'] == department:
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
+
+    @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
+    def test021_filter_by_date(self, key):
+        """
+         I can filter by testDate, shipmentDate, or createdAt fields
+
+         LIMS-3495
+        """
+        orders, _ = self.orders_api.get_all_orders(limit=20)
+        order = random.choice(orders['orders'])
+        suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
+        date_list = suborder['orders'][0][key].split('T')[0].split('-')
+        date_list.reverse()
+        filter_value = "{}.{}.{}".format(date_list[0], date_list[1], date_list[2])
+        filter_element = self.order_page.order_filters_element(key=key)
+        self.orders_page.filter_by_date(first_filter_element=filter_element['element'][0],
+                                        first_filter_text=filter_value,
+                                        second_filter_element=filter_element['element'][1],
+                                        second_filter_text=filter_value)
+
+        suborders = self.orders_page.get_child_table_data()
+        filter_key_found = False
+        for suborder in suborders:
+            if suborder[filter_element['result_key']] == filter_value:
+                filter_key_found = True
+                break
+
+        self.assertTrue(filter_key_found)
+        self.assertGreater(len(self.order_page.result_table()), 1)
 
     # will continue with us
     def test016_validate_order_test_unit_test_plan(self):
@@ -2174,6 +2308,115 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(confirm_edit)
         self.assertIn('You cannot do this action on more than one record', confirm_edit_message)
 
+    def test037_update_sub_order_with_multiple_testplans_only_delete_approach(self):
+        """
+        Orders: Test plans: In case I have order record with multiple test plans and I updated them,
+        this update should reflect on the same analysis record without creating new one.
+
+        LIMS-4134 case 1
+        """
+        self.info('create order with two testplans only')
+        response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
+        self.assertEqual(response['status'], 1)
+        test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
+        self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
+        test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
+                      TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
+        self.info("Edit order {}".format(payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        suborder_before_edit = self.order_page.get_suborder_data()
+        self.info('Assert that selected order has one analysis record')
+        self.assertEqual(len(suborder_before_edit['suborders']), 1)
+        analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
+        self.order_page.open_suborder_edit(sub_order_index=0)
+        self.info("remove only one test plan")
+        self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
+        self.info("confirm pop_up")
+        self.order_page.confirm_popup()
+        self.order_page.save(save_btn='order:save_btn', sleep=True)
+        self.info("navigate to analysis' active table and check that pld analysis edited without creating new analysis")
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
+        self.assertEqual(len(self.analyses_page.result_table())-1, 1)
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        found_test_plans = analysis_data['Test Plans'].split(', ')
+        self.info("assert that only one test plan found and analysis no not changed")
+        self.assertEqual(len(found_test_plans), 1)
+        self.assertEqual(analysis_data['Analysis No.'], analysis_no)
+        suborder_data = self.analyses_page.get_child_table_data()
+        self.assertEqual(len(suborder_data), 1)
+        for test_plan in test_plans:
+            for test_unit in test_units:
+                if found_test_plans == test_plan:
+                    self.info("assert that test unit related to deleted test plan removed from analysis")
+                    self.assertEqual(test_unit, suborder_data['Test Unit'])
+
+    def test038_update_sub_order_with_multiple_testplans_only_add_approach(self):
+        """
+        Orders: Test plans: In case I have order record with multiple test plans and I updated them,
+        this update should reflect on the same analysis record without creating new one.
+
+        LIMS-4134
+        """
+        self.info('create order with two testplans only')
+        response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
+        self.assertEqual(response['status'], 1)
+        test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
+        self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
+        test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
+                      TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
+
+        article_no = ArticleAPI().get_article_form_data(id=payload[0]['article']['id'])[0]['article']['No']
+        self.info("get new completed test plan with article {} No: {} and material_type {}".format(
+            payload[0]['article']['text'], article_no, payload[0]['materialType']['text']))
+
+        completed_test_plans = TestPlanAPI().get_completed_testplans_with_material_and_same_article(
+            material_type=payload[0]['materialType']['text'], article=payload[0]['article']['text'],
+            articleNo=article_no)
+        completed_test_plans_without_old = [testplan for testplan in completed_test_plans
+                                            if testplan['testPlanName'] not in test_plans]
+
+        if completed_test_plans_without_old:
+            test_plan_data = random.choice(completed_test_plans_without_old)
+            test_plan = test_plan_data['testPlanName']
+            test_unit_data = TestPlanAPI().get_testunits_in_testplan(id=test_plan_data['id'])
+            test_unit = test_unit_data[0]['name']
+        else:
+            self.info("There is no completed test plan so create it ")
+            formatted_article = {'id': payload[0]['article']['id'], 'text': payload[0]['article']['text']}
+            new_test_plan = TestPlanAPI().create_completed_testplan(
+                material_type=payload[0]['materialType']['text'], formatted_article=formatted_article)
+            test_plan = new_test_plan['testPlanEntity']['name']
+            test_unit = new_test_plan['specifications'][0]['name']
+            self.info("completed test plan created with name {} and test unit {}".format(test_plan, test_unit))
+
+        test_plans.append(test_plan)
+        test_units.append(test_unit)
+
+        self.info("edit the sub order of order {}".format(payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        suborder_before_edit = self.order_page.get_suborder_data()
+        self.info('Assert that selected order has one analysis record')
+        self.assertEqual(len(suborder_before_edit['suborders']), 1)
+        analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
+        self.order_page.update_suborder(test_plans=[test_plan])
+        self.order_page.save(save_btn='order:save_btn')
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
+        self.assertEqual(len(self.analyses_page.result_table())-1, 1)
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        found_test_plans = analysis_data['Test Plans'].split(', ')
+        self.assertEqual(len(found_test_plans), 3)
+        self.assertEqual(analysis_data['Analysis No.'], analysis_no)
+        suborder_data = self.analyses_page.get_child_table_data()
+        found_test_units = [testunit['Test Unit'] for testunit in suborder_data]
+        self.assertEqual(len(found_test_units), 3)
+        self.assertCountEqual(test_plans, found_test_plans)
+        self.assertCountEqual(test_units, found_test_units)
+
     def test040_test_create_order(self):
         api, payload = self.orders_api.create_new_order()
         self.info(payload)
@@ -2196,5 +2439,6 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
         self.assertEqual(suborder_data['Test Units'].split(',\n')[0], payload[0]['testUnits'][0]['name'])
         self.assertEqual(suborder_data['Test Units'].split(',\n')[1], payload[0]['testUnits'][1]['name'])
+
 
 
