@@ -736,10 +736,11 @@ class TestPlansTestCases(BaseTest):
             testunit['name'], testunit['categoryName'], testunit['iterations']))
 
         # create the first testplan
-        diana = self.test_plan_api.create_testplan()
-        print(diana)
-        api, payload = self.test_plan_api.create_testplan(materialType=testunit['materialTypes'],selectedArticles='All',testunits=testunit['name'])
-        #print(api)
+        api, payload = self.test_plan_api.create_testplan(materialType=testunit['materialTypes'],testunits=testunit['name'],testPlan=['diana'])
+        print(payload)
+        print(api)
+        #diana = self.test_plan_api.create_testplan(materialType=testunit['materialTypes'],selectedArticles='All',testunits=testunit['name'])
+        #print(diana)
         #print(payload)
         #first_testplan_name = self.test_plan.create_new_test_plan(
             #material_type=testunit['materialTypes'][0], article='', test_unit=testunit['name'])
@@ -748,7 +749,7 @@ class TestPlansTestCases(BaseTest):
 
         # go to testplan edit to get the number of iterations and testunit category
         first_testplan_testunit_category, first_testplan_testunit_iteration =self.test_plan.get_testunit_category_iterations(
-            payload['testplan_name'])
+            payload[0]['testPlan'])
         print(first_testplan_testunit_iteration)
         print(first_testplan_testunit_category)
         # go to testunits active table and search for this testunit-

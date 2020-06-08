@@ -108,17 +108,16 @@ class TestPlanAPIFactory(BaseAPI):
         using testunit id, select testunit form data through api call: test_unit_api.get_testunit_form_data(id=#testunit_id)
         and then use the return of this mapping function test_unit_page.map_testunit_to_testplan_format(testunit=formdata_testunit) to add it to the testunits array
         """
-        #testplan_name = self.generate_random_string()
+        testplan_name = self.generate_random_string()
         _payload = {
             'number': self.generate_random_number(),
-            'testplan_name' : self.generate_random_string(),
             'testPlan': {
                 'id': 'new',
-                'text': 'testplan_name'
+                'text': testplan_name
             },
             'selectedTestPlan': {
                 'id': 'new',
-                'text': 'testplan_name'
+                'text': testplan_name
             },
             'selectedArticles': [{
                 'id': -1,
@@ -132,13 +131,14 @@ class TestPlanAPIFactory(BaseAPI):
             'selectedTestUnits': [],
             'materialTypeId': 1,
             'dynamicFieldsValues': [],
-            'testUnits': []
+            'testUnits': [],
+            'testplan_name': []
         }
         payload = self.update_payload(_payload, **kwargs)
         if 'testPlan' in kwargs:
-            payload['selectedTestPlan'] = [kwargs['testPlan']]
+            payload['selectedTestPlan'] = [kwargs['testPlan']['text']]
         if 'materialType' in kwargs:
-            payload['materialTypeId'] = kwargs['materialType']['id']
+            payload['materialType'] = kwargs['materialType']
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan'])
         return api, payload
 
