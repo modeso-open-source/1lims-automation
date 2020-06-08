@@ -137,3 +137,9 @@ class ContactsAPI(ContactsAPIFactory):
                 return False
         else:
             return False
+
+    def get_contacts_with_department(self):
+        api, contacts_data = self.get_all_contacts(limit=50)
+        contacts = api['contacts']
+        contacts_with_department = [contact for contact in contacts if contact['departments']]
+        return contacts_with_department

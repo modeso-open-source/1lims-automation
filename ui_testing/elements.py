@@ -13,6 +13,7 @@ elements = {
                               'value': 'm-datatable__toggle-subtable',
                               'order': 0},
         'table_child': {'method': 'class_name', 'value': 'dataTable', 'order': 1},
+
         'table_menu_options': {'method': 'class_name', 'value': 'dropdown', 'order': 0},
         'span': {'method': 'tag_name',
                  'value': 'span',
@@ -524,6 +525,10 @@ elements = {
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
+        'active': {'method': 'link_text',
+                    'value': 'Active'},
+        'archived': {'method': 'link_text',
+                    'value': 'Archived'},
         'analysis-confirmation': {
             'method': 'class_name',
             'value': 'swal2-header'},
@@ -539,6 +544,8 @@ elements = {
                             'value': 'orderNofield'},
         'analysis_filter': {'method': 'id',
                             'value': 'analysisfield'},
+        'analysis_result_filter': {'method': 'id',
+                            'value': 'analysisResultsfield'},
         'order_filter': {'method': 'id',
                          'value': 'orderNofield'},
         'contact_filter': {'method': 'id',
@@ -549,18 +556,35 @@ elements = {
                                  'value': 'materialTypefield'},
         'article_filter': {'method': 'id',
                            'value': 'articlefield'},
-        'chnaged_on_filter': {'method': 'id',
-                              'value': 'start_createdAt'},
+        'test_plans_filter': {'method': 'id',
+                              'value': 'testPlanfield'},
+        'test_units_filter': {'method': 'id',
+                              'value': 'testUnitfield'},
+        'status_filter': {'method': 'id',
+                          'value': 'status_idfield'},
+        'departments_filter': {'method': 'id', 'value': 'departmentsfield'},
+        'created_on_filter': {'method': 'id',
+                              'value': "start_createdAt"},
+        'created_on_filter_end': {'method': 'id',
+                                  'value': 'end_createdAt'},
         'test_date_filter': {'method': 'id',
                              'value': 'start_testDate'},
+        'test_date_filter_end': {'method': 'id', 'value': 'end_testDate'},
+        'shipment_date_filter_end': {'method': 'id',
+                                     'value': 'end_shipmentDate',
+                                     'order': 1
+                                     },
         'shipment_date_filter': {'method': 'id',
-                                 'value': 'start_shipmentDate'},
+                                 'value': 'start_shipmentDate',
+                                 'order': 1},
+        'analysis_tab': {
+            'method': 'xpath',
+            'value': "//label[@class='btn tab']"},
         'mainorder_duplicate': {'method': 'id',
                                 'value': 'main_table_duplicate'},
-        'suborder_duplicate': {'method': 'id',
-                               'value': 'child_table_duplicate'},
-        'suborder_archive': {'method': 'id',
-                             'value': 'child_table_archive'},
+        'suborder_duplicate': {'method': 'id', 'value': 'child_table_duplicate'},
+        'suborder_archive': {'method': 'id', 'value': 'child_table_archive'},
+        'suborder_restore': {'method': 'id', 'value': 'child_table_restore'},
         'suborder_delete': {'method': 'id',
                              'value': 'child_table_delete'},
         'confirm_delete': {'method':'xpath',
@@ -574,6 +598,8 @@ elements = {
         'filter_entity': {'method': 'id', 'value': 'entityfield'},
         'filter_entity_number': {'method': 'id', 'value': 'entityNumberfield'},
     },
+
+
 
     'order': {
         'order': {'method': 'id',
@@ -598,7 +624,6 @@ elements = {
                       'value': '//td//*[@id="testPlans"]'},
         'test_unit': {'method': 'xpath',
                       'value': '//td//*[@id="testUnits"]'},
-
         'test_plan_btn': {'method': 'tag_name',
                           'value': 'span',
                           'order': 0},
@@ -634,9 +659,8 @@ elements = {
                           'value': 'date_shipmentDate_0'},
         'test_date': {'method': 'id',
                       'value': 'date_testDate'},
-        'save': {'method': 'class_name',
-                 'value': 'btn-primary',
-                 'order': 1},
+        'save': {'method': 'id',
+                 'value': 'button_save_order'},
         'duplicate_table_view': {'method': 'id',
                                  'value': 'duplicate_table_view'},
         'delete_table_view': {'method': 'id',
@@ -648,9 +672,20 @@ elements = {
         'suborder_list': {'method': 'class_name',
                           'value': 'flaticon-signs',
                           'order': 0},
+        'suborder_table': {'method': 'id',
+                           'value': 'table-with-add'},
+        'add_new_item': {'method': 'class_name',
+                         'value': 'addNewItem',
+                         'order': 0},
+        'add_another_suborder': {
+            'method': 'class_name',
+            'value': 'add-another',
+            'order': 0
+        },
         'add_new_item11': {'method': 'class_name',
-                           'value': 'addNewItem',
-                           'order': 0},
+                         'value': 'addNewItem',
+                         'order': 0},
+
         'add_new_item': {'method': 'link_text',
                          'value': 'Add another item'},
         'order_no_error_message': {'method': 'xpath',
@@ -1035,7 +1070,9 @@ elements = {
         },
         'analysis_page_table': {'method': 'class_name', 'value': 'm_accordion_7', 'order': 0},
         'headers': {'method': 'id', 'value': 'headers'},
-        'analysis_no_filter': {'method': 'id', 'value': 'nofield'}
+        'analysis_no_filter': {'method': 'id', 'value': 'nofield'},
+        'order_no_filter': {'method': 'id', 'value': 'orderNofield'}
+
     },
 
     'company_profile': {
