@@ -303,41 +303,38 @@ class OrdersTestCases(BaseTest):
                     break
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
-
     def test008_duplicate_main_order(self):
+
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
         LIMS-3270
         :return:
         """
-        # get the random main order data
-        main_order = self.order_page.get_random_main_order_with_sub_orders_data()
-        # select the order
-        self.order_page.click_check_box(main_order['row_element'])
-        # duplicate the main order
+        random_testunit, payload = self.test_unit_api.get_all_test_units(limit=20)
+        test_unit = random.choice(random_testunit['testUnits'])
+
+        data_before_duplicate = self.order_page.create_new_order(contact='', material_type='r', article='a',
+                                                                 test_plans=[],
+                                                                 test_units=[test_unit['name']])
+
+        self.orders_page.get_orders_page()
+        order_no = data_before_duplicate['orderNo']
+        self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
+                                              field_type='text')
+
+        row = self.order_page.get_last_order_row()
+        self.order_page.click_check_box(source=row)
         self.order_page.duplicate_main_order_from_table_overview()
+
         # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
-
-        # ignore contact no since the table view doesn't have contact No.
-        for contact in after_duplicate_order['contacts']:
-            contact['no'] = None
-
-        for index in range(len(main_order['suborders'])):
-            # ignore analysis no. since it won't be created in the form until saving
-            main_order['suborders'][index]['analysis_no'] = ''
-            # ignore testunit numbers since the table view only got the name
-            for testunit in after_duplicate_order['suborders'][index]['testunits']:
-                testunit['no'] = None
 
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No
-        self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
+        self.assertNotEqual(data_before_duplicate['orderNo'], after_duplicate_order['orderNo'])
         # compare the contacts
-        self.assertCountEqual(main_order['contacts'], after_duplicate_order['contacts'])
-        # compare the data of suborders data in both orders
-        self.assertCountEqual(main_order['suborders'], after_duplicate_order['suborders'])
+        self.assertCountEqual(data_before_duplicate['contacts'], after_duplicate_order['contacts'])
 
         # save the duplicated order
         self.order_page.save(save_btn='orders:save_order')
@@ -345,10 +342,9 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
         # search for the created order no
         self.order_page.search(after_duplicate_order['orderNo'])
-        # get the search result text
         results = self.order_page.result_table()[0].text
         # check that it exists
-        self.assertIn(after_duplicate_order['orderNo'], results)
+        self.assertIn(after_duplicate_order['orderNo'].replace("'", ""), results.replace("'", ""))
 
     # will continue with us
     def test009_export_order_sheet(self):
@@ -816,39 +812,27 @@ class OrdersTestCases(BaseTest):
             element="order:order_no_error_message")
         self.assertIn('No. already exists in archived, you can go to Archive table and restore it', order_error_message)
 
-    # will continue with us
     def test020_create_new_order_with_test_units(self):
         """
         New: Orders: Create a new order with test units
         LIMS-3267
         """
-        self.base_selenium.LOGGER.info('Running test case to create a new order with test units')
-        test_units_list = []
-        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Qualitative', material_type='All')
-        if test_unit_dict:
-            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative')
-        if test_unit_dict:
-            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(test_unit_dict['Test Unit Name'])
-        test_unit_dict = self.get_active_tst_unit_with_material_type(search='Quantitative Mibi')
-        if test_unit_dict:
-            self.base_selenium.LOGGER.info('Retrieved test unit ' + test_unit_dict['Test Unit Name'])
-            test_units_list.append(test_unit_dict['Test Unit Name'])
+        testunits, payload = self.test_unit_api.get_all_test_units(limited=20)
+        testunit = random.choice(testunits['testUnits'])
 
         self.order_page.get_orders_page()
-        created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a',
-                                                         test_units=test_units_list)
+        created_order = self.order_page.create_new_order(material_type='r', article='a', contact='a', test_plans=[],
+                                                         test_units=[testunit['name']])
 
-        self.analyses_page.get_analyses_page()
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
         self.base_selenium.LOGGER.info(
             'Assert There is an analysis for this new order.')
-        orders_analyess = self.analyses_page.search(created_order)
+        orders_analyess = self.analyses_page.search(value=created_order['orderNo'])
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
             row=orders_analyess[0])
         self.assertEqual(
-            created_order.replace("'", ""), latest_order_data['Order No.'].replace("'", ""))
+            created_order['orderNo'].replace("'", ""), latest_order_data['Order No.'].replace("'", ""))
 
         self.analyses_page.open_child_table(source=orders_analyess[0])
         rows_with_childtable = self.analyses_page.result_table(element='general:table_child')
@@ -857,7 +841,7 @@ class OrdersTestCases(BaseTest):
                                                                                        table_element='general:table_child')
             testunit_name = row_with_headers['Test Unit']
             self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
-            self.assertIn(testunit_name, test_units_list)
+            self.assertIn(testunit_name, testunit['name'])
 
     def test021_create_existing_order_with_test_units(self):
         """

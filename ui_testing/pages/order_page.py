@@ -11,6 +11,9 @@ class Order(Orders):
     def get_order_number(self):
         return self.base_selenium.get_text(element='order:order_number_add_form').split('\n')[0]
 
+    def set_order_number(self, no):
+        self.base_selenium.set_text(element="order:order_number", value=no)
+
     def set_new_order(self):
         self.base_selenium.LOGGER.info('Set new order.')
         self.base_selenium.select_item_from_drop_down(
@@ -61,12 +64,12 @@ class Order(Orders):
                 element='order:contact')
             return self.get_contact()
 
-    def get_contact(self, order_row=None):
-        if order_row:
-            return list(map(lambda s: {"name": str(s), "no": None}, order_row['Contact Name'].split(',\n')))
+    def get_contact(self):
+        contacts = self.base_selenium.get_text(element='order:contact')
+        if "×" in contacts:
+            return contacts.replace("×", "").split('\n')
         else:
-            return list(map(lambda s: {"name": str(s).split(' No: ')[0][1:], "no": str(s).split(' No: ')[1]},
-                            self.base_selenium.get_text(element='order:contact').split('\n')))
+            return []
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
