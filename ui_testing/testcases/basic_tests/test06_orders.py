@@ -2039,8 +2039,7 @@ class OrdersTestCases(BaseTest):
         :return:
         """
         re, payload = self.test_unit_api.create_qualitative_testunit()
-        archived_testunit = self.test_unit_api.archive_testunits(ids=[str(re['testUnit']['testUnitId'])])
-        self.order_page.get_orders_page()
+        self.test_unit_api.archive_testunits(ids=[str(re['testUnit']['testUnitId'])])
         self.base_selenium.click(element='orders:new_order')
         self.order_page.set_new_order()
         self.order_page.sleep_small()
