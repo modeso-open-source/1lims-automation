@@ -1804,7 +1804,7 @@ class OrdersTestCases(BaseTest):
             list(filter(lambda x: x['name'] == selected_suborder_data['material_type'], materialtype_list))[0]
 
         testunit_with_materialtype_all = \
-            self.test_unit_api.get_all_test_units(filter='{"materialTypes":"all"}').json()['testUnits'][0]
+            self.test_unit_api.get_all_test_units(filter='{"materiaTypes":"all"}').json()['testUnits'][0]
         testunit_form_data = self.test_unit_api.get_testunit_form_data(id=testunit_with_materialtype_all['id'])
         # create random article
         random_article_name = self.order_page.generate_random_text()
