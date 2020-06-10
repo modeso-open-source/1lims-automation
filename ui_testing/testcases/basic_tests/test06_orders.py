@@ -2389,29 +2389,55 @@ class OrdersTestCases(BaseTest):
         self.assertCountEqual(test_plans, found_test_plans)
         self.assertCountEqual(test_units, found_test_units)
 
-    def test040_test_create_order(self):
-        api, payload = self.orders_api.create_new_order()
-        self.info(payload)
-        self.orders_page.search(payload[0]['orderNo'])
-        order_data = self.orders_page.get_the_latest_row_data()
-        self.assertEqual(order_data['Order No.'].split('-')[0].replace("'", ""), str(payload[0]['orderNo']))
-        suborder_data = self.orders_page.get_child_table_data()[0]
-        self.assertEqual(suborder_data['Test Plans'], payload[0]['testPlans'][0]['name'])
-        self.assertEqual(suborder_data['Material Type'].replace(' ', ''),
-                         payload[0]['materialType']['text'].replace(' ', ''))
-        self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
-        self.assertEqual(suborder_data['Test Units'], payload[0]['selectedTestUnits'][0]['name'])
+    def test040_user_can_edit_multiple_columns(self):
+        """
+        user can edit multiple columns at the same time
 
-    def test041_test_create_order_with_multiple_testplans(self):
-        api, payload = self.orders_api.create_order_with_double_test_plans()
-        self.orders_page.search(payload[0]['orderNo'])
-        suborder_data = self.orders_page.get_child_table_data()[0]
-        self.assertEqual(suborder_data['Test Plans'].split(',\n')[0], payload[0]['testPlans'][0]['testPlanName'])
-        self.assertEqual(suborder_data['Test Plans'].split(',\n')[1], payload[0]['testPlans'][1]['testPlanName'])
-        self.assertEqual(suborder_data['Material Type'], payload[0]['materialType']['text'])
-        self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
-        self.assertEqual(suborder_data['Test Units'].split(',\n')[0], payload[0]['testUnits'][0]['name'])
-        self.assertEqual(suborder_data['Test Units'].split(',\n')[1], payload[0]['testUnits'][1]['name'])
+        LIMS-5221
+        """
+        self.info('get random order with multiple suborders edit page')
+        order = self.orders_api.get_order_with_multiple_sub_orders()
+        subororder_data = self.orders_api.get_order_by_id(order['orderId'])[0]
+        self.assertEqual(subororder_data['status'], 1)
+        self.info(' edit order no {}'.format(order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        self.info('click on first row and update it')
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row[0].click()
+        first_department = self.order_page.set_departments('')
+        self.info('Department updated to {}'.format(first_department))
+        first_Shipment_date = self.order_page.set_shipment_date(row_id=0)
+        self.info('Shipment_date updated to {}'.format(first_Shipment_date))
+        first_test_date = self.order_page.set_test_date(row_id=0)
+        self.info('test_date updated to {}'.format(first_test_date))
+        self.info('save changes')
+        self.order_page.save(save_btn='order:save')
+        self.info('edit second suborder row')
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row[1].click()
+        self.order_page.set_departments('')
+        self.order_page.set_shipment_date(row_id=1)
+        self.order_page.set_test_date(row_id=1)
+        self.info('press on cancel button')
+        self.order_page.cancel()
+        self.info('get suborders data to assert that second suborder not update updated ')
+        result_suborder_data = self.orders_api.get_order_by_id(order['orderId'])[0]
+        self.assertEqual(result_suborder_data['status'], 1)
+        self.assertEqual(subororder_data['orders'][1]['shipmentDate'], result_suborder_data['orders'][1]['shipmentDate'])
+        self.assertEqual(subororder_data['orders'][1]['testDate'], result_suborder_data['orders'][1]['testDate'])
+        self.info('assert first suborder updated successfully')
+        first_suborder = result_suborder_data['orders'][0]
+        if first_department:
+            first_suborder_department = [dep['name'] for dep in first_suborder['departments']]
+            self.assertCountEqual(first_department, first_suborder_department)
+        result_Shipment_date = first_suborder['shipmentDate'].split('T')[0].split('-')
+        result_Shipment_date.reverse()
+        Shipment_date = "{}.{}.{}".format(result_Shipment_date[0], result_Shipment_date[1], result_Shipment_date[2])
+        self.assertEqual(first_Shipment_date, Shipment_date)
+        result_test_date = first_suborder['testDate'].split('T')[0].split('-')
+        result_test_date.reverse()
+        test_date = "{}.{}.{}".format(result_test_date[0], result_test_date[1], result_test_date[2])
+        self.assertEqual(first_test_date, test_date)
 
     #@skip('https://modeso.atlassian.net/browse/LIMS-7722')
     def test042_duplicate_main_order_with_testPlans_and_testUnits(self):
