@@ -27,6 +27,7 @@ class OrdersTestCases(BaseTest):
         self.analyses_page = AllAnalysesPage()
         self.article_api = ArticleAPI()
         self.test_unit_api = TestUnitAPI()
+        self.contacts_api = ContactsAPI()
         self.single_analysis_page = SingleAnalysisPage()
         self.test_plan_api = TestPlanAPI()
         self.contacts_api = ContactsAPI()
@@ -311,34 +312,24 @@ class OrdersTestCases(BaseTest):
         LIMS-3270
         :return:
         """
-        # get the random main order data
-        main_order = self.order_page.get_random_main_order_with_sub_orders_data()
-        # select the order
-        self.order_page.click_check_box(main_order['row_element'])
-        # duplicate the main order
+        re, payload = self.orders_api.create_new_order()
+        order_no = payload[0]['orderNo']
+        self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
+                                              field_type='text')
+
+        row = self.order_page.get_last_order_row()
+        self.order_page.click_check_box(source=row)
         self.order_page.duplicate_main_order_from_table_overview()
+
         # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
-
-        # ignore contact no since the table view doesn't have contact No.
-        for contact in after_duplicate_order['contacts']:
-            contact['no'] = None
-
-        for index in range(len(main_order['suborders'])):
-            # ignore analysis no. since it won't be created in the form until saving
-            main_order['suborders'][index]['analysis_no'] = ''
-            # ignore testunit numbers since the table view only got the name
-            for testunit in after_duplicate_order['suborders'][index]['testunits']:
-                testunit['no'] = None
 
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No
-        self.assertNotEqual(main_order['orderNo'], after_duplicate_order['orderNo'])
+        self.assertNotEqual(payload[0]['orderNo'], after_duplicate_order['orderNo'])
         # compare the contacts
-        self.assertCountEqual(main_order['contacts'], after_duplicate_order['contacts'])
-        # compare the data of suborders data in both orders
-        self.assertCountEqual(main_order['suborders'], after_duplicate_order['suborders'])
+        self.assertCountEqual([payload[0]['contact'][0]['text']], after_duplicate_order['contacts'])
 
         # save the duplicated order
         self.order_page.save(save_btn='orders:save_order')
@@ -346,10 +337,9 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
         # search for the created order no
         self.order_page.search(after_duplicate_order['orderNo'])
-        # get the search result text
         results = self.order_page.result_table()[0].text
         # check that it exists
-        self.assertIn(after_duplicate_order['orderNo'], results)
+        self.assertIn(after_duplicate_order['orderNo'].replace("'", ""), results.replace("'", ""))
 
     # will continue with us
     def test009_export_order_sheet(self):
@@ -408,7 +398,7 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    # will change that the duplicate many copies will be from the the child table not from the active table
+    # will change that the duplicate many copies will be from the the child table not from the active tabl
     def test012_duplicate_many_orders(self):
         """
         New: Orders: Duplication from active table Approach: When I duplicate order 5 times, it will create 5 analysis records with the same order number
@@ -2030,6 +2020,23 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Article Name'].replace("'", ""), selected_test_plan['article'][0])
         self.assertEqual(suborder_data['Test Units'], test_unit)
         self.assertEqual(suborder_data['Test Plans'], selected_test_plan['testPlanName'])
+
+    def test035_archived_test_unit_shoudnt_display_in_the_order_drop_down_list(self):
+        """
+        Orders: Archived Test unit: Archive Approach: Archived test units shouldn't appear in orders in the drop down list
+        LIMS-3710
+        :return:
+        """
+        re, payload = self.test_unit_api.create_qualitative_testunit()
+        self.test_unit_api.archive_testunits(ids=[str(re['testUnit']['testUnitId'])])
+        self.base_selenium.click(element='orders:new_order')
+        self.order_page.set_new_order()
+        self.order_page.sleep_small()
+        self.order_page.set_material_type_of_first_suborder(material_type='r', sub_order_index=0)
+
+        self.info('Asset test unit is not existing in the list')
+        self.assertFalse(self.order_page.is_testunit_existing(
+            test_unit=payload['name']))
 
     def test034_duplicate_sub_order_table_with_add(self):
         """

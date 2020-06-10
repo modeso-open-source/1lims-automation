@@ -56,7 +56,8 @@ class BaseTest(TestCase):
                 elif ' ' == str(item)[-1]:
                     tmp.append(item[:-1])
                 else:
-                    tmp.append(str(item).replace(',', '').replace("'", "").replace(' - ', '-'))
+                    tmp.append(str(item).replace(',', '&').replace("'", "").replace(' - ', '-'))
+
         return tmp
 
     def get_active_article_with_tst_plan(self, test_plan_status='complete'):
@@ -116,11 +117,11 @@ class BaseTest(TestCase):
                 return test_unit_dict
         return {}
 
-
     '''
     Removes the data that was changed in the duplication process in order to compare
     between the objects to make sure that the duplication was done correcly.
     '''
+
     def remove_unduplicated_data(self, data_changed=[], first_element=[], second_element=[]):
         for data in data_changed:
             if data in first_element and data in second_element:

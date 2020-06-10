@@ -7,6 +7,7 @@ from ui_testing.pages.order_page import Order
 from api_testing.apis.test_plan_api import TestPlanAPI
 from ui_testing.pages.header_page import Header
 from api_testing.apis.users_api import UsersAPI
+from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from unittest import skip
 from parameterized import parameterized
@@ -23,6 +24,7 @@ class TestPlansTestCases(BaseTest):
         self.base_page = BasePages()
         self.test_plan_api = TestPlanAPI()
         self.users_api = UsersAPI()
+        self.test_unit_api = TestUnitAPI()
         self.article_api = ArticleAPI()
 
         self.set_authorization(auth=self.article_api.AUTHORIZATION_RESPONSE)
@@ -719,3 +721,67 @@ class TestPlansTestCases(BaseTest):
         LIMS-6288
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
+
+    def test026_test_unit_update_version_in_testplan(self):
+        """
+        LIMS-3703
+        Test plan: Test unit Approach: In case I update category & iteration of test unit that used in test plan with new version
+        ,when  go to test plan to add the same test unit , I found category & iteration updated
+        """
+        # select random test unit to create the test plan with it
+        testunits, payload = self.test_unit_api.get_all_test_units(limited=20, filter='{"materialTypes":"all"}')
+        testunit = random.choice(testunits['testUnits'])
+        self.info('A random test unit is chosen, its name: {}, category: {} and number of iterations: {}'.format(
+            testunit['name'], testunit['categoryName'], testunit['iterations']))
+
+        # create the first testplan
+        first_testplan_name, payload1 = self.test_plan_api.create_testplan()
+        self.info('First test plan create with name: {}'.format(
+            payload1['testPlan']['text']))
+
+        # go to testplan edit to get the number of iterations and testunit category
+        first_testplan_testunit_category, first_testplan_testunit_iteration =self.test_plan.get_testunit_category_iterations(
+            payload1['testPlan']['text'], testunit['name'])
+
+        # go to testunits active table and search for this testunit-
+        self.test_unit_page.get_test_units_page()
+        self.base_selenium.LOGGER.info(
+            'Navigating to test unit {} edit page'.format(testunit['name']))
+        self.test_unit_page.search(value=testunit['name'])
+        self.test_unit_page.open_edit_page(row=self.test_unit_page.result_table()[0])
+
+        new_iteration = str(int(first_testplan_testunit_iteration) + 1)
+        # update the iteration and category
+        new_category = self.test_unit_page.set_category('')
+        self.test_unit_page.set_testunit_iteration(new_iteration)
+
+        # press save and complete to create a new version
+        self.test_unit_page.save_and_create_new_version()
+
+        # go back to test plans active table
+        self.test_plan.get_test_plans_page()
+
+         #create new testplan with this testunit after creating the new version
+        second_testplan_name, payload2 = self.test_plan_api.create_testplan()
+        self.info('Second test plan create with name: {}'.format(
+            payload2['testPlan']['text']))
+
+        # check the iteration and category to be the same as the new version
+        # go to testplan edit to get the number of iterations and testunit category
+        second_testplan_testunit_category, second_testplan_testunit_iteration = self.test_plan.get_testunit_category_iterations(
+            payload2['testPlan']['text'], testunit['name'])
+
+        self.base_selenium.LOGGER.info(
+            'Asserting that the category of the testunit in the first testplan is not equal the category of the testunit in the second testplan')
+        self.assertNotEqual(first_testplan_testunit_category,
+                        second_testplan_testunit_category)
+        self.base_selenium.LOGGER.info(
+            'Asserting that the iterations of the testunit in the first testplan is not equal the iterations of the testunit in the second testplan')
+        self.assertNotEqual(first_testplan_testunit_iteration,
+                        second_testplan_testunit_iteration)
+        self.base_selenium.LOGGER.info(
+            'Asserting that the category of the testunit in the second testplan is the same as the updated category')
+        self.assertEqual(second_testplan_testunit_category, new_category)
+        self.base_selenium.LOGGER.info(
+            'Asserting that the iterations of the testunit in the second testplan is the same as the updated iterations')
+        self.assertEqual(second_testplan_testunit_iteration, new_iteration)

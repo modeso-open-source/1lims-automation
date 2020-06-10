@@ -203,8 +203,7 @@ class TestUnitAPIFactory(BaseAPI):
             }],
             'selectedMaterialTypes': [{
                 'id': 0,
-                'text': 'All'
-            }],
+                'text': 'All'}],
             'textValueArray': [],
             'textValue': '',
             'upperLimit': self.generate_random_number(lower=50, upper=100),

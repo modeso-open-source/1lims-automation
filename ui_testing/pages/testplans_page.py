@@ -23,6 +23,7 @@ class TestPlans(BasePages):
     def get_test_plan_edit_page(self, name):
         self.base_selenium.LOGGER.info('Navigating to testplan {} edit page'.format(name))
         test_plan = self.search(value=name)[0]
+        self.sleep_small()
         self.open_edit_page_by_css_selector(row=test_plan, css_selector='')
         self.sleep_small()
 

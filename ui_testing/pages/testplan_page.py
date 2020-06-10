@@ -62,10 +62,11 @@ class TstPlan(TestPlans):
 
     def set_test_unit(self, test_unit='', **kwargs):
         self.base_selenium.click('test_plan:next')
-        self.base_selenium.click('test_plan:add_test_units')
+        self.base_selenium.click('test_plan:add_new_item')
         self.sleep_small()
-        self.base_selenium.select_item_from_drop_down(element='test_plan:test_units', item_text=test_unit)
-        self.base_selenium.click('test_plan:add')
+        self.base_selenium.select_item_from_drop_down(element='test_plan:test_unit', item_text=test_unit)
+        self.sleep_small()
+        self.base_selenium.click('test_plan:check_btn')
         if 'upper' in kwargs:
             self.base_selenium.LOGGER.info(' set upper : {}'.format(kwargs['upper']))
             elems = self.base_selenium.find_elements('general:col_6')
@@ -213,12 +214,13 @@ class TstPlan(TestPlans):
         self.save(sleep=True)
         return no
 
-    def get_testunit_category_and_iterations(self, testplan_name):
+    def get_testunit_category_iterations(self, testplan_name, testunit_name):
         self.get_test_plan_edit_page(testplan_name)
-        self.navigate_to_testunits_selection_page()
-        testunit_category = self.base_selenium.get_text(element='test_plan:testunit_category')
-        testunit_iteration = self.base_selenium.get_value(element='test_plan:testunit_iteration')
-        
+        #self.navigate_to_testunits_selection_page()
+        self.set_test_unit(testunit_name)
+        testunit_category = self.base_selenium.get_text(element='test_plan:test_unit_category')
+        testunit_iteration = self.base_selenium.get_value(element='test_plan:test_unit_iteration')
+
         return testunit_category, testunit_iteration
 
     '''
