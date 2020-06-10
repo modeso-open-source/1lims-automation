@@ -2437,5 +2437,34 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Test Units'].split(',\n')[0], payload[0]['testUnits'][0]['name'])
         self.assertEqual(suborder_data['Test Units'].split(',\n')[1], payload[0]['testUnits'][1]['name'])
 
-
-
+    #@skip('https://modeso.atlassian.net/browse/LIMS-7722')
+    def test042_duplicate_main_order_with_testPlans_and_testUnits(self):
+        """
+        Duplicate main order Approach: duplicate order with test plan & test units
+        LIMS-4353
+        """
+        self.info('create order with multiple test plans and test units')
+        response, payload = self.orders_api.create_order_with_double_test_plans()
+        self.assertEqual(response['status'], 1, payload)
+        test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
+        test_units = [testunit['name'] for testunit in payload[0]['selectedTestUnits']]
+        test_units.extend(TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']))
+        test_units.extend(TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number']))
+        self.info("created order has test plans {} ".format(test_plans))
+        self.info("created order has test units {} ".format(test_units))
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+        self.info("duplicate order no {}".format(payload[0]['orderNo']))
+        self.orders_page.duplicate_main_order_from_order_option()
+        self.order_page.save(save_btn='order:save', sleep=True)
+        duplicated_order_no = self.order_page.get_no()
+        self.assertNotEqual(duplicated_order_no, payload[0]['orderNo'])
+        self.info("navigate to analysis page  and make sure duplicated order created with same data")
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.assertTrue(self.orders_page.is_order_in_table(duplicated_order_no))
+        self.analyses_page.search(duplicated_order_no)
+        duplicated_test_plans = self.analyses_page.get_the_latest_row_data()['Test Plans'].split(', ')
+        self.assertCountEqual(duplicated_test_plans, test_plans)
+        duplicated_suborder_data = self.order_page.get_child_table_data()
+        duplicated_test_units = [testunit['Test Unit'] for testunit in duplicated_suborder_data]
+        self.assertCountEqual(test_units, duplicated_test_units)

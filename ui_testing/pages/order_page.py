@@ -349,7 +349,6 @@ class Order(Orders):
 
             testunits =[]
             rawTestunitArr = suborder_data['testUnits'].split(',\n')
-
             for testunit in rawTestunitArr:
                 if 'Type' in testunit:
                     if len(testunit.split(' Type:')) > 1:
