@@ -27,6 +27,7 @@ class OrdersTestCases(BaseTest):
         self.analyses_page = AllAnalysesPage()
         self.article_api = ArticleAPI()
         self.test_unit_api = TestUnitAPI()
+        self.contacts_api = ContactsAPI()
         self.single_analysis_page = SingleAnalysisPage()
         self.test_plan_api = TestPlanAPI()
         self.contacts_api = ContactsAPI()
@@ -397,7 +398,7 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    # will change that the duplicate many copies will be from the the child table not from the active table
+    # will change that the duplicate many copies will be from the the child table not from the active tabl
     def test012_duplicate_many_orders(self):
         """
         New: Orders: Duplication from active table Approach: When I duplicate order 5 times, it will create 5 analysis records with the same order number
@@ -2019,6 +2020,23 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(suborder_data['Article Name'].replace("'", ""), selected_test_plan['article'][0])
         self.assertEqual(suborder_data['Test Units'], test_unit)
         self.assertEqual(suborder_data['Test Plans'], selected_test_plan['testPlanName'])
+
+    def test035_archived_test_unit_shoudnt_display_in_the_order_drop_down_list(self):
+        """
+        Orders: Archived Test unit: Archive Approach: Archived test units shouldn't appear in orders in the drop down list
+        LIMS-3710
+        :return:
+        """
+        re, payload = self.test_unit_api.create_qualitative_testunit()
+        self.test_unit_api.archive_testunits(ids=[str(re['testUnit']['testUnitId'])])
+        self.base_selenium.click(element='orders:new_order')
+        self.order_page.set_new_order()
+        self.order_page.sleep_small()
+        self.order_page.set_material_type_of_first_suborder(material_type='r', sub_order_index=0)
+
+        self.info('Asset test unit is not existing in the list')
+        self.assertFalse(self.order_page.is_testunit_existing(
+            test_unit=payload['name']))
 
     def test034_duplicate_sub_order_table_with_add(self):
         """
