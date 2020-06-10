@@ -303,22 +303,15 @@ class OrdersTestCases(BaseTest):
                     break
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
-    def test008_duplicate_main_order(self):
 
+    def test008_duplicate_main_order(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
         LIMS-3270
         :return:
         """
-        random_testunit, payload = self.test_unit_api.get_all_test_units(limit=20)
-        test_unit = random.choice(random_testunit['testUnits'])
-
-        data_before_duplicate = self.order_page.create_new_order(contact='', material_type='r', article='a',
-                                                                 test_plans=[],
-                                                                 test_units=[test_unit['name']])
-
-        self.orders_page.get_orders_page()
-        order_no = data_before_duplicate['orderNo']
+        re, payload = self.orders_api.create_new_order()
+        order_no = payload[0]['orderNo']
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
                                               field_type='text')
 
@@ -332,9 +325,9 @@ class OrdersTestCases(BaseTest):
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No
-        self.assertNotEqual(data_before_duplicate['orderNo'], after_duplicate_order['orderNo'])
+        self.assertNotEqual(payload[0]['orderNo'], after_duplicate_order['orderNo'])
         # compare the contacts
-        self.assertCountEqual(data_before_duplicate['contacts'], after_duplicate_order['contacts'])
+        self.assertCountEqual([payload[0]['contact'][0]['text']], after_duplicate_order['contacts'])
 
         # save the duplicated order
         self.order_page.save(save_btn='orders:save_order')
