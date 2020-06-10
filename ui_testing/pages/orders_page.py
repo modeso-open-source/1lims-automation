@@ -139,7 +139,7 @@ class Orders(BasePages):
 
     def filter_by_analysis_number(self, filter_text):
         self.open_filter_menu()
-        self.info(' + Filter by analysis number : {}'.format(filter_text))
+        self.info('Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
         
@@ -278,7 +278,6 @@ class Orders(BasePages):
         orders_data = self.get_child_table_data()
 
         return orders_data, orders
-
 
     def navigate_to_analysis_active_table(self):
         self.base_selenium.click(element='orders:analysis_tab')

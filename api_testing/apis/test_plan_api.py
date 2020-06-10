@@ -136,13 +136,14 @@ class TestPlanAPIFactory(BaseAPI):
             'selectedTestUnits': [],
             'materialTypeId': 1,
             'dynamicFieldsValues': [],
-            'testUnits': []
+            'testUnits': [],
+            'testplan_name': []
         }
         payload = self.update_payload(_payload, **kwargs)
         if 'testPlan' in kwargs:
-            payload['selectedTestPlan'] = [kwargs['testPlan']]
+            payload['selectedTestPlan'] = [kwargs['testPlan']['text']]
         if 'materialType' in kwargs:
-            payload['materialTypeId'] = kwargs['materialType']['id']
+            payload['materialType'] = kwargs['materialType']
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan'])
         return api, payload
 
@@ -241,5 +242,6 @@ class TestPlanAPI(TestPlanAPIFactory):
 
     def get_testunits_in_testplan_by_No(self, no):
         test_plan_id = self.get_testplan_with_filter(filter_option='number', filter_text=str(no))[0]['id']
-        test_unit = self.get_testunits_in_testplan(test_plan_id)
-        return test_unit[0]['name']
+        test_units = self.get_testunits_in_testplan(test_plan_id)
+        test_units_names = [testunit['name'] for testunit in test_units]
+        return test_units_names

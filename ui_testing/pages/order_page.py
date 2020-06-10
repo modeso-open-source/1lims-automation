@@ -56,16 +56,20 @@ class Order(Orders):
         self.set_article(article=article)
         return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
 
+    def is_testunit_existing(self, test_unit):
+        self.set_test_unit(test_unit=test_unit)
+        return self.base_selenium.check_item_partially_in_items(element='order:test_unit', item_text=test_unit)
+
     def set_contact(self, contact='', remove_old=False):
         if remove_old:
-            self.base_selenium.clear_items_in_drop_down(element='order:contact')
+           self.base_selenium.clear_items_in_drop_down(element='order:contact')
         if contact:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:contact', item_text=contact)
+           self.base_selenium.select_item_from_drop_down(
+            element='order:contact', item_text=contact)
         else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:contact', avoid_duplicate=True)
-            return self.get_contact()
+           self.base_selenium.select_item_from_drop_down(
+            element='order:contact', avoid_duplicate=True)
+        return self.get_contact()
 
     def get_contact(self):
         contacts = self.base_selenium.get_text(element='order:contact')
@@ -344,7 +348,6 @@ class Order(Orders):
 
             testunits =[]
             rawTestunitArr = suborder_data['testUnits'].split(',\n')
-
             for testunit in rawTestunitArr:
                 if 'Type' in testunit:
                     if len(testunit.split(' Type:')) > 1:
@@ -423,7 +426,7 @@ class Order(Orders):
                 self.sleep_tiny()
             self.set_test_plan(test_plan=testplan)
             self.sleep_tiny()
-           
+
         self.info(' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
             if remove_old:
@@ -561,4 +564,5 @@ class Order(Orders):
         suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
             row=suborder_row, table_element='order:suborder_table')
         return suborders_elements
+
 
