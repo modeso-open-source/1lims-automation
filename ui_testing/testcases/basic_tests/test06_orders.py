@@ -2406,29 +2406,53 @@ class OrdersTestCases(BaseTest):
         self.assertCountEqual(test_plans, found_test_plans)
         self.assertCountEqual(test_units, found_test_units)
 
-    def test040_test_create_order(self):
-        api, payload = self.orders_api.create_new_order()
-        self.info(payload)
-        self.orders_page.search(payload[0]['orderNo'])
-        order_data = self.orders_page.get_the_latest_row_data()
-        self.assertEqual(order_data['Order No.'].split('-')[0].replace("'", ""), str(payload[0]['orderNo']))
-        suborder_data = self.orders_page.get_child_table_data()[0]
-        self.assertEqual(suborder_data['Test Plans'], payload[0]['testPlans'][0]['name'])
-        self.assertEqual(suborder_data['Material Type'].replace(' ', ''),
-                         payload[0]['materialType']['text'].replace(' ', ''))
-        self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
-        self.assertEqual(suborder_data['Test Units'], payload[0]['selectedTestUnits'][0]['name'])
+    def test040_user_can_edit_only_single_row(self):
+        """
+        I can edit any single row at the time (This mean I can’t edit multiple records at the same time )
 
-    def test041_test_create_order_with_multiple_testplans(self):
-        api, payload = self.orders_api.create_order_with_double_test_plans()
-        self.orders_page.search(payload[0]['orderNo'])
-        suborder_data = self.orders_page.get_child_table_data()[0]
-        self.assertEqual(suborder_data['Test Plans'].split(',\n')[0], payload[0]['testPlans'][0]['testPlanName'])
-        self.assertEqual(suborder_data['Test Plans'].split(',\n')[1], payload[0]['testPlans'][1]['testPlanName'])
-        self.assertEqual(suborder_data['Material Type'], payload[0]['materialType']['text'])
-        self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
-        self.assertEqual(suborder_data['Test Units'].split(',\n')[0], payload[0]['testUnits'][0]['name'])
-        self.assertEqual(suborder_data['Test Units'].split(',\n')[1], payload[0]['testUnits'][1]['name'])
+        LIMS-5221
+        """
+        import ipdb;ipdb.set_trace()
+        self.info('get random order edit page')
+        order = self.orders_api.get_order_with_multiple_sub_orders()
+        self.info(' edit order no {}'.format(order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(order['orderId'])
+        self.info('click on first row')
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row[0].click()
+        old_test_unit = self.order_page.get_test_unit()
+        new_test_unit = self.order_page.set_test_unit('')
+        suborder_row[1].click()
+        self.info('get suborders data to assert that test unit of first suborder updated to {}'.format(new_test_unit))
+        suberder_test_units = self.order_page.get_suborder_data()['suborders'][0]['testunits']
+        suberder_test_units_names = [suberder_test_unit['name'] for suberder_test_unit in suberder_test_units]
+        if old_test_unit:
+            self.assertCountEqual(new_test_unit.split(',\n'), suberder_test_units_names)
+        else:
+            self.assertCountEqual([new_test_unit], suberder_test_units_names)
+
+        self.info('enter one more time on second suborder')
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row[1].click()
+        old_second_test_unit = self.order_page.get_test_unit()
+        new_second_test_unit = self.order_page.set_test_unit('')
+        self.base_selenium.click(element='general:cancel')
+        self.base_selenium.click(element='order:confirm_cancel')
+
+        updated_order = self.orders_api.get_suborder_by_order_id(order['orderId'])[0]
+        self.assertEqual(updated_order['status'], 1)
+        updated_first_suborder_testunits = updated_order['orders'][0]['testUnit']
+        updated_first_suborder_test_units = \
+            [testunit['testUnit']['name'] for testunit in updated_first_suborder_testunits]
+        if old_test_unit:
+            self.assertCountEqual(new_test_unit.split(',\n'), updated_first_suborder_test_units)
+        else:
+            self.assertCountEqual([new_test_unit], updated_first_suborder_test_units)
+
+        second_suborder_test_units = updated_order['orders'][1]['testUnit']
+        updated_second_suborder_test_units = \
+            [test_unit['testUnit']['name'] for test_unit in updated_first_suborder_testunits]
+        self.assertEqual(old_second_test_unit, updated_second_suborder_test_units)
 
 
 
