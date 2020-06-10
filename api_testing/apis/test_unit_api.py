@@ -203,8 +203,7 @@ class TestUnitAPIFactory(BaseAPI):
             }],
             'selectedMaterialTypes': [{
                 'id': 0,
-                'text': 'All'
-            }],
+                'text': 'All'}],
             'textValueArray': [],
             'textValue': '',
             'upperLimit': self.generate_random_number(lower=50, upper=100),
@@ -313,12 +312,12 @@ class TestUnitAPI(TestUnitAPIFactory):
         selected_test_units = [test_unit for test_unit in test_units if test_unit['materialTypes'] == [material_type]]
         return selected_test_units
 
-
     def get_test_unit_name_with_value_with_material_type(self, material_type,
                                                          avoid_duplicate=False, duplicated_test_unit=''):
         material_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testunits = TestUnitAPI().list_testunit_by_name_and_material_type(materialtype_id=material_id)[0]['testUnits']
-        if avoid_duplicate: # make sure test unit differs from old one
+
+        if avoid_duplicate:  # make sure test unit differs from old one
             testunits = [testunit for testunit in testunits if testunit['name'] != duplicated_test_unit]
         testunits_with_values = []  # make sure test unit have value
         for testunit in testunits:
