@@ -56,16 +56,20 @@ class Order(Orders):
         self.set_article(article=article)
         return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
 
+    def is_testunit_existing(self, test_unit):
+        self.set_test_unit(test_unit=test_unit)
+        return self.base_selenium.check_item_partially_in_items(element='order:test_unit', item_text=test_unit)
+
     def set_contact(self, contact='', remove_old=False):
         if remove_old:
-            self.base_selenium.clear_items_in_drop_down(element='order:contact')
+           self.base_selenium.clear_items_in_drop_down(element='order:contact')
         if contact:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:contact', item_text=contact)
+           self.base_selenium.select_item_from_drop_down(
+            element='order:contact', item_text=contact)
         else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:contact', avoid_duplicate=True)
-            return self.get_contact()
+           self.base_selenium.select_item_from_drop_down(
+            element='order:contact', avoid_duplicate=True)
+        return self.get_contact()
 
     def get_contact(self):
         contacts = self.base_selenium.get_text(element='order:contact')
@@ -105,10 +109,8 @@ class Order(Orders):
 
     def get_test_unit(self):
         test_units = self.base_selenium.get_text(element='order:test_unit')
-        if "×" in test_units:
-            return test_units.replace("×", "").split(' Type')[0]
-        elif "× " in test_units:
-            return test_units.replace("× ", "").split(' Type')[0]
+        if test_units:
+            return test_units.replace("×", "").split("\n")
         else:
             return []
 
@@ -231,6 +233,7 @@ class Order(Orders):
         # update the field
         test_date.clear()
         test_date.send_keys(date)
+        self.sleep_small()
         return date
 
     def get_shipment_date(self, row_id=None):
@@ -253,13 +256,13 @@ class Order(Orders):
         # update the field
         shipment_date.clear()
         shipment_date.send_keys(date)
+        self.sleep_small()
         return date
 
     def get_departments(self):
-        departments = self.base_selenium.get_text(
-            element='order:departments').split('\n')[0]
-        if departments == 'Search':
-            return ''
+        departments = self.base_selenium.get_text(element='order:departments').replace('×', '').split('\n')
+        if departments == ['Search']: #empty
+            return []
         return departments
 
     def get_department(self):
@@ -270,6 +273,7 @@ class Order(Orders):
             self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
         else:
             self.base_selenium.select_item_from_drop_down(element='order:departments')
+            self.sleep_small()
             return self.get_departments()
 
     def get_suborder_table(self):
@@ -335,17 +339,17 @@ class Order(Orders):
             "suborders": []
         }
         suborders_data = []
-        self.base_selenium.LOGGER.info('getting suborders data')
+        self.info('getting suborders data')
         for suborder in table_suborders:
             suborder_data = self.base_selenium.get_row_cells_id_dict_related_to_header(
                 row=suborder, table_element='order:suborder_table')
+
             article = \
                 {"name": suborder_data['article'].split(' No:')[0], "no": suborder_data['article']
                     .split(' No:')[1]} if len(suborder_data['article'].split(' No:')) > 1 else '-'
 
             testunits =[]
             rawTestunitArr = suborder_data['testUnits'].split(',\n')
-
             for testunit in rawTestunitArr:
                 if 'Type' in testunit:
                     if len(testunit.split(' Type:')) > 1:
@@ -411,10 +415,9 @@ class Order(Orders):
                 ' Set material type : {}'.format(material_type))
             self.set_material_type(material_type=material_type)
             self.sleep_small()
-        if articles:
+        if articles or articles == '':
             self.remove_article(testplans=suborder_elements_dict['testPlans'])
-            self.base_selenium.LOGGER.info(
-                ' Set article name : {}'.format(articles))
+            self.info('Set article name : {}'.format(articles))
             self.set_article(article=articles)
             self.sleep_small()
 
@@ -425,7 +428,7 @@ class Order(Orders):
                 self.sleep_tiny()
             self.set_test_plan(test_plan=testplan)
             self.sleep_tiny()
-           
+
         self.info(' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
         for testunit in test_units:
             if remove_old:
@@ -548,11 +551,10 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:material_type').split('\n')[0]
 
     def remove_article(self, testplans=''):
-        self.base_selenium.LOGGER.info('clear article data')
+        self.info('clear article data')
         self.base_selenium.clear_single_select_drop_down(element='order:article')
         if testplans:
             self.base_selenium.wait_element(element='general:form_popup_warning_window')
-            self.sleep_tiny()
             self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
 

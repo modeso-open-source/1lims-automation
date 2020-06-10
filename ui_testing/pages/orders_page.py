@@ -15,7 +15,7 @@ class Orders(BasePages):
     def get_order_edit_page_by_id(self, id):
         url_text = "{}sample/orders/" + str(id)
         self.base_selenium.get(url=url_text.format(self.base_selenium.url))
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def click_create_order_button(self):
         self.base_selenium.LOGGER.info('Press create order button')
@@ -139,7 +139,7 @@ class Orders(BasePages):
 
     def filter_by_analysis_number(self, filter_text):
         self.open_filter_menu()
-        self.info(' + Filter by analysis number : {}'.format(filter_text))
+        self.info('Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
         
