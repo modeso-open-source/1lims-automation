@@ -214,9 +214,10 @@ class TstPlan(TestPlans):
         self.save(sleep=True)
         return no
 
-    def get_testunit_category_iterations(self, testplan_name):
+    def get_testunit_category_iterations(self, testplan_name, testunit_name):
         self.get_test_plan_edit_page(testplan_name)
-        self.navigate_to_testunits_selection_page()
+        #self.navigate_to_testunits_selection_page()
+        self.set_test_unit(testunit_name)
         testunit_category = self.base_selenium.get_text(element='test_plan:test_unit_category')
         testunit_iteration = self.base_selenium.get_value(element='test_plan:test_unit_iteration')
 

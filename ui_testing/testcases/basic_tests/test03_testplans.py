@@ -722,7 +722,6 @@ class TestPlansTestCases(BaseTest):
         """
         assert (self.test_unit_page.deselect_all_configurations(), False)
 
-    #@skip('https://modeso.atlassian.net/browse/LIMSA-139')
     def test026_test_unit_update_version_in_testplan(self):
         """
         LIMS-3703
@@ -730,33 +729,25 @@ class TestPlansTestCases(BaseTest):
         ,when  go to test plan to add the same test unit , I found category & iteration updated
         """
         # select random test unit to create the test plan with it
-        testunits, payload = self.test_unit_api.get_all_test_units(limited=20)
+        testunits, payload = self.test_unit_api.get_all_test_units(limited=20, filter='{"materialTypes":"all"}')
         testunit = random.choice(testunits['testUnits'])
         self.info('A random test unit is chosen, its name: {}, category: {} and number of iterations: {}'.format(
             testunit['name'], testunit['categoryName'], testunit['iterations']))
 
         # create the first testplan
-        api, payload = self.test_plan_api.create_testplan(materialType=testunit['materialTypes'],testunits=testunit['name'],testPlan=['diana'])
-        print(payload)
-        print(api)
-        #diana = self.test_plan_api.create_testplan(materialType=testunit['materialTypes'],selectedArticles='All',testunits=testunit['name'])
-        #print(diana)
-        #print(payload)
-        #first_testplan_name = self.test_plan.create_new_test_plan(
-            #material_type=testunit['materialTypes'][0], article='', test_unit=testunit['name'])
-        #self.info('New testplan is created successfully with name: {}'.format(
-          #  payload[0]['testPlan']))
+        first_testplan_name, payload1 = self.test_plan_api.create_testplan()
+        self.info('First test plan create with name: {}'.format(
+            payload1['testPlan']['text']))
 
         # go to testplan edit to get the number of iterations and testunit category
         first_testplan_testunit_category, first_testplan_testunit_iteration =self.test_plan.get_testunit_category_iterations(
-            payload[0]['testPlan'])
-        print(first_testplan_testunit_iteration)
-        print(first_testplan_testunit_category)
+            payload1['testPlan']['text'], testunit['name'])
+
         # go to testunits active table and search for this testunit-
         self.test_unit_page.get_test_units_page()
         self.base_selenium.LOGGER.info(
             'Navigating to test unit {} edit page'.format(testunit['name']))
-        testunit = self.test_unit_page.search(value=testunit['name'])
+        self.test_unit_page.search(value=testunit['name'])
         self.test_unit_page.open_edit_page(row=self.test_unit_page.result_table()[0])
 
         new_iteration = str(int(first_testplan_testunit_iteration) + 1)
@@ -767,19 +758,18 @@ class TestPlansTestCases(BaseTest):
         # press save and complete to create a new version
         self.test_unit_page.save_and_create_new_version()
 
-        # go back to testplans active table
+        # go back to test plans active table
         self.test_plan.get_test_plans_page()
 
          #create new testplan with this testunit after creating the new version
-        second_testplan_name = self.test_plan.create_new_test_plan(
-            material_type=testunit["materialTypes"][0], article='', test_unit='')
-        self.info('New test plan is created successfully with name: {}'.format(
-            second_testplan_name))
+        second_testplan_name, payload2 = self.test_plan_api.create_testplan()
+        self.info('Second test plan create with name: {}'.format(
+            payload2['testPlan']['text']))
 
         # check the iteration and category to be the same as the new version
         # go to testplan edit to get the number of iterations and testunit category
         second_testplan_testunit_category, second_testplan_testunit_iteration = self.test_plan.get_testunit_category_iterations(
-            second_testplan_name)
+            payload2['testPlan']['text'], testunit['name'])
 
         self.base_selenium.LOGGER.info(
             'Asserting that the category of the testunit in the first testplan is not equal the category of the testunit in the second testplan')
