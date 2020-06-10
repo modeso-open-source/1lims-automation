@@ -57,10 +57,16 @@ class BasePages:
             if sleep:
                 self.sleep_tiny()
             self.base_selenium.click(element=save_btn)
-        else:            
+        else:
             self.base_selenium.click(element='my_profile:save_button')
         if sleep:
             self.sleep_tiny()
+
+    def save_and_wait(self, save_btn='general:save'):
+        self.save(save_btn=save_btn)
+        self.info('Refresh to make sure that data are saved correctly')
+        self.base_selenium.refresh()
+        self.wait_until_page_is_loaded()
 
     def cancel(self, force=True):
         if self.base_selenium.check_element_is_exist(element='general:cancel'):
@@ -99,7 +105,6 @@ class BasePages:
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
-        self.sleep_tiny()
 
     def filter_reset(self):
         self.base_selenium.LOGGER.info(' Reset Filter')
@@ -176,11 +181,12 @@ class BasePages:
         self.base_selenium.click(element='general:restore')
         self.confirm_popup()
 
-    def delete_selected_item(self):
+    def delete_selected_item(self, confirm_pop_up=True):
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:delete')
-        self.confirm_popup()
+        if confirm_pop_up:
+            self.confirm_popup()
 
     def archive_selected_items(self):
         self.base_selenium.scroll()
@@ -565,3 +571,8 @@ class BasePages:
 
     def close_connection_with_database(self, db):
         db.close()
+
+    def get_current_year(self):
+        current_year = datetime.datetime.now()
+        return str(current_year.year)
+

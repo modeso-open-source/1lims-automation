@@ -1,5 +1,7 @@
 from api_testing.apis.base_api import BaseAPI
 from api_testing.apis.base_api import api_factory
+from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
+import random
 
 
 class TestUnitAPIFactory(BaseAPI):
@@ -86,7 +88,9 @@ class TestUnitAPIFactory(BaseAPI):
         """
         if success, response['testUnits']
         """
-        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'], materialtype_id, name, negelectIsDeleted, searchableValue)
+        api = '{}{}{}?name={}&negelectIsDeleted={}&searchableValue={}'.format(
+            self.url, self.END_POINTS['test_unit_api']['list_testunit_by_name_and_materialtype'],
+            materialtype_id, name, negelectIsDeleted, searchableValue)
         return api, {}
 
     """
@@ -308,4 +312,30 @@ class TestUnitAPI(TestUnitAPIFactory):
         test_units = all_test_units['testUnits']
         selected_test_units = [test_unit for test_unit in test_units if test_unit['materialTypes'] == [material_type]]
         return selected_test_units
+
+
+    def get_test_unit_name_with_value_with_material_type(self, material_type,
+                                                         avoid_duplicate=False, duplicated_test_unit=''):
+        material_id = GeneralUtilitiesAPI().get_material_id(material_type)
+        testunits = TestUnitAPI().list_testunit_by_name_and_material_type(materialtype_id=material_id)[0]['testUnits']
+        if avoid_duplicate: # make sure test unit differs from old one
+            testunits = [testunit for testunit in testunits if testunit['name'] != duplicated_test_unit]
+        testunits_with_values = []  # make sure test unit have value
+        for testunit in testunits:
+            if testunit['typeName'] == 'Quantitative MiBi' and testunit['mibiValue'] and testunit['concentrations']:
+                testunits_with_values.append(testunit)
+            elif testunit['typeName'] == 'Quantitative':
+                if testunit['lowerLimit'] or testunit['upperLimit']:
+                    testunits_with_values.append(testunit)
+            elif testunit['typeName'] == 'Qualitative' and testunit['textValue']:
+                testunits_with_values.append(testunit)
+
+        if not testunits_with_values:
+            self.info(" No test unit with req. material type, so create one")
+            api, testunit_payload = self.create_quantitative_testunit()
+            if api('status') == 1:
+                return testunit_payload
+        else:
+            testunit = random.choice(testunits_with_values)
+            return testunit
 

@@ -1,5 +1,6 @@
 from api_testing.apis.base_api import BaseAPI
 from api_testing.apis.base_api import api_factory
+from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 
 
 class ArticleAPIFactory(BaseAPI):
@@ -161,3 +162,19 @@ class ArticleAPI(ArticleAPIFactory):
     def quick_search_article(self, name):
         _filter = '{{"quickSearch":"{}","columns":["name"]}}'.format(name)
         return self.get_all_articles(filter=_filter)
+
+    def get_article_with_material_type(self, material_type):
+        material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
+        articles, payload = self.get_all_articles(limit=500)
+        self.info("search for article with material type {}".format(material_type))
+        for article in articles['articles']:
+            if article['materialType'] == material_type:
+                return article['name']
+
+        self.info("No article with requested material type, So create atricle")
+        materialType = {"id": material_type_id, "text": material_type}
+        api, payload = self.create_article(materialType=materialType,
+                                           selectedMaterialType=[materialType],
+                                           materialTypeId=int(material_type_id))
+        if api['status'] == 1:
+            return api['article']['name']
