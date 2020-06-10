@@ -109,10 +109,8 @@ class Order(Orders):
 
     def get_test_unit(self):
         test_units = self.base_selenium.get_text(element='order:test_unit')
-        if "×" in test_units:
-            return test_units.replace("×", "").split(' Type')[0]
-        elif "× " in test_units:
-            return test_units.replace("× ", "").split(' Type')[0]
+        if test_units:
+            return test_units.replace("×", "").split("\n")
         else:
             return []
 
@@ -339,10 +337,11 @@ class Order(Orders):
             "suborders": []
         }
         suborders_data = []
-        self.base_selenium.LOGGER.info('getting suborders data')
+        self.info('getting suborders data')
         for suborder in table_suborders:
             suborder_data = self.base_selenium.get_row_cells_id_dict_related_to_header(
                 row=suborder, table_element='order:suborder_table')
+
             article = \
                 {"name": suborder_data['article'].split(' No:')[0], "no": suborder_data['article']
                     .split(' No:')[1]} if len(suborder_data['article'].split(' No:')) > 1 else '-'
@@ -414,10 +413,9 @@ class Order(Orders):
                 ' Set material type : {}'.format(material_type))
             self.set_material_type(material_type=material_type)
             self.sleep_small()
-        if articles:
+        if articles or articles == '':
             self.remove_article(testplans=suborder_elements_dict['testPlans'])
-            self.base_selenium.LOGGER.info(
-                ' Set article name : {}'.format(articles))
+            self.info('Set article name : {}'.format(articles))
             self.set_article(article=articles)
             self.sleep_small()
 
@@ -550,11 +548,10 @@ class Order(Orders):
         return self.base_selenium.get_text(element='order:material_type').split('\n')[0]
 
     def remove_article(self, testplans=''):
-        self.base_selenium.LOGGER.info('clear article data')
+        self.info('clear article data')
         self.base_selenium.clear_single_select_drop_down(element='order:article')
         if testplans:
             self.base_selenium.wait_element(element='general:form_popup_warning_window')
-            self.sleep_tiny()
             self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
 

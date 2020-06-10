@@ -15,7 +15,7 @@ class Orders(BasePages):
     def get_order_edit_page_by_id(self, id):
         url_text = "{}sample/orders/" + str(id)
         self.base_selenium.get(url=url_text.format(self.base_selenium.url))
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def click_create_order_button(self):
         self.base_selenium.LOGGER.info('Press create order button')
