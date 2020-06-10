@@ -106,9 +106,7 @@ class Order(Orders):
     def get_test_unit(self):
         test_units = self.base_selenium.get_text(element='order:test_unit')
         if "×" in test_units:
-            return test_units.replace("×", "").split(' Type')[0]
-        elif "× " in test_units:
-            return test_units.replace("× ", "").split(' Type')[0]
+            return test_units.replace("×", "").split('\n')
         else:
             return []
 
@@ -231,6 +229,7 @@ class Order(Orders):
         # update the field
         test_date.clear()
         test_date.send_keys(date)
+        self.sleep_small()
         return date
 
     def get_shipment_date(self, row_id=None):
@@ -253,13 +252,13 @@ class Order(Orders):
         # update the field
         shipment_date.clear()
         shipment_date.send_keys(date)
+        self.sleep_small()
         return date
 
     def get_departments(self):
-        departments = self.base_selenium.get_text(
-            element='order:departments').split('\n')[0]
-        if departments == 'Search':
-            return ''
+        departments = self.base_selenium.get_text(element='order:departments').replace('×', '').split('\n')
+        if departments == ['Search']: #empty
+            return []
         return departments
 
     def get_department(self):
@@ -270,6 +269,7 @@ class Order(Orders):
             self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
         else:
             self.base_selenium.select_item_from_drop_down(element='order:departments')
+            self.sleep_small()
             return self.get_departments()
 
     def get_suborder_table(self):
