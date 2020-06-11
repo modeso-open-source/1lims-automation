@@ -2389,30 +2389,6 @@ class OrdersTestCases(BaseTest):
         self.assertCountEqual(test_plans, found_test_plans)
         self.assertCountEqual(test_units, found_test_units)
 
-    def test040_test_create_order(self):
-        api, payload = self.orders_api.create_new_order()
-        self.info(payload)
-        self.orders_page.search(payload[0]['orderNo'])
-        order_data = self.orders_page.get_the_latest_row_data()
-        self.assertEqual(order_data['Order No.'].split('-')[0].replace("'", ""), str(payload[0]['orderNo']))
-        suborder_data = self.orders_page.get_child_table_data()[0]
-        self.assertEqual(suborder_data['Test Plans'], payload[0]['testPlans'][0]['name'])
-        self.assertEqual(suborder_data['Material Type'].replace(' ', ''),
-                         payload[0]['materialType']['text'].replace(' ', ''))
-        self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
-        self.assertEqual(suborder_data['Test Units'], payload[0]['selectedTestUnits'][0]['name'])
-
-    def test041_test_create_order_with_multiple_testplans(self):
-        api, payload = self.orders_api.create_order_with_double_test_plans()
-        self.orders_page.search(payload[0]['orderNo'])
-        suborder_data = self.orders_page.get_child_table_data()[0]
-        self.assertEqual(suborder_data['Test Plans'].split(',\n')[0], payload[0]['testPlans'][0]['testPlanName'])
-        self.assertEqual(suborder_data['Test Plans'].split(',\n')[1], payload[0]['testPlans'][1]['testPlanName'])
-        self.assertEqual(suborder_data['Material Type'], payload[0]['materialType']['text'])
-        self.assertEqual(suborder_data['Article Name'], payload[0]['article']['text'])
-        self.assertEqual(suborder_data['Test Units'].split(',\n')[0], payload[0]['testUnits'][0]['name'])
-        self.assertEqual(suborder_data['Test Units'].split(',\n')[1], payload[0]['testUnits'][1]['name'])
-
     def test040_user_can_edit_multiple_columns(self):
         """
         user can edit multiple columns at the same time
