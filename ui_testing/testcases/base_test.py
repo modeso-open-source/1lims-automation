@@ -3,10 +3,8 @@ from ui_testing.pages.base_selenium import BaseSelenium
 from uuid import uuid4
 from random import randint
 from ui_testing.pages.article_page import Article
-from ui_testing.pages.login_page import Login
 from ui_testing.pages.testplan_page import TstPlan
 from ui_testing.pages.testunit_page import TstUnit
-from ui_testing.pages.analysis_page import SingleAnalysisPage
 import datetime, re
 
 
@@ -31,7 +29,7 @@ class BaseTest(TestCase):
         try:
             method, error = self._outcome.errors[0]
             if error:
-                self.base_selenium.driver.get_screenshot_as_file("screenshot_" + method._testMethodName + ".png")
+                self.base_selenium.driver.get_screenshot_as_file(f"./screenshots/screenshot_{method._testMethodName}_.png")
         except:
             pass
 

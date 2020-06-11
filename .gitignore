@@ -4,6 +4,8 @@
 .vscode/
 __pycache__/
 *.py[cod]
+screenshots
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
