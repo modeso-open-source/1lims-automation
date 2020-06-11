@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test004_archive_main_order",
-                     "ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test004_archive_main_order"]
+        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test042_Duplicate_sub_order_with_multiple_testplans_and_testunits_add_approach"]
 
     steps:
       - uses: actions/checkout@master
