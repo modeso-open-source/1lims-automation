@@ -2392,7 +2392,6 @@ class OrdersTestCases(BaseTest):
     def test040_user_can_edit_multiple_columns(self):
         """
         user can edit multiple columns at the same time
-
         LIMS-5221
         """
         self.info('get random order with multiple suborders edit page')
@@ -2470,3 +2469,43 @@ class OrdersTestCases(BaseTest):
         duplicated_suborder_data = self.order_page.get_child_table_data()
         duplicated_test_units = [testunit['Test Unit'] for testunit in duplicated_suborder_data]
         self.assertCountEqual(test_units, duplicated_test_units)
+
+    def test042_table_with_add_edit_single_row(self):
+        """
+        Orders: Table with add: In case I have two suborders and I update the first one
+        then press on the second one the first one should updated according to that
+        LIMS-5204
+        """
+        self.info("create new test unit edit the suborder by it ( because the test unit name is not a unique ")
+        re, payload1 = self.test_unit_api.create_qualitative_testunit()
+
+        order, payload = self.orders_api.create_new_order()
+        self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
+
+        self.info(" Duplicate it to make sure we have two suborders to edit in one and press on the other to save data in the first one ")
+        self.order_page.duplicate_from_table_view(index_to_duplicate_from=0)
+
+        testunit_before_edit_row = self.order_page.get_suborder_data()['suborders'][0]['testunits']
+        self.info("test unit before I update the first row {}".format(testunit_before_edit_row))
+
+        # update the first suborder to update the test unit one it
+        self.order_page.update_suborder(test_units=[payload1['name']], sub_order_index=0)
+        # press on the second row because I want to save data in the first one
+        self.order_page.update_suborder(sub_order_index=1)
+
+        testunit_after_edit_row = self.order_page.get_sub_order_data_first_row()['suborders'][0]['testunits']
+        self.info("test unit after I press on the second row to make sure it saved in the first one {}".format(testunit_after_edit_row))
+
+        self.info('Assert that the test unit not equal ')
+        self.assertNotEqual(testunit_before_edit_row, testunit_after_edit_row)
+
+
+
+
+
+
+
+
+
+
+

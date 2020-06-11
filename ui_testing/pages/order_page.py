@@ -437,6 +437,7 @@ class Order(Orders):
             self.set_test_unit(test_unit=testunit)
             self.sleep_small()
 
+
         if shipment_date:
             return self.set_shipment_date(row_id=sub_order_index)
         if test_date:
@@ -566,5 +567,11 @@ class Order(Orders):
         suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
             row=suborder_row, table_element='order:suborder_table')
         return suborders_elements
+
+    def get_sub_order_data_first_row(self, index=0):
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = suborders[index]
+        suborder_data = self.get_suborder_data()
+        return  suborder_data
 
 
