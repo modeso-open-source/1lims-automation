@@ -3,10 +3,9 @@ from api_testing.apis.contacts_api import ContactsAPI
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
 from api_testing.apis.test_unit_api import TestUnitAPI
-from api_testing.apis.article_api import ArticleAPI
 from ui_testing.pages.testunit_page import TstUnit
 from api_testing.apis.base_api import api_factory
-import random
+import random, json, os
 
 
 class OrdersAPIFactory(BaseAPI):
@@ -355,28 +354,6 @@ class OrdersAPI(OrdersAPIFactory):
         }
         return self.create_new_order(**payload)
 
-    def create_order_with_multiple_contacts(self):
-        contacts = ContactsAPI().get_all_contacts()[0]['contacts']
-        first_contact = contacts[0]
-        second_contact = contacts[1]
-        third_contact = contacts[2]
-        payload = {
-            'contact': [
-                {"id": first_contact['id'],
-                 "text": first_contact['name'],
-                 'No': first_contact['companyNo']},
-                {"id": second_contact['id'],
-                 "text": second_contact['name'],
-                 'No': second_contact['companyNo']},
-                {"id": third_contact['id'],
-                 "text": third_contact['name'],
-                 'No': third_contact['companyNo']}
-
-            ]
-
-        }
-        return self.create_new_order(**payload)
-
     def create_order_with_department(self):
         contact = random.choice(ContactsAPI().get_contacts_with_department())
         department_data = ContactsAPI().get_contact_form_data(contact['id'])[0]['contact']['departments'][0]
@@ -391,8 +368,9 @@ class OrdersAPI(OrdersAPIFactory):
         }
         return self.create_new_order(**payload)
 
-
-
-
-
-
+    def set_configuration(self):
+        self.info('set order configuration')
+        config_file = os.path.abspath('api_testing/config/order.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_configuration(payload=payload)

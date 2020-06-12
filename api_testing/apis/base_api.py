@@ -67,6 +67,12 @@ class BaseAPI:
         payload = {'username': username, 'password': password}
         return requests.post(api, json=payload, headers=header, verify=False)
 
+    def set_configuration(self, payload):
+        api = f'{self.url}{self.END_POINTS["field_data"]["configuration_update"]}'
+        response_json = self.session.put(api, json=payload, headers=self.headers, verify=False).json()
+        self.info('status code: {}'.format(response_json['status']))
+        return response_json
+
     @staticmethod
     def _update_payload(payload, **kwargs):
         for key in kwargs:
@@ -126,5 +132,4 @@ def api_factory(method):
         return wrapper
 
     return api_request
-
 

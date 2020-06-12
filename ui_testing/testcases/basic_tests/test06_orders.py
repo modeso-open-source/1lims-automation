@@ -15,7 +15,6 @@ from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from ui_testing.pages.contacts_page import Contacts
 from random import randint
 import random
-import time
 
 
 class OrdersTestCases(BaseTest):
@@ -35,6 +34,7 @@ class OrdersTestCases(BaseTest):
         self.contacts_page = Contacts()
         self.set_authorization(auth=self.contacts_api.AUTHORIZATION_RESPONSE)
         self.order_page.get_orders_page()
+        self.orders_api.set_configuration()
 
     @parameterized.expand(['save_btn', 'cancel'])
     def test001_edit_order_number_with_save_cancel_btn(self, save):

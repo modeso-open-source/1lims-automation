@@ -85,5 +85,8 @@ end_points = {
     },
     'materialTypes': {
         'list_material_types': '/api/materialTypes'
+    },
+    'field_data': {
+        'configuration_update': '/api/field_data/update'
     }
 }
