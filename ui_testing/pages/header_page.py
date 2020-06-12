@@ -6,7 +6,7 @@ import time
 class Header(BasePages):
     def __init__(self):
         super().__init__()
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        # self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.user_url = "{}users".format(self.base_selenium.url)
         self.role_url = "{}roles".format(self.base_selenium.url)
 

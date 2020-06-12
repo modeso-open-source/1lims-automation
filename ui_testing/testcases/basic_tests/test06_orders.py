@@ -2433,7 +2433,7 @@ class OrdersTestCases(BaseTest):
         duplicated_suborder_test_plans = duplicated_suborder_data['Test Plans'].split(',\n') or []
         self.assertCountEqual(duplicated_suborder_test_units, test_units)
         self.assertCountEqual(duplicated_suborder_test_plans, test_plans)
-
+        
     def test040_user_can_edit_multiple_columns(self):
         """
         user can edit multiple columns at the same time

@@ -186,7 +186,7 @@ class BaseSelenium:
 
     def wait_until_element_is_not_displayed(self, element):
         method, value, order = self.get_method_value_order(element=element)
-        if order == 0:
+        if order in [0, None]:
             with self._change_implicit_wait():
                 return self.wait.until(EC.invisibility_of_element_located((getattr(By, method), value)))
         else:
