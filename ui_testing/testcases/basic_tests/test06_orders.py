@@ -723,8 +723,8 @@ class OrdersTestCases(BaseTest):
         New: orders Test plan /test unit validation in edit mode
         LIMS-4826
         """
-        self.base_selenium.LOGGER.info(
-            ' Running test case to check that at least test unit or test plan is mandatory in order')
+        self.base_selenium.LOGGER.info(' Running test case to check that '
+                                       'at least test unit or test plan is mandatory in order')
         # Get random order
         orders, payload = self.orders_api.get_all_orders(limit=20)
         selected_order_record = random.choice(orders['orders'])
@@ -2187,7 +2187,7 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(duplicated_suborder_data['Material Type'], suborder_data_before_duplicate[0]['Material Type'])
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
-
+    
     def test037_duplicate_main_order_change_contact(self):
         """
         Duplicate from the main order Approach: Duplicate then change the contact
@@ -2388,8 +2388,117 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(len(found_test_units), 3)
         self.assertCountEqual(test_plans, found_test_plans)
         self.assertCountEqual(test_units, found_test_units)
+        
+    @parameterized.expand(['change', 'add'])
+    def test039_duplicate_main_order_with_testPlan_and_testUnit_edit_both(self, case):
+        """
+        Duplicate from the main order Approach: Duplicate then change the test units & test plans
 
-    def test042_Duplicate_sub_order_with_multiple_testplans_and_testunits_add_approach(self):
+        LIMS-6221
+
+        Duplicate from the main order Approach: Duplicate then update test unit/plan by deleting
+        any test plan & test unit
+
+        LIMS-6841
+
+        Duplicate from the main order Approach: Duplicate by adding test unit & plan
+
+        LIMS-6231
+        """
+        self.info('create order with test plan and test unit')
+        response, payload = self.orders_api.create_new_order()
+        self.assertEqual(response['status'], 1, response)
+        self.info('order created with payload {}'.format(payload))
+        self.info('get valid test plan and test unit to edit suborder data')
+        new_test_plan, new_test_unit = TestPlanAPI().get_order_valid_testplan_and_test_unit(
+            material_type=payload[0]['materialType']['text'],
+            used_test_plan=payload[0]['testPlans'][0]['name'],
+            used_test_unit=payload[0]['testUnits'][0]['name'],
+            article_id=payload[0]['article']['id'], article=payload[0]['article']['text'])
+
+        self.info("duplicate order No {} ".format(payload[0]['orderNo']))
+        self.orders_page.search(payload[0]['orderNo'])
+        self.info("duplicate main order")
+        self.orders_page.duplicate_main_order_from_order_option()
+        self.assertIn("duplicateMainOrder", self.base_selenium.get_url())
+        self.order_page.sleep_medium()
+        duplicated_order_No = self.order_page.get_no()
+        self.info("duplicated order No is {}".format(duplicated_order_No))
+        self.assertNotEqual(duplicated_order_No, payload[0]['orderNo'])
+        if case == 'add':
+            self.info("add test plan {} and test unit {} to duplicated order".format(new_test_plan, new_test_unit))
+            self.order_page.update_suborder(test_plans=[new_test_plan], test_units=[new_test_unit])
+        else:
+            self.info("update test plan to {} and test unit to {}".format(new_test_plan, new_test_unit))
+            self.order_page.update_suborder(test_plans=[new_test_plan], test_units=[new_test_unit], remove_old=True)
+
+        self.order_page.save(save_btn='order:save')
+        self.info("navigate to active table")
+        self.order_page.get_orders_page()
+        self.assertTrue(self.orders_page.search(duplicated_order_No))
+        duplicated_suborder_data = self.order_page.get_child_table_data()[0]
+        if case == 'change':
+            self.info("assert that test unit updated to {}, test plan {}".format(
+                new_test_unit, new_test_plan))
+            self.assertEqual(duplicated_suborder_data['Test Units'], new_test_unit)
+            self.assertEqual(duplicated_suborder_data['Test Plans'], new_test_plan)
+        else:
+            self.info("assert that test unit {}, test plan {} added to duplicated order".format(
+                new_test_unit, new_test_plan))
+            self.assertIn(new_test_unit, duplicated_suborder_data['Test Units'])
+            self.assertIn(new_test_plan, duplicated_suborder_data['Test Plans'])
+
+        self.info("navigate to analysis page")
+        self.order_page.navigate_to_analysis_tab()
+        self.assertTrue(self.analyses_page.search(duplicated_order_No))
+        analyses = self.analyses_page.get_the_latest_row_data()
+        if case == 'add':
+            self.assertIn(new_test_plan, analyses['Test Plans'].replace("'", ""))
+        else:
+            self.assertEqual(new_test_plan, analyses['Test Plans'].replace("'", ""))
+        child_data = self.analyses_page.get_child_table_data()
+        test_units = [test_unit['Test Unit'] for test_unit in child_data]
+        self.assertIn(new_test_unit, test_units)
+
+    def test040_duplicate_sub_order_with_testPlan_and_testUnit_change_both(self):
+        """
+        Duplicate suborder Approach: Duplicate any sub order then change the units & test plans
+        (remove them and put another ones )
+
+        LIMS-6229
+        """
+        self.info('create order with test plan and test unit')
+        response, payload = self.orders_api.create_new_order()
+        self.assertEqual(response['status'], 1)
+        self.info('order created with payload {}'.format(payload))
+        self.info('get valid test plan and test unit to edit suborder data')
+        new_test_plan, new_test_unit = TestPlanAPI().get_order_valid_testplan_and_test_unit(
+            material_type=payload[0]['materialType']['text'],
+            used_test_plan=payload[0]['testPlans'][0]['name'],
+            used_test_unit=payload[0]['testUnits'][0]['name'],
+            article_id=payload[0]['article']['id'], article=payload[0]['article']['text']
+        )
+
+        self.info("duplicate order No {} ".format(payload[0]['orderNo']))
+        self.orders_page.search(payload[0]['orderNo'])
+        self.info("duplicate sub order with one copy only")
+        self.orders_page.open_child_table(source=self.orders_page.result_table()[0])
+        self.orders_page.duplicate_sub_order_from_table_overview()
+        self.info("update test plan to {} and test unit to {}".format(new_test_plan, new_test_unit))
+        self.order_page.update_suborder(test_plans=[new_test_plan], test_units=[new_test_unit], remove_old=True)
+        self.order_page.save(save_btn='order:save')
+
+        self.info("navigate to analysis page")
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.search(payload[0]['orderNo'])
+        analyses = self.analyses_page.get_the_latest_row_data()
+        self.assertEqual(new_test_plan, analyses['Test Plans'].replace("'", ""))
+        child_data = self.analyses_page.get_child_table_data()
+        test_units = [test_unit['Test Unit'] for test_unit in child_data]
+        self.assertIn(new_test_unit, test_units)
+
+    def test041_Duplicate_sub_order_with_multiple_testplans_and_testunits_add_approach(self):
         """
         Duplicate suborder Approach: Duplicate any sub order then add test unit & test plan
 
@@ -2434,7 +2543,7 @@ class OrdersTestCases(BaseTest):
         self.assertCountEqual(duplicated_suborder_test_units, test_units)
         self.assertCountEqual(duplicated_suborder_test_plans, test_plans)
         
-    def test040_user_can_edit_multiple_columns(self):
+    def test042_user_can_edit_multiple_columns(self):
         """
         user can edit multiple columns at the same time
         LIMS-5221
@@ -2484,7 +2593,7 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(first_test_date, test_date)
 
     #@skip('https://modeso.atlassian.net/browse/LIMS-7722')
-    def test042_duplicate_main_order_with_testPlans_and_testUnits(self):
+    def test043_duplicate_main_order_with_testPlans_and_testUnits(self):
         """
         Duplicate main order Approach: duplicate order with test plan & test units
         LIMS-4353
@@ -2515,7 +2624,7 @@ class OrdersTestCases(BaseTest):
         duplicated_test_units = [testunit['Test Unit'] for testunit in duplicated_suborder_data]
         self.assertCountEqual(test_units, duplicated_test_units)
 
-    def test042_table_with_add_edit_single_row(self):
+    def test044_table_with_add_edit_single_row(self):
         """
         Orders: Table with add: In case I have two suborders and I update the first one
         then press on the second one the first one should updated according to that
@@ -2543,14 +2652,3 @@ class OrdersTestCases(BaseTest):
 
         self.info('Assert that the test unit not equal ')
         self.assertNotEqual(testunit_before_edit_row, testunit_after_edit_row)
-
-
-
-
-
-
-
-
-
-
-
