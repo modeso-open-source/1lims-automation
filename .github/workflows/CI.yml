@@ -10,7 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test008_duplicate_main_order"]
+        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test32_update_order_no_should_reflect_all_suborders_and_analysis"]
+
 
     steps:
       - uses: actions/checkout@master
