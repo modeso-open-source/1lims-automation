@@ -505,8 +505,9 @@ class TestPlansTestCases(BaseTest):
         self.order_page.get_orders_page()
 
         # create a new order with material type and article same as the saved ones
-        order_data = self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article,
-                                                      test_plans=[testplan_name])
+        self.order_page.create_new_order(material_type=testplan_materialtype, article=testplan_article,
+                                         test_plans=[testplan_name])
+        order_data = self.order_page.get_suborder_data()
 
         # get the first suborder's testplan and make sure it's an empty string
         suborder_first_testplan = (((order_data['suborders'])[0])['testplans'])[0]

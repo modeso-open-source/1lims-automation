@@ -369,8 +369,8 @@ class ContactsTestCases(BaseTest):
 
         self.base_selenium.LOGGER.info('create order with the desired contact to keep track of the updated')
         self.order_page.get_orders_page()
-        order_data = self.order_page.create_new_order(material_type='Raw Material', departments=departments,
-                                                      contact=contact_name, test_plans=[])
+        self.order_page.create_new_order(material_type='Raw Material', departments=departments,
+                                         contact=contact_name, test_plans=[])
         order_id = self.order_page.get_order_id()
         self.base_selenium.LOGGER.info('get the contacts to update the desired contact department')
         self.contact_page.get_contacts_page()
