@@ -703,6 +703,21 @@ elements = {
         'confirm_cancel': {'method': 'class_name',
                            'value': 'btn-secondary',
                            'order': 2},
+        'attachment_btn': {'method': 'xpath',
+                           'value': '//i[@class="la la-cloud-upload"]',
+                           },
+        'uploader_zone': {'method': 'id',
+                           'value': 'fieldUploaderComponent',
+                           },
+
+        'uploader_close_btn': {'method': 'id',
+                           'value': 'uploaderPopUpClose',
+                           },
+
+        'attachments_btn': {'method': 'xpath',
+                               'value': '//i[@class="fa fa-cloud-upload"]',
+                               },
+
         'testplan_popup_btn': {'method': 'xpath',
                            'value': '//span[@class="pull-right collapse-long-words"]',
                            },

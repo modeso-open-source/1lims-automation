@@ -2620,6 +2620,43 @@ class OrdersTestCases(BaseTest):
         self.info('Assert that the test unit not equal ')
         self.assertNotEqual(testunit_before_edit_row, testunit_after_edit_row)
 
+    def test047_upload_attachment(self):
+        """
+        I can upload any attachment successfully from the order section
+        LIMS-8258
+        :return:
+        """
+        order, payload = self.orders_api.create_new_order()
+        self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
+        self.base_selenium.click(element='order:attachment_btn')
+        file_name = 'logo.png'
+        upload_file = self.order_page.upload_attachment(file_name='logo.png', drop_zone_element='order:uploader_zone',save=True)
+        self.info("assert that the upload file same as the file name ".format(upload_file, file_name))
+        self.assertEqual(upload_file, file_name)
+
+    @skip('https://modeso.atlassian.net/browse/LIMS-177')
+    def test048_upload_attachment_then_remove(self):
+        """
+        Orders step 1: Attachment download approach: There is a link under remove link for
+        download and you can preview it by clicking on it
+        LIMS-6933
+        :return:
+        """
+        order, payload = self.orders_api.create_new_order()
+        self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
+        self.base_selenium.click(element='order:attachment_btn')
+        file_name = 'logo.png'
+        upload_attachment_then_save = self.order_page.upload_attachment(file_name='logo.png', drop_zone_element='order:uploader_zone', save=True)
+        self.info("assert that the upload file same as the file name ".format(upload_attachment_then_save, file_name))
+        self.assertEqual(upload_attachment_then_save, file_name)
+        self.info('open the same record in the edit mode')
+        self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
+        self.base_selenium.click(element='order:attachments_btn')
+        self.info("remove the file and submit the record ")
+        after_remove_attachment = self.order_page.upload_attachment(file_name='logo2.png', drop_zone_element='order:uploader_zone', remove_current_file=True,save=True)
+        self.info("assert that after I remove the file it will return none should not equal to the file name ".format(after_remove_attachment, file_name))
+        self.assertNotEqual(after_remove_attachment, file_name)
+
     def test044_testplans_popup(self):
         """
         Orders: Test plan pop up Approach: Make sure the test plans
@@ -2695,6 +2732,3 @@ class OrdersTestCases(BaseTest):
         self.info("assert that the test unint in the edit mode same as the test unit in the test unit pop up ".format(
             testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0]))
         self.assertEqual(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0])
-
-
-

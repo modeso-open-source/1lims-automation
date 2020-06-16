@@ -501,8 +501,6 @@ class BasePages:
         self.base_selenium.LOGGER.info(
             "{} file is uploaded successfully".format(file_name))
 
-
-
     def open_pagination_menu(self):
         self.base_selenium.wait_element(element='general:pagination_button')
         self.base_selenium.click(element='general:pagination_button')

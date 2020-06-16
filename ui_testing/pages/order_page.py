@@ -578,8 +578,21 @@ class Order(Orders):
         suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborders[index]
         suborder_data = self.get_suborder_data()
-        return suborder_data
+        return  suborder_data
 
+    def upload_attachment(self, file_name, drop_zone_element, remove_current_file=False, save=False):
+        super().upload_file(file_name, drop_zone_element, remove_current_file)
+        if save:
+           self.base_selenium.driver.execute_script("document.querySelector('.dz-details').style.opacity = 'initial';")
+           self.sleep_tiny()
+           uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name').text
+           self.base_selenium.click('order:uploader_close_btn')
+           self.save(save_btn='order:save_btn')
+           return uploaded_file_name
+        else:
+            self.base_selenium.click('order:uploader_close_btn')
+            self.cancel(True)
+            
     def get_testplan_pop_up(self):
         self.base_selenium.click(element='order:testplan_popup_btn')
         self.sleep_small()
@@ -589,4 +602,3 @@ class Order(Orders):
             test_plan, test_units = element.text.split('\n')[0], element.text.split('\n')[1:]
             results.append({'test_plan': test_plan, 'test_units': test_units})
         return results
-
