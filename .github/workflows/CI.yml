@@ -10,7 +10,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test32_update_order_no_should_reflect_all_suborders_and_analysis"]
+
+
+
+        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test044_testplans_popup ",
+                     "ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test045_testplans_popup_after_edit_by_add ",
+                     "ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test046_testplans_popup_after_edit_by_replace "]
+
 
 
     steps:

@@ -11,6 +11,7 @@ from api_testing.apis.test_unit_api import TestUnitAPI
 from ui_testing.pages.analysis_page import SingleAnalysisPage
 from api_testing.apis.contacts_api import ContactsAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
+from ui_testing.pages.testplan_page import TstPlan
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from ui_testing.pages.contacts_page import Contacts
 from random import randint
@@ -22,6 +23,7 @@ class OrdersTestCases(BaseTest):
         super().setUp()
         self.order_page = Order()
         self.orders_api = OrdersAPI()
+        self.testplan_page = TstPlan()
         self.orders_page = Orders()
         self.analyses_page = AllAnalysesPage()
         self.article_api = ArticleAPI()
@@ -2617,3 +2619,82 @@ class OrdersTestCases(BaseTest):
 
         self.info('Assert that the test unit not equal ')
         self.assertNotEqual(testunit_before_edit_row, testunit_after_edit_row)
+
+    def test044_testplans_popup(self):
+        """
+        Orders: Test plan pop up Approach: Make sure the test plans
+        & units displayed on the test plans & units fields same as in the test plan pop up
+        LIMS-4796
+        """
+        order, payload = self.orders_api.create_new_order()
+        self.info('open the order record in the edit mode')
+        self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
+        testplan_name = payload[0]['testPlans'][0]['name']
+        self.info("get test plan name ".format(testplan_name))
+        testplans_testunits_names_in_popup = self.order_page.get_testplan_pop_up()
+        self.info("get test plan & test unit name from the test plan popup".format(testplans_testunits_names_in_popup))
+        testunit_no = self.test_plan_api.get_testplan_with_quicksearch(quickSearchText=testplan_name)[0]['number']
+        testunit_name = self.test_plan_api.get_testunits_in_testplan_by_No(no=testunit_no)[0]
+        self.info("get test unit name".format(testunit_name))
+        self.info("assert that the test plan in the editmode same as the test plan in the test plan pop up".format(testplan_name, testplans_testunits_names_in_popup[0]['test_plan']))
+        self.assertEqual(testplan_name, testplans_testunits_names_in_popup[0]['test_plan'])
+        self.info("assert that the test unint in the edit mode same as the test unit in the test unit pop up ".format(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0]))
+        self.assertEqual(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0])
+
+    def test045_testplans_popup_after_edit_by_add(self):
+        """
+        Orders: Test plan pop up  Approach: Make sure In case you edit the test plans
+        & add another ones this update should reflect on the test plan pop up
+        LIMS-8256
+        """
+        self.info('Get completed test plan to upade by it with raw material type')
+        testplan = \
+            self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material', article='', articleNo='')[0]
+        order, payload = self.orders_api.create_new_order(materialTypeId=1)
+        self.info('open the order record in the edit mode')
+        self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
+        self.info('go to update the test plan by adding the completed one')
+        self.order_page.update_suborder(sub_order_index=0, test_plans=[testplan['testPlanName']])
+        self.order_page.save(save_btn='order:save')
+        testplan_name = testplan['testPlanName']
+        self.info("Get the test plan name that I added it in the edit mode".format(testplan_name))
+        testplans_testunits_names_in_popup = self.order_page.get_testplan_pop_up()
+        testunit_no = self.test_plan_api.get_testplan_with_quicksearch(quickSearchText=testplan_name)[0]['number']
+        testunit_name = self.test_plan_api.get_testunits_in_testplan_by_No(no=testunit_no)[0]
+        self.info("assert that the test plan I added in the test plan popup ".format(testplan_name, testplans_testunits_names_in_popup[1]['test_plan']))
+        self.assertEqual(testplan_name, testplans_testunits_names_in_popup[1]['test_plan'])
+        self.info("assert that the test plan I added in the test plan popup ".format(testplan_name, testplans_testunits_names_in_popup[1]['test_units'][0]))
+        self.assertEqual(testunit_name, testplans_testunits_names_in_popup[1]['test_units'][0])
+
+    @skip("https://modeso.atlassian.net/browse/LIMSA-127")
+    def test046_testplans_popup_after_edit_by_replace(self):
+        """
+        Orders: Test plan: Test unit pop up Approach: In case I delete test plan, make sure it
+        deleted from the pop up with it's test units and updated with another one
+        LIMS-4802
+        """
+        self.info('Get completed test plan to upade by it with raw material type')
+        testplan = \
+            self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',article='', articleNo='')[0]
+        order, payload = self.orders_api.create_new_order(materialTypeId=1)
+        self.info('open the order record in the edit mode')
+        self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
+        self.info('go to update the test plan by adding the completed one')
+        self.order_page.update_suborder(sub_order_index=0, remove_old=True, test_plans=[testplan['testPlanName']])
+        self.order_page.save(save_btn='order:save')
+        testplan_name = testplan['testPlanName']
+        self.info("Get the test plan name that I added it in the edit mode".format(testplan_name))
+        testplans_testunits_names_in_popup = self.order_page.get_testplan_pop_up()
+        self.info("get test plan & test unit name from the test plan popup".format(testplans_testunits_names_in_popup))
+        testunit_no = self.test_plan_api.get_testplan_with_quicksearch(quickSearchText=testplan_name)[0]['number']
+        testunit_name = self.test_plan_api.get_testunits_in_testplan_by_No(no=testunit_no)[0]
+        self.info("get test unit name".format(testunit_name))
+        self.info("assert that the test plan in the editmode same as the test plan in the test plan pop up".format(
+            testplan_name, testplans_testunits_names_in_popup[0]['test_plan']))
+        self.assertEqual(testplan_name, testplans_testunits_names_in_popup[0]['test_plan'])
+        self.info("assert that the test unint in the edit mode same as the test unit in the test unit pop up ".format(
+            testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0]))
+        self.assertEqual(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0])
+
+
+
