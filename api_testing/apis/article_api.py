@@ -1,6 +1,7 @@
 from api_testing.apis.base_api import BaseAPI
 from api_testing.apis.base_api import api_factory
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
+import random
 
 
 class ArticleAPIFactory(BaseAPI):
@@ -178,3 +179,7 @@ class ArticleAPI(ArticleAPIFactory):
                                            materialTypeId=int(material_type_id))
         if api['status'] == 1:
             return api['article']['name']
+
+    def get_random_article_articleID(self):
+        selected_article = random.choice(self.get_all_articles(limit=30)[0]['articles'])
+        return selected_article['name'], selected_article['id']
