@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test047_upload_attachment ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test048_upload_attachment_then_remove"]
+        test_cases: ["ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test046_search_by_year_0_2020 ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases.test046_search_by_year_1_20"]
 
     steps:
       - uses: actions/checkout@master

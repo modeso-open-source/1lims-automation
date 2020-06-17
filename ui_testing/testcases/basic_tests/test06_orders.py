@@ -2620,6 +2620,21 @@ class OrdersTestCases(BaseTest):
         self.info('Assert that the test unit not equal ')
         self.assertNotEqual(testunit_before_edit_row, testunit_after_edit_row)
 
+    @parameterized.expand(['2020', '20'])
+    def test046_search_by_year(self, search_text):
+        """
+        Search: Orders: Make sure that you can search by all the year format
+        ( with year in case year after or before & without year )
+
+        LIMS-7427
+        """
+        self.order_page.filter_by_order_no(search_text)
+        results = self.orders_page.result_table()
+        orders = [item.text.split('\n')[0] for item in results if item.text.split('\n')[0]!='']
+        self.assertTrue(orders)
+        for order in orders:
+            self.assertIn(search_text, order.replace("'", ""))
+
     def test047_upload_attachment(self):
         """
         I can upload any attachment successfully from the order section
@@ -2732,3 +2747,4 @@ class OrdersTestCases(BaseTest):
         self.info("assert that the test unint in the edit mode same as the test unit in the test unit pop up ".format(
             testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0]))
         self.assertEqual(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0])
+
