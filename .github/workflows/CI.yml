@@ -52,3 +52,4 @@ jobs:
         run: |
           export PYTHONPATH='$PYTHONPATH:./'
           script -e -c $'xvfb-run -a ~/.local/bin/nosetests-3.4 -vs --nologcapture --tc-file=config.ini ${{ matrix.test_cases }}'
+
