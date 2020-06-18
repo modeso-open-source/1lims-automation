@@ -140,14 +140,6 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.get(url=order_url, sleep=5)
 
         current_department = self.order_page.get_department()
-                if 'save_btn' == save:
-            self.order_page.save(save_btn='order:save_btn')
-        else:
-            self.order_page.cancel(force=True)
-
-        self.base_selenium.get(url=order_url, sleep=5)
-
-        current_department = self.order_page.get_department()
         if 'save_btn' == save:
             self.info(
                 ' + Assert {} (current_department) == {} (new_department)'.format(current_department, new_department))
