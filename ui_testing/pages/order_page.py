@@ -268,7 +268,13 @@ class Order(Orders):
             return []
         return departments
 
-    def get_department(self):
+    def get_department(self, sub_order_index=0):
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
+        suborder_row = suborder_table_rows[sub_order_index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        suborder_row.click()
         return self.base_selenium.get_text(element='order:departments').split('\n')[0]
 
     def set_departments(self, departments=''):
