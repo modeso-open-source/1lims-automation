@@ -146,8 +146,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(current_department, new_department)
         else:
             self.info(
-                ' + Assert {} (current_department) == {} (order_departments)'.format(current_department,
-                                                                                      order_department))
+                ' + Assert {} (current_department) == {} (order_departments)'.format(current_department,order_department))
             self.assertEqual(current_department, order_department)
 
     def test004_archive_main_order(self):
@@ -177,8 +176,8 @@ class OrdersTestCases(BaseTest):
         I can restore any order successfully
         LIMS-4374
         """
+        orders, payload = self.orders_api.get_all_orders(deleted=1, limit=5)
         self.orders_page.get_archived_items()
-        orders, payload = self.orders_api.get_all_orders(deleted=1, limit=20)
         order = random.choice(orders['orders'])
         self.base_selenium.LOGGER.info(
             '{}'.format(order['orderNo']))
@@ -187,7 +186,6 @@ class OrdersTestCases(BaseTest):
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
                                               field_type='text')
         suborders_data = self.order_page.get_child_table_data(index=0)
-        print(suborders_data)
         self.order_page.restore_table_suborder(index=0)
         self.info('make sure that suborder is restored successfully')
         if len(suborders_data) > 1:
@@ -389,8 +387,8 @@ class OrdersTestCases(BaseTest):
 
         self.order_page.get_child_table_data(index=0)
         child_rows = self.order_page.result_table(element='general:table_child')
-        data_before_duplicate_sub_order = self.base_selenium.get_row_cells_dict_related_to_header(row=child_rows[0],
-                                                                                                  table_element='general:table_child')
+        data_before_duplicate_sub_order = self.base_selenium.get_row_cells_dict_related_to_header(
+                                                                row=child_rows[0], table_element='general:table_child')
         self.orders_page.duplicate_sub_order_from_table_overview(number_of_copies=no_of_copies)
         table_rows = self.order_page.result_table(element='general:table_child')
         self.base_selenium.LOGGER.info(
@@ -403,7 +401,7 @@ class OrdersTestCases(BaseTest):
                 row=table_rows[index], table_element='general:table_child')
 
             self.base_selenium.LOGGER.info(
-                'Check if order created number:  {} with analyis  '.format(index + 1, ))
+                'Check if order created number:  {} with analysis  '.format(index + 1, ))
             self.assertTrue(data_after_duplicate_sub_order['Analysis No.'])
 
             self.base_selenium.LOGGER.info(
@@ -431,20 +429,17 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(
                 data_before_duplicate_sub_order['Shipment Date'], data_after_duplicate_sub_order['Shipment Date'])
             self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Date = {}   '.format(index + 1,
-                                                                                                             data_after_duplicate_sub_order[
-                                                                                                                 'Test Date']))
+                                                                      data_after_duplicate_sub_order['Test Date']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Date'], data_after_duplicate_sub_order['Test Date'])
 
             self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Plan = {}   '.format(index + 1,
-                                                                                                             data_after_duplicate_sub_order[
-                                                                                                                 'Test Plans']))
+                                                                      data_after_duplicate_sub_order['Test Plans']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Plans'], data_after_duplicate_sub_order['Test Plans'])
 
             self.base_selenium.LOGGER.info('Check if order created number:  {} has Test unit = {}   '.format(index + 1,
-                                                                                                             data_after_duplicate_sub_order[
-                                                                                                                 'Test Units']))
+                                                                      data_after_duplicate_sub_order['Test Units']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Units'], data_after_duplicate_sub_order['Test Units'])
 
@@ -459,10 +454,10 @@ class OrdersTestCases(BaseTest):
         LIMS-4282
         :return:
         """
-        testplan = \
+        testplan= \
             self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',
                                                                                       article='', articleNo='')[0]
-        orders, payload = self.orders_api.create_new_order()
+        orders, payload = self.orders_api.create_new_order(materialTypeId=2)
         self.orders_page.get_order_edit_page_by_id(id=orders['order']['mainOrderId'])
         order_url = self.base_selenium.get_url()
         self.info(' + order_url : {}'.format(order_url))
@@ -483,10 +478,9 @@ class OrdersTestCases(BaseTest):
 
         if 'save_btn' == save:
             self.info(
-                ' + Assert {} (current_material_type) == {} (new_material_type)'.format(current_material_type,
-                                                                                            testplan['materialType']))
-            self.assertEqual(testplan['materialType'],
-                             current_material_type)
+                ' + Assert {} (current_material_type) == {} (new_material_type)'.format(current_material_type, testplan
+                                                                                                     ['materialType']))
+            self.assertEqual(testplan['materialType'], current_material_type)
         else:
             self.info(
                 ' + Assert {} (current_material_type) == {} (order_material_type)'.format(current_material_type,
@@ -656,7 +650,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.create_new_order(material_type='r', article='', contact='a', test_plans=[],
                                          test_units=[], multiple_suborders=0)
         self.base_selenium.LOGGER.info(
-            'waiting to validation message appear when I didnt enter test plan & test unit')
+            'waiting to validation message appear when I did not enter test plan & test unit')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
 
         self.info(
