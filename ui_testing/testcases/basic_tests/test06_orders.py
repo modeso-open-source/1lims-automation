@@ -643,23 +643,19 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
+
     def test020_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
         LIMS-4349
         """
-        self.info(
+        self.base_selenium.LOGGER.info(
             ' Running test case to make sure from the validation of the test plan & test unit ')
 
         self.order_page.create_new_order(material_type='r', article='', contact='a', test_plans=[],
                                          test_units=[], multiple_suborders=0)
-<<<<<<< HEAD
         self.base_selenium.LOGGER.info(
             'waiting to validation message appear when I did not enter test plan & test unit')
-=======
-        self.info(
-            'waiting to validation message appear when I didnt enter test plan & test unit')
->>>>>>> 8d4576e15af0571edf7928ae83962791ad8401ab
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
 
         self.info(
@@ -1613,11 +1609,7 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(duplicated_suborder_data['Material Type'], suborder_data_before_duplicate[0]['Material Type'])
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 8d4576e15af0571edf7928ae83962791ad8401ab
     def test045_duplicate_main_order_change_contact(self):
         """
         Duplicate from the main order Approach: Duplicate then change the contact
@@ -1972,11 +1964,7 @@ class OrdersTestCases(BaseTest):
         duplicated_suborder_test_plans = duplicated_suborder_data['Test Plans'].split(',\n') or []
         self.assertCountEqual(duplicated_suborder_test_units, test_units)
         self.assertCountEqual(duplicated_suborder_test_plans, test_plans)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 8d4576e15af0571edf7928ae83962791ad8401ab
     def test054_user_can_edit_multiple_columns(self):
         """
         user can edit multiple columns at the same time
@@ -2027,11 +2015,7 @@ class OrdersTestCases(BaseTest):
         test_date = "{}.{}.{}".format(result_test_date[0], result_test_date[1], result_test_date[2])
         self.assertEqual(first_test_date, test_date)
 
-<<<<<<< HEAD
     #@skip('https://modeso.atlassian.net/browse/LIMS-7722')
-=======
-    # @skip('https://modeso.atlassian.net/browse/LIMS-7722')
->>>>>>> 8d4576e15af0571edf7928ae83962791ad8401ab
     def test055_duplicate_main_order_with_testPlans_and_testUnits(self):
         """
         Duplicate main order Approach: duplicate order with test plan & test units
