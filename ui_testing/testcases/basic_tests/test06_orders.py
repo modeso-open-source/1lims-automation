@@ -140,7 +140,15 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.get(url=order_url, sleep=5)
 
         current_department = self.order_page.get_department()
-
+        if 'save_btn' == save:
+            self.info(
+                ' + Assert {} (current_department) == {} (new_department)'.format(current_department, new_department))
+            self.assertEqual(current_department, new_department)
+        else:
+            self.info(
+                ' + Assert {} (current_department) == {} (order_departments)'.format(current_department,
+                                                                                     order_department))
+            self.assertEqual(current_department, order_department)
 
     def test004_archive_main_order(self):
         """"
@@ -248,7 +256,7 @@ class OrdersTestCases(BaseTest):
                 search_by = row_data[column].split(' (')[0]
 
             row_data[column] = row_data[column].split(',')[0]
-            self.info(
+            self.base_selenium.LOGGER.info(
                 ' + search for {} : {}'.format(column, row_data[column]))
             if small_letters == 'True':
                 search_results = self.order_page.search(search_by)
@@ -301,17 +309,14 @@ class OrdersTestCases(BaseTest):
         # check that it exists
         self.assertIn(after_duplicate_order['orderNo'].replace("'", ""), results.replace("'", ""))
 
-<<<<<<< HEAD
     @skip("https://modeso.atlassian.net/browse/LIMSA-179")
-=======
->>>>>>> 8d4576e15af0571edf7928ae83962791ad8401ab
     def test009_export_order_sheet(self):
         """
         New: Orders: XSLX Approach: user can download all data in table view with the same order with table view
         LIMS-3274
         :return:
         """
-        self.info(' * Download XSLX sheet')
+        self.base_selenium.LOGGER.info(' * Download XSLX sheet')
         self.order_page.select_all_records()
         self.order_page.download_xslx_sheet()
         rows_data = self.order_page.get_table_rows_data()
@@ -371,7 +376,6 @@ class OrdersTestCases(BaseTest):
         LIMS-6224
         :return:
         """
-<<<<<<< HEAD
         no_of_copies = randint(2, 5)
         self.base_selenium.LOGGER.info('get last order row that you created')
         orders, payload = self.orders_api.get_all_orders(limit=20)
@@ -385,7 +389,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_child_table_data(index=0)
         child_rows = self.order_page.result_table(element='general:table_child')
         data_before_duplicate_sub_order = self.base_selenium.get_row_cells_dict_related_to_header(
-                                                                row=child_rows[0], table_element='general:table_child')
+            row=child_rows[0], table_element='general:table_child')
         self.orders_page.duplicate_sub_order_from_table_overview(number_of_copies=no_of_copies)
         table_rows = self.order_page.result_table(element='general:table_child')
         self.base_selenium.LOGGER.info(
@@ -426,75 +430,20 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(
                 data_before_duplicate_sub_order['Shipment Date'], data_after_duplicate_sub_order['Shipment Date'])
             self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Date = {}   '.format(index + 1,
-                                                                      data_after_duplicate_sub_order['Test Date']))
+                                                                                                             data_after_duplicate_sub_order[
+                                                                                                                 'Test Date']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Date'], data_after_duplicate_sub_order['Test Date'])
 
             self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Plan = {}   '.format(index + 1,
-                                                                      data_after_duplicate_sub_order['Test Plans']))
+                                                                                                             data_after_duplicate_sub_order[
+                                                                                                                 'Test Plans']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Plans'], data_after_duplicate_sub_order['Test Plans'])
 
             self.base_selenium.LOGGER.info('Check if order created number:  {} has Test unit = {}   '.format(index + 1,
-                                                                      data_after_duplicate_sub_order['Test Units']))
-=======
-        number_of_copies = randint(2, 5)
-        self.info(' Select Random Order')
-        selected_row = self.order_page.get_random_order_row()
-        selected_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
-            row=selected_row)
-        self.order_page.click_check_box(source=selected_row)
-        self.info(
-            'Duplicate selected order  {} times  '.format(number_of_copies))
-        self.order_page.duplicate_order_from_table_overview(number_of_copies)
-        table_rows = self.order_page.result_table()
-        self.info(
-            'Make sure that created orders has same data of the oringal order')
-        for index in range(number_of_copies):
-            row_data = self.base_selenium.get_row_cells_dict_related_to_header(
-                row=table_rows[index])
-            self.info(
-                'Check if order created number:  {} with analyis  '.format(index + 1, ))
-            self.assertTrue(row_data['Analysis No.'])
-            self.info(
-                'Check if order created number:  {} has order number = {}   '.format(index + 1,
-                                                                                     selected_order_data['Order No.']))
-            self.assertEqual(
-                selected_order_data['Order No.'], row_data['Order No.'])
-            self.info(
-                'Check if order created number:  {} has Contact Name = {}   '.format(index + 1, selected_order_data[
-                    'Contact Name']))
-            self.assertEqual(
-                selected_order_data['Contact Name'], row_data['Contact Name'])
-            self.info(
-                'Check if order created number:  {} has Material Type = {}   '.format(index + 1, selected_order_data[
-                    'Material Type']))
-            self.assertEqual(
-                selected_order_data['Material Type'], row_data['Material Type'])
-            self.info(
-                'Check if order created number:  {} has Article Name = {}   '.format(index + 1, selected_order_data[
-                    'Article Name']))
-            self.assertEqual(
-                selected_order_data['Article Name'], row_data['Article Name'])
-            self.info(
-                'Check if order created number:  {} has Article Number = {}   '.format(index + 1, selected_order_data[
-                    'Article No.']))
-            self.assertEqual(
-                selected_order_data['Article No.'], row_data['Article No.'])
-            self.info(
-                'Check if order created number:  {} has Shipment Date = {}   '.format(index + 1, selected_order_data[
-                    'Shipment Date']))
-            self.assertEqual(
-                selected_order_data['Shipment Date'], row_data['Shipment Date'])
-            self.info('Check if order created number:  {} has Test Date = {}   '.format(index + 1,
-                                                                                        selected_order_data[
-                                                                                            'Test Date']))
-            self.assertEqual(
-                selected_order_data['Test Date'], row_data['Test Date'])
-            self.info('Check if order created number:  {} has Test Plan = {}   '.format(index + 1,
-                                                                                        selected_order_data[
-                                                                                            'Test Plans']))
->>>>>>> 8d4576e15af0571edf7928ae83962791ad8401ab
+                                                                                                             data_after_duplicate_sub_order[
+                                                                                                                 'Test Units']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Units'], data_after_duplicate_sub_order['Test Units'])
 
@@ -509,7 +458,7 @@ class OrdersTestCases(BaseTest):
         LIMS-4282
         :return:
         """
-        testplan= \
+        testplan = \
             self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',
                                                                                       article='', articleNo='')[0]
         orders, payload = self.orders_api.create_new_order(materialTypeId=2)
@@ -533,17 +482,9 @@ class OrdersTestCases(BaseTest):
 
         if 'save_btn' == save:
             self.info(
-<<<<<<< HEAD
                 ' + Assert {} (current_material_type) == {} (new_material_type)'.format(current_material_type, testplan
-                                                                                                     ['materialType']))
+                ['materialType']))
             self.assertEqual(testplan['materialType'], current_material_type)
-=======
-                ' + Assert {} (current_material_type) == {} (new_material_type)'.format(current_material_type,
-                                                                                        test_plan_dict[
-                                                                                            'Material Type']))
-            self.assertEqual(test_plan_dict['Material Type'],
-                             current_material_type)
->>>>>>> 8d4576e15af0571edf7928ae83962791ad8401ab
         else:
             self.info(
                 ' + Assert {} (current_material_type) == {} (order_material_type)'.format(current_material_type,
