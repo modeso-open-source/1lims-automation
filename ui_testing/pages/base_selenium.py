@@ -14,7 +14,34 @@ from loguru import logger
 from contextlib import contextmanager
 
 
+class PageLoadResources(object):
+    """An expectation for checking that the page has been loaded
+
+    """
+    count = 0
+    resources = "return window.performance.getEntriesByType('resource')"
+
+    def __init__(self, expected_counter):
+        self.expected_counter = expected_counter
+
+    def __call__(self, driver):
+        if self.count == 0:
+            self.pre = len(driver.execute_script(self.resources))
+
+        self.now = len(driver.execute_script(self.resources))
+
+        if self.now == self.pre:
+            self.count += 1
+            if self.count > self.expected_counter:
+                return True
+        else:
+            self.count = 0
+        return False
+
+
 class BaseSelenium:
+    POLL_FREQUENCY = 0.1
+
     TIME_TINY = 2
     TIME_SMALL = 5
     TIME_MEDIUM = 10
@@ -22,10 +49,10 @@ class BaseSelenium:
     TIME_X_LARGE = 60
 
     IMPLICITLY_WAIT = 60
-    EXPLICITLY_WAIT = 60
+    EXPLICITLY_WAIT = 30
 
     LOGGER = logger
-    #LOGGER.add('log_{time}.log', backtrace=False)
+    # LOGGER.add('log_{time}.log', backtrace=False)
 
     _instance = None
 
@@ -83,7 +110,7 @@ class BaseSelenium:
 
         self.driver.set_window_size(1800, 1200)
         # self.driver.maximize_window()
-        self.wait = WebDriverWait(self.driver, BaseSelenium.EXPLICITLY_WAIT)
+        self.wait = WebDriverWait(self.driver, BaseSelenium.EXPLICITLY_WAIT, BaseSelenium.POLL_FREQUENCY)
 
     def quit_driver(self):
         self.driver.quit()
@@ -197,7 +224,7 @@ class BaseSelenium:
                     if dom_element.is_displayed():
                         time.sleep(0.5)
                     else:
-                        return
+                        return dom_element
                     if time.time() > end_time:
                         break
                 raise TimeoutException("Element is still displayed")
@@ -269,6 +296,9 @@ class BaseSelenium:
                 time.sleep(0.5)
         else:
             raise TimeoutException()
+
+    def wait_until_page_load_resources(self, expected_counter=10):
+        self.wait.until(PageLoadResources(expected_counter))
 
     def click(self, element):
         dom_element = self.wait_until_element_clickable(element=element)
@@ -355,7 +385,8 @@ class BaseSelenium:
 
     def clear_single_select_drop_down(self, element):
         self.wait_until_element_located(element)
-        clear_button = self.find_element_in_element(destination_element='general:clear_single_dropdown', source_element=element)
+        clear_button = self.find_element_in_element(destination_element='general:clear_single_dropdown',
+                                                    source_element=element)
         clear_button.click()
 
     def clear_items_with_text_in_drop_down(self, element, items_text=[]):
@@ -414,8 +445,9 @@ class BaseSelenium:
 
         if item_text:
             if element:
-                input_element = self.find_element_in_element(destination_element='general:input', source_element=element)
-            else: # if element_source
+                input_element = self.find_element_in_element(destination_element='general:input',
+                                                             source_element=element)
+            else:  # if element_source
                 input_element = self.find_element_in_element(destination_element='general:input',
                                                              source=element_source)
             time.sleep(self.TIME_TINY)
@@ -428,10 +460,10 @@ class BaseSelenium:
         time.sleep(self.TIME_SMALL)
 
         items = self.find_elements(element=options_element)
-        if not item_text: #random selection
-            if len(items) == 1 and items[0].text: #if only one item in list
-                    items[0].click()
-                    return True
+        if not item_text:  # random selection
+            if len(items) == 1 and items[0].text:  # if only one item in list
+                items[0].click()
+                return True
             elif len(items) <= 1:
                 self.LOGGER.info(' There is no drop-down options')
                 return False
@@ -469,11 +501,12 @@ class BaseSelenium:
         else:
             return False
 
-    def _unique_index_list(self, data): # I didnt like this implemenation need to fix it!+
+    def _unique_index_list(self, data):  # I didnt like this implemenation need to fix it!+
         result = []
         data_text = [data_item.text for data_item in data]
         for text in data_text:
-            _occurrences = [index for index, value in enumerate(data_text) if value == text] # this returns the indexs for each item
+            _occurrences = [index for index, value in enumerate(data_text) if
+                            value == text]  # this returns the indexs for each item
             if len(_occurrences) == 1:
                 result.append(_occurrences[0])
         return result
@@ -524,7 +557,8 @@ class BaseSelenium:
             input_item.clear()
             input_item.send_keys(item_text)
 
-    def set_text_in_drop_down(self, ng_select_element, text, input_element='general:input', confirm_button='general:drop_down_options'):
+    def set_text_in_drop_down(self, ng_select_element, text, input_element='general:input',
+                              confirm_button='general:drop_down_options'):
         input_field = self.find_element_in_element(destination_element=input_element, source_element=ng_select_element)
         input_field.send_keys(text)
         confirm_button = self.find_elements(confirm_button)
@@ -593,8 +627,8 @@ class BaseSelenium:
         try:
             table = self.find_element(element)
             thead = table.find_elements_by_tag_name('thead')
-            #thead_row = thead[0].find_elements_by_tag_name('tr')
-            #return thead_row[0].find_elements_by_tag_name('th')
+            # thead_row = thead[0].find_elements_by_tag_name('tr')
+            # return thead_row[0].find_elements_by_tag_name('th')
             return thead[0].find_elements_by_tag_name('th')
         except:
             self.LOGGER.exception(" Can't get table head.")
@@ -605,7 +639,7 @@ class BaseSelenium:
             table = self.find_element(element)
             thead = table.find_elements_by_tag_name('thead')
             thead_row = thead[0].find_elements_by_tag_name('tr')
-            #return thead_row[0].find_elements_by_tag_name('th')
+            # return thead_row[0].find_elements_by_tag_name('th')
             return thead_row
         except:
             self.LOGGER.exception(" Can't get table head.")
@@ -693,11 +727,11 @@ class BaseSelenium:
         sheets = []
         for file_name in os.listdir(os.path.expanduser("~/Downloads")):
             if '.xlsx' in file_name:
-                sheets.append(os.path.expanduser("~/Downloads/")+file_name)
+                sheets.append(os.path.expanduser("~/Downloads/") + file_name)
         downloaded_file_name = max(sheets, key=os.path.getctime)
         data = pd.read_excel(downloaded_file_name)
-        #row = data.iloc[1]
-        #values = row.values
+        # row = data.iloc[1]
+        # values = row.values
         return data
 
     def scroll(self, up=True):
