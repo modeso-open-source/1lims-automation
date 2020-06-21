@@ -16,8 +16,8 @@ from contextlib import contextmanager
 
 class BaseSelenium:
     TIME_TINY = 0
-    TIME_SMALL = 0
-    TIME_MEDIUM = 0
+    TIME_SMALL = 5
+    TIME_MEDIUM = 10
     TIME_LARGE = 15
     TIME_X_LARGE = 60
 
