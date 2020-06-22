@@ -9,7 +9,7 @@ import pymysql
 class BasePages:
     def __init__(self):
         self.base_selenium = BaseSelenium()
-        self.pagination_elements_array=['10', '20', '25', '50', '100']
+        self.pagination_elements_array = ['10', '20', '25', '50', '100']
 
     def generate_random_text(self):
         return str(uuid4()).replace("-", "")[:10]
@@ -29,27 +29,27 @@ class BasePages:
         return self.result_table()
 
     def result_table(self, element='general:table'):
-        table=self.base_selenium.get_table_rows(element=element)
+        table = self.base_selenium.get_table_rows(element=element)
         return table
 
     def clear_text(self, element):
-        self.base_selenium.clear_element_text(element= element)
+        self.base_selenium.clear_element_text(element=element)
 
     def sleep_tiny(self):
-        self.base_selenium.LOGGER.info(' Tiny sleep.')
-        time.sleep(self.base_selenium.TIME_TINY)
+        self.info('wait up to 0.5 sec')
+        self.base_selenium.wait_until_page_load_resources(expected_counter=5)
 
     def sleep_small(self):
-        self.base_selenium.LOGGER.info(' Small sleep.')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        self.info('wait up to 1 sec')
+        self.base_selenium.wait_until_page_load_resources(expected_counter=10)
 
     def sleep_medium(self):
-        self.base_selenium.LOGGER.info(' Medium sleep.')
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.info('wait up to 2 sec')
+        self.base_selenium.wait_until_page_load_resources(expected_counter=20)
 
     def sleep_large(self):
-        self.base_selenium.LOGGER.info(' Large sleep.')
-        time.sleep(self.base_selenium.TIME_LARGE)
+        self.info('wait up to 4 sec')
+        self.base_selenium.wait_until_page_load_resources(expected_counter=40)
 
     def save(self, sleep=True, save_btn='general:save', logger_msg='save the changes'):
         self.info(logger_msg)
@@ -68,7 +68,7 @@ class BasePages:
     def cancel(self, force=True):
         if self.base_selenium.check_element_is_exist(element='general:cancel'):
             self.base_selenium.click(element='general:cancel')
-        else:            
+        else:
             self.base_selenium.click(element='my_profile:cancel_button')
         self.confirm_popup(force)
 
@@ -88,7 +88,7 @@ class BasePages:
         filter.click()
 
     def filter_by(self, filter_element, filter_text, field_type='drop_down'):
-        if field_type =='drop_down':
+        if field_type == 'drop_down':
             self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
         else:
             self.base_selenium.set_text(element=filter_element, value=filter_text)
@@ -113,7 +113,7 @@ class BasePages:
         selected_rows_data = []
         selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
-        no_of_rows = randint(min(2, len(rows)-1), min(5, len(rows)-1))
+        no_of_rows = randint(min(2, len(rows) - 1), min(5, len(rows) - 1))
         count = 0
         self.info(' No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:
@@ -201,7 +201,7 @@ class BasePages:
         self.click_check_box(source=header_row[0])
 
     def get_table_rows_data(self):
-        return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]                      
+        return [row.text for row in self.base_selenium.get_table_rows(element='general:table')]
 
     def open_random_table_row_page(self, table_element):
         row = self.get_random_table_row(table_element)
@@ -223,9 +223,9 @@ class BasePages:
     def get_random_date(self):
         return '{:02d}.{:02d}.{}'.format(randint(1, 30), randint(1, 12), 2019)
 
-    def filter(self,field_name, element, filter_text, type):
-        self.base_selenium.LOGGER.info(' Filter by {} : {}'.format(field_name,filter_text))
-        self.filter_by(filter_element= element, filter_text=filter_text, field_type = type)
+    def filter(self, field_name, element, filter_text, type):
+        self.base_selenium.LOGGER.info(' Filter by {} : {}'.format(field_name, filter_text))
+        self.filter_by(filter_element=element, filter_text=filter_text, field_type=type)
         self.filter_apply()
 
     def _copy(self, value):
@@ -280,11 +280,11 @@ class BasePages:
         name = str(uuid4()).replace("-", "")[:10]
         server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'
 
-        return name+server
-      
+        return name + server
+
     def generate_random_website(self):
-        return "www."+str(uuid4()).replace("-", "")[:10]+"."+str(uuid4()).replace("-", "")[:3]
-    
+        return "www." + str(uuid4()).replace("-", "")[:10] + "." + str(uuid4()).replace("-", "")[:3]
+
     def open_configuration(self):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:configurations')
@@ -301,29 +301,31 @@ class BasePages:
         configure_table_menu.click()
         self.sleep_small()
 
-    
     def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
         self.open_configure_table()
-        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items', destination_element='general:li')
+        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items',
+                                                                    destination_element='general:li')
         # total_columns = self.base_selenium.find_element_by_xpath(xpath='//ul[@class="m-nav sortable sortable-table1 ui-sortable"]').find_elements_by_tag_name('li')
         random_indices_arr = index_arr
         hidden_columns_names = []
         if random:
-            random_indices_arr = self.generate_random_indices(max_index=len(total_columns)-2, count=count)
+            random_indices_arr = self.generate_random_indices(max_index=len(total_columns) - 2, count=count)
 
         for index in random_indices_arr:
-            if total_columns[index].get_attribute('id') and total_columns[index].get_attribute('id') != 'id' and total_columns[index].get_attribute('id') not in always_hidden_columns:
-                column_name = self.change_column_view(column=total_columns[index], value=False, always_hidden_columns=always_hidden_columns)
+            if total_columns[index].get_attribute('id') and total_columns[index].get_attribute('id') != 'id' and \
+                    total_columns[index].get_attribute('id') not in always_hidden_columns:
+                column_name = self.change_column_view(column=total_columns[index], value=False,
+                                                      always_hidden_columns=always_hidden_columns)
                 if column_name != '':
                     hidden_columns_names.append(column_name)
 
-        
         self.press_apply_in_configure_table()
         self.base_selenium.LOGGER.info(hidden_columns_names)
         return hidden_columns_names
 
     def change_column_view(self, column, value, always_hidden_columns=[]):
-        if column.get_attribute('id') and column.get_attribute('id') != 'id' and column.get_attribute('id') not in always_hidden_columns  :
+        if column.get_attribute('id') and column.get_attribute('id') != 'id' and column.get_attribute(
+                'id') not in always_hidden_columns:
             try:
                 new_checkbox_value = "//li[@id='" + column.get_attribute('id') + "']//input[@type='checkbox']"
                 new_label_xpath = "//li[@id='" + column.get_attribute('id') + "']//label[@class='sortable-label']"
@@ -335,30 +337,31 @@ class BasePages:
                     checkbox.click()
                     return column_name
             except Exception as e:
-                self.base_selenium.LOGGER.info("element with the id '{}' doesn't  exit in the configure table".format(column.get_attribute('id')))
+                self.base_selenium.LOGGER.info(
+                    "element with the id '{}' doesn't  exit in the configure table".format(column.get_attribute('id')))
                 self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
                 return ''
-
 
     def generate_random_indices(self, max_index=3, count=3):
         counter = 0
         indices_arr = []
         while counter < count:
-            random_index = self.generate_random_number(lower=0, upper=max_index-1)
+            random_index = self.generate_random_number(lower=0, upper=max_index - 1)
             if random_index not in indices_arr:
                 indices_arr.append(random_index)
-                counter = counter +1
-        
+                counter = counter + 1
+
         return indices_arr
 
     def press_apply_in_configure_table(self):
         apply_button = self.base_selenium.find_element(element="general:apply_configure_table")
         if apply_button:
             apply_button.click()
-            
+
     def set_all_configure_table_columns_to_specific_value(self, value=True, always_hidden_columns=['']):
         self.open_configure_table()
-        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items', destination_element='general:li')
+        total_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items',
+                                                                    destination_element='general:li')
         for column in total_columns:
             self.change_column_view(column=column, value=True, always_hidden_columns=always_hidden_columns)
         self.press_apply_in_configure_table()
@@ -393,7 +396,7 @@ class BasePages:
     def cancel_overview_pop_up(self):
         self.base_selenium.click(element='general:cancel_overview')
         self.sleep_tiny()
-        
+
     def duplicate_selected_item(self):
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
@@ -404,8 +407,9 @@ class BasePages:
     archives this item and tries to delete it
     returns True if it's deleted and False otherwise
     '''
+
     def delete_selected_item_from_active_table_and_from_archived_table(self, item_name):
-        
+
         # archive this item
         row = self.search(item_name)
         self.base_selenium.LOGGER.info('Selecting the row')
@@ -436,7 +440,7 @@ class BasePages:
             return False
         else:
             return True
-        
+
     def upload_file(self, file_name, drop_zone_element, remove_current_file=False):
         """
         Upload single file to a page that only have 1 drop zone
@@ -452,10 +456,10 @@ class BasePages:
         if remove_current_file:
             self.base_selenium.LOGGER.info(" remove current file")
             is_the_file_exist = self.base_selenium.check_element_is_exist(
-            element='general:file_upload_success_flag')
+                element='general:file_upload_success_flag')
             if is_the_file_exist:
                 self.base_selenium.click('general:remove_file')
-                self.save()      
+                self.save()
             else:
                 self.base_selenium.LOGGER.info(" there is no current file")
 
@@ -510,7 +514,8 @@ class BasePages:
         self.open_pagination_menu()
         limit_index = self.pagination_elements_array.index(limit)
         self.base_selenium.wait_element(element='general:pagination_menu')
-        pagination_elements = self.base_selenium.find_elements_in_element(source_element='general:pagination_menu', destination_element='general:li')
+        pagination_elements = self.base_selenium.find_elements_in_element(source_element='general:pagination_menu',
+                                                                          destination_element='general:li')
         if limit_index >= 0:
             pagination_elements[limit_index].click()
         time.sleep(self.base_selenium.TIME_MEDIUM)
@@ -530,7 +535,7 @@ class BasePages:
         start = table_info_elements[1]
         end = table_info_elements[3]
         count = table_info_elements[5]
-        page_limit = str((int(end) - int(start)) +1)
+        page_limit = str((int(end) - int(start)) + 1)
         current_pagination_limit = self.get_current_pagination_limit()
         return {'start': start,
                 'end': end,
@@ -560,4 +565,3 @@ class BasePages:
     def get_current_year(self):
         current_year = datetime.datetime.now()
         return str(current_year.year)
-
