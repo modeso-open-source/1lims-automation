@@ -17,7 +17,6 @@ from ui_testing.pages.contacts_page import Contacts
 from random import randint
 import random
 
-
 class OrdersTestCases(BaseTest):
     def setUp(self):
         super().setUp()
