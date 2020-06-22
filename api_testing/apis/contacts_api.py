@@ -115,7 +115,7 @@ class ContactsAPIFactory(BaseAPI):
             }
 
         api = '{}{}'.format(self.url, self.END_POINTS['contacts_api']['create_contact'])
-        return api, {}
+        return api, _payload
 
 
 class ContactsAPI(ContactsAPIFactory):

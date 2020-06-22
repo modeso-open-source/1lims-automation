@@ -525,7 +525,11 @@ elements = {
                                'value': 'a',
                                'order': 4},
         'analysis_order_tab': {'method': 'xpath',
-                               'value': "//label[@class='btn tab']"},
+                               'value':'//span[@class="m-wizard__step-label"][contains(text(),"Analysis")]'},
+
+        'order_analysis_tab': {'method': 'xpath',
+                               'value':'//span[contains(text(),"Orders")]'},
+
         'new_order': {'method': 'link_text',
                       'value': 'New Order'},
         'right_menu': {'method': 'xpath',

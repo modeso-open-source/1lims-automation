@@ -52,7 +52,6 @@ class Order(Orders):
             self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
         else:
             self.base_selenium.select_item_from_drop_down(element='order:article')
-            self.sleep_tiny()
             return self.get_article()
 
     def is_article_existing(self, article):
@@ -135,7 +134,7 @@ class Order(Orders):
             self.set_test_plan(test_plan=test_plan)
         for test_unit in test_units:
             self.set_test_unit(test_unit=test_unit)
-        self.sleep_small()
+            self.sleep_small()
         
         if multiple_suborders > 0:
             self.get_suborder_table()
@@ -422,12 +421,17 @@ class Order(Orders):
         contacts_record = 'contact with many departments'
         suborder_row.click()
         self.base_selenium.scroll()
+        self.sleep_small()
         if material_type:
             self.info('Set material type : {}'.format(material_type))
             self.set_material_type(material_type=material_type)
+            self.confirm_popup(True)
+            self.sleep_small()
+            self.set_article(article=articles)
             self.sleep_small()
 
         if articles:
+            self.sleep_small()
             self.remove_article(testplans=suborder_elements_dict['testPlans'])
             self.info('Set article name : {}'.format(articles))
             self.set_article(article=articles)
@@ -521,13 +525,13 @@ class Order(Orders):
         rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
         self.info(' Set material type : {}'.format(material_type))
         self.set_material_type(material_type=material_type)
-        self.sleep_tiny()
+        self.sleep_small()
         self.info(' Set article name : {}'.format(article_name))
         self.set_article(article=article_name)
-        self.sleep_tiny()
+        self.sleep_small()
         self.info(' Set Test Unit  : {}'.format(test_unit))
         self.set_test_unit(test_unit=test_unit)
-        self.sleep_tiny()
+        self.sleep_small()
 
     def get_order_id(self):
         current_splited_url = self.base_selenium.get_url().split('/')
