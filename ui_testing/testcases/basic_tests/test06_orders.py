@@ -175,13 +175,13 @@ class OrdersTestCases(BaseTest):
         I can restore any order successfully
         LIMS-4374
         """
-        orders, payload = self.orders_api.get_all_orders(deleted=1, limit=5)
+        re, payload = self.orders_api.create_new_order()
+        self.orders_page.search(payload[0]['orderNo'])
+        self.orders_page.select_all_records()
+        self.orders_page.archive_selected_items()
         self.orders_page.get_archived_items()
-        order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
-            '{}'.format(order['orderNo']))
 
-        order_no = order['orderNo']
+        order_no = payload[0]['orderNoWithYear']
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
                                               field_type='text')
         suborders_data = self.order_page.get_child_table_data(index=0)
@@ -206,7 +206,7 @@ class OrdersTestCases(BaseTest):
         The user can hard delete any archived order
         LIMS-3257
         """
-        orders, payload = self.orders_api.get_all_orders(limit=10, deleted=1)
+        orders, payload = self.orders_api.get_all_orders(limit=2, deleted=1)
         random_order = random.choice(orders['orders'])
         self.base_selenium.LOGGER.info(
             '{}'.format(random_order['orderNo']))
@@ -225,7 +225,7 @@ class OrdersTestCases(BaseTest):
         self.assertFalse(self.order_page.confirm_popup())
         deleted_order = self.orders_page.search(order_number)[0]
         self.assertTrue(deleted_order.get_attribute("textContent"), 'No records found')
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
         deleted_order = self.orders_page.search(order_number)[0]
         self.assertTrue(deleted_order.get_attribute("textContent"), 'No records found')
 
@@ -346,7 +346,7 @@ class OrdersTestCases(BaseTest):
                                                             test_plan=test_plan['testPlanName'],
                                                             test_unit='',
                                                             add_new_suborder_btn='order:add_another_suborder')
-
+        print(suborder_data)
         self.assertEqual(suborder_data['orderNo'].replace("'", "").split("-")[0],
                          order['orderNo'].split("-")[0])
 
@@ -365,6 +365,7 @@ class OrdersTestCases(BaseTest):
         orders_analyses = self.analyses_page.search(order['orderNo'])
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
+
 
     def test011_duplicate_many_orders(self):
         """
@@ -466,10 +467,10 @@ class OrdersTestCases(BaseTest):
         article_before_update = suborders_data_before_update['suborders'][1]['article']['name']
         testunit_before_update = suborders_data_before_update['suborders'][1]['testunits'][0]['name']
         self.order_page.update_suborder(sub_order_index=1,
-                                        material_type=random_data['materialTypes'][0], test_units=[random_data['name']],
-                                        )
+                                        material_type=random_data['materialTypes'][0],
+                                        articles=[''], test_units=[random_data['name']])
         self.order_page.save(save_btn='order:save_btn')
-        self.base_selenium.refresh()
+        self.orders_page.sleep_small()
         suborders_data_after_update = self.order_page.get_suborder_data()
         materail_type_after_update = suborders_data_after_update['suborders'][1]['material_type']
         article_after_update = suborders_data_after_update['suborders'][1]['article']['name']
@@ -809,7 +810,7 @@ class OrdersTestCases(BaseTest):
                                                          test_units=[payload['name']])
 
         self.order_page.get_orders_page()
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
         self.base_selenium.LOGGER.info(
             'Assert There is an analysis for this new order.')
         orders_analyess = self.analyses_page.search(value=created_order_no)
@@ -838,7 +839,7 @@ class OrdersTestCases(BaseTest):
         created_order = self.order_page.create_existing_order(no='', material_type='s', article='a', contact='',
                                                               test_units=[random_name['name']])
         self.order_page.get_orders_page()
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
         self.base_selenium.LOGGER.info(
             'Assert There is an analysis for this new order.')
         orders_analyess = self.analyses_page.search(value=created_order)
@@ -876,7 +877,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.save(save_btn='order:save_btn', sleep=True)
 
         self.order_page.get_orders_page()
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
 
         self.info('Assert There is an analysis for this new order.')
         self.analyses_page.apply_filter_scenario(
@@ -910,7 +911,7 @@ class OrdersTestCases(BaseTest):
 
         self.order_page.save(save_btn='order:save_btn')
         self.order_page.get_orders_page()
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
         self.info('Assert There is an analysis for this new order.')
         self.analyses_page.apply_filter_scenario(
             filter_element='orders:filter_order_no', filter_text=order_no, field_type='drop_down')
@@ -1006,7 +1007,7 @@ class OrdersTestCases(BaseTest):
         suborder_after_refresh = self.orders_api.get_order_by_id(response['order']['mainOrderId'])[0]['orders'][0]
         self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
         self.order_page.get_orders_page()
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
         self.analyses_page.filter_by_analysis_number(suborder_after_refresh['analysisNos'][0]['analysisNo'])
         analyses = self.analyses_page.get_the_latest_row_data()
         self.assertEqual(test_plan['materialType'], analyses['Material Type'])
@@ -1055,7 +1056,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.filter_by_analysis_number(sub_order[sub_order_index]['analysis'])
         sub_order_data = self.orders_page.get_child_table_data()[0]
         self.assertEqual(sub_order_data['Test Units'], new_test_unit_name)
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
         self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
                                                  filter_text=sub_order[sub_order_index]['analysis'],
                                                  field_type='text')
@@ -1119,7 +1120,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
 
         self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
-        self.order_page.navigate_to_analysis_tab()
+        self.orders_page.navigate_to_analysis_active_table()
         self.analyses_page.filter_by_analysis_number(suborder['analysis'])
         analyses = self.analyses_page.get_the_latest_row_data()
         analyses_test_plans = analyses['Test Plans'].replace("'", '').split(", ")
@@ -1147,7 +1148,7 @@ class OrdersTestCases(BaseTest):
 
         self.info('update order {} with random article'.format(order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(order['orderId'])
-        self.order_page.update_suborder(sub_order_index=suborder_update_index, articles='a', confirm_pop_up=True)
+        self.order_page.update_suborder(sub_order_index=suborder_update_index, articles='a', confirm_pop_up=True, remove_old=True)
         self.info('assert test plan is empty')
         self.assertFalse(self.order_page.get_test_plan())
         if test_units:
@@ -1156,8 +1157,7 @@ class OrdersTestCases(BaseTest):
             self.assertCountEqual(self.order_page.get_test_unit(), ['Search'])
         self.order_page.cancel()
         self.info('navigate to analysis page to make sure analysis corresponding to suborder updated')
-        self.order_page.navigate_to_analysis_tab()
-        self.orders_page.sleep_small()
+        self.orders_page.navigate_to_analysis_active_table()
         self.analyses_page.filter_by_analysis_number(suborder['analysis'])
         analyses = self.analyses_page.get_the_latest_row_data()
         analyses_test_plans = analyses['Test Plans'].replace("'", '').split(", ")
@@ -1307,7 +1307,6 @@ class OrdersTestCases(BaseTest):
         self.order_page.duplicate_main_order_from_order_option()
         self.order_page.wait_until_page_is_loaded()
         duplicated_order_number = self.order_page.get_no()
-        print(duplicated_order_number)
         self.info('order to be duplicated is {}, new order no is {}'.
                   format(main_order['orderNo'], duplicated_order_number))
         self.assertNotEqual(main_order['orderNo'], duplicated_order_number)

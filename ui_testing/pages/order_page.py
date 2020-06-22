@@ -426,15 +426,15 @@ class Order(Orders):
             self.info('Set material type : {}'.format(material_type))
             self.set_material_type(material_type=material_type)
             self.confirm_popup(True)
-            self.sleep_small()
-            self.set_article(article=articles)
-            self.sleep_small()
 
-        if articles:
-            self.sleep_small()
-            self.remove_article(testplans=suborder_elements_dict['testPlans'])
-            self.info('Set article name : {}'.format(articles))
-            self.set_article(article=articles)
+        for article in articles:
+            if remove_old:
+                self.sleep_small()
+                self.remove_article(testplans=suborder_elements_dict['testPlans'])
+                self.info('Set article name : {}'.format(articles))
+                self.set_article(article=articles)
+                self.sleep_small()
+            self.set_article(article=article)
             self.sleep_small()
 
         self.info(' Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
