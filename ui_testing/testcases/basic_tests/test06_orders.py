@@ -58,6 +58,7 @@ class OrdersTestCases(BaseTest):
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
+            self.order_page.sleep_medium()
             self.order_page.cancel(force=True)
 
         self.base_selenium.get(
@@ -95,6 +96,7 @@ class OrdersTestCases(BaseTest):
         if 'save_btn' == save:
             self.order_page.save(save_btn='order:save_btn')
         else:
+            self.order_page.sleep_medium()
             self.order_page.cancel(force=True)
 
         self.base_selenium.get(url=order_url, sleep=5)
@@ -1440,294 +1442,361 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(duplicated_suborder_data['Test Units'], test_unit[0])
         self.assertEqual(duplicated_suborder_data['Test Plans'], selected_test_plan['testPlanName'])
 
-    #
-    # def test042_delete_suborder(self):
-    #     """
-    #      Delete sub order Approach: In case I have main order with multiple sub orders,
-    #      make sure you can delete one of them
-    #      LIMS-6853
-    #     """
-    #     self.info('get random order with multiple suborders')
-    #     order = self.orders_api.get_order_with_multiple_sub_orders()
-    #     self.order_page.search(order['orderNo'])
-    #
-    #     self.info('archive first suborder')
-    #     suborder_data = self.order_page.get_child_table_data()[0]
-    #     self.order_page.archive_sub_order_from_active_table()
-    #     self.orders_page.delete_sub_order(analysis_no=suborder_data['Analysis No.'])
-    #
-    #     self.info('Navigate to order page to make sure that suborder is deleted and main order still active')
-    #     self.order_page.get_orders_page()
-    #     self.order_page.search(order['orderNo'])
-    #     suborders_after_delete = self.order_page.get_child_table_data()
-    #     self.assertNotIn(suborder_data['Analysis No.'], suborders_after_delete)
-    #     self.assertGreater(len(suborder_data), 0)
-    #
-    #     self.info('Navigate to Analysis page to make sure that analysis related to deleted suborder not found')
-    #     self.order_page.navigate_to_analysis_tab()
-    #     self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
-    #                                              filter_text=suborder_data['Analysis No.'], field_type='text')
-    #     self.assertEqual(len(self.order_page.result_table()), 1)
-    #
-    # def test043_archive_new_order_and_analysis(self):
-    #     """
-    #     New: Orders Form: Archive main order: Make sure when the user archive main order,
-    #     the analysis corresponding to it will be archived also
-    #     LIMS-6873
-    #     """
-    #     self.info("select random order to archive")
-    #     orders, api = self.orders_api.get_all_orders(limit=20)
-    #     order = random.choice(orders['orders'])
-    #     suborder_data, api = self.orders_api.get_suborder_by_order_id(order['id'])
-    #     suborders = suborder_data['orders']
-    #     analysis_no_list = []
-    #     for suborder in suborders:
-    #         analysis_no_list.append(suborder['analysis'])
-    #
-    #     self.info(" Archive order with number : {}".format(order['orderNo']))
-    #     order_row = self.order_page.search(order['orderNo'])
-    #     self.order_page.click_check_box(source=order_row[0])
-    #     self.order_page.archive_selected_orders(check_pop_up=True)
-    #     self.info("Navigate to archived orders' table and filter by analysis no")
-    #     self.orders_page.get_archived_items()
-    #     self.orders_page.filter_by_analysis_number(analysis_no_list[0])
-    #     self.assertTrue(self.orders_page.is_order_in_table(value=order['orderNo']))
-    #     child_data = self.orders_page.get_child_table_data()
-    #     result_analysis = []
-    #     for suborder in child_data:
-    #         result_analysis.append(suborder['Analysis No.'].replace("'", ""))
-    #     self.assertCountEqual(result_analysis, analysis_no_list)
-    #
-    # def test044_Duplicate_sub_order_with_multiple_testplans_and_testunits_delet_approach(self):
-    #     """
-    #     Duplicate suborder Approach: Duplicate any sub order then delete the units & test plans
-    #     LIMS-6852
-    #     """
-    #     self.info('create order data multiple testplans and test units')
-    #     response, payload = self.orders_api.create_order_with_double_test_plans()
-    #     self.orders_page.filter_by_order_no(payload[0]['orderNo'])
-    #     suborder_data_before_duplicate = self.orders_page.get_child_table_data()
-    #     test_plans = [suborder_data_before_duplicate[0]['Test Plans'].split(',\n')[0],
-    #                   suborder_data_before_duplicate[0]['Test Plans'].split(',\n')[1]]
-    #     test_units = [suborder_data_before_duplicate[0]['Test Units'].split(',\n')[0],
-    #                   suborder_data_before_duplicate[0]['Test Units'].split(',\n')[1]]
-    #     self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
-    #     self.orders_page.duplicate_sub_order_from_table_overview()
-    #     self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
-    #     self.base_selenium.clear_items_in_drop_down(element='order:test_unit', one_item_only=True)
-    #     self.order_page.save(save_btn='order:save')
-    #     self.order_page.wait_until_page_is_loaded()
-    #     self.info("navigate to orders' active table and check that duplicated suborder found")
-    #     self.order_page.get_orders_page()
-    #     self.orders_page.filter_by_order_no(payload[0]['orderNo'])
-    #     child_data = self.order_page.get_child_table_data()
-    #     duplicated_suborder_data = child_data[0]
-    #     self.assertEqual(len(child_data), 2)
-    #     self.assertEqual(duplicated_suborder_data['Article Name'], suborder_data_before_duplicate[0]['Article Name'])
-    #     self.assertEqual(duplicated_suborder_data['Material Type'], suborder_data_before_duplicate[0]['Material Type'])
-    #     self.assertIn(duplicated_suborder_data['Test Units'], test_units)
-    #     self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
-    #
-    # def test045_duplicate_main_order_change_contact(self):
-    #     """
-    #     Duplicate from the main order Approach: Duplicate then change the contact
-    #     LIMS-6222
-    #     """
-    #     self.info('get random main order data')
-    #     orders, payload = self.orders_api.get_all_orders(limit=50)
-    #     self.assertEqual(orders['status'], 1)
-    #     main_order = random.choice(orders['orders'])
-    #     self.info("duplicate order No {}".format(main_order['orderNo']))
-    #     self.order_page.search(main_order['orderNo'])
-    #     self.order_page.duplicate_main_order_from_order_option()
-    #     new_contact = self.order_page.set_contact(contact='', remove_old=True)
-    #     duplicted_order_no = self.order_page.get_no()
-    #     self.order_page.save(save_btn='order:save')
-    #     self.orders_page.get_orders_page()
-    #     self.orders_page.filter_by_order_no(duplicted_order_no)
-    #     order = self.orders_page.get_the_latest_row_data()
-    #     self.assertEqual(new_contact[0], order['Contact Name'])
-    #
-    # def test046_duplicate_main_order_with_multiple_contacts(self):
-    #     """
-    #     Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
-    #     I duplicate from the main order or from the suborder
-    #     LIMS-5816
-    #     """
-    #     self.info('create order with multiple contacts')
-    #     response, payload = self.orders_api.create_order_with_multiple_contacts()
-    #     self.assertEqual(response['status'], 1)
-    #     contacts = [contact['text'] for contact in payload[0]['contact']]
-    #     self.orders_page.filter_by_order_no(payload[0]['orderNo'])
-    #
-    #     self.info("duplicate the order {} from order's options".format(payload[0]['orderNo']))
-    #     self.orders_page.duplicate_main_order_from_order_option()
-    #     duplicated_order_no = self.order_page.get_no()
-    #     self.order_page.save(save_btn='order:save')
-    #     self.info("navigate to orders' active table and check that duplicated suborder found")
-    #     self.order_page.get_orders_page()
-    #     self.orders_page.filter_by_order_no(duplicated_order_no)
-    #     duplicated_order_data = self.orders_page.get_the_latest_row_data()
-    #     duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
-    #     self.assertCountEqual(duplicated_contacts, contacts)
-    #
-    # def test047_duplicate_sub_order_with_multiple_contacts(self):
-    #     """
-    #     Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
-    #     I duplicate from the main order or from the suborder
-    #     LIMS-5816
-    #     """
-    #     self.info('create order with multiple contacts')
-    #     response, payload = self.orders_api.create_order_with_multiple_contacts()
-    #     self.assertEqual(response['status'], 1, response)
-    #     contacts = [contact['text'] for contact in payload[0]['contact']]
-    #     self.orders_page.filter_by_order_no(payload[0]['orderNo'])
-    #
-    #     self.order_page.get_child_table_data()
-    #     self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
-    #     self.orders_page.duplicate_sub_order_from_table_overview(number_of_copies=4)
-    #     self.base_selenium.refresh()
-    #     self.orders_page.wait_until_page_is_loaded()
-    #     self.orders_page.filter_by_order_no(payload[0]['orderNo'])
-    #
-    #     duplicated_order_data = self.orders_page.get_the_latest_row_data()
-    #     duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
-    #     self.assertCountEqual(duplicated_contacts, contacts)
-    #
-    #     duplicated_suborders = self.orders_page.get_child_table_data()
-    #     self.assertEqual(len(duplicated_suborders), 5)
-    #     analyses_numbers = [suborder['Analysis No.'] for suborder in duplicated_suborders]
-    #     self.order_page.navigate_to_analysis_tab()
-    #     self.analyses_page.open_filter_menu()
-    #     for analysis in analyses_numbers:
-    #         self.analyses_page.filter_by(
-    #             filter_element='analysis_page:analysis_no_filter', filter_text=analysis, field_type='text')
-    #         self.analyses_page.filter_apply()
-    #         analysis_data = self.analyses_page.get_the_latest_row_data()
-    #         duplicated_contacts_in_analyses = analysis_data['Contact Name'].split(', ')
-    #         self.assertEqual(len(duplicated_contacts_in_analyses), 3)
-    #         self.assertCountEqual(duplicated_contacts, contacts)
-    #
-    # def test048_delete_multiple_orders(self):
-    #     """
-    #     Orders: Make sure that you can't delete multiple orders records at the same time
-    #     LIMS-6854
-    #     """
-    #     self.info("navigate to archived items' table")
-    #     self.orders_page.get_archived_items()
-    #     self.orders_page.select_random_multiple_table_rows()
-    #     self.orders_page.delete_selected_item(confirm_pop_up=False)
-    #     confirm_edit = self.base_selenium.check_element_is_exist(element="general:cant_delete_message")
-    #     confirm_edit_message = self.base_selenium.get_text(element="general:confirmation_pop_up")
-    #     self.assertTrue(confirm_edit)
-    #     self.assertIn('You cannot do this action on more than one record', confirm_edit_message)
-    #
-    # def test049_update_sub_order_with_multiple_testplans_only_delete_approach(self):
-    #     """
-    #     Orders: Test plans: In case I have order record with multiple test plans and I updated them,
-    #     this update should reflect on the same analysis record without creating new one.
-    #     LIMS-4134 case 1
-    #     """
-    #     self.info('create order with two testplans only')
-    #     response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
-    #     self.assertEqual(response['status'], 1)
-    #     test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
-    #     self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
-    #     test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
-    #                   TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
-    #     self.info("Edit order {}".format(payload[0]['orderNo']))
-    #     self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
-    #     suborder_before_edit = self.order_page.get_suborder_data()
-    #     self.info('Assert that selected order has one analysis record')
-    #     self.assertEqual(len(suborder_before_edit['suborders']), 1)
-    #     analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
-    #     self.order_page.open_suborder_edit(sub_order_index=0)
-    #     self.info("remove only one test plan")
-    #     self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
-    #     self.info("confirm pop_up")
-    #     self.order_page.confirm_popup()
-    #     self.order_page.save(save_btn='order:save_btn', sleep=True)
-    #     self.info("navigate to analysis' active table and check that pld analysis edited without creating new analysis")
-    #     self.order_page.get_orders_page()
-    #     self.order_page.navigate_to_analysis_tab()
-    #     self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
-    #     self.assertEqual(len(self.analyses_page.result_table()) - 1, 1)
-    #     analysis_data = self.analyses_page.get_the_latest_row_data()
-    #     found_test_plans = analysis_data['Test Plans'].split(', ')
-    #     self.info("assert that only one test plan found and analysis no not changed")
-    #     self.assertEqual(len(found_test_plans), 1)
-    #     self.assertEqual(analysis_data['Analysis No.'], analysis_no)
-    #     suborder_data = self.analyses_page.get_child_table_data()
-    #     self.assertEqual(len(suborder_data), 1)
-    #     for test_plan in test_plans:
-    #         for test_unit in test_units:
-    #             if found_test_plans == test_plan:
-    #                 self.info("assert that test unit related to deleted test plan removed from analysis")
-    #                 self.assertEqual(test_unit, suborder_data['Test Unit'])
-    #
-    # def test050_update_sub_order_with_multiple_testplans_only_add_approach(self):
-    #     """
-    #     Orders: Test plans: In case I have order record with multiple test plans and I updated them,
-    #     this update should reflect on the same analysis record without creating new one.
-    #     LIMS-4134
-    #     """
-    #     self.info('create order with two testplans only')
-    #     response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
-    #     self.assertEqual(response['status'], 1)
-    #     test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
-    #     self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
-    #     test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
-    #                   TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
-    #
-    #     article_no = ArticleAPI().get_article_form_data(id=payload[0]['article']['id'])[0]['article']['No']
-    #     self.info("get new completed test plan with article {} No: {} and material_type {}".format(
-    #         payload[0]['article']['text'], article_no, payload[0]['materialType']['text']))
-    #
-    #     completed_test_plans = TestPlanAPI().get_completed_testplans_with_material_and_same_article(
-    #         material_type=payload[0]['materialType']['text'], article=payload[0]['article']['text'],
-    #         articleNo=article_no)
-    #     completed_test_plans_without_old = [testplan for testplan in completed_test_plans
-    #                                         if testplan['testPlanName'] not in test_plans]
-    #
-    #     if completed_test_plans_without_old:
-    #         test_plan_data = random.choice(completed_test_plans_without_old)
-    #         test_plan = test_plan_data['testPlanName']
-    #         test_unit_data = TestPlanAPI().get_testunits_in_testplan(id=test_plan_data['id'])
-    #         test_unit = test_unit_data[0]['name']
-    #     else:
-    #         self.info("There is no completed test plan so create it ")
-    #         formatted_article = {'id': payload[0]['article']['id'], 'text': payload[0]['article']['text']}
-    #         new_test_plan = TestPlanAPI().create_completed_testplan(
-    #             material_type=payload[0]['materialType']['text'], formatted_article=formatted_article)
-    #         test_plan = new_test_plan['testPlanEntity']['name']
-    #         test_unit = new_test_plan['specifications'][0]['name']
-    #         self.info("completed test plan created with name {} and test unit {}".format(test_plan, test_unit))
-    #
-    #     test_plans.append(test_plan)
-    #     test_units.append(test_unit)
-    #
-    #     self.info("edit the sub order of order {}".format(payload[0]['orderNo']))
-    #     self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
-    #     suborder_before_edit = self.order_page.get_suborder_data()
-    #     self.info('Assert that selected order has one analysis record')
-    #     self.assertEqual(len(suborder_before_edit['suborders']), 1)
-    #     analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
-    #     self.order_page.update_suborder(test_plans=[test_plan])
-    #     self.order_page.save(save_btn='order:save_btn')
-    #     self.info("navigate to orders' active table and check that duplicated suborder found")
-    #     self.order_page.get_orders_page()
-    #     self.order_page.navigate_to_analysis_tab()
-    #     self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
-    #     self.assertEqual(len(self.analyses_page.result_table()) - 1, 1)
-    #     analysis_data = self.analyses_page.get_the_latest_row_data()
-    #     found_test_plans = analysis_data['Test Plans'].split(', ')
-    #     self.assertEqual(len(found_test_plans), 3)
-    #     self.assertEqual(analysis_data['Analysis No.'], analysis_no)
-    #     suborder_data = self.analyses_page.get_child_table_data()
-    #     found_test_units = [testunit['Test Unit'] for testunit in suborder_data]
-    #     self.assertEqual(len(found_test_units), 3)
-    #     self.assertCountEqual(test_plans, found_test_plans)
-    #     self.assertCountEqual(test_units, found_test_units)
+    def test041_delete_suborder(self):
+        """
+         Delete sub order Approach: In case I have main order with multiple sub orders,
+         make sure you can delete one of them
+         LIMS-6853
+        """
+        self.info('get random order with multiple suborders')
+        order = self.orders_api.get_order_with_multiple_sub_orders()
+        self.order_page.search(order['orderNo'])
+        self.info('archive first suborder')
+        suborder_data = self.order_page.get_child_table_data()[0]
+        self.order_page.archive_sub_order_from_active_table()
+        self.orders_page.delete_sub_order(analysis_no=suborder_data['Analysis No.'])
+
+        self.info('Navigate to order page to make sure that suborder is deleted and main order still active')
+        self.order_page.get_orders_page()
+        self.order_page.search(order['orderNo'])
+        suborders_after_delete = self.order_page.get_child_table_data()
+        self.assertNotIn(suborder_data['Analysis No.'], suborders_after_delete)
+        self.assertGreater(len(suborder_data), 0)
+
+        self.info('Navigate to Analysis page to make sure that analysis related to deleted suborder not found')
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
+                                                 filter_text=suborder_data['Analysis No.'], field_type='text')
+        self.assertEqual(len(self.order_page.result_table()), 1)
+
+    def test042_archive_new_order_and_analysis(self):
+        """
+        New: Orders Form: Archive main order: Make sure when the user archive main order,
+        the analysis corresponding to it will be archived also
+        LIMS-6873
+        """
+        self.info("select random order to archive")
+        orders, api = self.orders_api.get_all_orders(limit=20)
+        order = random.choice(orders['orders'])
+        self.base_selenium.LOGGER.info(
+            '{}'.format(order['orderNo']))
+        suborder_data, api = self.orders_api.get_suborder_by_order_id(order['id'])
+        suborders = suborder_data['orders']
+        analysis_no_list = []
+        for suborder in suborders:
+            analysis_no_list.append(suborder['analysis'])
+
+        self.info(" Archive order with number : {}".format(order['orderNo']))
+        order_row = self.order_page.search(order['orderNo'])
+        self.order_page.click_check_box(source=order_row[0])
+        self.order_page.archive_selected_orders(check_pop_up=True)
+        self.info("Navigate to archived orders' table and filter by analysis no")
+        self.orders_page.get_archived_items()
+        self.orders_page.filter_by_analysis_number(analysis_no_list[0])
+        self.assertTrue(self.orders_page.is_order_in_table(value=order['orderNo']))
+        child_data = self.orders_page.get_child_table_data()
+        result_analysis = []
+        for suborder in child_data:
+            result_analysis.append(suborder['Analysis No.'].replace("'", ""))
+        self.assertCountEqual(result_analysis, analysis_no_list)
+
+    def test043_Duplicate_sub_order_with_multiple_testplans_and_testunits_delet_approach(self):
+        """
+        Duplicate suborder Approach: Duplicate any sub order then delete the units & test plans
+        LIMS-6852
+        """
+        self.info('create order data multiple testplans and test units')
+        response, payload = self.orders_api.create_order_with_double_test_plans()
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+        suborder_data_before_duplicate = self.orders_page.get_child_table_data()
+        test_plans = [suborder_data_before_duplicate[0]['Test Plans'].split(',\n')[0],
+                      suborder_data_before_duplicate[0]['Test Plans'].split(',\n')[1]]
+        test_units = [suborder_data_before_duplicate[0]['Test Units'].split(',\n')[0],
+                      suborder_data_before_duplicate[0]['Test Units'].split(',\n')[1]]
+        self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
+        self.orders_page.duplicate_sub_order_from_table_overview()
+        self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
+        self.base_selenium.clear_items_in_drop_down(element='order:test_unit', one_item_only=True)
+        self.order_page.save(save_btn='order:save')
+        self.order_page.wait_until_page_is_loaded()
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+        child_data = self.order_page.get_child_table_data()
+        duplicated_suborder_data = child_data[0]
+        self.assertEqual(len(child_data), 2)
+        self.assertEqual(duplicated_suborder_data['Article Name'], suborder_data_before_duplicate[0]['Article Name'])
+        self.assertEqual(duplicated_suborder_data['Material Type'], suborder_data_before_duplicate[0]['Material Type'])
+        self.assertIn(duplicated_suborder_data['Test Units'], test_units)
+        self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
+
+    def test044_duplicate_main_order_change_contact(self):
+        """
+        Duplicate from the main order Approach: Duplicate then change the contact
+        LIMS-6222
+        """
+        self.info('get random main order data')
+        orders, payload = self.orders_api.get_all_orders(limit=50)
+        self.assertEqual(orders['status'], 1)
+        main_order = random.choice(orders['orders'])
+        self.base_selenium.LOGGER.info(
+            '{}'.format(main_order['orderNo']))
+        self.info("duplicate order No {}".format(main_order['orderNo']))
+        self.order_page.search(main_order['orderNo'])
+        self.order_page.duplicate_main_order_from_order_option()
+        new_contact = self.order_page.set_contact(contact='', remove_old=True)
+        duplicted_order_no = self.order_page.get_no()
+        self.order_page.save(save_btn='order:save')
+        self.orders_page.get_orders_page()
+        self.orders_page.filter_by_order_no(duplicted_order_no)
+        order = self.orders_page.get_the_latest_row_data()
+        self.assertEqual(new_contact[0], order['Contact Name'])
+
+    def test045_duplicate_main_order_with_multiple_contacts(self):
+        """
+        Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
+        I duplicate from the main order or from the suborder
+        LIMS-5816
+        """
+        self.info('create order with multiple contacts')
+        response, payload = self.orders_api.create_order_with_multiple_contacts()
+        self.assertEqual(response['status'], 1)
+        contacts = [contact['text'] for contact in payload[0]['contact']]
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+
+        self.info("duplicate the order {} from order's options".format(payload[0]['orderNo']))
+        self.orders_page.duplicate_main_order_from_order_option()
+        duplicated_order_no = self.order_page.get_no()
+        self.order_page.save(save_btn='order:save')
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.orders_page.filter_by_order_no(duplicated_order_no)
+        duplicated_order_data = self.orders_page.get_the_latest_row_data()
+        duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
+        self.assertCountEqual(duplicated_contacts, contacts)
+
+    def test046_duplicate_sub_order_with_multiple_contacts(self):
+        """
+        Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
+        I duplicate from the main order or from the suborder
+        LIMS-5816
+        """
+        self.info('create order with multiple contacts')
+        response, payload = self.orders_api.create_order_with_multiple_contacts()
+        self.assertEqual(response['status'], 1, response)
+        contacts = [contact['text'] for contact in payload[0]['contact']]
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+
+        self.order_page.get_child_table_data()
+        self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
+        self.orders_page.duplicate_sub_order_from_table_overview(number_of_copies=4)
+        self.base_selenium.refresh()
+        self.orders_page.wait_until_page_is_loaded()
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+
+        duplicated_order_data = self.orders_page.get_the_latest_row_data()
+        duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
+        self.assertCountEqual(duplicated_contacts, contacts)
+
+        duplicated_suborders = self.orders_page.get_child_table_data()
+        self.assertEqual(len(duplicated_suborders), 5)
+        analyses_numbers = [suborder['Analysis No.'] for suborder in duplicated_suborders]
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.open_filter_menu()
+        for analysis in analyses_numbers:
+            self.analyses_page.filter_by(
+                filter_element='analysis_page:analysis_no_filter', filter_text=analysis, field_type='text')
+            self.analyses_page.filter_apply()
+            analysis_data = self.analyses_page.get_the_latest_row_data()
+            duplicated_contacts_in_analyses = analysis_data['Contact Name'].split(', ')
+            self.assertEqual(len(duplicated_contacts_in_analyses), 3)
+            self.assertCountEqual(duplicated_contacts, contacts)
+
+    def test047_delete_multiple_orders(self):
+        """
+        Orders: Make sure that you can't delete multiple orders records at the same time
+        LIMS-6854
+        """
+        self.info("navigate to archived items' table")
+        self.orders_page.get_archived_items()
+        self.orders_page.select_random_multiple_table_rows()
+        self.orders_page.delete_selected_item(confirm_pop_up=False)
+        confirm_edit = self.base_selenium.check_element_is_exist(element="general:cant_delete_message")
+        confirm_edit_message = self.base_selenium.get_text(element="general:confirmation_pop_up")
+        self.assertTrue(confirm_edit)
+        self.assertIn('You cannot do this action on more than one record', confirm_edit_message)
+
+    def test048_update_sub_order_with_multiple_testplans_only_delete_approach(self):
+        """
+        Orders: Test plans: In case I have order record with multiple test plans and I updated them,
+        this update should reflect on the same analysis record without creating new one.
+        LIMS-4134 case 1
+        """
+        self.info('create order with two testplans only')
+        response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
+        self.assertEqual(response['status'], 1)
+        test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
+        self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
+        test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
+                      TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
+        self.info("Edit order {}".format(payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        suborder_before_edit = self.order_page.get_suborder_data()
+        self.info('Assert that selected order has one analysis record')
+        self.assertEqual(len(suborder_before_edit['suborders']), 1)
+        analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
+        self.order_page.open_suborder_edit(sub_order_index=0)
+        self.info("remove only one test plan")
+        self.base_selenium.clear_items_in_drop_down(element='order:test_plan', one_item_only=True)
+        self.info("confirm pop_up")
+        self.order_page.confirm_popup()
+        self.order_page.save(save_btn='order:save_btn', sleep=True)
+        self.info("navigate to analysis' active table and check that pld analysis edited without creating new analysis")
+        self.order_page.get_orders_page()
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
+        self.assertEqual(len(self.analyses_page.result_table()) - 1, 1)
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        found_test_plans = analysis_data['Test Plans'].split(', ')
+        self.info("assert that only one test plan found and analysis no not changed")
+        self.assertEqual(len(found_test_plans), 1)
+        self.assertEqual(analysis_data['Analysis No.'], analysis_no)
+        suborder_data = self.analyses_page.get_child_table_data()
+        for test_plan in test_plans:
+            for test_unit in test_units:
+                if found_test_plans == test_plan:
+                    self.info("assert that test unit related to deleted test plan removed from analysis")
+                    self.assertEqual(test_unit, suborder_data['Test Unit'])
+
+    def test049_update_sub_order_with_multiple_testplans_only_add_approach(self):
+        """
+        Orders: Test plans: In case I have order record with multiple test plans and I updated them,
+        this update should reflect on the same analysis record without creating new one.
+        LIMS-4134
+        """
+        self.info('create order with two testplans only')
+        response, payload = self.orders_api.create_order_with_double_test_plans(only_test_plans=True)
+        self.assertEqual(response['status'], 1)
+        test_plans = [payload[0]['selectedTestPlans'][0]['name'], payload[0]['selectedTestPlans'][1]['name']]
+        self.info("created order has test plans {} and {} ".format(test_plans[0], test_plans[1]))
+        test_units = [TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][0]['number']),
+                      TestPlanAPI().get_testunits_in_testplan_by_No(payload[0]['testPlans'][1]['number'])]
+
+        article_no = ArticleAPI().get_article_form_data(id=payload[0]['article']['id'])[0]['article']['No']
+        self.info("get new completed test plan with article {} No: {} and material_type {}".format(
+            payload[0]['article']['text'], article_no, payload[0]['materialType']['text']))
+
+        completed_test_plans = TestPlanAPI().get_completed_testplans_with_material_and_same_article(
+            material_type=payload[0]['materialType']['text'], article=payload[0]['article']['text'],
+            articleNo=article_no)
+        completed_test_plans_without_old = [testplan for testplan in completed_test_plans
+                                            if testplan['testPlanName'] not in test_plans]
+
+        if completed_test_plans_without_old:
+            test_plan_data = random.choice(completed_test_plans_without_old)
+            test_plan = test_plan_data['testPlanName']
+            test_unit_data = TestPlanAPI().get_testunits_in_testplan(id=test_plan_data['id'])
+            test_unit = test_unit_data[0]['name']
+        else:
+            self.info("There is no completed test plan so create it ")
+            formatted_article = {'id': payload[0]['article']['id'], 'text': payload[0]['article']['text']}
+            new_test_plan = TestPlanAPI().create_completed_testplan(
+                material_type=payload[0]['materialType']['text'], formatted_article=formatted_article)
+            test_plan = new_test_plan['testPlanEntity']['name']
+            test_unit = new_test_plan['specifications'][0]['name']
+            self.info("completed test plan created with name {} and test unit {}".format(test_plan, test_unit))
+
+        test_plans.append(test_plan)
+        test_units.append(test_unit)
+
+        self.info("edit the sub order of order {}".format(payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        suborder_before_edit = self.order_page.get_suborder_data()
+        self.info('Assert that selected order has one analysis record')
+        self.assertEqual(len(suborder_before_edit['suborders']), 1)
+        analysis_no = suborder_before_edit['suborders'][0]['analysis_no']
+        self.order_page.update_suborder(test_plans=[test_plan], articles='')
+        self.order_page.save(save_btn='order:save_btn')
+        self.info("navigate to orders' active table and check that duplicated suborder found")
+        self.order_page.get_orders_page()
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.filter_by_order_no(payload[0]['orderNo'])
+        self.assertEqual(len(self.analyses_page.result_table()) - 1, 1)
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        found_test_plans = analysis_data['Test Plans'].split(', ')
+        self.assertEqual(len(found_test_plans), 3)
+        self.assertEqual(analysis_data['Analysis No.'], analysis_no)
+        suborder_data = self.analyses_page.get_child_table_data()
+        found_test_units = [testunit['Test Unit'] for testunit in suborder_data]
+        self.assertCountEqual(test_plans, found_test_plans)
+        self.assertNotEqual(test_units, found_test_units)
+
+    @parameterized.expand(['change', 'add'])
+    def test050_duplicate_main_order_with_testPlan_and_testUnit_edit_both(self, case):
+        """
+        Duplicate from the main order Approach: Duplicate then change the test units & test plans
+        LIMS-6221
+        Duplicate from the main order Approach: Duplicate then update test unit/plan by deleting
+        any test plan & test unit
+        LIMS-6841
+        Duplicate from the main order Approach: Duplicate by adding test unit & plan
+        LIMS-6231
+        """
+        self.info('create order with test plan and test unit')
+        response, payload = self.orders_api.create_new_order()
+        self.assertEqual(response['status'], 1, response)
+        self.info('order created with payload {}'.format(payload))
+        self.info('get valid test plan and test unit to edit suborder data')
+        new_test_plan, new_test_unit = TestPlanAPI().get_order_valid_testplan_and_test_unit(
+            material_type=payload[0]['materialType']['text'],
+            used_test_plan=payload[0]['testPlans'][0]['name'],
+            used_test_unit=payload[0]['testUnits'][0]['name'],
+            article_id=payload[0]['article']['id'], article=payload[0]['article']['text'])
+
+        self.info("duplicate order No {} ".format(payload[0]['orderNo']))
+        self.orders_page.search(payload[0]['orderNo'])
+        self.info("duplicate main order")
+        self.orders_page.duplicate_main_order_from_order_option()
+        self.assertIn("duplicateMainOrder", self.base_selenium.get_url())
+        self.order_page.sleep_medium()
+        duplicated_order_No = self.order_page.get_no()
+        self.info("duplicated order No is {}".format(duplicated_order_No))
+        self.assertNotEqual(duplicated_order_No, payload[0]['orderNo'])
+        if case == 'add':
+            self.info("add test plan {} and test unit {} to duplicated order".format(new_test_plan, new_test_unit))
+            self.order_page.update_suborder(test_plans=[new_test_plan], test_units=[new_test_unit], articles='')
+        else:
+            self.info("update test plan to {} and test unit to {}".format(new_test_plan, new_test_unit))
+            self.order_page.update_suborder(test_plans=[new_test_plan], test_units=[new_test_unit], remove_old=True, articles='')
+
+        self.order_page.save(save_btn='order:save')
+        self.info("navigate to active table")
+        self.order_page.get_orders_page()
+        self.assertTrue(self.orders_page.search(duplicated_order_No))
+        duplicated_suborder_data = self.order_page.get_child_table_data()[0]
+        if case == 'change':
+            self.info("assert that test unit updated to {}, test plan {}".format(
+                new_test_unit, new_test_plan))
+            self.assertEqual(duplicated_suborder_data['Test Units'], new_test_unit)
+            self.assertEqual(duplicated_suborder_data['Test Plans'], new_test_plan)
+        else:
+            self.info("assert that test unit {}, test plan {} added to duplicated order".format(
+                new_test_unit, new_test_plan))
+            self.assertIn(new_test_unit, duplicated_suborder_data['Test Units'])
+            self.assertIn(new_test_plan, duplicated_suborder_data['Test Plans'])
+
+        self.info("navigate to analysis page")
+        self.orders_page.navigate_to_analysis_active_table()
+        self.assertTrue(self.analyses_page.search(duplicated_order_No))
+        analyses = self.analyses_page.get_the_latest_row_data()
+        if case == 'add':
+            self.assertIn(new_test_plan, analyses['Test Plans'].replace("'", ""))
+        else:
+            self.assertEqual(new_test_plan, analyses['Test Plans'].replace("'", ""))
+        child_data = self.analyses_page.get_child_table_data()
+        test_units = [test_unit['Test Unit'] for test_unit in child_data]
+        self.assertIn(new_test_unit, test_units)
+
     #
     # @parameterized.expand(['change', 'add'])
     # def test051_duplicate_main_order_with_testPlan_and_testUnit_edit_both(self, case):
