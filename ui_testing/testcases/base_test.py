@@ -65,6 +65,8 @@ class BaseTest(TestCase):
                     continue
                 elif '&' in str(item):
                     tmp.extend(str(item).split('&'))
+                elif ',' in str(item):
+                    tmp.extend(str(item).split(', '))
                 elif ' ' == str(item)[-1]:
                     tmp.append(item[:-1])
                 elif 'all' == str(item)[-1]:
@@ -72,6 +74,13 @@ class BaseTest(TestCase):
                 else:
                     tmp.append(str(item).replace(',', '&').replace("'", "").replace(' - ', '-'))
 
+        return tmp
+
+    def reformat_data(self, data_list):
+        tmp = []
+        for item in data_list:
+            if len(str(item)) > 0:
+                tmp.append(str(item).replace(',', ' &').replace("'", ""))
         return tmp
 
     def get_active_article_with_tst_plan(self, test_plan_status='complete'):

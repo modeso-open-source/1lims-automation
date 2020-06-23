@@ -574,6 +574,22 @@ class Order(Orders):
             row=suborder_row, table_element='order:suborder_table')
         return suborders_elements
 
+    def match_format_to_sheet_format(self, list_of_orders=[]):
+        formatted_orders_list = []
+        orders_list = []
+        for order in list_of_orders:
+            for key in order:
+                if key in ['', 'Options']:
+                    continue
+                if key in ['Contact Name', 'Test Plans', 'Departments', 'Test Units']:
+                    formatted_orders_list.append(order[key].replace(',\n', ' & ').replace("'", ""))
+                else:
+                    formatted_orders_list.append(order[key].replace("'", ""))
+            orders_list.append(formatted_orders_list)
+            formatted_orders_list = []
+
+        return orders_list
+
     def get_sub_order_data_first_row(self, index=0):
         suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
         suborder_row = suborders[index]

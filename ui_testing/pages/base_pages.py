@@ -120,12 +120,35 @@ class BasePages:
         selected_rows = []
         rows = self.base_selenium.get_table_rows(element=element)
         no_of_rows = randint(min(2, len(rows) - 1), min(5, len(rows) - 1))
-
         count = 0
         self.info(' No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:
             self.base_selenium.scroll()
             row = rows[randint(0, len(rows) - 2)]
+            row_text = row.text
+            if not row_text:
+                continue
+            if row_text in _selected_rows_text:
+                continue
+            count = count + 1
+            self.click_check_box(source=row)
+            _selected_rows_text.append(row_text)
+            selected_rows.append(row)
+            selected_rows_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=row))
+        return selected_rows_data, selected_rows
+
+    def select_random_ordered_multiple_table_rows(self, element='general:table'):
+        _selected_rows_text = []
+        selected_rows_data = []
+        selected_rows = []
+        rows = self.base_selenium.get_table_rows(element=element)
+        no_of_rows = randint(min(2, len(rows)-1), min(5, len(rows)-1))
+        count = 0
+        self.info(' No. of selected rows {} '.format(no_of_rows))
+        while count < no_of_rows:
+            self.base_selenium.scroll()
+            row = rows[count]
+
             row_text = row.text
             if not row_text:
                 continue
