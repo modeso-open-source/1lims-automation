@@ -1,0 +1,29 @@
+language: python
+sudo: enabled
+dist: xenial
+group: edge
+
+python:
+  - "3.7"
+
+install:
+  - wget -N --no-check-certificate "https://www.slimjet.com/chrome/download-chrome.php?file=files%2F79.0.3945.88%2Fgoogle-chrome-stable_current_amd64.deb" -O ~/google-chrome-stable_current_amd64.deb
+  - sudo apt install -y ~/google-chrome-stable_current_amd64.deb
+  - echo $(google-chrome --version)
+  - wget -N "https://chromedriver.storage.googleapis.com/79.0.3945.36/chromedriver_linux64.zip" -P ~/
+  - unzip ~/chromedriver_linux64.zip -d ~/
+  - rm ~/chromedriver_linux64.zip
+  - sudo mv -f ~/chromedriver /usr/local/share/
+  - sudo chmod +x /usr/local/share/chromedriver
+  - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+  - echo $(/usr/bin/chromedriver -v)
+  - sudo apt-get install -y xvfb xclip
+  - pip3 install -r $TRAVIS_BUILD_DIR/requirements.txt
+
+script:
+  - export TESTS='test08_usermanagement.py:'
+  #- export TESTS='test04_testunits.py:TestUnitsTestCases.test011_create_test_unit_with_random_category'
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export TESTS=''; fi
+  - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
+  - export LOGURU_LEVEL='INFO'
+  - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini --with-flaky --force-flaky --max-runs=3 --min-passes=1 -m 'test[0-9]{3}' ui_testing/testcases/basic_tests/test03_testplans.py:TestPlansTestCases
