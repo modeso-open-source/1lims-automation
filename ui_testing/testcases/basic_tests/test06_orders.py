@@ -2138,4 +2138,3 @@ class OrdersTestCases(BaseTest):
     #         testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0]))
     #     self.assertEqual(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0])
     #
-
