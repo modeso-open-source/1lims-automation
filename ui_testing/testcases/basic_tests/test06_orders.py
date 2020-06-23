@@ -1797,78 +1797,7 @@ class OrdersTestCases(BaseTest):
         test_units = [test_unit['Test Unit'] for test_unit in child_data]
         self.assertIn(new_test_unit, test_units)
 
-    #
-    # @parameterized.expand(['change', 'add'])
-    # def test051_duplicate_main_order_with_testPlan_and_testUnit_edit_both(self, case):
-    #     """
-    #     Duplicate from the main order Approach: Duplicate then change the test units & test plans
-    #
-    #     LIMS-6221
-    #
-    #     Duplicate from the main order Approach: Duplicate then update test unit/plan by deleting
-    #     any test plan & test unit
-    #
-    #     LIMS-6841
-    #
-    #     Duplicate from the main order Approach: Duplicate by adding test unit & plan
-    #
-    #     LIMS-6231
-    #     """
-    #     self.info('create order with test plan and test unit')
-    #     response, payload = self.orders_api.create_new_order()
-    #     self.assertEqual(response['status'], 1, response)
-    #     self.info('order created with payload {}'.format(payload))
-    #     self.info('get valid test plan and test unit to edit suborder data')
-    #     new_test_plan, new_test_unit = TestPlanAPI().get_order_valid_testplan_and_test_unit(
-    #         material_type=payload[0]['materialType']['text'],
-    #         used_test_plan=payload[0]['testPlans'][0]['name'],
-    #         used_test_unit=payload[0]['testUnits'][0]['name'],
-    #         article_id=payload[0]['article']['id'], article=payload[0]['article']['text'])
-    #
-    #     self.info("duplicate order No {} ".format(payload[0]['orderNo']))
-    #     self.orders_page.search(payload[0]['orderNo'])
-    #     self.info("duplicate main order")
-    #     self.orders_page.duplicate_main_order_from_order_option()
-    #     self.assertIn("duplicateMainOrder", self.base_selenium.get_url())
-    #     self.order_page.sleep_medium()
-    #     duplicated_order_No = self.order_page.get_no()
-    #     self.info("duplicated order No is {}".format(duplicated_order_No))
-    #     self.assertNotEqual(duplicated_order_No, payload[0]['orderNo'])
-    #     if case == 'add':
-    #         self.info("add test plan {} and test unit {} to duplicated order".format(new_test_plan, new_test_unit))
-    #         self.order_page.update_suborder(test_plans=[new_test_plan], test_units=[new_test_unit])
-    #     else:
-    #         self.info("update test plan to {} and test unit to {}".format(new_test_plan, new_test_unit))
-    #         self.order_page.update_suborder(test_plans=[new_test_plan], test_units=[new_test_unit], remove_old=True)
-    #
-    #     self.order_page.save(save_btn='order:save')
-    #     self.info("navigate to active table")
-    #     self.order_page.get_orders_page()
-    #     self.assertTrue(self.orders_page.search(duplicated_order_No))
-    #     duplicated_suborder_data = self.order_page.get_child_table_data()[0]
-    #     if case == 'change':
-    #         self.info("assert that test unit updated to {}, test plan {}".format(
-    #             new_test_unit, new_test_plan))
-    #         self.assertEqual(duplicated_suborder_data['Test Units'], new_test_unit)
-    #         self.assertEqual(duplicated_suborder_data['Test Plans'], new_test_plan)
-    #     else:
-    #         self.info("assert that test unit {}, test plan {} added to duplicated order".format(
-    #             new_test_unit, new_test_plan))
-    #         self.assertIn(new_test_unit, duplicated_suborder_data['Test Units'])
-    #         self.assertIn(new_test_plan, duplicated_suborder_data['Test Plans'])
-    #
-    #     self.info("navigate to analysis page")
-    #     self.order_page.navigate_to_analysis_tab()
-    #     self.assertTrue(self.analyses_page.search(duplicated_order_No))
-    #     analyses = self.analyses_page.get_the_latest_row_data()
-    #     if case == 'add':
-    #         self.assertIn(new_test_plan, analyses['Test Plans'].replace("'", ""))
-    #     else:
-    #         self.assertEqual(new_test_plan, analyses['Test Plans'].replace("'", ""))
-    #     child_data = self.analyses_page.get_child_table_data()
-    #     test_units = [test_unit['Test Unit'] for test_unit in child_data]
-    #     self.assertIn(new_test_unit, test_units)
-    #
+    
     # def test052_duplicate_sub_order_with_testPlan_and_testUnit_change_both(self):
     #     """
     #     Duplicate suborder Approach: Duplicate any sub order then change the units & test plans
