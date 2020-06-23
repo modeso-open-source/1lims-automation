@@ -2189,7 +2189,84 @@ class OrdersTestCases(BaseTest):
             testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0]))
         self.assertEqual(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0])
 
-    def test047_download_suborder_sheet_for_single_order(self):
+    def test063_create_order_with_multiple_contacts_then_add_department(self):
+        """
+        User should be able to choose more than one contact from drop down menu upon creating a new order
+
+        LIMS-5704 'create mode'
+        """
+        self.info("get 3 contacts with department contacts")
+        contact_list = random.choices(self.contacts_api.get_contacts_with_department(), k=3)
+        self.assertTrue(contact_list, "Can't get 3 contacts with departments")
+        contact_names_list = [contact['name'] for contact in contact_list]
+        self.info('selected contacts are {}'.format(contact_names_list))
+        departments_list_with_contacts = self.contacts_api.get_department_contact_list(contact_names_list)
+        self.info('department contacts list {}'.format(departments_list_with_contacts))
+        self.info('create new order with selected contacts')
+        self.order_page.create_multiple_contacts_new_order(contacts=contact_names_list)
+        self.order_page.sleep_tiny()
+        contacts = self.order_page.get_contact()
+        self.info('selected contacts are {}'.format(contacts))
+        self.assertCountEqual(contacts, contact_names_list)
+        suggested_department_list, departments_only_list = \
+            self.order_page.get_department_suggestion_lists(contacts=contact_names_list)
+        self.info('suggested department list {}'.format(suggested_department_list))
+        self.info('and it should be {}'.format(departments_list_with_contacts))
+        index = 0
+        for item in suggested_department_list:
+            for element in departments_list_with_contacts:
+                if item['contact'] == element['contact']:
+                    self.assertCountEqual(item['departments'], element['departments'])
+                    index = index + 1
+
+        self.assertEqual(index, len(contact_names_list))
+        department = random.choice(departments_only_list)
+        self.info('set department to {}'.format(department))
+        self.order_page.set_departments(department)
+        self.order_page.sleep_small()
+        self.order_page.save_and_wait(save_btn='order:save')
+        order_data = self.order_page.get_suborder_data()
+        self.info('assert that new order with multiple contacts created')
+        self.assertCountEqual(order_data['contacts'], contact_names_list)
+        self.info('assert that department updated')
+        self.assertEqual([department], order_data['suborders'][0]['departments'])
+
+    def test064_edit_department_of_order_with_multiple_contacts(self):
+        """
+        In case I select multiple contacts the departments should be updated according to that
+
+        LIMS-5705 'edit mode'
+        """
+        self.info("create order with multiple contacts")
+        response, payload = self.orders_api.create_order_with_multiple_contacts()
+        self.assertEqual(response['status'], 1, response)
+        contact_names_list = [contact['text'] for contact in payload[0]['contact']]
+        self.info('selected contacts are {}'.format(contact_names_list))
+        departments_list_with_contacts = self.contacts_api.get_department_contact_list(contact_names_list)
+        self.info('department contacts list {}'.format(departments_list_with_contacts))
+        self.info('open edit page of order no {}'.format(payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        self.order_page.sleep_tiny()
+        suggested_department_list, departments_only_list = \
+            self.order_page.get_department_suggestion_lists(open_suborder_table=True, contacts=contact_names_list)
+        self.info('suggested department list {}'.format(suggested_department_list))
+        self.info('and it should be {}'.format(departments_list_with_contacts))
+        index = 0
+        for item in suggested_department_list:
+            for element in departments_list_with_contacts:
+                if item['contact'] == element['contact']:
+                    self.assertCountEqual(item['departments'], element['departments'])
+                    index = index + 1
+        self.assertEqual(index, len(contact_names_list))
+
+        department = random.choice(departments_only_list)
+        self.info('set department to {}'.format(department))
+        self.order_page.set_departments(department)
+        self.order_page.save_and_wait(save_btn='order:save')
+        suborder_data = self.order_page.get_suborder_data()
+        self.assertEqual([department], suborder_data['suborders'][0]['departments'])
+
+    def test065_download_suborder_sheet_for_single_order(self):
         """
         Export order child table
 

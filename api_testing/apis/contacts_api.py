@@ -143,3 +143,27 @@ class ContactsAPI(ContactsAPIFactory):
         contacts = api['contacts']
         contacts_with_department = [contact for contact in contacts if contact['departments']]
         return contacts_with_department
+
+    def get_departments_in_contact(self, contact_name):
+        _filter = '{{"quickSearch":"{}","columns":["companyName","departments","skype","number",' \
+                  '"email","postalCode","modifiedBy","website","createdAt","address","country",' \
+                  '"modifiedAt","type","phone","location"]}}'.format(contact_name)
+
+        api, contacts_data = self.get_all_contacts(filter=_filter)
+        if api['status'] == 1 and api['count']==1:
+            return api['contacts'][0]['departments'].split(', ')
+        elif api['status'] == 1 and api['count'] > 1:
+            for contact in api['contacts']:
+                if contact['name'] == contact_name:
+                    return contact['departments'].split(', ')
+
+    def get_department_contact_list(self, contact_list=[]):
+        selected_contacts = sorted(contact_list, key=str.lower)
+        departments_list_with_contacts = []
+        for contact in selected_contacts:
+            departments = self.get_departments_in_contact(contact)
+            if departments and departments != ['']:
+                contact_dict = {'contact': contact,
+                                'departments': departments}
+                departments_list_with_contacts.append(contact_dict)
+        return departments_list_with_contacts
