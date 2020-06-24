@@ -2246,4 +2246,3 @@ class OrdersTestCases(BaseTest):
                                   f"{str(fixed_sheet_row_data)} : {str(formatted_orders[index])}")
             for item in formatted_orders[index]:
                 self.assertIn(item, fixed_sheet_row_data)
-
