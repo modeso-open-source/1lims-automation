@@ -148,6 +148,10 @@ elements = {
             'method': 'id',
             'value': 'table_next'
         },
+        'last_page': {
+            'method': 'id',
+            'value': 'table_last'
+        },
         'file_input_field': {'method': 'css_selector', 'value':'[type="file"]'},
         'file_upload_success_flag': {'method': 'class_name', 'value': 'dz-complete', 'order': 0},
         'files_upload_success_flags': {'method': 'class_name', 'value': 'dz-complete', 'order': -1},
@@ -264,8 +268,6 @@ elements = {
                         'order': -1},
     },
     'test_plans': {
-        'test_plans_table': {'method': 'id',
-                             'value': 'table'},
         'test_plans_edit_button': {'method': 'tag_name',
                                    'value': 'a',
                                    'order': 1},
@@ -286,6 +288,10 @@ elements = {
         'testplan_changed_by_filter': {
             'method': 'id',
             'value': 'lastModifiedUserfield'
+        },
+        'testplan_created_on_filter': {
+            'method': 'id',
+            'value': 'start_createdAt'
         },
         'testplan_status_filter': {
             'method': 'id',
@@ -329,7 +335,6 @@ elements = {
     'test_plan': {
         'no': {'method': 'id',
                'value': 'numberfield'},
-
         'test_plan': {'method': 'id',
                       'value': 'testPlan'},
         'material_type': {'method': 'id',
@@ -403,12 +408,12 @@ elements = {
         'testunit_unit': {'method': 'id',
                           'value': 'testunit_unit'},
         'testunit_quantification_upper_limit': {
-            'method': 'id',
-            'value': 'quantification_upper_limit'
+            'method': 'xpath',
+            'value': ' //input[@placeholder="Upper Limit"]'
         },
         'testunit_quantification_lower_limit': {
-            'method': 'id',
-            'value': 'quantification_lower_limit'
+            'method': 'xpath',
+            'value': ' //input[@placeholder="Lower Limit"]'
         },
         'add_testunit_error_msg': {
             'method': 'xpath',

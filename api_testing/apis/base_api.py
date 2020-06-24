@@ -88,9 +88,9 @@ class BaseAPI:
             return [BaseAPI._update_payload(payload[0], **kwargs)]
         return BaseAPI._update_payload(payload, **kwargs)
 
-    @staticmethod
-    def info(message):
-        BaseAPI.LOGGER.info(message)
+    @property
+    def info(self):
+        return BaseAPI.LOGGER.info
 
     @staticmethod
     def generate_random_string():

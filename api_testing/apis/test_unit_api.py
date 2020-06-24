@@ -338,3 +338,14 @@ class TestUnitAPI(TestUnitAPIFactory):
             testunit = random.choice(testunits_with_values)
             return testunit
 
+    def get_testplan_valid_test_unit(self):
+        test_units, payload = self.get_all_test_units(limited=20, filter='{"materialTypes":"all"}')
+        testunits_with_values = []  # make sure test unit have value
+        for testunit in test_units['testUnits']:
+            if testunit['typeName'] == 'Quantitative':
+                if testunit['specifications'] or testunit['quantification']:
+                    testunits_with_values.append(testunit)
+            elif testunit['typeName'] == 'Qualitative' and testunit['specifications']:
+                testunits_with_values.append(testunit)
+
+        return testunits_with_values

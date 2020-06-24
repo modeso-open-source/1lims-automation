@@ -338,7 +338,7 @@ class OrdersAPI(OrdersAPIFactory):
         return self.create_new_order(**payload)
 
     def create_order_with_multiple_contacts(self):
-        contacts = ContactsAPI().get_all_contacts()[0]['contacts']
+        contacts = random.choices(ContactsAPI().get_contacts_with_department(), k=3)
         first_contact = contacts[0]
         second_contact = contacts[1]
         third_contact = contacts[2]
@@ -353,7 +353,6 @@ class OrdersAPI(OrdersAPIFactory):
                 {"id": third_contact['id'],
                  "text": third_contact['name'],
                  'No': third_contact['companyNo']}
-
             ]
 
         }

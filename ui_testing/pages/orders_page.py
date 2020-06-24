@@ -20,7 +20,7 @@ class Orders(BasePages):
     def click_create_order_button(self):
         self.base_selenium.LOGGER.info('Press create order button')
         self.base_selenium.click(element='orders:new_order')
-        self.sleep_small()
+        self.wait_until_page_is_loaded()
 
     def archive_selected_orders(self, check_pop_up=False):
         self.base_selenium.scroll()

@@ -1,7 +1,5 @@
-from selenium.webdriver.common.keys import Keys
-
 from ui_testing.pages.testplans_page import TestPlans
-from selenium.common.exceptions import NoSuchElementException
+
 
 class TstPlan(TestPlans):
     def get_no(self):
@@ -11,11 +9,11 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text(element="test_plan:no", value=no)
 
     def get_article(self):
-        articles = self.base_selenium.get_text(element="test_plan:article").split('\n')
+        articles = self.base_selenium.get_text(element="test_plan:article").split(' No')
         article_list = []
         for article in articles:
             if "×" in article:
-                article_list.append(article.replace("× ", ""))
+                article_list.append(article.replace("×", ""))
         return article_list
 
     def set_article(self, article='', random=False):
@@ -48,7 +46,7 @@ class TstPlan(TestPlans):
         return name
 
     def search_test_unit_not_set(self, test_unit=''):
-        self.base_selenium.LOGGER.info('navigate to testplan second step')
+        self.info('navigate to testplan second step')
         self.base_selenium.click('test_plan:next')
         self.sleep_tiny()
         self.base_selenium.click('test_plan:add_test_units')
@@ -61,43 +59,45 @@ class TstPlan(TestPlans):
         return is_option_exist
 
     def set_test_unit(self, test_unit='', **kwargs):
-        self.base_selenium.click('test_plan:next')
+        self.navigate_to_testunits_selection_page()
+        self.sleep_tiny()
         self.base_selenium.click('test_plan:add_new_item')
-        self.sleep_small()
-        self.base_selenium.select_item_from_drop_down(element='test_plan:test_unit', item_text=test_unit)
-        self.sleep_small()
-        self.base_selenium.click('test_plan:check_btn')
+        self.sleep_tiny()
+        self.base_selenium.select_item_from_drop_down(element='test_plan:test_unit',
+                                                      item_text=test_unit, avoid_duplicate=True)
         if 'upper' in kwargs:
-            self.base_selenium.LOGGER.info(' set upper : {}'.format(kwargs['upper']))
+            self.info(' set upper : {}'.format(kwargs['upper']))
             elems = self.base_selenium.find_elements('general:col_6')
             upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
             upper.clear()
             upper.send_keys(kwargs['upper'])
         if 'lower' in kwargs:
-            self.base_selenium.LOGGER.info(' set lower : {}'.format(kwargs['lower']))
+            self.info(' set lower : {}'.format(kwargs['lower']))
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
             lower.clear()
             lower.send_keys(kwargs['lower'])
+        self.sleep_small()
+        self.base_selenium.click('test_plan:check_btn')
+        self.sleep_tiny()
 
     def get_testunit_in_testplan_title_multiple_line_properties(self):
         dom_element = self.base_selenium.find_element(element='test_plan:testunit_title')
         multiple_line_properties = dict()
-        multiple_line_properties['textOverflow'] = self.base_selenium.driver.execute_script( 'return '
-                                                                                             'window'
-                                                                                             '.getComputedStyle('
-                                                                                             'arguments[0], '
-                                                                                             '"None").textOverflow',
-                                                                                             dom_element)
-        multiple_line_properties['lineBreak'] = self.base_selenium.driver.execute_script('return '
+        multiple_line_properties['textOverflow'] = self.base_selenium.driver.execute_script('return '
                                                                                             'window'
                                                                                             '.getComputedStyle('
                                                                                             'arguments[0], '
-                                                                                            '"None").lineBreak',
+                                                                                            '"None").textOverflow',
                                                                                             dom_element)
+        multiple_line_properties['lineBreak'] = self.base_selenium.driver.execute_script('return '
+                                                                                         'window'
+                                                                                         '.getComputedStyle('
+                                                                                         'arguments[0], '
+                                                                                         '"None").lineBreak',
+                                                                                         dom_element)
 
         return multiple_line_properties
-
 
     def get_test_unit_limits(self):
         self.base_selenium.click('test_plan:next')
@@ -112,7 +112,7 @@ class TstPlan(TestPlans):
         category_label_test_unit = self.base_selenium.find_element('test_plan:category-label')
         return category_label_test_unit.get_attribute('textContent')
 
-    def create_new_test_plan(self, name='', material_type='', article='', test_unit='', **kwargs):
+    def create_new_test_plan(self, name='', material_type='', article='', test_unit='', save=True, **kwargs):
         self.info(' Create new test plan')
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
@@ -120,28 +120,31 @@ class TstPlan(TestPlans):
         self.click_create_test_plan_button()
         self.set_test_plan(name=self.test_plan_name)
         if self.material_type:
-            self.base_selenium.LOGGER.info(' With {} material type'.format(material_type))
+            self.info(' With {} material type'.format(material_type))
             self.set_material_type(material_type=self.material_type)
         else:
-            self.base_selenium.LOGGER.info(' With random material type')
+            self.info(' With random material type')
             self.material_type = self.set_material_type(random=True)
         self.sleep_tiny()
 
         if self.article:
-            self.base_selenium.LOGGER.info(' With {} article'.format(article))
+            self.info(' With {} article'.format(article))
             self.set_article(article=article)
         else:
             self.article = self.set_article(random=True)
+        self.sleep_tiny()
 
         if test_unit:
-            self.base_selenium.LOGGER.info('With {} test unit'.format(test_unit))
+            self.info('With {} test unit'.format(test_unit))
             self.set_test_unit(test_unit=test_unit, **kwargs)
             self.sleep_tiny()
-            self.save(save_btn='test_plan:save_and_complete')
+            if save:
+                self.save(save_btn='test_plan:save_and_complete')
         else:
-            self.save()
+            self.save(save_btn='test_plan:save_btn')
+            self.wait_until_page_is_loaded()
 
-        self.base_selenium.LOGGER.info(' Test plan name : {}'.format(self.test_plan_name))
+        self.info(' Test plan name : {}'.format(self.test_plan_name))
         return self.test_plan_name
 
     def is_article_existing(self, article):
@@ -149,29 +152,31 @@ class TstPlan(TestPlans):
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)
 
     def navigate_to_testunits_selection_page(self):
-        self.base_selenium.LOGGER.info('Navigating to testplan create/update step 2')
+        self.info('Navigating to testplan create/update step 2')
+        self.sleep_tiny()
         self.base_selenium.click(element='test_plan:testunits_selection')
-        self.sleep_small()
+        self.sleep_tiny()
 
     def get_all_testunits_in_testplan(self):
-        # returns all testunits in testplan 
+        # returns all testunits in testplan
+        self.navigate_to_testunits_selection_page()
         testunits = []
-        self.base_selenium.LOGGER.info('Getting the testunits data')
+        self.info('Getting the testunits data')
         rows = self.base_selenium.get_table_rows(element='test_plan:testunits_table')
         for row in rows:
             row_data = self.base_selenium.get_row_cells(row)
             row_data_text = []
             for r in row_data:
-                row_data_text.append(r.text) 
+                row_data_text.append(r.text)
             testunits.append(row_data_text)
-            
+
         return testunits
 
     def delete_the_first_testunit_from_the_tableview(self):
-        self.base_selenium.LOGGER.info('Deleting the first testunit from the testunits table')
+        self.info('Deleting the first testunit from the testunits table')
         self.base_selenium.click(element='test_plan:row_delete_button')
-        self.sleep_medium()
-    
+        self.sleep_tiny()
+
     def check_if_deleted_testunit_is_available(self, all_testunits, deleted_test_unit):
         deleted_test_unit_found = 0
         for testunit in all_testunits:
@@ -181,7 +186,7 @@ class TstPlan(TestPlans):
         return deleted_test_unit_found
 
     def switch_test_units_to_row_view(self):
-        self.base_selenium.LOGGER.info('Switching from card view to table view')
+        self.info('Switching from card view to table view')
         self.base_selenium.click(element='test_plan:table_card_switcher')
 
     def save_and_confirm_popup(self):
@@ -191,32 +196,39 @@ class TstPlan(TestPlans):
         self.base_selenium.click(element='test_plan:ok')
         self.sleep_small()
 
-    def delete_all_testunits(self):
-        testunits_still_available = 1
-        while testunits_still_available:
-            try:
-                self.base_selenium.click(element='test_plan:remove_testunit')
-            except:
-                testunits_still_available = 0      
+    def save_confirm_popup_and_wait(self):
+        self.save(save_btn='test_plan:save_btn', sleep=True)
+        # press 'Ok' on the popup
+        self.info('Accepting the changes made')
+        self.base_selenium.click(element='test_plan:ok')
+        self.sleep_small()
+        self.base_selenium.refresh()
+        self.wait_until_page_is_loaded()
 
-    '''
-    Changes the fields in the testplan after choosing the duplicate option on
-    a specific testplan
-    '''
+    def delete_all_testunits(self):
+        rows = self.base_selenium.get_table_rows(element='test_plan:testunits_table')
+        for row in rows:
+            self.base_selenium.click(element='test_plan:row_delete_button')
+
     def duplicate_testplan(self, change=[]):
+        """
+        Changes the fields in the testplan after choosing the duplicate option on
+        a specific testplan
+        """
         for c in change:
-            self.base_selenium.LOGGER.info('Changing the {} field'.format(c))
+            self.info('Changing the {} field'.format(c))
             if c == 'name':
                 duplicated_test_plan_name = self.generate_random_text()
                 self.set_test_plan(name=duplicated_test_plan_name)
+                self.sleep_tiny()
 
         no = self.get_no()
-        self.save(sleep=True)
+        self.save(save_btn='test_plan:save_btn')
+        self.wait_until_page_is_loaded()
         return no
 
     def get_testunit_category_iterations(self, testplan_name, testunit_name):
         self.get_test_plan_edit_page(testplan_name)
-        #self.navigate_to_testunits_selection_page()
         self.set_test_unit(testunit_name)
         testunit_category = self.base_selenium.get_text(element='test_plan:test_unit_category')
         testunit_iteration = self.base_selenium.get_value(element='test_plan:test_unit_iteration')
@@ -226,25 +238,33 @@ class TstPlan(TestPlans):
     '''
     Update the testunits field searchable in the database
     '''
+
     def get_and_update_testunits_dropdown_field(self, cursor, db, searchable):
-        testunits_select_query_from_testplans = ("SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
+        testunits_select_query_from_testplans = (
+            "SELECT searchable FROM `field_data` WHERE componentId = 5 AND name = 'testUnits'")
         cursor.execute(testunits_select_query_from_testplans)
         old_testunits_searchable_from_testplans = str(cursor.fetchone()[0])
 
-        testunits_searchable_update_query_in_testplans = ("UPDATE `field_data` SET `searchable`= '" + searchable + "' WHERE componentId = 5 AND name = 'testUnits'")
+        testunits_searchable_update_query_in_testplans = (
+                "UPDATE `field_data` SET `searchable`= '" + searchable + "' WHERE componentId = 5 AND name = 'testUnits'")
         cursor.execute(testunits_searchable_update_query_in_testplans)
         db.commit()
 
         return old_testunits_searchable_from_testplans
 
-    def update_upper_lower_limits_of_testunit(self, old_upper, old_lower):
-        self.base_selenium.set_text('test_plan:testunit_quantification_upper_limit', str(old_upper + 5))
-        self.base_selenium.set_text('test_plan:testunit_quantification_lower_limit', str(old_lower + 5))
+    def update_upper_lower_limits_of_testunit(self, id):
+        self.get_test_plan_edit_page_by_id(id)
+        self.navigate_to_testunits_selection_page()
+        new_upper = self.generate_random_number(lower=50, upper=100)
+        new_lower = self.generate_random_number(lower=1, upper=49)
+        self.base_selenium.set_text('test_plan:testunit_quantification_upper_limit', str(new_upper))
+        self.base_selenium.set_text('test_plan:testunit_quantification_lower_limit', str(new_lower))
         self.sleep_small()
+        self.save_and_confirm_popup()
+        return new_lower, new_upper
 
     def get_testunit_quantification_limit(self, testunits, testunit_display_name):
         for testunit in testunits:
             if (testunit_display_name in testunit['Test Unit Name']):
                 quantification_limit = testunit['Quantification Limit']
                 return quantification_limit
-
