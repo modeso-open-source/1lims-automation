@@ -118,7 +118,9 @@ class Order(Orders):
                          multiple_suborders=0, departments=''):
         self.info(' Create new order.')
         self.click_create_order_button()
+        self.sleep_small()
         self.set_new_order()
+        self.sleep_small()
         self.set_contact(contact=contact)
         self.sleep_small()
         self.set_departments(departments=departments)

@@ -290,15 +290,15 @@ class OrdersTestCases(BaseTest):
 
         # get the new order data
         after_duplicate_order = self.order_page.get_suborder_data()
-
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
         # make sure that the new order has different order No
         self.assertNotEqual(payload[0]['orderNo'], after_duplicate_order['orderNo'])
         # compare the contacts
-        self.assertCountEqual([payload[0]['contact'][0]['text']], after_duplicate_order['contacts'])
+        self.assertEqual([payload[0]['contact'][0]['text']], after_duplicate_order['contacts'])
 
         # save the duplicated order
+        self.orders_page.sleep_medium()
         self.order_page.save(save_btn='orders:save_order')
         # go back to the table view
         self.order_page.get_orders_page()
@@ -336,6 +336,7 @@ class OrdersTestCases(BaseTest):
         self.info("get active suborder data to use")
         completed_test_plans = TestPlanAPI().get_completed_testplans(limit=50)
         test_plan = random.choice(completed_test_plans)
+
         self.info("get random order")
         orders, api = self.orders_api.get_all_orders(limit=50)
         order = random.choice(orders['orders'])
@@ -347,6 +348,7 @@ class OrdersTestCases(BaseTest):
                                                             test_plan=test_plan['testPlanName'],
                                                             test_unit='',
                                                             add_new_suborder_btn='order:add_another_suborder')
+
 
         self.assertEqual(suborder_data['orderNo'].replace("'", "").split("-")[0],
                          order['orderNo'].split("-")[0])
@@ -367,7 +369,6 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-
     def test011_duplicate_many_orders(self):
         """
         Make sure that the user can duplicate suborder with multiple copies ( record with test units )
@@ -383,6 +384,7 @@ class OrdersTestCases(BaseTest):
         self.base_selenium.LOGGER.info(
             '{}'.format(order['orderNo']))
         order_no = order['orderNo']
+        self.orders_page.sleep_small()
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
                                               field_type='text')
 
