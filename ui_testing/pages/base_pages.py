@@ -36,19 +36,19 @@ class BasePages:
         self.base_selenium.clear_element_text(element=element)
 
     def sleep_tiny(self):
-        self.info('wait up to 0.5 sec')
+        self.base_selenium.LOGGER.debug('wait up to 0.5 sec')
         self.base_selenium.wait_until_page_load_resources(expected_counter=5)
 
     def sleep_small(self):
-        self.info('wait up to 1 sec')
+        self.base_selenium.LOGGER.debug('wait up to 1 sec')
         self.base_selenium.wait_until_page_load_resources(expected_counter=10)
 
     def sleep_medium(self):
-        self.info('wait up to 2 sec')
+        self.base_selenium.LOGGER.debug('wait up to 2 sec')
         self.base_selenium.wait_until_page_load_resources(expected_counter=20)
 
     def sleep_large(self):
-        self.info('wait up to 4 sec')
+        self.base_selenium.LOGGER.debug('wait up to 4 sec')
         self.base_selenium.wait_until_page_load_resources(expected_counter=40)
 
     def save(self, sleep=True, save_btn='general:save', logger_msg='save the changes'):
@@ -87,9 +87,15 @@ class BasePages:
                                                             destination_element='general:filter')
         filter.click()
 
+    def close_filter_menu(self):
+        filter = self.base_selenium.find_element_in_element(source_element='general:menu_filter_view',
+                                                            destination_element='general:filter')
+        filter.click()
+
     def filter_by(self, filter_element, filter_text, field_type='drop_down'):
         if field_type == 'drop_down':
-            self.base_selenium.select_item_from_drop_down(element=filter_element, item_text=filter_text)
+            self.base_selenium.select_item_from_drop_down(element=filter_element,
+                                                          item_text=filter_text, avoid_duplicate=True)
         else:
             self.base_selenium.set_text(element=filter_element, value=filter_text)
 
@@ -118,7 +124,31 @@ class BasePages:
         self.info(' No. of selected rows {} '.format(no_of_rows))
         while count < no_of_rows:
             self.base_selenium.scroll()
-            row = rows[randint(0, len(rows) - 1)]
+            row = rows[randint(0, len(rows) - 2)]
+            row_text = row.text
+            if not row_text:
+                continue
+            if row_text in _selected_rows_text:
+                continue
+            count = count + 1
+            self.click_check_box(source=row)
+            _selected_rows_text.append(row_text)
+            selected_rows.append(row)
+            selected_rows_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=row))
+        return selected_rows_data, selected_rows
+
+    def select_random_ordered_multiple_table_rows(self, element='general:table'):
+        _selected_rows_text = []
+        selected_rows_data = []
+        selected_rows = []
+        rows = self.base_selenium.get_table_rows(element=element)
+        no_of_rows = randint(min(2, len(rows)-1), min(5, len(rows)-1))
+        count = 0
+        self.info(' No. of selected rows {} '.format(no_of_rows))
+        while count < no_of_rows:
+            self.base_selenium.scroll()
+            row = rows[count]
+
             row_text = row.text
             if not row_text:
                 continue
@@ -135,7 +165,7 @@ class BasePages:
         self.info("select random row")
         rows = self.base_selenium.get_table_rows(element=element)
         for _ in range(5):
-            row_index = randint(0, len(rows) - 1)
+            row_index = randint(0, len(rows) - 2)
             row = rows[row_index]
             row_text = row.text
             if not row_text:
@@ -164,7 +194,7 @@ class BasePages:
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:archived')
-        self.sleep_small()
+        self.sleep_tiny()
 
     def get_active_items(self):
         self.base_selenium.scroll()
@@ -177,6 +207,7 @@ class BasePages:
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:restore')
         self.confirm_popup()
+        self.sleep_tiny()
 
     def delete_selected_item(self, confirm_pop_up=True):
         self.base_selenium.scroll()
@@ -190,8 +221,10 @@ class BasePages:
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:archive')
         self.confirm_popup()
+        self.sleep_tiny()
 
     def download_xslx_sheet(self):
+        self.info("Download XSLX sheet")
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.sheet = self.base_selenium.download_excel_file(element='general:xslx')
@@ -224,7 +257,7 @@ class BasePages:
         return '{:02d}.{:02d}.{}'.format(randint(1, 30), randint(1, 12), 2019)
 
     def filter(self, field_name, element, filter_text, type):
-        self.base_selenium.LOGGER.info(' Filter by {} : {}'.format(field_name, filter_text))
+        self.info(' Filter by {} : {}'.format(field_name, filter_text))
         self.filter_by(filter_element=element, filter_text=filter_text, field_type=type)
         self.filter_apply()
 
@@ -270,11 +303,9 @@ class BasePages:
 
         return child_table_data
 
-    def info(self, message):
-        if message[0] != " ":
-            message = " {}".format(message)
-        message = message.lower()
-        self.base_selenium.LOGGER.info(message)
+    @property
+    def info(self):
+        return self.base_selenium.LOGGER.info
 
     def generate_random_email(self):
         name = str(uuid4()).replace("-", "")[:10]
@@ -526,6 +557,7 @@ class BasePages:
     def wait_until_page_is_loaded(self):
         self.base_selenium.LOGGER.info('wait until page is loaded')
         self.base_selenium.wait_until_element_is_not_displayed('general:loading')
+        self.sleep_tiny()
 
     def get_table_info_data(self):
         self.base_selenium.LOGGER.info('get table information')

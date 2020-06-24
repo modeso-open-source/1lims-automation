@@ -66,11 +66,9 @@ class Order(Orders):
         if remove_old:
            self.base_selenium.clear_items_in_drop_down(element='order:contact')
         if contact:
-           self.base_selenium.select_item_from_drop_down(
-            element='order:contact', item_text=contact)
+           self.base_selenium.select_item_from_drop_down(element='order:contact', item_text=contact)
         else:
-           self.base_selenium.select_item_from_drop_down(
-            element='order:contact', avoid_duplicate=True)
+           self.base_selenium.select_item_from_drop_down(element='order:contact', avoid_duplicate=True)
         return self.get_contact()
 
     def get_contact(self):
@@ -141,8 +139,54 @@ class Order(Orders):
             self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
 
         self.save(save_btn='order:save_btn')
-        self.base_selenium.LOGGER.info(' Order created with no : {} '.format(order_no))
-        return order_no
+        self.info(' Order created with no : {} '.format(order_no))
+
+    def create_multiple_contacts_new_order(self, contacts):
+        self.click_create_order_button()
+        self.sleep_small()
+        self.set_new_order()
+        self.sleep_tiny()
+        for contact in contacts:
+            self.set_contact(contact)
+            self.sleep_tiny()
+        self.set_material_type('Raw Material')
+        self.sleep_small()
+        self.set_article('')
+        self.sleep_small()
+        self.set_test_unit('')
+        self.sleep_small()
+
+    def get_department_suggestion_lists(self, open_suborder_table=False, contacts=[]):
+        """
+        :param open_suborder_table:
+
+        in create mode let open_suborder_table = false
+        in edit mode let open_suborder_table = True
+        :return: 2 lists , departments with contacts and departments only
+        """
+        if open_suborder_table:
+            suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[0]
+            suborder_row.click()
+        department = self.base_selenium.find_element(element='order:departments')
+        department.click()
+        suggested_department_list = self.base_selenium.get_drop_down_suggestion_list(
+            element='order:departments', item_text='', options_element='general:drop_down_div')[0].split('\n')
+        departments_only_list = self.base_selenium.get_drop_down_suggestion_list(
+            element='order:departments', item_text='')
+        contact_dict = {'contact': '', 'departments': []}
+        contact_dep_list = []
+        for item in suggested_department_list:
+            if item in contacts:
+                if suggested_department_list.index(item) != 0:
+                    contact_dep_list.append(contact_dict)
+                    contact_dict = {'contact': '', 'departments': []}
+                contact_dict['contact'] = item
+            else:
+                contact_dict['departments'].append(item)
+                if suggested_department_list.index(item) == len(suggested_department_list)-1:
+                    contact_dep_list.append(contact_dict)
+
+        return contact_dep_list, departments_only_list
 
     def create_existing_order(self, no='', material_type='', article='', contact='', test_units=[],
                               multiple_suborders=0):
@@ -583,6 +627,22 @@ class Order(Orders):
         suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
             row=suborder_row, table_element='order:suborder_table')
         return suborders_elements
+
+    def match_format_to_sheet_format(self, list_of_orders=[]):
+        formatted_orders_list = []
+        orders_list = []
+        for order in list_of_orders:
+            for key in order:
+                if key in ['', 'Options']:
+                    continue
+                if key in ['Contact Name', 'Test Plans', 'Departments', 'Test Units']:
+                    formatted_orders_list.append(order[key].replace(',\n', ' & ').replace("'", ""))
+                else:
+                    formatted_orders_list.append(order[key].replace("'", ""))
+            orders_list.append(formatted_orders_list)
+            formatted_orders_list = []
+
+        return orders_list
 
     def get_sub_order_data_first_row(self, index=0):
         suborders = self.base_selenium.get_table_rows(element='order:suborder_table')

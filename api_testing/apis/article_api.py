@@ -180,6 +180,21 @@ class ArticleAPI(ArticleAPIFactory):
         if api['status'] == 1:
             return api['article']['name']
 
+    def get_formatted_article_with_formatted_material_type(self, material_type):
+        articles, payload = self.get_all_articles(limit=500)
+        self.info("search for article with material type {}".format(material_type))
+        for article in articles['articles']:
+            if article['materialType'] == material_type['name']:
+                formatted_article = {'id': article['id'], 'name': article['name']}
+                return formatted_article
+
+        self.info("No article with requested material type, So create atricle")
+        api, payload = self.create_article(materialType=material_type['name'],
+                                           selectedMaterialType=[material_type],
+                                           materialTypeId=int(material_type['id']))
+        if api['status'] == 1:
+            return api['article']
+
     def get_random_article_articleID(self):
         selected_article = random.choice(self.get_all_articles(limit=30)[0]['articles'])
         return selected_article['name'], selected_article['id']
