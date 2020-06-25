@@ -176,7 +176,7 @@ class OrdersTestCases(BaseTest):
         I can restore any order successfully
         LIMS-4374
         """
-        re, payload = self.orders_api.create_new_order()
+        re, payload = self.orders_api.create_new_order(materialTypeId=1)
         self.orders_page.search(payload[0]['orderNo'])
         self.orders_page.select_all_records()
         self.orders_page.archive_selected_items()
@@ -446,6 +446,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Units'], data_after_duplicate_sub_order['Test Units'])
 
+
     def test012_update_suborder_materialtype(self):
         """
         New: Orders: Edit material type: Make sure that user able to change material type of the second suborder and related test plan &
@@ -482,40 +483,34 @@ class OrdersTestCases(BaseTest):
         self.assertNotEqual(article_before_update, article_after_update)
         self.assertNotEqual(testunit_before_update, testunit_after_update)
 
-    @parameterized.expand(['materialType', 'article', 'testPlans',
-                           'testUnit', 'lastModifiedUser', 'analysis'])
-    def test013_filter_by_any_fields(self, key):
+    @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
+    def test013_filter_by_date(self, key):
         """
-        New: Orders: Filter Approach: I can filter by any field in the table view
-        LIMS-3495
+         I can filter by testDate, shipmentDate, or createdAt fields
+         LIMS-3495
         """
-        self.info('select random order using api')
-        order, suborder = self.orders_api.get_order_with_testunit_testplans()
-        order_data = suborder[0]
+        orders, _ = self.orders_api.get_all_orders(limit=20)
+        order = random.choice(orders['orders'])
+        suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
+        date_list = suborder['orders'][0][key].split('T')[0].split('-')
+        date_list.reverse()
+        filter_value = "{}.{}.{}".format(date_list[0], date_list[1], date_list[2])
         filter_element = self.order_page.order_filters_element(key=key)
-        if key == 'testPlans':
-            filter_value = order_data[key][0]
-        elif key == 'testUnit':
-            filter_value = order_data[key][0]['testUnit']['name']
-        else:
-            filter_value = order_data[key]
-
-        self.info('filter by {} with value {}'.format(key, filter_value))
-
-        self.orders_page.apply_filter_scenario(
-            filter_element=filter_element['element'],
-            filter_text=filter_value,
-            field_type=filter_element['type'])
+        self.orders_page.filter_by_date(first_filter_element=filter_element['element'][0],
+                                        first_filter_text=filter_value,
+                                        second_filter_element=filter_element['element'][1],
+                                        second_filter_text=filter_value)
 
         suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
         for suborder in suborders:
-            if filter_value in suborder[filter_element['result_key']].split(",\n"):
+            if suborder[filter_element['result_key']] == filter_value:
                 filter_key_found = True
                 break
 
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
+
 
     def test014_filter_by_order_No(self):
         """
@@ -634,6 +629,7 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
+
     def test020_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
@@ -685,7 +681,7 @@ class OrdersTestCases(BaseTest):
         self.assertIn('has-error', test_unit_class_name)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test022_update_test_date(self, save):
+    def test02_update_test_date(self, save):
         """
         New: Orders: Test Date: I can update test date successfully with cancel/save buttons
         LIMS-4780
@@ -957,6 +953,7 @@ class OrdersTestCases(BaseTest):
         results = self.order_page.result_table(element='general:table_child')[0].text
         self.assertIn(suborders_data[0]['Analysis No.'].replace("'", ""), results.replace("'", ""))
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-187")
     @parameterized.expand(['testPlans', 'testUnit'])
     def test030_update_material_type(self, case):
         """
@@ -968,11 +965,14 @@ class OrdersTestCases(BaseTest):
         LIMS-4267 (order with test unit )
         """
         self.info('create new order')
-        response, order_payload = self.orders_api.create_new_order()
+        response, order_payload = self.orders_api.create_new_order(materialTypeId=2)
         self.assertEqual(response['status'], 1, order_payload)
         self.info('get random completed test plan with different material type')
-        test_plan, test_unit = self.test_plan_api.get_suborder_data_with_different_material_type(
-            order_payload[0]['materialType']['text'])
+        test_plan = \
+            self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',
+                                                                                      article='', articleNo='')[0]
+
+        test_unit = self.test_plan_api.get_testunits_in_testplan(test_plan['id'])[0]
         self.info('update material type of order from {} to {}'.format(
             order_payload[0]['materialType']['text'], test_plan['materialType']))
 
@@ -2248,3 +2248,5 @@ class OrdersTestCases(BaseTest):
                                   f"{str(fixed_sheet_row_data)} : {str(formatted_orders[index])}")
             for item in formatted_orders[index]:
                 self.assertIn(item, fixed_sheet_row_data)
+
+

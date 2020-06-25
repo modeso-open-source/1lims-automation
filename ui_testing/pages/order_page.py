@@ -130,6 +130,7 @@ class Order(Orders):
         self.sleep_small()
         order_no = self.get_no()
 
+
         for test_plan in test_plans:
             self.set_test_plan(test_plan=test_plan)
         for test_unit in test_units:
@@ -142,6 +143,7 @@ class Order(Orders):
 
         self.save(save_btn='order:save_btn')
         self.info(' Order created with no : {} '.format(order_no))
+        return order_no
 
     def create_multiple_contacts_new_order(self, contacts):
         self.click_create_order_button()
@@ -351,6 +353,7 @@ class Order(Orders):
         if article_name == 'all':
             self.set_article('')
         else:
+            self.sleep_tiny()
             self.set_article(article_name)
         self.sleep_tiny()
         self.info('Set test plan : {}'.format(test_plan))
