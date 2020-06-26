@@ -3,9 +3,6 @@ sudo: enabled
 dist: xenial
 group: edge
 
-python:
-  - "3.7"
-
 services:
   - docker
 
@@ -13,4 +10,4 @@ before_script:
   - docker build -t selenium:lims $TRAVIS_BUILD_DIR/ --no-cache
 
 script:
-  - docker run --shm-size=2g -v $TRAVIS_BUILD_DIR:/1lims-automation selenium:lims bash -c "./run.sh"
+  - docker run -t --shm-size=2g -v $TRAVIS_BUILD_DIR:/1lims-automation selenium:lims bash -c "./run.sh"
