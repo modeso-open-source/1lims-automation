@@ -13,7 +13,7 @@ before_script:
   - unzip chromedriver_linux64.zip -d ~/bin
   - chmod +x ~/bin/chromedriver
   - echo $(chromedriver -v)
-  - apt-get install -y xvfb xclip
+  - sudo apt-get install -y xvfb xclip
 
 install:
   - pip3 install -r $TRAVIS_BUILD_DIR/requirements.txt
