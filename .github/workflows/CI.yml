@@ -10,12 +10,14 @@ jobs:
     strategy:
       fail-fast: false
     matrix:
-      test_cases: [0, 1]
+      test_cases: ["0"]
 
     steps:
       - uses: actions/checkout@master
+
       - name: pull docker image
         run:  docker pull 0xislamtaha/seleniumchromenose:83
+
       - name: Execute test case
         run: docker container run -t --shm-size=2g -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=2 NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel  -m 'test[0-9]{3}' ui_testing/testcases/basic_tests/test03_testplans.py"
 
