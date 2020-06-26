@@ -6,26 +6,11 @@ group: edge
 python:
   - "3.7"
 
-addons:
-  chrome: stable
+services:
+  - docker
 
 before_script:
-  - CHROME_MAIN_VERSION=`google-chrome-stable --version | sed -E 's/(^Google Chrome |\.[0-9]+ )//g'`
-  - echo $(CHROME_MAIN_VERSION)
-  - google-chrome-stable --version
-  - which google-chrome-stable
-  - CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAIN_VERSION"`
-  - curl "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O
-  - sudo unzip chromedriver_linux64.zip -d /usr/bin
-  - sudo chmod +x /usr/bin/chromedriver
-  - chromedriver -v
-  - which google-chrome-stable
-  - sudo apt-get install -y xvfb xclip
-
-install:
-  - pip3 install -r $TRAVIS_BUILD_DIR/requirements.txt
+  - docker build -t selenium:lims $TRAVIS_BUILD_DIR/ --no-cache
 
 script:
-  - cd $TRAVIS_BUILD_DIR && export PYTHONPATH='./'
-  - export LOGURU_LEVEL='DEBUG'
-  - xvfb-run -a nosetests -vs --nologcapture --tc-file=config.ini --with-flaky --force-flaky --max-runs=3 --min-passes=1 -m 'test001' ui_testing/testcases/basic_tests/test06_orders.py:OrdersTestCases
+  - docker run --shm-size=2g -v $TRAVIS_BUILD_DIR:/1lims-automation selenium:lims bash -c "./run.sh"
