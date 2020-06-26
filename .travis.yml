@@ -6,6 +6,9 @@ group: edge
 python:
   - "3.7"
 
+addons:
+  chrome: stable
+
 before_script:
   - CHROME_MAIN_VERSION=`google-chrome-stable --version | sed -E 's/(^Google Chrome |\.[0-9]+ )//g'`
   - echo $(CHROME_MAIN_VERSION)
