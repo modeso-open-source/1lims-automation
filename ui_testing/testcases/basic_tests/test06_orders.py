@@ -17,6 +17,7 @@ from ui_testing.pages.contacts_page import Contacts
 from random import randint
 import random
 
+
 class OrdersTestCases(BaseTest):
     def setUp(self):
         super().setUp()
@@ -47,7 +48,7 @@ class OrdersTestCases(BaseTest):
         """
         orders, payload = self.orders_api.get_all_orders(limit=40)
         random_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(random_order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
         order_url = self.base_selenium.get_url()
@@ -85,7 +86,7 @@ class OrdersTestCases(BaseTest):
         """
         orders, payload = self.orders_api.get_all_orders(limit=20)
         random_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(random_order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
         order_url = self.base_selenium.get_url()
@@ -122,7 +123,7 @@ class OrdersTestCases(BaseTest):
         """
         orders, payload = self.orders_api.get_all_orders(limit=40)
         random_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(random_order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
         order_url = self.base_selenium.get_url()
@@ -156,7 +157,7 @@ class OrdersTestCases(BaseTest):
         """
         orders, payload = self.orders_api.get_all_orders(limit=20)
         order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(order['orderNo']))
         order_no = order['orderNo']
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
@@ -209,7 +210,7 @@ class OrdersTestCases(BaseTest):
         """
         orders, payload = self.orders_api.get_all_orders(limit=2, deleted=1)
         random_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(random_order['orderNo']))
         self.orders_page.get_archived_items()
         order_row = self.orders_page.search(random_order['orderNo'])[0]
@@ -240,7 +241,7 @@ class OrdersTestCases(BaseTest):
         """
         orders, payload = self.orders_api.get_all_orders(limit=5)
         random_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(random_order['orderNo']))
         rows = self.orders_page.search(random_order['orderNo'])[0]
 
@@ -341,7 +342,7 @@ class OrdersTestCases(BaseTest):
         self.info("get random order")
         orders, api = self.orders_api.get_all_orders(limit=50)
         order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(order['id'])
         suborder_data = self.order_page.create_new_suborder(material_type=test_plan['materialType'],
@@ -379,10 +380,10 @@ class OrdersTestCases(BaseTest):
         :return:
         """
         no_of_copies = randint(2, 5)
-        self.base_selenium.LOGGER.info('get last order row that you created')
+        self.info('get last order row that you created')
         orders, payload = self.orders_api.get_all_orders(limit=20)
         order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(order['orderNo']))
         order_no = order['orderNo']
         self.orders_page.sleep_small()
@@ -395,54 +396,54 @@ class OrdersTestCases(BaseTest):
                                                                 row=child_rows[0], table_element='general:table_child')
         self.orders_page.duplicate_sub_order_from_table_overview(number_of_copies=no_of_copies)
         table_rows = self.order_page.result_table(element='general:table_child')
-        self.base_selenium.LOGGER.info(
+        self.info(
             'Duplicate multiple {} times  '.format(no_of_copies))
 
-        self.base_selenium.LOGGER.info(
+        self.info(
             'Make sure that created orders has same data of the original order')
         for index in range(no_of_copies):
             data_after_duplicate_sub_order = self.base_selenium.get_row_cells_dict_related_to_header(
                 row=table_rows[index], table_element='general:table_child')
 
-            self.base_selenium.LOGGER.info(
+            self.info(
                 'Check if order created number:  {} with analysis  '.format(index + 1, ))
             self.assertTrue(data_after_duplicate_sub_order['Analysis No.'])
 
-            self.base_selenium.LOGGER.info(
+            self.info(
                 'Check if order created number:  {} has Material Type = {}   '.format(index + 1,
                                                                                       data_after_duplicate_sub_order[
                                                                                           'Material Type']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Material Type'], data_after_duplicate_sub_order['Material Type'])
-            self.base_selenium.LOGGER.info(
+            self.info(
                 'Check if order created number:  {} has Article Name = {}   '.format(index + 1,
                                                                                      data_after_duplicate_sub_order[
                                                                                          'Article Name']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Article Name'], data_after_duplicate_sub_order['Article Name'])
-            self.base_selenium.LOGGER.info(
+            self.info(
                 'Check if order created number:  {} has Article Number = {}   '.format(index + 1,
                                                                                        data_after_duplicate_sub_order[
                                                                                            'Article No.']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Article No.'], data_after_duplicate_sub_order['Article No.'])
-            self.base_selenium.LOGGER.info(
+            self.info(
                 'Check if order created number:  {} has Shipment Date = {}   '.format(index + 1,
                                                                                       data_after_duplicate_sub_order[
                                                                                           'Shipment Date']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Shipment Date'], data_after_duplicate_sub_order['Shipment Date'])
-            self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Date = {}   '.format(index + 1,
+            self.info('Check if order created number:  {} has Test Date = {}   '.format(index + 1,
                                                                       data_after_duplicate_sub_order['Test Date']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Date'], data_after_duplicate_sub_order['Test Date'])
 
-            self.base_selenium.LOGGER.info('Check if order created number:  {} has Test Plan = {}   '.format(index + 1,
+            self.info('Check if order created number:  {} has Test Plan = {}   '.format(index + 1,
                                                                       data_after_duplicate_sub_order['Test Plans']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Plans'], data_after_duplicate_sub_order['Test Plans'])
 
-            self.base_selenium.LOGGER.info('Check if order created number:  {} has Test unit = {}   '.format(index + 1,
+            self.info('Check if order created number:  {} has Test unit = {}   '.format(index + 1,
                                                                       data_after_duplicate_sub_order['Test Units']))
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Units'], data_after_duplicate_sub_order['Test Units'])
@@ -636,12 +637,12 @@ class OrdersTestCases(BaseTest):
         New: orders Test plan /test unit validation
         LIMS-4349
         """
-        self.base_selenium.LOGGER.info(
+        self.info(
             ' Running test case to make sure from the validation of the test plan & test unit ')
 
         self.order_page.create_new_order(material_type='r', article='', contact='a', test_plans=[],
                                          test_units=[], multiple_suborders=0)
-        self.base_selenium.LOGGER.info(
+        self.info(
             'waiting to validation message appear when I did not enter test plan & test unit')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
 
@@ -785,7 +786,7 @@ class OrdersTestCases(BaseTest):
         """
         orders, payload = self.orders_api.get_all_orders(limit=40)
         random_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(random_order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
 
@@ -812,7 +813,7 @@ class OrdersTestCases(BaseTest):
 
         self.order_page.get_orders_page()
         self.orders_page.navigate_to_analysis_active_table()
-        self.base_selenium.LOGGER.info(
+        self.info(
             'Assert There is an analysis for this new order.')
         orders_analyess = self.analyses_page.search(value=created_order_no)
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
@@ -825,7 +826,7 @@ class OrdersTestCases(BaseTest):
             row_with_headers = self.base_selenium.get_row_cells_dict_related_to_header(row=row,
                                                                                        table_element='general:table_child')
             testunit_name = row_with_headers['Test Unit']
-            self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
+            self.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, payload['name'])
 
     def test026_create_existing_order_with_test_units(self):
@@ -841,7 +842,7 @@ class OrdersTestCases(BaseTest):
                                                               test_units=[random_name['name']])
         self.order_page.get_orders_page()
         self.orders_page.navigate_to_analysis_active_table()
-        self.base_selenium.LOGGER.info(
+        self.info(
             'Assert There is an analysis for this new order.')
         orders_analyess = self.analyses_page.search(value=created_order)
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(
@@ -855,7 +856,7 @@ class OrdersTestCases(BaseTest):
             row_with_headers = self.base_selenium.get_row_cells_dict_related_to_header(row=row,
                                                                                        table_element='general:table_child')
             testunit_name = row_with_headers['Test Unit']
-            self.base_selenium.LOGGER.info(" + Test unit : {}".format(testunit_name))
+            self.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, random_name['name'])
 
     @skip("https://modeso.atlassian.net/browse/LIMSA-181")
@@ -1188,7 +1189,7 @@ class OrdersTestCases(BaseTest):
         testunit_record = random.choice(random_testunit['testUnits'])
         orders, payload = self.orders_api.get_all_orders(limit=20)
         order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(order['id'])
         self.info('getting analysis tab to check out the count of the analysis')
@@ -1243,7 +1244,7 @@ class OrdersTestCases(BaseTest):
 
         orders, payload = self.orders_api.get_all_orders(limit=20)
         order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(order['id'])
         order_data = self.order_page.get_suborder_data()
@@ -1481,7 +1482,7 @@ class OrdersTestCases(BaseTest):
         self.info("select random order to archive")
         orders, api = self.orders_api.get_all_orders(limit=20)
         order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(order['orderNo']))
         suborder_data, api = self.orders_api.get_suborder_by_order_id(order['id'])
         suborders = suborder_data['orders']
@@ -1542,7 +1543,7 @@ class OrdersTestCases(BaseTest):
         orders, payload = self.orders_api.get_all_orders(limit=50)
         self.assertEqual(orders['status'], 1)
         main_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
+        self.info(
             '{}'.format(main_order['orderNo']))
         self.info("duplicate order No {}".format(main_order['orderNo']))
         self.order_page.search(main_order['orderNo'])
