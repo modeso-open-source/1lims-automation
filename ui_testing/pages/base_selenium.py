@@ -66,8 +66,8 @@ class BaseSelenium:
         self.username = config['site']['username']
         self.password = config['site']['password']
         self.browser = config['browser']['browser'].lower()
-        self.headless_mode = config['browser']['headless_mode'].capitalize()
-        self.remote_webdriver = config['browser']['remote_driver'].capitalize()
+        self.headless = config['browser']['headless'].capitalize()
+        self.remote_webdriver = config['browser']['remote'].capitalize()
         self.elements = elements
 
     @contextmanager
@@ -86,7 +86,7 @@ class BaseSelenium:
                 desired_capabilities = DesiredCapabilities.FIREFOX
             self.driver = webdriver.Remote(command_executor=self.remote_webdriver + '/wd/hub',
                                            desired_capabilities=desired_capabilities)
-        elif self.headless_mode == 'True':
+        elif self.headless == 'True':
             options = Options()
             options.add_argument('--headless')
             options.add_argument('--no-sandbox')
