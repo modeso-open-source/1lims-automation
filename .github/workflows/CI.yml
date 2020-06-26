@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
-     matrix:
-            test_cases: [1, 2, 3, 4]
+    matrix:
+      test_cases: [1, 2, 3, 4]
 
     steps:
       - uses: actions/checkout@master
