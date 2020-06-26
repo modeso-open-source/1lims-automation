@@ -289,6 +289,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.duplicate_main_order_from_table_overview()
 
         # get the new order data
+        self.orders_page.sleep_small()
         after_duplicate_order = self.order_page.get_suborder_data()
         # make sure that its the duplication page
         self.assertTrue('duplicateMainOrder' in self.base_selenium.get_url())
