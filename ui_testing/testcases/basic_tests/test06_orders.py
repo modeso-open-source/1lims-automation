@@ -1332,9 +1332,9 @@ class OrdersTestCases(BaseTest):
                   format(payload[0]['orderNo'], duplicated_order_number))
         self.assertNotEqual(payload[0]['orderNo'], duplicated_order_number)
         self.info('get completed test plan with different material type')
-        selected_test_plan = \
-            self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',
+        selected_test_plan = self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',
                                                                                       article='', articleNo='')[0]
+        print(selected_test_plan)
         self.info('change material type of first suborder')
         self.order_page.set_material_type_of_first_suborder(material_type=selected_test_plan['materialType'])
         self.info('Make sure that article, test unit, and test plan are empty')
@@ -1344,8 +1344,8 @@ class OrdersTestCases(BaseTest):
         self.info('select random article, test unit and test plan')
         # we need to select random article because we can't update the article by ALL article in the order section
         selected_article = self.order_page.set_article(article='')
-        test_unit = self.order_page.set_test_unit()
         self.order_page.set_test_plan(test_plan=selected_test_plan['testPlanName'])
+        test_unit = self.order_page.set_test_unit()
         self.info('duplicated order material is {}, article {}, test_unit {} and test_plan {}'.
                   format(selected_test_plan['materialType'], selected_test_plan['article'][0],
                          test_unit, selected_test_plan['testPlanName']))
@@ -1367,7 +1367,8 @@ class OrdersTestCases(BaseTest):
 
     def test038_archived_test_unit_shoudnt_display_in_the_order_drop_down_list(self):
         """
-        Orders: Archived Test unit: Archive Approach: Archived test units shouldn't appear in orders in the drop down list
+        Orders: Archived Test unit: Archive Approach: Archived test units shouldn't appear in orders in the drop down
+        list
         LIMS-3710
         :return:
         """
@@ -1436,9 +1437,10 @@ class OrdersTestCases(BaseTest):
         self.info("duplicate the sub order of order {} from suborder's options".format(payload[0]['orderNo']))
         self.order_page.duplicate_sub_order_from_table_overview()
         self.info('get completed test plan with different material type')
-        selected_test_plan= \
-                self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',
-                                                                                          article='', articleNo='')[0]
+        selected_test_plan = self.test_plan_api.get_completed_testplans_with_material_and_same_article(
+                                                                                           material_type='Raw Material',
+                                                                                           article='',
+                                                                                           articleNo='')[0]
         self.order_page.set_material_type_of_first_suborder(material_type=selected_test_plan['materialType'])
         self.info('Make sure that article, test unit, and test plan are empty')
         self.assertEqual(self.base_selenium.get_value(element='order:article'), None)

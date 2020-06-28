@@ -83,6 +83,7 @@ class Order(Orders):
             self.base_selenium.select_item_from_drop_down(element='order:test_plan', item_text=test_plan)
         else:
             self.base_selenium.select_item_from_drop_down(element='order:test_plan')
+            self.sleep_small()
             return self.get_test_plan()
 
     def get_test_plan(self):
