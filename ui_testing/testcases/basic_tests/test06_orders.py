@@ -1334,7 +1334,7 @@ class OrdersTestCases(BaseTest):
         self.info('get completed test plan with different material type')
         selected_test_plan = self.test_plan_api.get_completed_testplans_with_material_and_same_article(material_type='Raw Material',
                                                                                       article='', articleNo='')[0]
-        print(selected_test_plan)
+
         self.info('change material type of first suborder')
         self.order_page.set_material_type_of_first_suborder(material_type=selected_test_plan['materialType'])
         self.info('Make sure that article, test unit, and test plan are empty')
