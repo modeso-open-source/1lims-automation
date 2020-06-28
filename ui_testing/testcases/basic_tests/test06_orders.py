@@ -202,6 +202,7 @@ class OrdersTestCases(BaseTest):
         results = self.order_page.result_table(element='general:table_child')[0].text
         self.assertIn(suborders_data[0]['Analysis No.'].replace("'", ""), results.replace("'", ""))
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test006_delete_main_order(self):
         """
         New: Order without/with article: Deleting of orders
@@ -274,6 +275,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(row_data[column].replace("'", '').split(',')[0],
                              search_data[column].replace("'", '').split(',')[0])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test008_duplicate_main_order(self):
         """
         New: Orders with test units: Duplicate an order with test unit 1 copy
@@ -282,6 +284,8 @@ class OrdersTestCases(BaseTest):
         """
         re, payload = self.orders_api.create_new_order()
         order_no = payload[0]['orderNo']
+        self.info(
+            '{}'.format(payload[0]['orderNo']))
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
                                               field_type='text')
 
@@ -330,6 +334,7 @@ class OrdersTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test010_user_can_add_suborder(self):
         """
         New: Orders: Table view: Suborder Approach: User can add suborder from the main order
@@ -485,34 +490,40 @@ class OrdersTestCases(BaseTest):
         self.assertNotEqual(article_before_update, article_after_update)
         self.assertNotEqual(testunit_before_update, testunit_after_update)
 
-    @parameterized.expand(['testDate', 'shipmentDate', 'createdAt'])
-    def test013_filter_by_date(self, key):
+    @parameterized.expand(['materialType', 'article', 'testPlans',
+                           'testUnit', 'lastModifiedUser', 'analysis'])
+    def test013_filter_by_any_fields(self, key):
         """
-         I can filter by testDate, shipmentDate, or createdAt fields
-         LIMS-3495
+        New: Orders: Filter Approach: I can filter by any field in the table view
+        LIMS-3495
         """
-        orders, _ = self.orders_api.get_all_orders(limit=20)
-        order = random.choice(orders['orders'])
-        suborder, _ = self.orders_api.get_suborder_by_order_id(id=order['id'])
-        date_list = suborder['orders'][0][key].split('T')[0].split('-')
-        date_list.reverse()
-        filter_value = "{}.{}.{}".format(date_list[0], date_list[1], date_list[2])
+        self.info('select random order using api')
+        order, suborder = self.orders_api.get_order_with_testunit_testplans()
+        order_data = suborder[0]
         filter_element = self.order_page.order_filters_element(key=key)
-        self.orders_page.filter_by_date(first_filter_element=filter_element['element'][0],
-                                        first_filter_text=filter_value,
-                                        second_filter_element=filter_element['element'][1],
-                                        second_filter_text=filter_value)
+        if key == 'testPlans':
+            filter_value = order_data[key][0]
+        elif key == 'testUnit':
+            filter_value = order_data[key][0]['testUnit']['name']
+        else:
+            filter_value = order_data[key]
+
+        self.info('filter by {} with value {}'.format(key, filter_value))
+
+        self.orders_page.apply_filter_scenario(
+            filter_element=filter_element['element'],
+            filter_text=filter_value,
+            field_type=filter_element['type'])
 
         suborders = self.orders_page.get_child_table_data()
         filter_key_found = False
         for suborder in suborders:
-            if suborder[filter_element['result_key']] == filter_value:
+            if filter_value in suborder[filter_element['result_key']].split(",\n"):
                 filter_key_found = True
                 break
 
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
-
 
     def test014_filter_by_order_No(self):
         """
@@ -631,7 +642,6 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
-
     def test020_validate_order_test_unit_test_plan(self):
         """
         New: orders Test plan /test unit validation
@@ -683,7 +693,7 @@ class OrdersTestCases(BaseTest):
         self.assertIn('has-error', test_unit_class_name)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    def test02_update_test_date(self, save):
+    def test022_update_test_date(self, save):
         """
         New: Orders: Test Date: I can update test date successfully with cancel/save buttons
         LIMS-4780
@@ -800,6 +810,7 @@ class OrdersTestCases(BaseTest):
                 validation_result))
         self.assertTrue(validation_result)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test025_create_new_order_with_test_units(self):
         """
         New: Orders: Create a new order with test units
@@ -829,6 +840,7 @@ class OrdersTestCases(BaseTest):
             self.info(" + Test unit : {}".format(testunit_name))
             self.assertIn(testunit_name, payload['name'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test026_create_existing_order_with_test_units(self):
         """
         New: Orders: Create an existing order with test units
@@ -955,8 +967,8 @@ class OrdersTestCases(BaseTest):
         results = self.order_page.result_table(element='general:table_child')[0].text
         self.assertIn(suborders_data[0]['Analysis No.'].replace("'", ""), results.replace("'", ""))
 
-    @skip("https://modeso.atlassian.net/browse/LIMSA-187")
     @parameterized.expand(['testPlans', 'testUnit'])
+    @skip("https://modeso.atlassian.net/browse/LIMSA-187")
     def test030_update_material_type(self, case):
         """
         -When user update the materiel type from table view once I delete it message will appear
@@ -1024,6 +1036,7 @@ class OrdersTestCases(BaseTest):
             child_table_data = self.analyses_page.get_child_table_data()[0]
             self.assertEqual(test_unit['name'], child_table_data['Test Unit'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test031_update_suborder_testunits(self):
         """
         -When I delete test unit to update it message will appear
@@ -1138,6 +1151,7 @@ class OrdersTestCases(BaseTest):
         for testunit in test_units:
             self.assertIn(testunit, result_test_units)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test033_update_order_article_cancel_approach(self):
         """
         New: Orders: Edit Approach: I can update the article successfully and press on ok button
@@ -1178,6 +1192,7 @@ class OrdersTestCases(BaseTest):
         for testunit in test_units:
             self.assertIn(testunit, result_test_units[0])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test034_create_new_suborder_with_testunit(self):
         """
         New: Orders: Create Approach: I can create suborder with test unit successfully,
@@ -1270,6 +1285,7 @@ class OrdersTestCases(BaseTest):
             suborder_data_after_cancel = self.order_page.get_suborder_data()
             self.assertEqual(suborder_data_after_cancel['suborders'][1], selected_suborder_data['suborders'][1])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test036_update_order_no_should_reflect_all_suborders_and_analysis(self):
         """
         In case I update the order number of record that has multiple suborders inside it
@@ -1366,6 +1382,7 @@ class OrdersTestCases(BaseTest):
         self.assertFalse(self.order_page.is_testunit_existing(
             test_unit=payload['name']))
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test039_duplicate_sub_order_table_with_add(self):
         """
         Orders: User can duplicate any suborder from the order form ( table with add )
@@ -1406,6 +1423,7 @@ class OrdersTestCases(BaseTest):
         analysis_result = self.order_page.result_table()[0].text
         self.assertIn(suborder_data['Analysis No.'].replace("'", ""), analysis_result.replace("'", ""))
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test040_Duplicate_sub_order_and_cahange_materiel_type(self):
         """
         duplicate sub-order of any order then change the materiel type
@@ -1446,6 +1464,7 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(duplicated_suborder_data['Test Units'], test_unit[0])
         self.assertEqual(duplicated_suborder_data['Test Plans'], selected_test_plan['testPlanName'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test041_delete_suborder(self):
         """
          Delete sub order Approach: In case I have main order with multiple sub orders,
@@ -1579,6 +1598,7 @@ class OrdersTestCases(BaseTest):
         duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
         self.assertCountEqual(duplicated_contacts, contacts)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test046_duplicate_sub_order_with_multiple_contacts(self):
         """
         Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
@@ -1630,6 +1650,7 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(confirm_edit)
         self.assertIn('You cannot do this action on more than one record', confirm_edit_message)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test048_update_sub_order_with_multiple_testplans_only_delete_approach(self):
         """
         Orders: Test plans: In case I have order record with multiple test plans and I updated them,
@@ -1672,6 +1693,7 @@ class OrdersTestCases(BaseTest):
                     self.info("assert that test unit related to deleted test plan removed from analysis")
                     self.assertEqual(test_unit, suborder_data['Test Unit'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test049_update_sub_order_with_multiple_testplans_only_add_approach(self):
         """
         Orders: Test plans: In case I have order record with multiple test plans and I updated them,
@@ -1736,6 +1758,7 @@ class OrdersTestCases(BaseTest):
         self.assertNotEqual(test_units, found_test_units)
 
     @parameterized.expand(['change', 'add'])
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test050_duplicate_main_order_with_testPlan_and_testUnit_edit_both(self, case):
         """
         Duplicate from the main order Approach: Duplicate then change the test units & test plans
@@ -1801,6 +1824,7 @@ class OrdersTestCases(BaseTest):
         test_units = [test_unit['Test Unit'] for test_unit in child_data]
         self.assertIn(new_test_unit, test_units)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test051_duplicate_sub_order_with_testPlan_and_testUnit_change_both(self):
         """
         Duplicate suborder Approach: Duplicate any sub order then change the units & test plans
@@ -1935,6 +1959,7 @@ class OrdersTestCases(BaseTest):
         test_date = "{}.{}.{}".format(result_test_date[0], result_test_date[1], result_test_date[2])
         self.assertEqual(first_test_date, test_date)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-191")
     def test054_duplicate_main_order_with_testPlans_and_testUnits(self):
         """
         Duplicate main order Approach: duplicate order with test plan & test units
