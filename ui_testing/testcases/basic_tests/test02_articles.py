@@ -823,3 +823,5 @@ class ArticlesTestCases(BaseTest):
         LIMS-6288
         """
         self.assertFalse(self.article_page.deselect_all_configurations())
+
+        
