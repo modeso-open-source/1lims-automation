@@ -1,0 +1,118 @@
+{
+   "fields":[
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":1,
+         "section":1,
+         "archivable":false,
+         "id":2,
+         "name":"number",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":2,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Article No.",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":2,
+         "section":1,
+         "archivable":false,
+         "id":3,
+         "name":"name",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":2,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Article Name",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":3,
+         "section":1,
+         "archivable":false,
+         "id":4,
+         "name":"materialType",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":2,
+         "class":"col-md-4",
+         "title":"Material Type",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      }
+   ],
+   "archivedFields":[
+      {
+         "options":[
+
+         ],
+         "isEditable":true,
+         "isDragable":true,
+         "order":2,
+         "htmlId":"#draggableTextField",
+         "id":559,
+         "idInFields":559,
+         "dynamicFieldId":53,
+         "section":2,
+         "name":"Text",
+         "type":1,
+         "typeNameStr":"Text",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":true,
+         "componentId":2,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-4",
+         "title":"Text",
+         "en":"Text",
+         "de":"Text",
+         "key":"Text"
+      }
+   ]
+}

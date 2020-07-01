@@ -353,7 +353,7 @@ class ContactsTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    def test_012_update_departments_should_reflect_orders(self):
+    def test012_update_departments_should_reflect_orders(self):
         """
         New: Contacts: Department Approach: Any edit in the department, will reflect in the table view of orders and analysis sections.
         Any edit in the department, will reflect in the table view of orders and analysis sections.

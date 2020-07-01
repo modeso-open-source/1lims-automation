@@ -1,0 +1,293 @@
+{
+   "fields":[
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":1,
+         "section":1,
+         "archivable":false,
+         "id":14,
+         "name":"number",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Contact No",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":2,
+         "section":1,
+         "archivable":false,
+         "id":15,
+         "name":"companyName",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Contact Name",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":3,
+         "section":1,
+         "archivable":true,
+         "id":17,
+         "name":"address",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-3",
+         "title":"Address",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":4,
+         "section":1,
+         "archivable":true,
+         "id":20,
+         "name":"location",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-3",
+         "title":"Location",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":1,
+         "section":2,
+         "archivable":true,
+         "id":19,
+         "name":"email",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-3",
+         "title":"Email",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":2,
+         "section":2,
+         "archivable":true,
+         "id":21,
+         "name":"phone",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-3",
+         "title":"Phone",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":3,
+         "section":2,
+         "archivable":true,
+         "id":24,
+         "name":"skype",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-3",
+         "title":"Skype",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":4,
+         "section":2,
+         "archivable":true,
+         "id":25,
+         "name":"website",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-3",
+         "title":"Website",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":1,
+         "section":3,
+         "archivable":true,
+         "id":16,
+         "name":"type",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-4",
+         "title":"Contact Type",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":2,
+         "section":3,
+         "archivable":true,
+         "id":29,
+         "name":"departments",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":3,
+         "class":"col-md-4",
+         "title":"Departments",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      }
+   ],
+   "archivedFields":[
+      {
+         "options":[
+
+         ],
+         "isEditable":true,
+         "isDragable":true,
+         "order":1,
+         "htmlId":"#draggableEmailField",
+         "id":560,
+         "idInFields":560,
+         "dynamicFieldId":54,
+         "section":4,
+         "name":"Num",
+         "type":4,
+         "typeNameStr":"Num",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":true,
+         "componentId":3,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-4",
+         "title":"Num",
+         "en":"Num",
+         "de":"Num",
+         "key":"Num"
+      }
+   ]
+}
