@@ -9,20 +9,17 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
+      matrix:
+        test_cases: [0, 1, 2, 3]
 
     steps:
       - uses: actions/checkout@master
-      - name: Install dependencies
-        run:  docker build -t selenium:lims ./ --no-cache
-      - name: Execute test case
-        run: docker run -t --shm-size=2g -v `pwd`:/1lims-automation selenium:lims bash -c "./run.sh"
 
-#      - name: Start SSH via Ngrok
-#        if: ${{ failure() }}
-#        run: curl -sL https://gist.githubusercontent.com/retyui/7115bb6acf151351a143ec8f96a7c561/raw/7099b9db76729dc5761da72aa8525f632d8875c9/debug-github-actions.sh | bash
-#        env:
-#         NGROK_TOKEN: 1TmHkDZqdgfk4nKtBfmZT8RcYAK_25q7iVJ4QsPazz1y5ftcz
-#         USER_PASS: 0xislamtaha
-#      - name: Don't kill instace
-#        if: ${{ failure() }}
-#        run: sleep 1h # Prevent to killing instance after failure
+      - name: pull docker image
+        run:  docker pull 0xislamtaha/seleniumchromenose:83
+
+      - name: Execute test case
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test03_testplans.py
+          TEST_REG: test[0-9]{3}
+        run: docker container run -t --shm-size=2g -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=4 NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel  -m '$TEST_REG' $TEST_FILE"
