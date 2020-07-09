@@ -53,6 +53,7 @@ class TestPlanAPIFactory(BaseAPI):
         :return:
         """
         api = '{}{}{}'.format(self.url, self.END_POINTS['test_plan_api']['form_data'], str(id))
+        print(api)
         return api, {}
 
     @api_factory('put')

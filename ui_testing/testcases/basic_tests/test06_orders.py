@@ -178,6 +178,8 @@ class OrdersTestCases(BaseTest):
         LIMS-4374
         """
         re, payload = self.orders_api.create_new_order(materialTypeId=1)
+        print(re)
+        print(payload)
         self.orders_page.search(payload[0]['orderNo'])
         self.orders_page.select_all_records()
         self.orders_page.archive_selected_items()
@@ -376,6 +378,7 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-193")
     def test011_duplicate_many_orders(self):
         """
         Make sure that the user can duplicate suborder with multiple copies ( record with test units )
@@ -409,6 +412,7 @@ class OrdersTestCases(BaseTest):
         for index in range(no_of_copies):
             data_after_duplicate_sub_order = self.base_selenium.get_row_cells_dict_related_to_header(
                 row=table_rows[index], table_element='general:table_child')
+            print(data_after_duplicate_sub_order)
 
             self.info(
                 'Check if order created number:  {} with analysis  '.format(index + 1, ))
@@ -453,7 +457,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Units'], data_after_duplicate_sub_order['Test Units'])
 
-
+    #@skip("https://modeso.atlassian.net/browse/LIMSA-192")
     def test012_update_suborder_materialtype(self):
         """
         New: Orders: Edit material type: Make sure that user able to change material type of the second suborder and related test plan &
@@ -492,6 +496,7 @@ class OrdersTestCases(BaseTest):
 
     @parameterized.expand(['materialType', 'article', 'testPlans',
                            'testUnit', 'lastModifiedUser', 'analysis'])
+    @skip("https://modeso.atlassian.net/browse/LIMSA-194")
     def test013_filter_by_any_fields(self, key):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
@@ -598,6 +603,8 @@ class OrdersTestCases(BaseTest):
         """
         self.info('get create order with department')
         api, payload = self.orders_api.create_order_with_department()
+        print(api)
+        print(payload)
         self.assertEqual(api['status'], 1)
         department = payload[0]['departments'][0]['text']
         self.info('filter by department value {}'.format(department))
