@@ -83,4 +83,9 @@ class Articles(BasePages):
             return False
         return True
 
+    def get_article_edit_page_by_id(self, id):
+        url_text = "{}sample/articles/" + str(id)
+        self.base_selenium.get(url=url_text.format(self.base_selenium.url))
+        self.wait_until_page_is_loaded()
+
 
