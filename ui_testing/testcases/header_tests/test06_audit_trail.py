@@ -11,8 +11,10 @@ class AuditTrailTestCases(BaseTest):
         self.audit_trail_page = AuditTrail()
         self.set_authorization(auth=BaseAPI().AUTHORIZATION_RESPONSE)
         self.audit_trail_page.get_audit_trails_page()
+        self.audit_trail_page.sleep_medium()
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-6399')
+    #@skip('https://modeso.atlassian.net/browse/LIMS-6399')
+    @skip('https://modeso.atlassian.net/browse/LIMSA-206')
     def test001_download_audit_trail_sheet(self):
         """
         Header: Audit trail: Make sure that you can export all the fields in the active table
@@ -34,7 +36,8 @@ class AuditTrailTestCases(BaseTest):
             for item in fixed_row_data:
                 self.assertIn(item, fixed_sheet_row_data)
 
-    @parameterized.expand(['action_date', 'changed_by', 'action', 'entity', 'entity_number'])
+    # @parameterized.expand(['action_date', 'changed_by', 'action', 'entity', 'entity_number'])
+    @parameterized.expand(['changed_by', 'action', 'entity', 'entity_number'])
     def test002_audit_trail_filter(self, filter):
         """
         Header: Audit trail Approach: Make sure that I can filter by all the following fields 
@@ -42,11 +45,10 @@ class AuditTrailTestCases(BaseTest):
 
         LIMS-6355
         """
-        # get random row data
+        self.info('get random row data')
         audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
-        # open filter menu
+        self.info('filter by {} {}'.format(filter, audit_trail[filter]))
         self.audit_trail_page.open_filter_menu()
-        # filter by Action Date
         if filter == 'action_date' or filter == 'entity_number':
             field_type = 'text'
         else:
@@ -64,8 +66,8 @@ class AuditTrailTestCases(BaseTest):
 
         LIMS-6356
         """
-        # get random row data
+        self.info('get random row data')
         audit_trail = self.audit_trail_page.get_random_mapped_audit_trail_data()
-        # search by changed by
+        self.info('search by {} {}'.format(search_feild, audit_trail[search_feild]))
         result = self.audit_trail_page.search(audit_trail[search_feild])[0].text
-        self.assertIn(audit_trail[search_feild], result)
+        self.assertIn(audit_trail[search_feild].replace("'", ""), result.replace("'", ""))
