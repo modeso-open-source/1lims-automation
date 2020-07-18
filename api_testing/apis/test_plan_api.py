@@ -4,7 +4,7 @@ from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from ui_testing.pages.testunit_page import TstUnit
-import random
+import random, json, os
 
 
 class TestPlanAPIFactory(BaseAPI):
@@ -127,13 +127,13 @@ class TestPlanAPIFactory(BaseAPI):
                 'id': -1,
                 'text': 'All'
             }],
-            'materialType': {
+            'materialType': [{
                 'id': 1,
                 'text': 'Raw Material'
-            },
+            }],
             'attachments': '[]',
             'selectedTestUnits': [],
-            'materialTypeId': 1,
+            'materialTypeId': [1],
             'dynamicFieldsValues': [],
             'testUnits': [],
             'testplan_name': []
@@ -143,6 +143,8 @@ class TestPlanAPIFactory(BaseAPI):
             payload['selectedTestPlan'] = [kwargs['testPlan']['text']]
         if 'materialType' in kwargs:
             payload['materialType'] = kwargs['materialType']
+            payload['materialTypeId'] = [kwargs['materialType'][0]['id']]
+
         api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['create_testplan'])
         return api, payload
 
@@ -299,8 +301,15 @@ class TestPlanAPI(TestPlanAPIFactory):
         formatted_article = ArticleAPI().get_formatted_article_with_formatted_material_type(formatted_material)
         testplan, payload = self.create_testplan(testUnits=[formated_testunit],
                                                  selectedArticles=[formatted_article],
-                                                 materialType=formatted_material)
+                                                 materialType=[formatted_material])
         if testplan['status'] == 1:
             return (self.get_testplan_form_data(id=testplan['testPlanDetails']['id']))
         else:
             self.info(testplan)
+
+    def set_configuration(self):
+        self.info('set test Plan configuration')
+        config_file = os.path.abspath('api_testing/config/test_plan.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_configuration(payload=payload)

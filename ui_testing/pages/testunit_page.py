@@ -532,7 +532,8 @@ class TstUnit(TstUnits):
         testunit_formated['iterations'] = testunit['iterations']
         testunit_formated['order'] = order
         testunit_formated['testunitVersion'] = testunit['version']
-
+        if "roundingOption" in testunit.keys():
+            testunit_formated['roundingOption'] = testunit['roundingOption']
         if testunit_formated['testUnitTypeId'] == 1:
             return self.map_qualtiative_testunit(testunit_formated=testunit_formated, testunit=testunit)
         elif testunit_formated['testUnitTypeId'] == 2:

@@ -53,7 +53,7 @@ class OrdersAPIFactory(BaseAPI):
         """
         order_no = self.get_auto_generated_order_no()[0]['id']
         testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=1000))
-        material_type = testplan['materialType']
+        material_type = testplan['materialTypes'][0]
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
         article = testplan_form_data['testPlan']['selectedArticles'][0]['name']

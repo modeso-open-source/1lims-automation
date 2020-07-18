@@ -338,7 +338,7 @@ elements = {
         'test_plan': {'method': 'id',
                       'value': 'testPlan'},
         'material_type': {'method': 'id',
-                          'value': 'materialTypefield'},
+                          'value': 'materialType'},
         'material_type_options': {'method': 'class_name',
                                   'value': 'ng-option'},
         'article': {'method': 'id',

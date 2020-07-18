@@ -260,7 +260,7 @@ class TstPlan(TestPlans):
         self.base_selenium.set_text('test_plan:testunit_quantification_upper_limit', str(new_upper))
         self.base_selenium.set_text('test_plan:testunit_quantification_lower_limit', str(new_lower))
         self.sleep_small()
-        self.save_and_confirm_popup()
+        self.save(save_btn='test_plan:save_btn')
         return new_lower, new_upper
 
     def get_testunit_quantification_limit(self, testunits, testunit_display_name):
