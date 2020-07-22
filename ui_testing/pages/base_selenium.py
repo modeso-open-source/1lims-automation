@@ -725,9 +725,10 @@ class BaseSelenium:
         self.click(element=element)
         time.sleep(sleep)
         sheets = []
-        for file_name in os.listdir(os.path.expanduser("~/Downloads")):
+        downloaded_file_path = "~/Downloads" if os.path.isdir("~/Downloads") else "./"
+        for file_name in os.listdir(os.path.expanduser(downloaded_file_path)):
             if '.xlsx' in file_name:
-                sheets.append(os.path.expanduser("~/Downloads/") + file_name)
+                sheets.append(os.path.expanduser(downloaded_file_path) + file_name)
         downloaded_file_name = max(sheets, key=os.path.getctime)
         data = pd.read_excel(downloaded_file_name)
         # row = data.iloc[1]

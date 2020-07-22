@@ -63,10 +63,15 @@ class BaseTest(TestCase):
                     tmp.append(datetime.datetime.strptime(item, '%d.%m.%Y'))
                 elif str(item) in ["-", "nan", "N/A"]:
                     continue
+                elif ',' in str(item) and '&' in str(item):
+                    item = str(item).replace('&', ',')
+                    tmp.extend(str(item).split(','))
+                elif ',' in str(item):
+                    tmp.extend(str(item).split(','))
+                elif ', ' in str(item):
+                    tmp.extend(str(item).split(', '))
                 elif '&' in str(item):
                     tmp.extend(str(item).split('&'))
-                elif ',' in str(item):
-                    tmp.extend(str(item).split(', '))
                 elif ' ' == str(item)[-1]:
                     tmp.append(item[:-1])
                 elif 'all' == str(item)[-1]:

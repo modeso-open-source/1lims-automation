@@ -90,7 +90,6 @@ class TestPlanAPIFactory(BaseAPI):
         """
         NOTE: calling this api without adding testunits, will create an in progress testplan, to create a complete testplan
         you will need to pass parameter testunits[testunit_object], and this object is can be formated by the following steps,
-
         testunit = self.test_unit_api.get_testunit_form_data(id=#testunit_id)
         formated_testunit = self.test_unit_page.map_testunit_to_testplan_format(testunit=testunit)
         self.test_plan_api.create_testplan(testunits=[formated_testunit])
@@ -269,7 +268,7 @@ class TestPlanAPI(TestPlanAPIFactory):
             api, payload = TestUnitAPI().create_quantitative_testunit()
             if api['status'] == 1:
                 new_test_unit = payload['name']
-        
+
         return new_test_plan, new_test_unit
 
     def get_testunits_in_testplan_by_No(self, no):

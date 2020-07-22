@@ -1,7 +1,7 @@
 from api_testing.apis.base_api import BaseAPI
 from api_testing.apis.base_api import api_factory
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
-import random
+import random, json, os
 
 
 class TestUnitAPIFactory(BaseAPI):
@@ -11,8 +11,8 @@ class TestUnitAPIFactory(BaseAPI):
         _payload = {"sort_value": "number",
                     "limit": 1000,
                     "start": 0,
-                "sort_order": "DESC",
-                "filter": "{}",
+                    "sort_order": "DESC",
+                    "filter": "{}",
                     "deleted": "0"
                     }
         #for key in kwargs:
@@ -39,6 +39,11 @@ class TestUnitAPIFactory(BaseAPI):
         :return:
         """
         api = '{}{}{}'.format(self.url, self.END_POINTS['test_unit_api']['form_data'], str(id))
+        return api, {}
+
+    @api_factory('get')
+    def get_auto_generated_testunit_no(self):
+        api = '{}{}'.format(self.url, self.END_POINTS['test_unit_api']['get_auto_generated_number'])
         return api, {}
 
     @api_factory('put')
@@ -182,7 +187,14 @@ class TestUnitAPIFactory(BaseAPI):
 
     @api_factory('post')
     def create_quantitative_testunit(self, **kwargs):
-        random_category =self.generate_random_string()
+        """
+        if you want to create  quantitative test unit with Quantification limits you should call
+        create_quantitative_testunit(useSpec=False, useQuantification=True,
+                                     quantificationUpperLimit=upperLimit,
+                                     quantificationLowerLimit=lowerLimit)
+
+        """
+        random_category = self.generate_random_string()
         _payload = {
             'name': self.generate_random_string(),
             'number': self.generate_random_number(),
@@ -270,6 +282,14 @@ class TestUnitAPI(TestUnitAPIFactory):
         testunits = response['testUnits']
         return testunits
 
+    def get_testunit_with_quicksearch(self, quickSearchText, **kwargs):
+        filter_text = '{"quickSearch":"' + quickSearchText + '","columns":["number","name"]}'
+        response, _ = self.get_all_test_units(filter=filter_text, **kwargs)
+        if response['count'] >= 1:
+            return response['testUnits']
+        else:
+            return None
+
     def get_test_unit_with_spec_or_quan_only(self, spec_or_quan):
         response, _ = self.get_all_test_units(filter='{"typeName":2}')
         testunits = response['testUnits']
@@ -296,6 +316,15 @@ class TestUnitAPI(TestUnitAPIFactory):
             if testunit['specifications'] == '':
                 testunits_name.append(testunit['name'])
         return testunits_name
+
+    def get_testunit_with_quntification_limits_and_empty_specification(self):
+        testunits_request, _ = self.get_all_test_units(filter='{"typeName":2}')
+        testunits = testunits_request['testUnits']
+        testunits_list = []
+        for testunit in testunits:
+            if testunit['specifications'] == '' and testunit['quantification'] not in ['', '-*-', '-']:
+                testunits_list.append(testunit)
+        return testunits_list
 
     def delete_active_testunit(self, id=1):
         if self.archive_testunits(ids=[str(id)])[0]['message'] == 'delete_success':
@@ -351,3 +380,34 @@ class TestUnitAPI(TestUnitAPIFactory):
                 testunits_with_values.append(testunit)
 
         return testunits_with_values
+
+    def get_unit_format(self, test_unit_no):
+        test_unit = self.get_testunit_with_quicksearch(test_unit_no.replace("'", ""))
+        if test_unit:
+            return test_unit[0]['unit']
+
+    def create_test_unit_with_multiple_material_types(self, type='Qualitative'):
+        response, _ = GeneralUtilitiesAPI().list_all_material_types()
+        material_type = random.choices(response['materialTypes'], k=4)
+        if type == 'Quantitative MiBi':
+            api, payload = self.create_mibi_testunit(selectedMaterialTypes=material_type)
+        elif type == 'Quantitative':
+            api, payload = self.create_quantitative_testunit(selectedMaterialTypes=material_type)
+        elif type == 'Qualitative':
+            api, payload = self.create_qualitative_testunit(selectedMaterialTypes=material_type)
+
+        test_unit_dict = {'id': api['testUnit']['testUnitId']}
+        test_unit_dict.update(payload)
+        if api['status'] == 1:
+            return test_unit_dict
+        else:
+            return None
+
+    def set_configuration(self):
+        self.info('set test unit configuration')
+        config_file = os.path.abspath('api_testing/config/testUnit.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_configuration(payload=payload)
+
+

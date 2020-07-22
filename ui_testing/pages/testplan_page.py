@@ -49,11 +49,10 @@ class TstPlan(TestPlans):
         self.info('navigate to testplan second step')
         self.base_selenium.click('test_plan:next')
         self.sleep_tiny()
-        self.base_selenium.click('test_plan:add_test_units')
-        self.sleep_tiny()
-        is_option_exist = self.base_selenium.select_item_from_drop_down(element='test_plan:test_units',
+        self.base_selenium.click('test_plan:add_new_item')
+        self.sleep_small()
+        is_option_exist = self.base_selenium.select_item_from_drop_down(element='test_plan:test_unit',
                                                                         item_text=test_unit)
-        self.sleep_tiny()
         self.base_selenium.click(element='test_plan:cancel_add_testunit')
         self.base_selenium.click(element='test_plan:back_button')
         return is_option_exist
@@ -109,8 +108,8 @@ class TstPlan(TestPlans):
     def get_test_unit_category(self):
         self.base_selenium.click('test_plan:next')
         self.sleep_small()
-        category_label_test_unit = self.base_selenium.find_element('test_plan:category-label')
-        return category_label_test_unit.get_attribute('textContent')
+        return self.base_selenium.get_text(element='test_plan:test_unit_category')
+
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', save=True, **kwargs):
         self.info(' Create new test plan')
@@ -140,7 +139,8 @@ class TstPlan(TestPlans):
             self.sleep_tiny()
             if save:
                 self.save(save_btn='test_plan:save_and_complete')
-        else:
+
+        if save:
             self.save(save_btn='test_plan:save_btn')
             self.wait_until_page_is_loaded()
 
@@ -154,6 +154,7 @@ class TstPlan(TestPlans):
     def navigate_to_testunits_selection_page(self):
         self.info('Navigating to testplan create/update step 2')
         self.sleep_tiny()
+        self.base_selenium.scroll()
         self.base_selenium.click(element='test_plan:testunits_selection')
         self.sleep_tiny()
 

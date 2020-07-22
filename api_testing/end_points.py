@@ -23,7 +23,8 @@ end_points = {
         'list_testunit_types': '/api/testUnits/list/types',
         'list_testunit_concentrations': '/api/testUnits/list/concentrations',
         'list_testunit_categories': '/api/testUnits/list/categories',
-        'list_testunit_by_name_and_materialtype': '/api/testUnits/get/names/'
+        'list_testunit_by_name_and_materialtype': '/api/testUnits/get/names/',
+        'get_auto_generated_number': '/api/testUnits/auto/generatedId'
     },
     'test_plan_api': {
         'list_all_test_plans': '/api/testPlans',
