@@ -2059,6 +2059,8 @@ class OrdersTestCases(BaseTest):
         :return:
         """
         order, payload = self.orders_api.create_new_order()
+        print(order)
+        print(payload)
         self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
         self.base_selenium.click(element='order:attachment_btn')
         file_name = 'logo.png'

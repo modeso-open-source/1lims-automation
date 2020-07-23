@@ -51,16 +51,11 @@ class OrdersAPIFactory(BaseAPI):
         :param kwargs:
         :return: response, payload
         """
-        # until the order number bug is fixed
-        #order_no = self.get_auto_generated_order_no()[0]['id']
+        # until the order number bug solved
+        # order_no = self.get_auto_generated_order_no()[0]['id']
         order_no = self.generate_random_number()
-        print(order_no)
-        testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=10))
+        testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=20))
         material_type = testplan['materialTypes']
-
-        order_no = self.get_auto_generated_order_no()[0]['id']
-        testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=1000))
-        material_type = testplan['materialTypes'][0]
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
         article = testplan_form_data['testPlan']['selectedArticles'][0]['name']
