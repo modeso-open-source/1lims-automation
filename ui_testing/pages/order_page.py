@@ -14,6 +14,7 @@ class Order(Orders):
     def set_order_number(self, no):
         self.base_selenium.set_text(element="order:order_number", value=no)
 
+
     def set_new_order(self):
         self.base_selenium.LOGGER.info('Set new order.')
         self.base_selenium.select_item_from_drop_down(

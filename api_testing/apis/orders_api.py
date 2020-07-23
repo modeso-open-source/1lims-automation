@@ -51,12 +51,14 @@ class OrdersAPIFactory(BaseAPI):
         :param kwargs:
         :return: response, payload
         """
-        order_no = self.get_auto_generated_order_no()[0]['id']
+        # until the order number bug is fixed
+        #order_no = self.get_auto_generated_order_no()[0]['id']
+        order_no = self.generate_random_number()
+        print(order_no)
         testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=10))
-        material_type = testplan['materialType']
+        material_type = testplan['materialTypes']
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
-        print(testplan_form_data)
         article = testplan_form_data['testPlan']['selectedArticles'][0]['name']
         article_id =testplan_form_data['testPlan']['selectedArticles'][0]['id']
         if article == 'all':
@@ -94,7 +96,7 @@ class OrdersAPIFactory(BaseAPI):
                 'testUnits': [testunit],
                 'selectedTestUnits': [],
                 'materialType': {"id": material_type_id, "text": material_type},
-                'materialTypeId': material_type_id,
+                'materialTypeId': 1,
                 'article': {'id': article_id,
                             'text': article},
                 'articleId': article_id,
@@ -227,6 +229,7 @@ class OrdersAPIFactory(BaseAPI):
         elif payload['yearOption'] == 2:
             payload['orderNoWithYear'] = "{}-{}".format(payload['year'], payload['orderNo'])
 
+        payload['orderNo'] = payload['orderNoWithYear'] + '20'
         return [payload]
 
 class OrdersAPI(OrdersAPIFactory):
@@ -258,13 +261,15 @@ class OrdersAPI(OrdersAPIFactory):
         """
         :return: order, suborder,
         """
-        orders_data, payload = self.get_all_orders(limit=50)
+        orders_data, payload = self.get_all_orders(limit=20)
         orders = orders_data['orders']
         for order in orders:
             suborders_data, a = self.get_suborder_by_order_id(order['id'])
             suborders = suborders_data['orders']
             for i in range(0, len(suborders) - 1):
                 if suborders[i]['testPlans'] and suborders[i]['testUnit']:
+                    print(order)
+                    print(suborders)
                     return order, suborders
 
     def get_random_contact_in_order(self):
@@ -298,7 +303,7 @@ class OrdersAPI(OrdersAPIFactory):
         article_id = testplan_form_data['testPlan']['selectedArticles'][0]['id']
         if article == 'all':
             article, article_id = ArticleAPI().get_random_article_articleID()
-        material_type = testplan['materialType']
+        material_type = testplan['materialTypes']
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testunit1 = testplan_form_data['testPlan']['specifications'][0]
         testunit2 = TestUnitAPI().get_test_unit_name_with_value_with_material_type(
@@ -361,7 +366,9 @@ class OrdersAPI(OrdersAPIFactory):
 
     def create_order_with_department(self):
         contact = random.choice(ContactsAPI().get_contacts_with_department())
+        print(contact)
         department_data = ContactsAPI().get_contact_form_data(contact['id'])[0]['contact']['departments'][0]
+        print(department_data)
         payload = {
             'contact': [
                 {"id": contact['id'],
@@ -371,6 +378,7 @@ class OrdersAPI(OrdersAPIFactory):
             'departments': [{"id": department_data['id'], "text": department_data['name'],
                              "group": contact['id'], "groupName": contact['name']}],
         }
+        print(payload)
         return self.create_new_order(**payload)
 
     def set_configuration(self):

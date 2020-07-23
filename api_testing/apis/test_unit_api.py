@@ -306,7 +306,7 @@ class TestUnitAPI(TestUnitAPIFactory):
         else:
             return False
 
-    def get_testunits_with_material_type(self, material_types='Wasser'):
+    def get_testunits_with_material_type(self, material_types='Raw Material'):
         all_test_units, _ = self.get_all_test_units()
         test_units = all_test_units['testUnits']
         selected_test_units = [test_unit for test_unit in test_units if test_unit['materialTypes'] == [material_types]]

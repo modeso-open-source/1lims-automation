@@ -60,8 +60,7 @@ class ContactsAPIFactory(BaseAPI):
         minimum require parameters:
             Param: companyNo: denoted company no
             Param: name: denotes contact name
-
-        Param: departments: array denotes the contact's departments and each element consist of 
+        Param: departments: array denotes the contact's departments and each element consist of
         {
             "display": department displayed name,
             "value": department saved value,
@@ -71,7 +70,7 @@ class ContactsAPIFactory(BaseAPI):
         Param: address: denotes contact address
         Param: postalCode: denotes contact postal code
         Param: location: denotes contact location
-        Param: selectedCountry: denotes contact selected country and it is object 
+        Param: selectedCountry: denotes contact selected country and it is object
         {
             "id": country id,
             "text": country displayed text,
@@ -85,14 +84,14 @@ class ContactsAPIFactory(BaseAPI):
         Param: isSupplier: True/False
         Param: isClient: True/False
         Param: country: text of the selected country
-        
+
         contact persons parameters
         Param: persons: array and each element consist of the following
             Param: "name": contact person name
-            Param: "position": contact person position 
-            Param: "email": contact person email 
-            Param: "phone": contact person phone 
-            Param: "skype": contact person skype 
+            Param: "position": contact person position
+            Param: "email": contact person email
+            Param: "phone": contact person phone
+            Param: "skype": contact person skype
             Param: "moreInfo": contact person information field
         """
         random_contact_departments = self.generate_random_string()
@@ -107,15 +106,16 @@ class ContactsAPIFactory(BaseAPI):
             ],
             "departmentArray": [],
             "persons": [],
+            "email": {"text": "", "recipient": 0},
             "companyNo": self.generate_random_number(),
             "name": self.generate_random_string(),
             "isSupplier": "true",
             "country": "",
             "dynamicFieldsValues": []
-            }
-
+        }
+        payload = self.update_payload(_payload, **kwargs)
         api = '{}{}'.format(self.url, self.END_POINTS['contacts_api']['create_contact'])
-        return api, _payload
+        return api, payload
 
 
 class ContactsAPI(ContactsAPIFactory):

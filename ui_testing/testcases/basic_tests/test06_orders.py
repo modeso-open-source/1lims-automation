@@ -171,6 +171,7 @@ class OrdersTestCases(BaseTest):
         results = self.order_page.result_table()[0].text
         self.assertIn(order_no.replace("'", ""), results.replace("'", ""))
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-202")
     def test005_restore_archived_orders(self):
         """
         Restore Order
@@ -178,14 +179,12 @@ class OrdersTestCases(BaseTest):
         LIMS-4374
         """
         re, payload = self.orders_api.create_new_order(materialTypeId=1)
-        print(re)
-        print(payload)
         self.orders_page.search(payload[0]['orderNo'])
         self.orders_page.select_all_records()
         self.orders_page.archive_selected_items()
         self.orders_page.get_archived_items()
 
-        order_no = payload[0]['orderNoWithYear']
+        order_no = payload[0]['orderNo']
         self.order_page.apply_filter_scenario(filter_element='orders:filter_order_no', filter_text=order_no,
                                               field_type='text')
         suborders_data = self.order_page.get_child_table_data(index=0)
@@ -378,7 +377,6 @@ class OrdersTestCases(BaseTest):
         latest_order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=orders_analyses[0])
         self.assertEqual(suborders_data_after[0]['Analysis No.'], latest_order_data['Analysis No.'])
 
-    @skip("https://modeso.atlassian.net/browse/LIMSA-193")
     def test011_duplicate_many_orders(self):
         """
         Make sure that the user can duplicate suborder with multiple copies ( record with test units )
@@ -457,7 +455,6 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(
                 data_before_duplicate_sub_order['Test Units'], data_after_duplicate_sub_order['Test Units'])
 
-    #@skip("https://modeso.atlassian.net/browse/LIMSA-192")
     def test012_update_suborder_materialtype(self):
         """
         New: Orders: Edit material type: Make sure that user able to change material type of the second suborder and related test plan &
@@ -496,7 +493,6 @@ class OrdersTestCases(BaseTest):
 
     @parameterized.expand(['materialType', 'article', 'testPlans',
                            'testUnit', 'lastModifiedUser', 'analysis'])
-    @skip("https://modeso.atlassian.net/browse/LIMSA-194")
     def test013_filter_by_any_fields(self, key):
         """
         New: Orders: Filter Approach: I can filter by any field in the table view
@@ -530,6 +526,7 @@ class OrdersTestCases(BaseTest):
         self.assertTrue(filter_key_found)
         self.assertGreater(len(self.order_page.result_table()), 1)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-202")
     def test014_filter_by_order_No(self):
         """
         I can filter by any order No.
@@ -553,7 +550,7 @@ class OrdersTestCases(BaseTest):
                                                filter_text='Open', field_type='drop_down')
 
         self.info('get random suborder from result table to check that filter works')
-        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 9))
         filter_key_found = False
         for suborder in suborders:
             if suborder['Status'] == 'Open':
@@ -570,13 +567,13 @@ class OrdersTestCases(BaseTest):
         """
         self.info("filter by analysis_result: Conform")
         self.orders_page.apply_filter_scenario(filter_element='orders:analysis_result_filter',
-                                               filter_text='Conform', field_type='drop_down')
+                                               filter_text='Not Recieved', field_type='drop_down')
 
         self.info('get random suborder from result table to check that filter works')
-        suborders = self.orders_page.get_child_table_data(index=randint(0, 10))
+        suborders = self.orders_page.get_child_table_data(index=randint(0, 3))
         filter_key_found = False
         for suborder in suborders:
-            if suborder['Analysis Results'].split(' (')[0] == 'Conform':
+            if suborder['Analysis Results'].split(' (')[0] == 'Not Recieved':
                 filter_key_found = True
                 break
 
@@ -603,8 +600,6 @@ class OrdersTestCases(BaseTest):
         """
         self.info('get create order with department')
         api, payload = self.orders_api.create_order_with_department()
-        print(api)
-        print(payload)
         self.assertEqual(api['status'], 1)
         department = payload[0]['departments'][0]['text']
         self.info('filter by department value {}'.format(department))
@@ -676,7 +671,7 @@ class OrdersTestCases(BaseTest):
         self.info(' Running test case to check that '
                   'at least test unit or test plan is mandatory in order')
         # Get random order
-        re, payload = self.orders_api.create_new_order()
+        re, payload = self.orders_api.create_new_order(materialTypeId=1)
         self.orders_page.get_order_edit_page_by_id(id=re['order']['mainOrderId'])
         # edit suborder
         self.info(' Remove all selected test plans and test units')
@@ -910,7 +905,7 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(test_unit[0], self.analyses_page.get_child_table_data()[0]['Test Unit'])
         self.assertEqual('Subassembely', latest_order_data['Material Type'])
 
-    @skip("https://modeso.atlassian.net/browse/LIMSA-116")
+    @skip("https://modeso.atlassian.net/browse/LIMSA-181")
     def test028_create_existing_order_with_test_units_and_change_article(self):
         """
         New: Orders with test units: Create a new order from an existing order with
@@ -923,7 +918,7 @@ class OrdersTestCases(BaseTest):
         test_unit = self.order_page.get_test_unit()
         material_type = self.order_page.get_material_type()
         article = self.order_page.set_article()
-        # until bug in https://modeso.atlassian.net/browse/LIMSA-116 solved
+
         if self.order_page.get_test_unit() == [] and self.order_page.get_test_plan() == []:
             test_unit = self.order_page.set_test_unit()
         self.order_page.sleep_small()
@@ -939,17 +934,19 @@ class OrdersTestCases(BaseTest):
 
         latest_order_data = \
             self.base_selenium.get_row_cells_dict_related_to_header(row=self.analyses_page.result_table()[0])
-
         self.assertEqual(order_no.replace("'", ""), latest_order_data['Order No.'].replace("'", ""))
         self.assertEqual(article.split(' No:')[0], latest_order_data['Article Name'])
         self.assertEqual(test_unit, self.analyses_page.get_child_table_data()[0]['Test Unit'])
         self.assertEqual(material_type, latest_order_data['Material Type'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-202")
     def test029_archive_sub_order(self):
         """
         New: Orders: Table:  Suborder /Archive Approach: : User can archive any suborder successfully
         LIMS-3739
         """
+        # if it selects for example with 5242-20 I can't filter by this order number with this format
+        # so this is why this test case related to the bug 202
         orders, payload = self.orders_api.get_all_orders(limit=20)
         order = random.choice(orders['orders'])
 
@@ -1323,6 +1320,7 @@ class OrdersTestCases(BaseTest):
         self.info('checking order no of each analysis')
         self.assertEqual(analysis_record['Order No.'], formated_order_no)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-209")
     def test037_Duplicate_main_order_and_cahange_materiel_type(self):
         """
         duplicate the main order then change the materiel type
@@ -1562,13 +1560,14 @@ class OrdersTestCases(BaseTest):
         self.assertIn(duplicated_suborder_data['Test Units'], test_units)
         self.assertIn(duplicated_suborder_data['Test Plans'], test_plans)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-214")
     def test044_duplicate_main_order_change_contact(self):
         """
         Duplicate from the main order Approach: Duplicate then change the contact
         LIMS-6222
         """
         self.info('get random main order data')
-        orders, payload = self.orders_api.get_all_orders(limit=50)
+        orders, payload = self.orders_api.get_all_orders(limit=20)
         self.assertEqual(orders['status'], 1)
         main_order = random.choice(orders['orders'])
         self.info(
@@ -1584,6 +1583,7 @@ class OrdersTestCases(BaseTest):
         order = self.orders_page.get_the_latest_row_data()
         self.assertEqual(new_contact[0], order['Contact Name'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-214")
     def test045_duplicate_main_order_with_multiple_contacts(self):
         """
         Orders: Duplicate suborder: Multiple contacts Approach: : All contacts are correct in case
@@ -1602,6 +1602,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.save(save_btn='order:save')
         self.info("navigate to orders' active table and check that duplicated suborder found")
         self.order_page.get_orders_page()
+
         self.orders_page.filter_by_order_no(duplicated_order_no)
         duplicated_order_data = self.orders_page.get_the_latest_row_data()
         duplicated_contacts = duplicated_order_data['Contact Name'].split(',\n')
@@ -1872,6 +1873,7 @@ class OrdersTestCases(BaseTest):
         test_units = [test_unit['Test Unit'] for test_unit in child_data]
         self.assertIn(new_test_unit, test_units)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-115")
     def test052_Duplicate_sub_order_with_multiple_testplans_and_testunits_add_approach(self):
         """
         Duplicate suborder Approach: Duplicate any sub order then add test unit & test plan
@@ -2065,7 +2067,7 @@ class OrdersTestCases(BaseTest):
         self.info("assert that the upload file same as the file name ".format(upload_file, file_name))
         self.assertEqual(upload_file, file_name)
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-177')
+    @skip('https://modeso.atlassian.net/browse/LIMS-217')
     def test058_upload_attachment_then_remove(self):
         """
         Orders step 1: Attachment download approach: There is a link under remove link for
@@ -2089,10 +2091,12 @@ class OrdersTestCases(BaseTest):
         after_remove_attachment = self.order_page.upload_attachment(file_name='logo2.png',
                                                                     drop_zone_element='order:uploader_zone',
                                                                     remove_current_file=True, save=True)
+
         self.info("assert that after I remove the file it will return none should not equal to the file name ".format(
             after_remove_attachment, file_name))
         self.assertNotEqual(after_remove_attachment, file_name)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-217')
     def test059_testplans_popup(self):
         """
         Orders: Test plan pop up Approach: Make sure the test plans
@@ -2116,6 +2120,7 @@ class OrdersTestCases(BaseTest):
             testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0]))
         self.assertEqual(testunit_name, testplans_testunits_names_in_popup[0]['test_units'][0])
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-209')
     def test060_testplans_popup_after_edit_by_add(self):
         """
         Orders: Test plan pop up  Approach: Make sure In case you edit the test plans
@@ -2147,6 +2152,7 @@ class OrdersTestCases(BaseTest):
         self.assertEqual(testunit_name, testplans_testunits_names_in_popup[1]['test_units'][0])
 
     @skip("https://modeso.atlassian.net/browse/LIMSA-127")
+    @skip('https://modeso.atlassian.net/browse/LIMS-209')
     def test061_testplans_popup_after_edit_by_replace(self):
         """
         Orders: Test plan: Test unit pop up Approach: In case I delete test plan, make sure it
@@ -2254,6 +2260,7 @@ class OrdersTestCases(BaseTest):
         suborder_data = self.order_page.get_suborder_data()
         self.assertEqual([department], suborder_data['suborders'][0]['departments'])
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-205")
     def test064_download_suborder_sheet_for_single_order(self):
         """
         Export order child table

@@ -490,7 +490,7 @@ class BasePages:
                 element='general:file_upload_success_flag')
             if is_the_file_exist:
                 self.base_selenium.click('general:remove_file')
-                self.save()
+                self.base_selenium.click('general:close_uploader_popup')
             else:
                 self.base_selenium.LOGGER.info(" there is no current file")
 

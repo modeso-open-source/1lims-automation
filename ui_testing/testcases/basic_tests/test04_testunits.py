@@ -1655,5 +1655,3 @@ class TestUnitsTestCases(BaseTest):
             row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=record)
             testunit_material_types = row_data['Material Type'].split(', ')[0]
             self.assertEqual(testunit_material_types.replace("'",""), str(data_to_filter_with[0]))
-
-        

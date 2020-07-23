@@ -219,7 +219,7 @@ class TestPlanAPI(TestPlanAPIFactory):
 
     def get_completed_testplans_with_material_and_same_article(self, material_type, article, articleNo):
         all_test_plans = self.get_completed_testplans(limit=1000)
-        completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['materialType'] == material_type]
+        completed_test_plans = [test_plan for test_plan in all_test_plans if test_plan['materialTypes'] == material_type]
         test_plan_same_article = []
         for testplan in completed_test_plans:
             if testplan['article'][0] in [article, 'all'] and testplan['articleNo'][0] in [articleNo, 'all']:
