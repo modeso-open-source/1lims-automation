@@ -1,0 +1,132 @@
+{
+   "fields":[
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":1,
+         "section":1,
+         "archivable":false,
+         "id":69,
+         "name":"number",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":5,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Test Plan No.",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":2,
+         "section":1,
+         "archivable":false,
+         "id":70,
+         "name":"name",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":5,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Test Plan Name",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":3,
+         "section":1,
+         "archivable":false,
+         "id":71,
+         "name":"materialType",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":5,
+         "class":"col-md-6",
+         "title":"Material Type",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":4,
+         "section":1,
+         "archivable":false,
+         "id":72,
+         "name":"articleName",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":5,
+         "class":"col-md-6 show",
+         "title":"Article Name",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":1,
+         "section":2,
+         "archivable":true,
+         "id":79,
+         "name":"attachment",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":5,
+         "class":"col-md-12",
+         "title":"Attachments",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      }
+   ],
+   "archivedFields":[
+
+   ]
+}

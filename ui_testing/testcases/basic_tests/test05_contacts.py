@@ -30,6 +30,7 @@ class ContactsTestCases(BaseTest):
         self.base_page = BasePages()
 
         self.set_authorization(auth=self.contacts_api.AUTHORIZATION_RESPONSE)
+        self.contacts_api.set_configuration()
         self.contact_page.get_contacts_page()
         table_fields = self.contacts_api.get_table_fields(component_id=3)[0]['fields']
 

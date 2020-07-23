@@ -22,6 +22,7 @@ class TestPlansTestCases(BaseTest):
         self.test_plan_api = TestPlanAPI()
         self.article_api = ArticleAPI()
         self.test_plan.get_test_plans_page()
+        self.test_plan_api.set_configuration()
 
     def test001_test_plan_delete_testunit(self):
         """
@@ -62,9 +63,9 @@ class TestPlansTestCases(BaseTest):
                   format(testplan['testPlanName'], testplan['version']))
         self.test_plan.get_test_plan_edit_page_by_id(testplan['id'])
         self.info('Going to step 2 to add test unit to this test plan')
-        self.info("select test unit of same material type of test plan and has values to complete test plan")
-        test_unit = TestUnitAPI().get_test_unit_name_with_value_with_material_type(
-            material_type=testplan['materialType'])
+        self.info("createt test unit of  material type  = All  to complete test plan")
+        response, test_unit = TestUnitAPI().create_qualitative_testunit()
+        self.assertEqual(response['status'], 1, 'can not create test unit')
         self.test_plan.sleep_tiny()
         self.test_plan.set_test_unit(test_unit=test_unit['name'])
         if status == 'InProgress':
@@ -255,7 +256,7 @@ class TestPlansTestCases(BaseTest):
             duplicated_test_units.append(testunit['Test Unit Name'])
 
         self.info('Asserting that the data is duplicated correctly')
-        self.assertEqual(testPlan['materialType'], duplicated_testplan_data['Material Type'])
+        self.assertEqual(testPlan['materialTypes'][0], duplicated_testplan_data['Material Type'])
         self.assertEqual(testPlan['article'][0], duplicated_testplan_data['Article Name'])
         self.assertEqual(testPlan['articleNo'][0], duplicated_testplan_data['Article No.'])
         for testunit in testunits:
@@ -289,17 +290,20 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(completed_testplan['version'] + 1, int(inprogress_testplan_version))
         self.assertEqual(testplan_row_data_status, 'In Progress')
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-200")
     @parameterized.expand(['same', 'All'])
     def test011_create_testplans_same_name_article_materialtype(self, same):
         """
-        LIMS-3499
         Testing the creation of two testplans with the same name, material type
         and article, this shouldn't happen
 
-        LIMS-3500
+        LIMS-3499
+
         New: Test plan: Creation Approach: I can't create two test plans
         with the same name & same materiel type & one with any article
         and the other one all
+
+        LIMS-3500
         """
         self.info(" get random test plan with article != 'all")
         testplans = self.test_plan_api.get_all_test_plans_json()
@@ -315,13 +319,14 @@ class TestPlansTestCases(BaseTest):
             article_no = 'All'
 
         self.test_plan.create_new_test_plan(name=first_testplan['testPlanName'],
-                                            material_type=first_testplan['materialType'],
+                                            material_type=first_testplan['materialTypes'][0],
                                             article=article_no)
         self.info('Waiting for the error message')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
         self.info('Assert the error message')
         self.assertTrue(validation_result)
 
+    @skip("https://modeso.atlassian.net/browse/LIMSA-200")
     def test012_create_testplans_same_name_different_materialtype(self):
         """
         Testing the creation of two testplans with the same name, but different material type
@@ -337,12 +342,12 @@ class TestPlansTestCases(BaseTest):
         first_testplan = random.choice(testplans_list)
         self.info("selected random test plan ID : {}".format(first_testplan['id']))
         for testplan in testplans:
-            if testplan['materialType'] != first_testplan['materialType']:
+            if testplan['materialTypes'][0] != first_testplan['materialTypes'][0]:
                 second_testplan_data = testplan
                 break
         self.info('Create another testplan with the same name, but with different material type and article name')
         second_testplan_name = self.test_plan.create_new_test_plan(name=first_testplan['testPlanName'],
-                                                                   material_type=second_testplan_data['materialType'])
+                                                                   material_type=second_testplan_data['materialTypes'][0])
         self.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
             second_testplan_name, self.test_plan.article, self.test_plan.material_type))
 
@@ -384,11 +389,11 @@ class TestPlansTestCases(BaseTest):
         self.info("archived test plan data {}".format(archived_test_plan))
         self.info("create a new order with material type and article of archived testplan")
         if archived_test_plan['article'] != ['all']:
-            self.order_page.create_new_order(material_type=archived_test_plan['materialType'],
+            self.order_page.create_new_order(material_type=archived_test_plan['materialTypes'][0],
                                              article=archived_test_plan['article'][0],
                                              test_plans=[archived_test_plan['testPlanName']])
         else:
-            self.order_page.create_new_order(material_type=archived_test_plan['materialType'],
+            self.order_page.create_new_order(material_type=archived_test_plan['materialTypes'][0],
                                              test_plans=[archived_test_plan['testPlanName']])
 
         order_data = self.order_page.get_suborder_data()
@@ -442,7 +447,7 @@ class TestPlansTestCases(BaseTest):
             'Testplan Name', 'test_plans:testplan_name_filter', random_testplan['testPlanName'], 'drop_down')
 
         for tp_text in testplans_found_text:
-            self.assertIn(str(random_testplan['testPlanName']), tp_text)
+            self.assertIn(str(random_testplan['testPlanName']), tp_text.replace("'", ""))
 
     @parameterized.expand(['Completed', 'In Progress'])
     def test018_filter_by_testplan_status(self, status):
@@ -471,11 +476,13 @@ class TestPlansTestCases(BaseTest):
         self.info('Calling the users api to create a new user with username')
         response, payload = UsersAPI().create_new_user()
         self.assertEqual(response['status'], 1, payload)
+        self.test_plan.sleep_tiny()
         self.login_page.logout()
+        self.test_plan.sleep_tiny()
         self.login_page.login(username=payload['username'], password=payload['password'])
         self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.test_plan.get_test_plans_page()
-
+        self.test_plan.sleep_tiny()
         testplan_name = self.test_plan.create_new_test_plan()
 
         self.info('New testplan is created successfully with name: {}'.format(testplan_name))
@@ -497,10 +504,10 @@ class TestPlansTestCases(BaseTest):
         random_testplan = random.choice(self.test_plan_api.get_all_test_plans_json())
         testplans_found_text = self.test_plan.filter_by_element_and_get_text(
             'Material Type', 'test_plans:testplan_material_type_filter',
-            random_testplan['materialType'], 'drop_down')
+            random_testplan['materialTypes'][0], 'drop_down')
 
         for tp_text in testplans_found_text:
-            self.assertIn(str(random_testplan['materialType']), tp_text)
+            self.assertIn(str(random_testplan['materialTypes'][0]), tp_text)
 
     def test021_filter_by_testplan_article(self):
         """
@@ -587,13 +594,6 @@ class TestPlansTestCases(BaseTest):
         testplan = random.choice(self.test_plan_api.get_all_test_plans_json())
         search_results = self.test_plan.search(testplan['testPlanName'])
         self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
-        for search_result in search_results:
-            search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
-            if search_data['Test Plan Name'] == testplan['testPlanName']:
-                break
-        else:
-            self.assertTrue(False, " * There is no search results for it, Report a bug.")
-        self.assertEqual(testplan['testPlanName'], search_data['Test Plan Name'])
         # Navigate to articles page
         self.info('navigate to articles page')
         Articles().get_articles_page()
@@ -696,6 +696,7 @@ class TestPlansTestCases(BaseTest):
             test_plan['testPlanEntity']['name'])
         self.info('Asserting the limits of quantification viewed correctly')
         self.assertIn(testunit_display_old_quantification_limit, testplan_childtable_data[0].values())
+
 
         new_quantification_lower_limit, new_quantification_upper_limit = \
             self.test_plan.update_upper_lower_limits_of_testunit(test_plan['id'])

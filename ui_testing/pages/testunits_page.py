@@ -24,6 +24,7 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:archive')
         self.confirm_popup()
+        self.sleep_small()
     
     def get_versions_table(self):
         self.base_selenium.scroll()
@@ -36,7 +37,8 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:testunit_menu')
         self.sleep_small()
         self.base_selenium.click(element='test_units:versions')
-        self.sleep_medium()
+        self.base_selenium.wait_until_page_url_has(text='versions')
+        self.wait_until_page_is_loaded()
 
     def get_archived_test_units(self):
         self.base_selenium.scroll()
@@ -50,7 +52,6 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:configurations')
         self.sleep_small()
-
 
     def is_test_unit_in_table(self, value):
         """
@@ -73,6 +74,7 @@ class TstUnits(BasePages):
         self.base_selenium.click(element='test_units:right_menu')
         self.base_selenium.click(element='test_units:restore')
         self.confirm_popup()
+        self.sleep_small()
 
     def get_active_test_units(self):
         self.base_selenium.scroll()
@@ -98,10 +100,12 @@ class TstUnits(BasePages):
 
     def open_testunit_name_configurations_options(self):
         self.info('open testunits name configurations options')
+        self.base_selenium.scroll()
+        self.sleep_tiny()
         self.base_selenium.click(element='configurations_page:display_options_menu')
         self.sleep_tiny()
         self.base_selenium.click(element='configurations_page:field_options')
-        self.sleep_small()
+        self.sleep_tiny()
 
     def clear_all_selected_view_and_search_options(self):
         self.info('clear selected view and search options of testunits name')
@@ -109,7 +113,7 @@ class TstUnits(BasePages):
         self.sleep_tiny()
 
     def check_all_options_of_search_view_menu(self):
-        items = ['name','method', 'type', 'number']
+        items = ['Name', 'Method', 'Type', 'No']
         all_options_exist = True
         for item in items:
             self.clear_all_selected_view_and_search_options()
@@ -188,4 +192,51 @@ class TstUnits(BasePages):
     def get_last_test_unit_row(self):
         rows = self.result_table()
         return rows[0]
+
+    def filter_and_get_result(self, element='test_units:testunit_number_filter', text=''):
+        self.apply_filter_scenario(filter_element=element,
+                                   filter_text=text, field_type='text')
+        testunit_records = self.result_table()
+        if not testunit_records:
+            self.info("Test unit is not in active table")
+
+        return self.base_selenium.get_row_cells_dict_related_to_header(row=testunit_records[0])
+
+    def filter_by_user_get_result(self, text=''):
+        self.apply_filter_scenario(filter_element='test_units:filter_changed_by',
+                                   filter_text=text)
+        return self.get_the_latest_row_data()
+
+    def filter_and_get_latest_row_data(self, text=''):
+        self.apply_filter_scenario(filter_element='test_units:testunit_number_filter',
+                                   filter_text=text, field_type='text')
+        return self.get_the_latest_row_data()
+
+    def filter_and_get_edit_page(self, test_unit_number):
+        self.apply_filter_scenario(filter_element='test_units:testunit_number_filter',
+                                   filter_text=test_unit_number, field_type='text')
+        row = self.result_table()[0]
+        self.open_edit_page_by_css_selector(row)
+        self.wait_until_page_is_loaded()
+
+    def filter_and_get_version(self, test_unit_number):
+        self.apply_filter_scenario(filter_element='test_units:testunit_number_filter',
+                                   filter_text=test_unit_number, field_type='text')
+        self.sleep_small()
+        test_unit_data = self.get_the_latest_row_data()
+        row = self.base_selenium.get_table_rows(element='general:table')[0]
+        self.click_check_box(row)
+        self.sleep_tiny()
+        self.info('Open Versions for the selected test unit')
+        self.get_versions_of_selected_test_units()
+        version_data = []
+        rows = self.result_table()
+        for item in rows:
+            item_data = self.base_selenium.get_row_cells_dict_related_to_header(item)
+            if item_data:
+                version_data.append(item_data)
+        return test_unit_data, version_data
+
+
+
 

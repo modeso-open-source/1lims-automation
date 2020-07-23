@@ -138,7 +138,7 @@ class Article(Articles):
         self.sleep_small()
         self.base_selenium.click(element=element1)
         if element2:
-            self.base_selenium.click(element=element2)
+           self.base_selenium.click(element=element2)
         self.base_selenium.click(element='article:default_filter_save')
         self.sleep_small()
         self.open_filter_menu()

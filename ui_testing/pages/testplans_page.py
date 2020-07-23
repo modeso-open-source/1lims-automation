@@ -15,6 +15,7 @@ class TestPlans(BasePages):
         url_text = "{}testPlans/edit/" + str(id)
         self.base_selenium.get(url=url_text.format(self.base_selenium.url))
         self.wait_until_page_is_loaded()
+        self.sleep_small()
 
     def get_random_test_plans(self):
         row = self.get_random_table_row('test_plans:test_plans_table')
@@ -35,7 +36,6 @@ class TestPlans(BasePages):
         self.info('Search by testplan name {}'.format(test_plan_name))
         self.search(value=test_plan_name)
         new_testplan_testunits=self.get_child_table_data(index=0)
-
         testplan_testunits = []
         for testunit in new_testplan_testunits:
             testplan_testunits.append(testunit['Test Unit Name'])
@@ -65,9 +65,10 @@ class TestPlans(BasePages):
         self.filter_by(filter_element='test_plans:testplan_number_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
 
-    def get_the_latest_row_data(self):
-        latest_testplan_row = (self.result_table()[0])
-        return self.base_selenium.get_row_cells_dict_related_to_header(latest_testplan_row)
+    def get_the_latest_row_data(self, element='general:table'):
+        latest_testplan_row = (self.result_table(element)[0])
+        return self.base_selenium.get_row_cells_dict_related_to_header(row=latest_testplan_row,
+                                                                       table_element=element)
 
     def filter_multiple_rows_by_testplans_numbers(self, testplans_numbers, check=0):
         """

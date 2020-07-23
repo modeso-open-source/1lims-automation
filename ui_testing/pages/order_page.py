@@ -515,7 +515,6 @@ class Order(Orders):
             self.info(' Set departments : {}'.format(departments))
             self.set_departments(departments=departments)
             self.sleep_small()
-
     def update_material_type_suborder(self, row, material_type):
         self.base_selenium.LOGGER.info(' Set material type : {}'.format(material_type))
         self.base_selenium.update_item_value(item=row['materialType'],
@@ -679,3 +678,16 @@ class Order(Orders):
             test_plan, test_units = element.text.split('\n')[0], element.text.split('\n')[1:]
             results.append({'test_plan': test_plan, 'test_units': test_units})
         return results
+
+    def create_new_order_get_test_unit_suggetion_list(self, material_type, test_unit_name):
+        self.info(' Create new order.')
+        self.click_create_order_button()
+        self.set_new_order()
+        self.set_contact(contact='')
+        self.sleep_small()
+        self.set_material_type(material_type=material_type)
+        self.sleep_small()
+        self.set_article(article='')
+        self.sleep_small()
+        self.info('get test unit suggestion list')
+        test_units = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',item_text=test_unit_name)

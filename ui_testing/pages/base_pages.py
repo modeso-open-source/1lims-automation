@@ -105,6 +105,7 @@ class BasePages:
 
     def apply_filter_scenario(self, filter_element, filter_text, field_type='drop_down'):
         self.open_filter_menu()
+        self.sleep_tiny()
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
@@ -132,6 +133,7 @@ class BasePages:
                 continue
             count = count + 1
             self.click_check_box(source=row)
+            self.sleep_tiny()
             _selected_rows_text.append(row_text)
             selected_rows.append(row)
             selected_rows_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=row))
@@ -316,6 +318,12 @@ class BasePages:
     def generate_random_website(self):
         return "www." + str(uuid4()).replace("-", "")[:10] + "." + str(uuid4()).replace("-", "")[:3]
 
+    def generate_random_string(self):
+        return str(uuid4()).replace("-", "")[:10]
+
+    def generate_random_number(self, lower=1, upper=100000):
+        return randint(lower, upper)
+
     def open_configuration(self):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:configurations')
@@ -399,15 +407,14 @@ class BasePages:
 
     def deselect_all_configurations(self):
         self.open_configure_table()
-        active_columns = self.base_selenium.find_elements_in_element(source_element='general:configure_table_items',
-                                                                     destination_element='general:li')
+        active_columns = self.base_selenium.find_elements_in_element(
+            source_element='general:configure_table_items', destination_element='general:li')
         for column in active_columns:
             if column.text:
                 self.change_column_view(column=column, value=False)
 
         archived_coloums = self.base_selenium.find_elements_in_element(
-            source_element='general:configure_table_archive_items',
-            destination_element='general:li')
+            source_element='general:configure_table_archive_items', destination_element='general:li')
         for column in archived_coloums:
             if column.text:
                 self.change_column_view(column=column, value=False)
@@ -416,6 +423,7 @@ class BasePages:
 
     def click_overview(self):
         # click on Overview, this will display an alert to the user
+        self.base_selenium.scroll()
         self.base_selenium.LOGGER.info('click on Overview')
         self.base_selenium.click_by_script(element='general:overview')
         self.sleep_tiny()
@@ -472,13 +480,13 @@ class BasePages:
         else:
             return True
 
-    def upload_file(self, file_name, drop_zone_element, remove_current_file=False):
+    def upload_file(self, file_name, drop_zone_element, remove_current_file=False, save=True):
         """
         Upload single file to a page that only have 1 drop zone
-        
-        
+
+
         :param file_name: name of the file to be uploaded
-        :param drop_zone_element: the dropZone element 
+        :param drop_zone_element: the dropZone element
         :return:
         """
         self.base_selenium.LOGGER.info(" uploading file")
@@ -486,11 +494,13 @@ class BasePages:
         # remove the current file and save
         if remove_current_file:
             self.base_selenium.LOGGER.info(" remove current file")
-            is_the_file_exist = self.base_selenium.check_element_is_exist(
-                element='general:file_upload_success_flag')
+            is_the_file_exist = self.base_selenium.check_element_is_exist(element='general:file_upload_success_flag')
             if is_the_file_exist:
+                self.sleep_tiny()
                 self.base_selenium.click('general:remove_file')
                 self.base_selenium.click('general:close_uploader_popup')
+                if save:
+                    self.save()
             else:
                 self.base_selenium.LOGGER.info(" there is no current file")
 
@@ -521,18 +531,13 @@ class BasePages:
 
         # the input tag will be appended to the HTML by dropZone after the click
         # find the <input type="file"> tag
-        file_field = self.base_selenium.find_element(
-            element='general:file_input_field')
+        file_field = self.base_selenium.find_element(element='general:file_input_field')
 
         # send the path of the file to the input tag
         file_field.send_keys(file_path)
-
         self.base_selenium.LOGGER.info("Uploading {}".format(file_name))
-
         # wait until the file uploads
-        self.base_selenium.wait_until_element_located(
-            element='general:file_upload_success_flag')
-
+        self.base_selenium.wait_until_element_located(element='general:file_upload_success_flag')
         self.base_selenium.LOGGER.info(
             "{} file is uploaded successfully".format(file_name))
 
