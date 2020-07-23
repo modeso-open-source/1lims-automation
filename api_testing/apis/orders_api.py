@@ -51,18 +51,16 @@ class OrdersAPIFactory(BaseAPI):
         :param kwargs:
         :return: response, payload
         """
-<<<<<<< HEAD
         # until the order number bug is fixed
         #order_no = self.get_auto_generated_order_no()[0]['id']
         order_no = self.generate_random_number()
         print(order_no)
         testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=10))
         material_type = testplan['materialTypes']
-=======
+
         order_no = self.get_auto_generated_order_no()[0]['id']
         testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=1000))
         material_type = testplan['materialTypes'][0]
->>>>>>> af2d04ecc1b415127d7bbb1619a804f7ed5e7e75
         material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
         testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
         article = testplan_form_data['testPlan']['selectedArticles'][0]['name']
@@ -373,9 +371,7 @@ class OrdersAPI(OrdersAPIFactory):
 
     def create_order_with_department(self):
         contact = random.choice(ContactsAPI().get_contacts_with_department())
-        print(contact)
         department_data = ContactsAPI().get_contact_form_data(contact['id'])[0]['contact']['departments'][0]
-        print(department_data)
         payload = {
             'contact': [
                 {"id": contact['id'],
@@ -385,7 +381,6 @@ class OrdersAPI(OrdersAPIFactory):
             'departments': [{"id": department_data['id'], "text": department_data['name'],
                              "group": contact['id'], "groupName": contact['name']}],
         }
-        print(payload)
         return self.create_new_order(**payload)
 
     def set_configuration(self):
