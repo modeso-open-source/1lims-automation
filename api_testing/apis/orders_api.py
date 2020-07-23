@@ -51,7 +51,7 @@ class OrdersAPIFactory(BaseAPI):
         :param kwargs:
         :return: response, payload
         """
-        # until the order number bug solved
+        
         # order_no = self.get_auto_generated_order_no()[0]['id']
         order_no = self.generate_random_number()
         testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=20))
