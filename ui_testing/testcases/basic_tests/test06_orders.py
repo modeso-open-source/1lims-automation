@@ -171,13 +171,15 @@ class OrdersTestCases(BaseTest):
         results = self.order_page.result_table()[0].text
         self.assertIn(order_no.replace("'", ""), results.replace("'", ""))
 
-    @skip("https://modeso.atlassian.net/browse/LIMSA-202")
+    #@skip("https://modeso.atlassian.net/browse/LIMSA-202")
     def test005_restore_archived_orders(self):
         """
         Restore Order
         I can restore any order successfully
         LIMS-4374
         """
+        import ipdb;
+        ipdb.set_trace()
         re, payload = self.orders_api.create_new_order(materialTypeId=1)
         self.orders_page.search(payload[0]['orderNo'])
         self.orders_page.select_all_records()
@@ -2100,13 +2102,15 @@ class OrdersTestCases(BaseTest):
             after_remove_attachment, file_name))
         self.assertNotEqual(after_remove_attachment, file_name)
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-217')
+    #@skip('https://modeso.atlassian.net/browse/LIMS-217')
     def test059_testplans_popup(self):
         """
         Orders: Test plan pop up Approach: Make sure the test plans
         & units displayed on the test plans & units fields same as in the test plan pop up
         LIMS-4796
         """
+        import ipdb;
+        ipdb.set_trace()
         order, payload = self.orders_api.create_new_order()
         self.info('open the order record in the edit mode')
         self.orders_page.get_order_edit_page_by_id(id=order['order']['mainOrderId'])
