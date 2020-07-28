@@ -30,6 +30,8 @@ class BaseTest(TestCase):
 
     def tearDown(self):
         self.screen_shot()
+        self.info('go to dashboard page')
+        self.base_selenium.get(url=f"{self.base_selenium.url}dashboard")
         self.info('TearDown. \t')
 
     @classmethod

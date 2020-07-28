@@ -9,21 +9,17 @@ from api_testing.apis.base_api import BaseAPI
 class MyProfileTestCases(BaseTest):
     def setUp(self):
         super().setUp()
-
-        self.header_page = Header()
         self.my_profile_page = MyProfile()
         self.users_api = UsersAPI()
-
-        self.username = self.generate_random_string()
-        self.email = self.header_page.generate_random_email()
-
-        response, payload = self.users_api.create_new_user(username=self.username, emai=self.email)
+        self.info("create new user")
+        response, payload = self.users_api.create_new_user()
+        self.assertEqual(response['status'], 1, "failed to create new user")
         self.current_password = payload["password"]
-        self.info('create User {}:{}'.format(self.username, self.current_password))
-
+        self.username = payload["username"]
+        self.email = payload["email"]
+        self.info('user {}:{}'.format(self.username, self.current_password))
         self.users_api._get_authorized_session(username=self.username, password=self.current_password, reset_token=True)
         self.set_authorization(auth=self.users_api.AUTHORIZATION_RESPONSE)
-
         self.my_profile_page.get_my_profile_page()
 
     def tearDown(self):
@@ -91,6 +87,8 @@ class MyProfileTestCases(BaseTest):
             self.my_profile_page.chang_lang('EN')
             self.my_profile_page.sleep_tiny()
 
+        self.base_selenium.scroll()
+        self.my_profile_page.sleep_tiny()
         page_name = self.base_selenium.get_text('my_profile:page_name')
         if lang == 'EN':
             self.assertEqual(page_name, 'My Profile')
@@ -104,23 +102,19 @@ class MyProfileTestCases(BaseTest):
 
         LIMS-6086
         """
-        # open signature tab
+        self.info('open signature tab')
         self.base_selenium.click('my_profile:signature_tab')
-
         # choose file from assets to be uploaded
         file_name = 'logo.png'
-
-        # upload the file then cancel
+        self.info('upload the file then cancel')
         self.my_profile_page.upload_logo(
             file_name=file_name, drop_zone_element='my_profile:signature_field', save=False)
 
-        # go back to the company profile
+        self.info("Navigate to my profile page")
         self.my_profile_page.get_my_profile_page()
-
-        # open signature tab
+        self.info('open signature tab')
         self.base_selenium.click('my_profile:signature_tab')
-
-        # check that the image is not saved
+        self.info('check that the image is not saved')
         is_the_file_not_exist = self.base_selenium.check_element_is_not_exist(
             element='general:file_upload_success_flag')
         self.assertTrue(is_the_file_not_exist)
@@ -128,8 +122,10 @@ class MyProfileTestCases(BaseTest):
     def test006_my_profile_user_can_upload_logo(self):
         """
         My Profile: Signature Approach: Make sure that you can upload the signature successfully
+
         LIMS-6085
         """
+        self.info('open signature tab')
         self.base_selenium.click('my_profile:signature_tab')
         file_name = 'logo.png'
         uploaded_file_name = self.my_profile_page.upload_logo(
@@ -139,18 +135,19 @@ class MyProfileTestCases(BaseTest):
     def test007_my_profile_user_can_update_logo(self):
         """
         My Profile: Signature Approach: Make sure that you can remove any signature
+
         LIMS-6095
         """
-        # open signature tab
+        self.info('open signature tab')
         self.base_selenium.click('my_profile:signature_tab')
 
-        # choose file from assets to be uploaded
+        self.info('choose file from assets to be uploaded')
         file_name = 'logo.png'
-
         self.my_profile_page.upload_logo(
             file_name=file_name, drop_zone_element='my_profile:signature_field', save=True)
 
         self.info('remove the uploaded logo')
+        self.base_selenium.scroll()
         self.base_selenium.click('general:remove_file')
         self.my_profile_page.save(save_btn="my_profile:save_button")
 
@@ -159,30 +156,29 @@ class MyProfileTestCases(BaseTest):
             element='general:file_upload_success_flag')
         self.assertTrue(is_the_file_not_exist)
 
-    def test008_you_cant_upload_more_than_one_logo(self):
+    def test008_you_cant_upload_more_than_one_signature(self):
         """
         My Profile: Signature Approach: Make sure you can't download more than one signature
+
         LIMS-6087
         """
-        # open signature tab
+        self.info('open signature tab')
         self.base_selenium.click('my_profile:signature_tab')
-        # choose file from assets to be uploaded
+        self.info('choose file from assets to be uploaded')
         file_name = 'logo.png'
         other_file_name = 'logo2.png'
-
-        # upload the first file
+        self.info("upload the first file")
         self.my_profile_page.upload_logo(
             file_name=file_name, drop_zone_element='my_profile:signature_field', save=True)
-
-        # upload other file beside the current one
+        self.base_selenium.scroll()
+        self.info("upload other file beside the current one")
         self.my_profile_page.upload_logo(
             file_name=other_file_name, drop_zone_element='my_profile:signature_field', save=True)
-
-        # wait to see if the file upload
+        self.base_selenium.scroll()
+        self.assertTrue(self.base_selenium.find_element('general:oh_snap_msg'))
+        self.info('wait to see if the file upload')
         self.my_profile_page.sleep_medium()
-
-        # get array of all uploded files
+        self.info('get array of all uploaded files')
         files_uploaded_flags = self.base_selenium.find_elements('general:files_upload_success_flags')
-
-        # only 1 file should be uploded
+        self.info('assert that only 1 file should be uploaded')
         self.assertEqual(len(files_uploaded_flags), 1)
