@@ -91,6 +91,13 @@ class BaseSelenium:
             options.add_argument('--headless')
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-gpu')
+            options.add_experimental_option("prefs", {
+                "download.default_directory": os.path.expanduser("~/Downloads"),
+                "download.prompt_for_download": False,
+                "download.directory_upgrade": True,
+                "safebrowsing_for_trusted_sources_enabled": False,
+                "safebrowsing.enabled": False
+            })
             self.driver = webdriver.Chrome(chrome_options=options)
         else:
             if self.browser == 'chrome':
@@ -667,6 +674,20 @@ class BaseSelenium:
 
         return cells_dict
 
+    def get_rows_cells_dict_related_to_header(self, table_element='general:table'):
+        result = []
+        headers = self.get_table_head_elements(element=table_element)
+        headers_text = [header.text for header in headers]
+        for row in self.get_table_rows(element=table_element):
+            row_cells = self.get_row_cells(row=row)
+            row_text = [cell.text for cell in row_cells]
+            if row_text != ['']:
+                cells_dict = {}
+                for column_value in headers_text:
+                    cells_dict[column_value] = row_text[headers_text.index(column_value)]
+                result.append(cells_dict)
+        return result
+
     def get_row_cells_id_dict_related_to_header(self, row, table_element='general:table'):
         cells_dict = {}
         headers = self.get_table_head_elements(element=table_element)
@@ -725,10 +746,13 @@ class BaseSelenium:
         self.click(element=element)
         time.sleep(sleep)
         sheets = []
-        downloaded_file_path = "~/Downloads" if os.path.isdir("~/Downloads") else "./"
+
+        home_download = os.path.expanduser("~/Downloads/")
+        downloaded_file_path = home_download if os.path.isdir(home_download) else "./"
         for file_name in os.listdir(os.path.expanduser(downloaded_file_path)):
             if '.xlsx' in file_name:
                 sheets.append(os.path.expanduser(downloaded_file_path) + file_name)
+
         downloaded_file_name = max(sheets, key=os.path.getctime)
         data = pd.read_excel(downloaded_file_name)
         # row = data.iloc[1]

@@ -17,9 +17,10 @@ jobs:
 
       - name: pull docker image
         run:  docker pull 0xislamtaha/seleniumchromenose:83
+
       - name: execute test case in parallel
         env:
-          TEST_FILE: ui_testing/testcases/header_tests/test09_my_profile.py
+          TEST_FILE: ui_testing/testcases/header_tests/test08_usermanagement.py
           TEST_REG: test[0-9]{3}
         run: docker container run -t --shm-size=2g -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
 
@@ -38,3 +39,4 @@ jobs:
 #          TEST_REG: test[0-9]{3}
 #        run: docker container run -t --shm-size=2g -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
 #
+
