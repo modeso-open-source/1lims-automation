@@ -82,7 +82,7 @@ class BasePages:
         self.sleep_small()
 
     def open_filter_menu(self):
-        self.base_selenium.LOGGER.info(' Open Filter')
+        self.info('open Filter')
         filter = self.base_selenium.find_element_in_element(source_element='general:menu_filter_view',
                                                             destination_element='general:filter')
         filter.click()
@@ -101,7 +101,7 @@ class BasePages:
 
     def filter_apply(self):
         self.base_selenium.click(element='general:filter_btn')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        self.wait_until_page_is_loaded()
 
     def apply_filter_scenario(self, filter_element, filter_text, field_type='drop_down'):
         self.open_filter_menu()
@@ -226,7 +226,7 @@ class BasePages:
         self.sleep_tiny()
 
     def download_xslx_sheet(self):
-        self.info("Download XSLX sheet")
+        self.info("download XSLX sheet")
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.sheet = self.base_selenium.download_excel_file(element='general:xslx')

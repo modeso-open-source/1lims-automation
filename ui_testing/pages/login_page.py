@@ -20,7 +20,8 @@ class Login:
 
     def logout(self):
         self.base_selenium.click(element='header:header_button')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        self.base_selenium.wait_until_page_load_resources(expected_counter=10)
         self.base_selenium.click(element='header:logout')
-        self.base_selenium.LOGGER.info('+ Logout')
-        time.sleep(self.base_selenium.TIME_MEDIUM)
+        self.base_selenium.LOGGER.info('logout')
+        self.base_selenium.wait_until_page_load_resources(expected_counter=10)
+
