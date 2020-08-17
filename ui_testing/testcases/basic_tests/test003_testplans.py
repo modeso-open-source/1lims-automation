@@ -50,6 +50,7 @@ class TestPlansTestCases(BaseTest):
         self.assertFalse(deleted_test_unit_found)
 
     @parameterized.expand(['InProgress', 'Completed'])
+    @skip('https://modeso.atlassian.net/browse/LIMSA-234')
     def test002_test_plan_edit_status(self, status):
         """
         Creation Approach: when the status converted from completed to completed, new version created
@@ -58,14 +59,15 @@ class TestPlansTestCases(BaseTest):
         LIMS-3502
         LIMS-3501
         """
+        self.info("create test unit of  material type  = All  to complete test plan")
+        response, test_unit = TestUnitAPI().create_qualitative_testunit()
+        self.assertEqual(response['status'], 1, 'can not create test unit')
         testplan = random.choice(self.test_plan_api.get_testplans_with_status(status=status))
+        self.assertTrue(testplan, 'No test plan selected')
         self.info('Navigate to edit page of test plan: {} with version: {}'.
                   format(testplan['testPlanName'], testplan['version']))
         self.test_plan.get_test_plan_edit_page_by_id(testplan['id'])
         self.info('Going to step 2 to add test unit to this test plan')
-        self.info("createt test unit of  material type  = All  to complete test plan")
-        response, test_unit = TestUnitAPI().create_qualitative_testunit()
-        self.assertEqual(response['status'], 1, 'can not create test unit')
         self.test_plan.sleep_tiny()
         self.test_plan.set_test_unit(test_unit=test_unit['name'])
         if status == 'InProgress':
@@ -159,21 +161,22 @@ class TestPlansTestCases(BaseTest):
         LIMS-3506 Case 2
         """
         self.info("Navigate to archived test plan table")
+        self.test_plan.sleep_tiny()
         self.test_plan.get_archived_items()
-        self.info('Choosing random multiple testplans table rows')
+        self.info('Choosing random multiple test plans table rows')
         self.test_plan.sleep_tiny()
         rows_data, rows = self.test_plan.select_random_multiple_table_rows()
         self.assertTrue(rows_data)
         testplans_numbers = [row['Test Plan No.'] for row in rows_data]
-        self.info('Restore Testplans with numbers: {}'.format(testplans_numbers))
+        self.info('Restore Test plans with numbers: {}'.format(testplans_numbers))
         self.test_plan.restore_selected_items()
         self.test_plan.sleep_small()
-        self.info('Navigate to active table and make sure testplans restored')
+        self.info('Navigate to active table and make sure test plans restored')
         self.test_plan.get_active_items()
         restored_rows = self.test_plan.filter_multiple_rows_by_testplans_numbers(testplans_numbers)
         self.assertIsNotNone(restored_rows)
         self.assertEqual(len(restored_rows), len(testplans_numbers))
-        self.info('Testplan numbers: {} are restored correctly'.format(testplans_numbers))
+        self.info('Test plans numbers: {} are restored correctly'.format(testplans_numbers))
 
     # @skip('https://modeso.atlassian.net/browse/LIMS-6403')
     @skip('https://modeso.atlassian.net/browse/LIMSA-180')
@@ -239,10 +242,13 @@ class TestPlansTestCases(BaseTest):
         """
         self.info('Choosing a random testplan table row')
         testPlan = random.choice(self.test_plan_api.get_completed_testplans())
+        self.assertTrue(testPlan, "No completed test plan selected")
         testunits = self.test_plan_api.get_testunits_in_testplan(id=testPlan['id'])
+        self.assertTrue(testunits, "Completed test plan with id {} has no testunits!!".format(testPlan['id']))
         self.info("select test plan {}".format(testPlan['testPlanName']))
-        row = self.test_plan.search(testPlan['testPlanName'])
-        self.test_plan.click_check_box(source=row[0])
+        self.test_plan.filter_by_testplan_number(testPlan['number'])
+        row = self.test_plan.result_table()[0]
+        self.test_plan.click_check_box(source=row)
         self.info('Duplicating testplan number: {}'.format(testPlan['number']))
         self.test_plan.duplicate_selected_item()
         duplicated_test_plan_number = self.test_plan.duplicate_testplan(change=['name'])
@@ -262,6 +268,7 @@ class TestPlansTestCases(BaseTest):
         for testunit in testunits:
             self.assertIn(testunit['name'], duplicated_test_units)
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-234')
     def test010_test_plan_completed_to_inprogress(self):
         """
         When the test plan status is converted from completed to in progress a new version is created
@@ -450,6 +457,7 @@ class TestPlansTestCases(BaseTest):
             self.assertIn(str(random_testplan['testPlanName']), tp_text.replace("'", ""))
 
     @parameterized.expand(['Completed', 'In Progress'])
+    @skip("https://modeso.atlassian.net/browse/LIMSA-235")
     def test018_filter_by_testplan_status(self, status):
         """
         User can filter with status
@@ -466,6 +474,7 @@ class TestPlansTestCases(BaseTest):
             else:
                 self.assertNotIn('In Progress', tp_text)
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-235')
     def test019_filter_by_testplan_changed_by(self):
         """
         User can filter with changed by field
@@ -486,7 +495,6 @@ class TestPlansTestCases(BaseTest):
         testplan_name = self.test_plan.create_new_test_plan()
 
         self.info('New testplan is created successfully with name: {}'.format(testplan_name))
-
         self.test_plan.set_all_configure_table_columns_to_specific_value(value=True)
 
         testplan_found = self.test_plan.filter_by_element_and_get_results(
@@ -605,7 +613,7 @@ class TestPlansTestCases(BaseTest):
 
         LIMS-6288
         """
-        assert (self.test_plan.deselect_all_configurations(), False)
+        self.assertTrue(self.test_plan.deselect_all_configurations())
 
     @skip("https://modeso.atlassian.net/browse/LIMSA-184")
     def test027_test_unit_update_version_in_testplan(self):
@@ -668,6 +676,7 @@ class TestPlansTestCases(BaseTest):
                   'same as the updated iterations')
         self.assertEqual(second_testplan_testunit_iteration, new_iteration)
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test028_childtable_limits_of_quantification(self):
         """
         Limits of quantification should be viewed in the testplan's child table
@@ -679,7 +688,7 @@ class TestPlansTestCases(BaseTest):
 
         LIMS-4426
         """
-        self.info("Create new quantitative testunit with quantification limits")
+        self.info("Create new quantitative test unit with quantification limits")
         self.test_unit_api = TestUnitAPI()
         oldUpperLimit = self.generate_random_number(lower=50, upper=100)
         oldLowerLimit = self.generate_random_number(lower=1, upper=49)
@@ -696,7 +705,6 @@ class TestPlansTestCases(BaseTest):
             test_plan['testPlanEntity']['name'])
         self.info('Asserting the limits of quantification viewed correctly')
         self.assertIn(testunit_display_old_quantification_limit, testplan_childtable_data[0].values())
-
 
         new_quantification_lower_limit, new_quantification_upper_limit = \
             self.test_plan.update_upper_lower_limits_of_testunit(test_plan['id'])

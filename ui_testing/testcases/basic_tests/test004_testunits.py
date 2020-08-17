@@ -260,6 +260,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('Assert error msg')
         self.assertEqual(validation_result, True)
 
+    @skip('https://modeso.atlassian.net/browse/LIMS-8467')
     def test010_material_type_approach(self):
         """"
         In case I created test unit with 4 materiel type, when I go to test plan,
@@ -273,19 +274,22 @@ class TestUnitsTestCases(BaseTest):
         self.info('Navigate to test plan page')
         self.test_plan.get_test_plans_page()
         self.info('create new test plan')
-        self.test_plan.create_new_test_plan(material_type=testunit['selectedMaterialTypes'][0]['name'], save=False)
+        self.test_plan.create_new_test_plan(material_type=testunit['selectedMaterialTypes'][0]['name'],
+                                            test_unit=testunit['name'], save=False)
+
+        test_unit_data = self.test_plan.get_all_testunits_in_testplan(navigate_to_test_unit_selection=False)
+        self.assertIn(testunit['name'], test_unit_data[0][0])
 
         for i in range(0, len(testunit['selectedMaterialTypes'])-1):
-            self.test_plan.set_test_unit(testunit['name'])
-            test_unit_data = self.test_plan.result_table('test_plan:testunits_table')[0].text
-            self.assertIn(testunit['name'], test_unit_data)
             if i+1 < len(testunit['selectedMaterialTypes']):
                 self.base_selenium.click('test_plan:back_button')
+                self.test_plan.clear_material_types()
                 self.test_plan.set_material_type(testunit['selectedMaterialTypes'][i+1]['name'])
                 self.test_plan.set_article(random=True)
             else:
                 break
 
+            self.assertCountEqual(test_unit_data, self.test_plan.get_all_testunits_in_testplan())
         self.info("test unit displayed according to materiel type.")
 
     @parameterized.expand(['True', 'False'])
@@ -489,6 +493,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertNotEqual(test_unit_found['Specifications'], 'N/A')
             self.assertEqual(test_unit_found['Quantification Limit'], 'N/A')
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-222')
     def test018_download_test_units_sheet(self):
         """
         I can download all the data in the table view in the excel sheet
@@ -770,8 +775,8 @@ class TestUnitsTestCases(BaseTest):
         """
         self.info('select random quantitative unit with specification only ')
         test_unit_id = self.test_unit_api.get_test_unit_with_spec_or_quan_only('spec')
+        self.assertTrue(test_unit_id, "No test unit selected")
         self.test_unit_page.open_test_unit_edit_page_by_id(id=test_unit_id)
-        self.test_unit_page.sleep_small()
         self.info('switch to quantification')
         self.test_unit_page.switch_from_spec_to_quan(lower_limit=50, upper_limit=100)
         self.info('refresh to make sure that data are updated successfully')
@@ -789,6 +794,7 @@ class TestUnitsTestCases(BaseTest):
         """
         self.info('select random quantitative unit with quantification only ')
         test_unit_id = self.test_unit_api.get_test_unit_with_spec_or_quan_only('quan')
+        self.assertTrue(test_unit_id, "No test unit selected")
         self.test_unit_page.open_test_unit_edit_page_by_id(id=test_unit_id)
         self.info('switch to specification')
         self.test_unit_page.switch_from_quan_to_spec(lower_limit=50, upper_limit=100)
@@ -833,7 +839,7 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(response['status'], 1, payload)
         self.info('create new test plan with created test unit with name {}'.format(payload['name']))
         test_plan = TestPlanAPI().create_testplan_from_test_unit_id(response['testUnit']['testUnitId'])
-        self.assertTrue(test_plan)
+        self.assertTrue(test_plan, "Test plan not created")
         self.info('created test unit with number {}'.format(test_plan['number']))
         self.info('Navigate to test plan edit page ang get test unit category')
         self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
@@ -842,12 +848,14 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(random_category_before_edit, payload['selectedCategory'][0]['text'])
         self.info('edit newly created testunit with qualitative and random generated data')
         self.test_unit_page.open_test_unit_edit_page_by_id(response['testUnit']['testUnitId'])
+        self.test_unit_page.sleep_small()
         new_random_category_edit = self.generate_random_string()
         self.info('update test unit category to {}'.format(new_random_category_edit))
         self.test_unit_page.set_category(new_random_category_edit)
         self.test_unit_page.save_and_wait()
         self.info('Navigate to test plan edit page and get test unit category')
         self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
+        self.test_plan.sleep_small()
         test_plan_category_after_edit = self.test_plan.get_test_unit_category()
         self.info('Assert that category updated successfully')
         self.assertEqual(test_plan_category_after_edit, new_random_category_edit)
@@ -916,7 +924,7 @@ class TestUnitsTestCases(BaseTest):
             test_unit_suggetion_list = Order().create_new_order_get_test_unit_suggetion_list(
                 material_type='', test_unit_name=archived_test_unit['name'])
 
-        self.assertFalse(test_unit_suggetion_list)
+        self.assertCountEqual(test_unit_suggetion_list, ['No items found'])
 
     def test035_can_not_archive_quantifications_limit_field(self):
         """

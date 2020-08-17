@@ -72,7 +72,7 @@ class Header(BasePages):
 
     def create_new_user(self, user_role='', sleep=True, user_email='', user_password='', user_confirm_password='',
                         user_name='', contact=''):
-        self.base_selenium.LOGGER.info('create new user.')
+        self.info('create new user.')
         self.base_selenium.click(element='user_management:create_user_button')
         self.sleep_medium()
         user_name = self.set_user_name(user_name)
@@ -386,3 +386,35 @@ class Header(BasePages):
         self.filter_apply()
         self.sleep_tiny()
         return self.get_the_latest_row_data()
+
+    def select_random_multiple_users_table_rows(self, element='general:table'):
+        _selected_rows_text = []
+        selected_rows_data = []
+        selected_rows = []
+        rows = self.base_selenium.get_table_rows(element=element)
+        no_of_rows = randint(min(2, len(rows) - 1), min(5, len(rows) - 1))
+        count = 0
+        self.info(' No. of selected rows {} '.format(no_of_rows))
+        while count < no_of_rows:
+            self.base_selenium.scroll()
+            row = rows[randint(0, len(rows) - 2)]
+            row_text = row.text
+            if 'Admin' in row_text:
+                no_of_rows = no_of_rows-1
+                continue
+            if 'Contact' in row_text:
+                no_of_rows = no_of_rows-1
+                continue
+            if not row_text:
+                continue
+            if row_text in _selected_rows_text:
+                continue
+            count = count + 1
+            self.click_check_box(source=row)
+            self.sleep_tiny()
+            _selected_rows_text.append(row_text)
+            selected_rows.append(row)
+            selected_rows_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=row))
+
+        self.info(' No. of selected rows {} '.format(no_of_rows))
+        return selected_rows_data, selected_rows

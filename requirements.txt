@@ -11,3 +11,4 @@ xlrd
 loguru
 pyperclip
 pymysql
+git+https://github.com/0xIslamTaha/agent-python-nosetests@0.0.7

@@ -64,13 +64,14 @@ class TestPlans(BasePages):
         self.info('Filtering by testplan number: {}'.format(filter_text))
         self.filter_by(filter_element='test_plans:testplan_number_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
+        self.sleep_tiny()
 
     def get_the_latest_row_data(self, element='general:table'):
         latest_testplan_row = (self.result_table(element)[0])
         return self.base_selenium.get_row_cells_dict_related_to_header(row=latest_testplan_row,
                                                                        table_element=element)
 
-    def filter_multiple_rows_by_testplans_numbers(self, testplans_numbers, check=0):
+    def filter_multiple_rows_by_testplans_numbers(self, testplans_numbers, check=False):
         """
             Searches for multiple rows with the testplans numbers as array of numbers
             The parameter check is a boolean to either allow selecting those rows or not

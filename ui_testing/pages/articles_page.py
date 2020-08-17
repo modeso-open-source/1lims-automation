@@ -37,12 +37,15 @@ class Articles(BasePages):
         self.base_selenium.click(element='articles:right_menu')
         self.base_selenium.click(element='articles:archive')
         self.confirm_popup()
+        self.sleep_tiny()
 
     def restore_selected_articles(self):
         self.base_selenium.scroll()
         self.base_selenium.click(element='articles:right_menu')
         self.base_selenium.click(element='articles:restore')
         self.confirm_popup()
+        self.sleep_tiny()
+
 
     def is_article_in_table(self, value):
         """

@@ -306,6 +306,17 @@ class TestPlanAPI(TestPlanAPIFactory):
         else:
             self.info(testplan)
 
+    def create_testplan_with_article_not_all(self):
+        response, _ = GeneralUtilitiesAPI().list_all_material_types()
+        formatted_material = random.choice(response['materialTypes'])
+        formatted_article = ArticleAPI().get_formatted_article_with_formatted_material_type(formatted_material)
+        testplan, payload = self.create_testplan(selectedArticles=[formatted_article],
+                                                 materialType=[formatted_material])
+        if testplan['status'] == 1:
+            return (self.get_testplan_form_data(id=testplan['testPlanDetails']['id']))
+        else:
+            self.info(testplan)
+
     def set_configuration(self):
         self.info('set test Plan configuration')
         config_file = os.path.abspath('api_testing/config/test_plan.json')

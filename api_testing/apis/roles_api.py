@@ -83,5 +83,5 @@ class RolesAPI(RolesAPIFactory):
     def get_random_role(self):
         response, payload = RolesAPI().get_all_roles()
         roles = response['roles']
-        editable_roles = [role for role in roles if role['name'] != 'Admin']
+        editable_roles = [role for role in roles if role['name'] not in ['Admin', 'Contact']]
         return editable_roles

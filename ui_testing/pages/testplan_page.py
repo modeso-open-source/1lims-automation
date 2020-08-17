@@ -3,6 +3,7 @@ from ui_testing.pages.testplans_page import TestPlans
 
 class TstPlan(TestPlans):
     def get_no(self):
+        self.base_selenium.wait_until_element_located("test_plan:no")
         return self.base_selenium.get_value(element="test_plan:no")
 
     def set_no(self, no):
@@ -27,6 +28,11 @@ class TstPlan(TestPlans):
         if self.get_article():
             self.base_selenium.clear_items_in_drop_down(element='test_plan:article')
 
+    def clear_material_types(self):
+        if self.get_material_type():
+            self.base_selenium.clear_items_in_drop_down(element='test_plan:material_type')
+            self.sleep_tiny()
+
     def get_material_type(self):
         return self.base_selenium.get_text(element='test_plan:material_type').split('\n')[0]
 
@@ -47,7 +53,7 @@ class TstPlan(TestPlans):
 
     def search_test_unit_not_set(self, test_unit=''):
         self.info('navigate to testplan second step')
-        self.base_selenium.click('test_plan:next')
+        self.navigate_to_testunits_selection_page()
         self.sleep_tiny()
         self.base_selenium.click('test_plan:add_new_item')
         self.sleep_small()
@@ -106,7 +112,7 @@ class TstPlan(TestPlans):
         return upper.get_attribute('value'), lower.get_attribute('value')
 
     def get_test_unit_category(self):
-        self.base_selenium.click('test_plan:next')
+        self.navigate_to_testunits_selection_page()
         self.sleep_small()
         return self.base_selenium.get_text(element='test_plan:test_unit_category')
 
@@ -117,6 +123,7 @@ class TstPlan(TestPlans):
         self.material_type = material_type
         self.article = article
         self.click_create_test_plan_button()
+        self.sleep_small()
         self.set_test_plan(name=self.test_plan_name)
         if self.material_type:
             self.info(' With {} material type'.format(material_type))
@@ -158,9 +165,10 @@ class TstPlan(TestPlans):
         self.base_selenium.click(element='test_plan:testunits_selection')
         self.sleep_tiny()
 
-    def get_all_testunits_in_testplan(self):
+    def get_all_testunits_in_testplan(self, navigate_to_test_unit_selection=True):
         # returns all testunits in testplan
-        self.navigate_to_testunits_selection_page()
+        if navigate_to_test_unit_selection:
+            self.navigate_to_testunits_selection_page()
         testunits = []
         self.info('Getting the testunits data')
         rows = self.base_selenium.get_table_rows(element='test_plan:testunits_table')
@@ -222,7 +230,7 @@ class TstPlan(TestPlans):
                 duplicated_test_plan_name = self.generate_random_text()
                 self.set_test_plan(name=duplicated_test_plan_name)
                 self.sleep_tiny()
-
+        self.sleep_small()
         no = self.get_no()
         self.save(save_btn='test_plan:save_btn')
         self.wait_until_page_is_loaded()

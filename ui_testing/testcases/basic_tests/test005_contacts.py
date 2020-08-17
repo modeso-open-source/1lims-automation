@@ -173,17 +173,19 @@ class ContactsTestCases(BaseTest):
         self.info('open random contact record to add a new contact persons to it')
         random_contact_record = self.contact_page.get_random_contact_row()
         self.contact_page.open_edit_page(row=random_contact_record)
-
+        self.contact_page.sleep_small()
         self.info('acquire contact data to compare it after updating the persons')
         contact_data = self.contact_page.get_full_contact_data()
 
         self.info('Open contact persons page')
         self.contact_page.get_contact_persons_page()
+        self.contact_page.sleep_small()
         self.info('add new record to contact persons')
         contact_persons_after_update = self.contact_page.create_update_contact_person(save=True)
 
         self.info('Refresh to compare the data before and after refresh')
         self.base_selenium.refresh()
+        self.contact_page.sleep_small()
         contact_data_after_refresh = self.contact_page.get_full_contact_data()
         self.assertTrue(self.contact_page.compare_contact_main_data(data_after_save=contact_data_after_refresh,
                                                                     data_before_save=contact_data))
@@ -410,7 +412,7 @@ class ContactsTestCases(BaseTest):
 
         LIMS-6288
         """
-        assert (self.contacts_page.deselect_all_configurations(), False)
+        self.assertTrue(self.contacts_page.deselect_all_configurations())
 
     @parameterized.expand([('name', 'name', 'Contact Name'),
                            ('skype', 'skype', 'Skype'),

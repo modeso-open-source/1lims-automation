@@ -1,6 +1,5 @@
 from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.my_profile_page import MyProfile
-from ui_testing.pages.header_page import Header
 from api_testing.apis.users_api import UsersAPI
 from parameterized import parameterized
 from api_testing.apis.base_api import BaseAPI

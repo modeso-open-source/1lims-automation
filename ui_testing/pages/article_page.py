@@ -7,7 +7,7 @@ from datetime import date
 
 class Article(Articles):
     def create_new_article(self, material_type='', sleep=True, full_options=False):
-        self.base_selenium.LOGGER.info(' + Create new article.')
+        self.info(' + Create new article.')
         self.base_selenium.click(element='articles:new_article')
         time.sleep(self.base_selenium.TIME_SMALL)
         self.article_name = self.generate_random_text()
@@ -52,8 +52,8 @@ class Article(Articles):
                 "test_plan": None,
             }
 
-        self.save(sleep)
-        self.base_selenium.LOGGER.info(' + Article name : {}'.format(self.article_name))
+        self.save()
+        self.info(' + Article name : {}'.format(self.article_name))
 
         return article_data
 
@@ -107,12 +107,12 @@ class Article(Articles):
         self.base_selenium.set_text(element="article:comment", value=comment)
 
     def filter_article_by(self, filter_element, filter_text, field_type='text'):
-        self.base_selenium.LOGGER.info(
+        self.info(
             ' + Filter by {} : {}'.format(filter_element.replace('article:filter_', '').replace('_', ' '), filter_text))
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
         self.sleep_tiny()
-        return self.result_table()[0]
+        return self.base_selenium.get_rows_cells_dict_related_to_header()
 
     def set_related_article(self):
         self.base_selenium.select_item_from_drop_down(element='article:related_article')
@@ -175,4 +175,15 @@ class Article(Articles):
         self._restore_field(field_name='unit')
         self._restore_field(field_name='comment')
         self._restore_field(field_name='related_article')
+
+    def filter_and_select(self, article_no):
+        self.info("filter by article No {}".format(article_no))
+        self.open_filter_menu()
+        self.filter_article_by(filter_element='article:filter_number',
+                               filter_text=article_no, field_type='text')
+        self.close_filter_menu()
+        self.sleep_tiny()
+        row = self.result_table()[0]
+        self.click_check_box(source=row)
+        self.sleep_tiny()
 

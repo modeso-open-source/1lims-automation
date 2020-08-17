@@ -98,6 +98,19 @@ class ArticleAPIFactory(BaseAPI):
 
 
 class ArticleAPI(ArticleAPIFactory):
+    def get_all_articles_json(self, **kwargs):
+        response, _ = self.get_all_articles(**kwargs)
+        return response['articles']
+
+    def get_first_record_with_data_in_attribute(self, attribute):
+        articles_request, _ = self.get_all_articles()
+        if (articles_request['status'] != 1) or (articles_request['count'] == 0):
+            return False
+        articles_records = articles_request['contacts']
+        for article in articles_records:
+            if article[attribute] != '':
+                return article[attribute]
+
     def delete_active_article(self, id=1):
         response = self.archive_articles(ids=[str(id)])
         if response['status'] == 1 and response['message'] == 'delete_success':

@@ -608,6 +608,7 @@ class TstUnit(TstUnits):
         test_units_url = url_str.format(self.base_selenium.url)
         self.base_selenium.get(url=test_units_url)
         self.wait_until_page_is_loaded()
+        self.sleep_small()
 
     def update_test_unit(self, id):
         test_unit = {}
@@ -619,8 +620,11 @@ class TstUnit(TstUnits):
         test_unit['categoryName'] = self.generate_random_string()
         test_unit['iterations'] = str(self.generate_random_number(upper=4))
         self.set_testunit_number(number=test_unit['number'])
+        self.sleep_tiny()
         self.set_testunit_name(name=test_unit['name'])
+        self.sleep_tiny()
         self.set_material_type()
+        self.sleep_small()
         test_unit['materialTypes'] = self.get_material_type()
         self.set_category(category=test_unit['categoryName'])
         self.set_testunit_iteration(iteration=test_unit['iterations'])

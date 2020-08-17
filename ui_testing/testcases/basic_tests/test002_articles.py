@@ -7,6 +7,8 @@ from ui_testing.pages.orders_page import Orders
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.orders_api import OrdersAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
+from ui_testing.pages.login_page import Login
+from api_testing.apis.users_api import UsersAPI
 from parameterized import parameterized
 from unittest import skip
 import random, re
@@ -83,7 +85,7 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.get_random_article()
         article_url = self.base_selenium.get_url()
-        self.article_page.info('article_url : {}'.format(article_url))
+        self.info('article_url : {}'.format(article_url))
         self.article_page.sleep_small()
         current_unit = self.article_page.get_unit()
         random_unit = self.generate_random_string()
@@ -101,14 +103,11 @@ class ArticlesTestCases(BaseTest):
 
         article_unit = self.article_page.get_unit()
         if 'save' == save:
-            self.article_page.info(
-                'Assert {} (new_unit) == {} (article_unit)'.format(new_unit, article_unit))
+            self.info('Assert {} (new_unit) == {} (article_unit)'.format(new_unit, article_unit))
             self.assertEqual(new_unit, article_unit)
         else:
-            self.article_page.info(
-                'Assert {} (current_unit) == {} (article_unit)'.format(current_unit, article_unit))
+            self.info('Assert {} (current_unit) == {} (article_unit)'.format(current_unit, article_unit))
             self.assertEqual(current_unit, article_unit)
-
 
     @parameterized.expand(['save', 'cancel'])
     def test002_cancel_button_edit_no(self, save):
@@ -121,7 +120,7 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.get_random_article()
         article_url = self.base_selenium.get_url()
-        self.article_page.info('article_url : {}'.format(article_url))
+        self.info('article_url : {}'.format(article_url))
         self.article_page.sleep_small()
         current_no = self.article_page.get_no()
         random_no = self.generate_random_string()
@@ -136,16 +135,14 @@ class ArticlesTestCases(BaseTest):
 
         self.base_selenium.get(
             url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
-
+        self.base_selenium.scroll()
         article_no = self.article_page.get_no()
 
         if 'save' == save:
-            self.article_page.info(
-                ' Assert {} (new_no) == {} (article_no)'.format(new_no, article_no))
+            self.info(' Assert {} (new_no) == {} (article_no)'.format(new_no, article_no))
             self.assertEqual(new_no, article_no)
         else:
-            self.article_page.info(
-                ' Assert {} (current_no) == {} (article_no)'.format(current_no, article_no))
+            self.info(' Assert {} (current_no) == {} (article_no)'.format(current_no, article_no))
             self.assertEqual(current_no, article_no)
 
     @parameterized.expand(['save', 'cancel'])
@@ -159,7 +156,7 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.get_random_article()
         article_url = self.base_selenium.get_url()
-        self.article_page.info('article_url : {}'.format(article_url))
+        self.info('article_url : {}'.format(article_url))
         self.article_page.sleep_small()
         current_name = self.article_page.get_name()
         random_name = self.generate_random_string()
@@ -174,15 +171,13 @@ class ArticlesTestCases(BaseTest):
 
         self.base_selenium.get(
             url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
-
+        self.base_selenium.scroll()
         article_name = self.article_page.get_name()
         if 'save' == save:
-            self.article_page.info(
-                'Assert {} (new_name) == {} (article_name)'.format(new_name, article_name))
+            self.info('Assert {} (new_name) == {} (article_name)'.format(new_name, article_name))
             self.assertEqual(new_name, article_name)
         else:
-            self.article_page.info(
-                'Assert {} (current_name) == {} (article_name)'.format(current_name, article_name))
+            self.info('Assert {} (current_name) == {} (article_name)'.format(current_name, article_name))
             self.assertEqual(current_name, article_name)
 
     @parameterized.expand(['save', 'cancel'])
@@ -196,8 +191,7 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.get_random_article()
         article_url = self.base_selenium.get_url()
-        self.article_page.info(
-            'article_url : {}'.format(article_url))
+        self.info('article_url : {}'.format(article_url))
         self.article_page.sleep_small()
         current_comment = self.article_page.get_comment()
         new_comment = self.generate_random_string()
@@ -209,40 +203,34 @@ class ArticlesTestCases(BaseTest):
             self.article_page.sleep_medium()
             self.article_page.cancel(force=True)
 
-        self.base_selenium.get(
-            url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
+        self.base_selenium.get(url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
 
         article_comment = self.article_page.get_comment()
         if 'save' == save:
-            self.article_page.info(
-                'Assert {} (new_comment) == {} (article_comment)'.format(new_comment, article_comment))
+            self.info('Assert {} (new_comment) == {} (article_comment)'.format(new_comment, article_comment))
             self.assertEqual(new_comment, article_comment)
         else:
-            self.article_page.info(
-                'Assert {} (current_comment) == {} (article_comment)'.format(current_comment, article_comment))
+            self.info('Assert {} (current_comment) == {} (article_comment)'.format(current_comment, article_comment))
             self.assertEqual(current_comment, article_comment)
 
     @skip('https://modeso.atlassian.net/browse/LIMSA-200')
     def test005_archived_articles_shoudnt_dispaly_in_test_plan(self):
         """
         New: Article: In case I archived any article this article shouldn't display in the test plan module when
-         I create test plan or edit it
+        I create test plan or edit it
 
         LIMS-3668
         """
         article_created, payload = self.article_api.create_article()
-        self.base_selenium.LOGGER.info(' Archive the article.')
+        self.info(' Archive the article.')
         self.article_api.archive_articles(ids=[str(article_created['article']['id'])])
         self.test_plan_page.get_test_plans_page()
-        self.base_selenium.LOGGER.info(
-            'Create test plan with the same material type.')
+        self.info('Create test plan with the same material type.')
         self.test_plan_page.click_create_test_plan_button()
         self.article_page.sleep_small()
-        self.test_plan_page.set_material_type(
-            material_type=payload['materialType']['text'])
+        self.test_plan_page.set_material_type(material_type=payload['materialType']['text'])
         self.article_page.sleep_tiny()
-        self.base_selenium.LOGGER.info(
-            'Assert article is not existing in the list.')
+        self.info('Assert article is not existing in the list.')
         self.assertFalse(self.test_plan_page.is_article_existing(
             article=article_created['article']['name']))
 
@@ -256,13 +244,12 @@ class ArticlesTestCases(BaseTest):
         self.article_api.archive_articles(ids=[str(api['article']['id'])])
         orders, payload = self.order_api.get_all_orders(limit=20)
         random_order = random.choice(orders['orders'])
-        self.base_selenium.LOGGER.info(
-            '{}'.format(random_order['orderNo']))
+        self.info('{}'.format(random_order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
         self.order_page.set_material_type_of_first_suborder(material_type='Raw Material', sub_order_index=0)
         self.order_page.set_article(article=api['article']['name'])
-        self.assertFalse(self.order_page.is_article_existing(
-            article=api['article']['name']))
+        self.assertFalse(
+            self.order_page.is_article_existing(article=api['article']['name']))
 
     @skip('https://modeso.atlassian.net/browse/LIMSA-200')
     def test007_created_article_appear_in_test_plan(self):
@@ -274,23 +261,23 @@ class ArticlesTestCases(BaseTest):
         article_created, payload = self.article_api.create_article()
         self.test_plan_page.get_test_plans_page()
         self.test_plan_page.click_create_test_plan_button()
-        self.test_plan_page.set_material_type(
-            material_type=payload['materialType']['text'])
+        self.test_plan_page.set_material_type(material_type=payload['materialType']['text'])
         self.article_page.sleep_tiny()
-        self.assertTrue(self.test_plan_page.is_article_existing(
-            article=article_created['article']['name']))
+        self.assertTrue(
+            self.test_plan_page.is_article_existing(article=article_created['article']['name']))
 
     @skip('https://modeso.atlassian.net/browse/LIMSA-200')
     def test008_create_article_with_test_plan_search_by_test_plan(self):
         """
-        In case I create test plan with the article that I created, this test plan should display in the table view
+        In case I create test plan with the article that I created, this
+        test plan should display in the table view
 
         LIMS-3583
         """
         article_created = self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan_page.get_test_plans_page()
         self.test_plan_page.create_new_test_plan(material_type=article_created['material_type'],
-                                            article=article_created['name'])
+                                                 article=article_created['name'])
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
         article = self.article_page.search(value=self.test_plan_page.test_plan_name)[0]
@@ -318,7 +305,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.create_new_article(material_type='Raw Material')
         self.test_plan_page.get_test_plans_page()
         self.test_plan_page.create_new_test_plan(material_type=self.article_page.article_material_type,
-                                            article=self.article_page.article_name)
+                                                 article=self.article_page.article_name)
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
 
@@ -326,7 +313,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.filter_article_by(filter_element='article:filter_test_plan',
                                             filter_text=self.test_plan_page.test_plan_name, field_type="drop_down")
         article = self.article_page.result_table()[0]
-        self.article_page.info('Assert user could filter with test plan.')
+        self.info('Assert user could filter with test plan.')
         self.assertIn(self.test_plan_page.test_plan_name, article.text)
 
     def test010_archive_articles(self):
@@ -340,7 +327,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.get_archived_articles()
         for article in selected_articles_data:
             article_name = article['Article Name']
-            self.article_page.info('{} article should be activated.'.format(article_name))
+            self.info('{} article should be activated.'.format(article_name))
             self.assertTrue(self.article_page.is_article_in_table(value=article_name))
 
     def test011_restore_articles(self):
@@ -411,17 +398,18 @@ class ArticlesTestCases(BaseTest):
         LIMS-3597
         """
         self.article_page.create_new_article(sleep=False, material_type='Raw Material')
-        self.article_page.sleep_medium()
+        self.article_page.sleep_small()
         self.assertEqual(self.base_selenium.get_text(element='general:alert_confirmation'),
                          'Successfully created')
 
     def test015_create_full_options_article(self):
         """
         New: Articles: Creation Approach: I can create new article successfully
+
         LIMS-3575
         """
         self.article_page.create_new_article(full_options=True, material_type='Raw Material')
-        self.article_page.get_articles_page()
+        self.article_page.sleep_tiny()
         article_text = self.article_page.search(value=self.article_page.article_name)[0].text
         self.assertIn(self.article_page.article_unit, article_text)
         self.assertIn(self.article_page.article_comment, article_text)
@@ -433,22 +421,18 @@ class ArticlesTestCases(BaseTest):
 
         LIMS-3577
         """
-        # get article with testPlan
-        created_article, payload = self.article_api.create_article()
-        article_name = created_article['article']['name']
-        self.test_plan_page.get_test_plans_page()
-        self.test_plan_page.create_new_test_plan(name=self.generate_random_string(), material_type='Raw Material',article=article_name )
-        self.article_page.get_articles_page()
-        article = self.article_page.search(value=article_name)[0]
-        # archive article
-        self.article_page.click_check_box(source=article)
+        test_plan = self.test_plan_api.create_testplan_with_article_not_all()
+        self.info("test plan created with article No {}".format(test_plan['selectedArticleNos'][0]['name']))
+        self.article_page.filter_and_select(test_plan['selectedArticleNos'][0]['name'])
+        self.info("Archive article")
         self.article_page.archive_selected_articles()
-        # get archived articles, select our article then delete it
+        self.info("Navigate to archived  articles page")
         self.article_page.get_archived_articles()
-        archived_article = self.article_page.search(value=article_name)[0]
-        self.article_page.click_check_box(source=archived_article)
-        self.article_page.sleep_medium()
+        self.article_page.filter_and_select(test_plan['selectedArticleNos'][0]['name'])
+        self.info("Delete selected article")
         self.assertFalse(self.article_page.delete_selected_article())
+        row = self.article_page.get_the_latest_row_data()
+        self.assertEqual(row['Article No.'].replace("'", ""), test_plan['selectedArticleNos'][0]['name'])
 
     def test017_delete_article_with_order(self):
         """
@@ -456,16 +440,19 @@ class ArticlesTestCases(BaseTest):
 
         LIMS-3577
         """
-        orders, payload = self.order_api.create_new_order()
-        article_name = payload[0]['article']['text']
+        response, payload = self.order_api.create_new_order()
+        self.assertEqual(response['status'], 1, "order not created")
+        article_number = self.article_api.get_article_form_data(
+            id=payload[0]['article']['id'])[0]['article']['No']
+        self.info("order created with article No {}".format(article_number))
         self.article_api.archive_articles(ids=[str(payload[0]['article']['id'])])
-        self.article_page.get_articles_page()
         self.article_page.get_archived_articles()
-        self.article_page.search(value=article_name)
-        self.article_page.select_all_records()
-        self.base_selenium.LOGGER.info(' + Delete this article, should fail.')
+        self.article_page.filter_and_select(article_number)
+        self.info(' + Delete this article, should fail.')
         self.assertFalse(self.article_page.delete_selected_article())
-        
+        row = self.article_page.get_the_latest_row_data()
+        self.assertEqual(row['Article No.'].replace("'", ""), article_number)
+
     @skip('https://modeso.atlassian.net/browse/LIMSA-201')
     def test018_download_article_sheet(self):
         """
@@ -491,9 +478,10 @@ class ArticlesTestCases(BaseTest):
         after I press on the overview button, it redirects me to the active table
         LIMS-6203
         """
-        self.article_page.info('create new article.')
-        self.base_selenium.click(element='articles:new_article')
+        self.info('create new article.')
         self.article_page.sleep_tiny()
+        self.base_selenium.click(element='articles:new_article')
+        self.article_page.sleep_small()
         # click on Overview, this will display an alert to the user
         self.article_page.click_overview()
         # switch to the alert
@@ -501,12 +489,12 @@ class ArticlesTestCases(BaseTest):
             self.article_page.confirm_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(),
                              '{}articles'.format(self.base_selenium.url))
-            self.article_page.info('clicking on Overview confirmed')
+            self.info('clicking on Overview confirmed')
         else:
             self.article_page.cancel_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(),
                              '{}articles/add'.format(self.base_selenium.url))
-            self.article_page.info('clicking on Overview cancelled')
+            self.info('clicking on Overview cancelled')
 
     def test020_edit_approach_overview_button(self):
         """
@@ -516,14 +504,14 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.get_random_article()
         article_url = self.base_selenium.get_url()
-        self.article_page.info('article_url : {}'.format(article_url))
+        self.info('article_url : {}'.format(article_url))
         # click on Overview, it will redirect you to articles' page
-        self.article_page.info('click on Overview')
+        self.info('click on Overview')
         self.article_page.click_overview()
         self.article_page.sleep_small()
         self.assertEqual(self.base_selenium.get_url(),
                          '{}articles'.format(self.base_selenium.url))
-        self.article_page.info('clicking on Overview confirmed')
+        self.info('clicking on Overview confirmed')
 
     @skip('we will skip it until we fix the issue')
     def test021_user_archive_optional_config_fields(self):
@@ -653,95 +641,70 @@ class ArticlesTestCases(BaseTest):
         self.info(' assert related article field is not existing in article page')
         self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
 
-    @parameterized.expand(['name', 'number', 'unit', 'created_at', 'material_type', 'changed_by'])
-    def test026_filter_article_by_any_field(self, filter_name):
+    @parameterized.expand([('name', 'Article Name'),
+                           ('number', 'Article No.'),
+                           ('unit', 'Unit'),
+                           ('created_at', 'Created On'),
+                           ('material_type', 'Material Type')])
+    def test026_filter_article_by_any_field(self, filter_name, header):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
-        LIMS:3595
+        LIMS-3595
         """
         # set default material type and field type
         material_type = 'Raw Material'
         field_type = 'text'
         full_options = False
-
         # set the material type to None in case of material type filter to test with random material type name
         if filter_name == 'material_type':
             material_type = None
-
-        # change the field type for drop down fields
-        if filter_name == 'material_type' or filter_name == 'changed_by':
             field_type = 'drop_down'
-
         # use full options in case of unit field
         if filter_name == 'unit':
             full_options = True
-
         # create new article with full options
         article = self.article_page.create_new_article(
             material_type=material_type, full_options=full_options)
-
         # open article table page and open the filter menu
-        self.article_page.get_articles_page()
-        self.article_page.sleep_small()
+        self.assertTrue(article, 'article not created')
+        self.article_page.sleep_medium()
         self.article_page.open_filter_menu()
-
         # filter the article and get the result
-        result_article = self.article_page.filter_article_by(filter_element='article:filter_{}'.format(
+        article_results = self.article_page.filter_article_by(filter_element='article:filter_{}'.format(
             filter_name), filter_text=article[filter_name], field_type=field_type)
-        self.assertIn(article[filter_name], result_article.text)
+        for article_result in article_results:
+            self.assertEqual(article[filter_name].replace("'", ""), article_result[header].replace("'", ""))
 
-    @parameterized.expand(['name', 'number', 'unit', 'created_at', 'material_type', 'changed_by', 'test_plan'])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-200')
-    def test027_filter_article_by_any_default_filter(self, filter_name):
+    def test027_filter_article_by_changed_by_filter(self):
         """
-        New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
+        New: Article: Filter Approach: I can filter by changed by.
 
-        LIMS:3595
+        LIMS-3595
         """
-        # set default material type and field type
-        material_type = 'Raw Material'
-        field_type = 'text'
-        full_options = False
-
-        # set the material type to None in case of material type filter to test with random material type name
-        if filter_name == 'material_type':
-            material_type = None
-
-        # change the field type for drop down fields
-        if filter_name == 'material_type' or filter_name == 'changed_by' or filter_name == 'test_plan':
-            field_type = 'drop_down'
-
-        # use full options in case of unit field
-        if filter_name == 'unit':
-            full_options = True
-
-        # create new article with full options
-        article = self.article_page.create_new_article(
-            material_type=material_type, full_options=full_options)
+        self.login_page = Login()
+        self.info('Calling the users api to create a new user with username')
+        response, payload = UsersAPI().create_new_user()
+        self.assertEqual(response['status'], 1, payload)
+        self.article_page.sleep_tiny()
+        self.login_page.logout()
+        self.article_page.sleep_tiny()
+        self.login_page.login(username=payload['username'], password=payload['password'])
+        self.base_selenium.wait_until_page_url_has(text='dashboard')
         self.article_page.get_articles_page()
-
-        # create corresponding test plan
-        if filter_name == 'test_plan':
-            self.test_plan_page.get_test_plans_page()
-            self.test_plan_page.create_new_test_plan(
-                material_type=article['material_type'], article=article['name'])
-            self.article_page.get_articles_page()
-            self.article_page.sleep_small()
-            article['test_plan'] = self.test_plan_page.test_plan_name
-
-        # turn on the selected default filters
-        self.article_page.toggle_default_filters(
-            element1='article:default_filter_{}'.format(filter_name))
-        self.default_filters_flags[filter_name] = True
-
+        self.article_page.sleep_tiny()
+        article = self.article_page.create_new_article()['name']
+        self.info('New article is created successfully with name: {}'.format(article))
+        self.article_page.set_all_configure_table_columns_to_specific_value(
+            always_hidden_columns=['selectedArticles'])
         # filter the article and get the results
-        self.article_page.filter_by(
-            filter_element='article:filter_{}'.format(filter_name), filter_text=article[filter_name],
-            field_type=field_type)
-        self.article_page.sleep_large()
-        result_article = self.article_page.result_table()[0]
-        self.assertIn(article[filter_name], result_article.text)
+        self.article_page.apply_filter_scenario(filter_element='article:filter_changed_by',
+                                                filter_text=payload['username'])
+        self.article_page.sleep_tiny()
+        result_articles = self.base_selenium.get_rows_cells_dict_related_to_header()
+        for article_result in result_articles:
+            self.assertEqual(article, article_result['Article Name'])
+            self.assertEqual(payload['username'], article_result['Changed By'])
 
     def test028_article_search_then_navigate(self):
         """
@@ -763,7 +726,7 @@ class ArticlesTestCases(BaseTest):
             self.assertTrue(False, " * There is no search results for it, Report a bug.")
         self.assertEqual(article_name, search_data['Article Name'])
         # Navigate to test plan page
-        self.article_page.info('navigate to test plans page')
+        self.info('navigate to test plans page')
         self.test_plan_page.get_test_plans_page()
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
 
@@ -775,5 +738,3 @@ class ArticlesTestCases(BaseTest):
         """
         self.article_page.sleep_medium()
         assert (self.article_page.deselect_all_configurations(), False)
-
-        
