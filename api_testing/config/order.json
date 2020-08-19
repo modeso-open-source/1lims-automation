@@ -1,49 +1,22 @@
 {
    "fields":[
       {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":1,
-         "section":2,
-         "archivable":true,
-         "id":122,
-         "name":"departments",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Departments",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
-         "order":2,
-         "htmlId":"#draggableNumberField",
-         "id":187,
-         "idInFields":187,
-         "dynamicFieldId":341,
+         "order":1,
+         "htmlId":"#draggableTextField",
+         "id":528,
+         "idInFields":528,
+         "dynamicFieldId":14,
          "section":2,
-         "name":"Date",
-         "type":2,
-         "typeNameStr":"Date",
-         "isUnique":false,
+         "name":"Container Nr.",
+         "type":1,
+         "typeNameStr":"Text",
+         "isUnique":true,
          "isRequired":false,
          "isArchived":false,
-         "componentId":10,
+         "componentId":8,
          "isDynamic":true,
          "viewByoptions":[
             {
@@ -56,160 +29,22 @@
          ],
          "optionsComponentId":null,
          "isStoredInServer":true,
-         "class":"col-md-3 hide ",
-         "title":"Date",
-         "en":"Date",
-         "de":"Date",
-         "key":"Date",
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":3,
-         "section":2,
-         "archivable":false,
-         "id":115,
-         "name":"materialType",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
          "class":"col-md-3",
-         "title":"Material Type",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
+         "title":"Container Nr.",
+         "en":"Container Nr.",
+         "de":"Container Nr.",
+         "key":"Container Nr.",
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
-         "order":4,
+         "order":2,
          "section":2,
          "archivable":false,
-         "id":116,
-         "name":"articleName",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Article",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":5,
-         "htmlId":"#draggableMultiSelectionField",
-         "id":181,
-         "idInFields":181,
-         "dynamicFieldId":331,
-         "section":2,
-         "name":"MStestplans analysis",
-         "type":8,
-         "typeNameStr":"Multiple Select",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":false,
-         "componentId":10,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":5,
-         "isStoredInServer":true,
-         "class":"col-md-3 hide ",
-         "title":"MStestplans analysis",
-         "en":"MStestplans analysis",
-         "de":"MStestplans analysis",
-         "key":"MStestplans analysis",
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":6,
-         "htmlId":"#draggableSingleSelectionField",
-         "id":180,
-         "idInFields":180,
-         "dynamicFieldId":330,
-         "section":2,
-         "name":"SScontacts analysis",
-         "type":7,
-         "typeNameStr":"Single Select",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":false,
-         "componentId":10,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            },
-            {
-               "id":1,
-               "text":"                     number"
-            }
-         ],
-         "searchable":[
-            "name",
-            "                     number"
-         ],
-         "optionsComponentId":3,
-         "isStoredInServer":true,
-         "class":"col-md-3 hide ",
-         "title":"SScontacts analysis",
-         "en":"SScontacts analysis",
-         "de":"SScontacts analysis",
-         "key":"SScontacts analysis",
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":7,
-         "section":2,
-         "archivable":false,
-         "id":121,
+         "id":83,
          "name":"testPlan",
          "isDynamic":false,
          "isArchived":false,
@@ -221,53 +56,26 @@
          "searchable":[
             "name"
          ],
-         "optionsInUse":[
-
-         ]
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":8,
-         "section":2,
-         "archivable":false,
-         "id":144,
-         "name":"testUnit",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Test Unit",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
-         "order":9,
-         "htmlId":"#draggableEmailField",
-         "id":188,
-         "idInFields":188,
-         "dynamicFieldId":342,
+         "order":3,
+         "htmlId":"#draggableTextField",
+         "id":95,
+         "idInFields":95,
+         "dynamicFieldId":8,
          "section":2,
-         "name":"Num",
-         "type":4,
-         "typeNameStr":"Num",
+         "name":"Chargen Nr",
+         "type":1,
+         "typeNameStr":"Text",
          "isUnique":false,
          "isRequired":false,
          "isArchived":false,
-         "componentId":10,
+         "componentId":8,
          "isDynamic":true,
          "viewByoptions":[
             {
@@ -280,50 +88,141 @@
          ],
          "optionsComponentId":null,
          "isStoredInServer":true,
-         "class":"col-md-3 hide ",
-         "title":"Num",
-         "en":"Num",
-         "de":"Num",
-         "key":"Num",
-         "optionsInUse":[
-
-         ]
+         "class":"col-md-3",
+         "title":"Chargen Nr",
+         "en":"Chargen Nr",
+         "de":"Chargen Nr",
+         "key":"Chargen Nr",
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
-         "order":10,
+         "order":4,
          "section":2,
-         "archivable":true,
-         "id":120,
-         "name":"shipmentDate",
+         "archivable":false,
+         "id":76,
+         "name":"materialType",
          "isDynamic":false,
          "isArchived":false,
          "componentId":8,
          "class":"col-md-3",
-         "title":"Shipment Date",
+         "title":"Material Type",
          "isStoredInServer":true,
          "hasShowOption":true,
          "searchable":[
             "name"
          ],
-         "optionsInUse":[
-
-         ]
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":5,
+         "section":2,
+         "archivable":false,
+         "id":77,
+         "name":"articleName",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":8,
+         "class":"col-md-3",
+         "title":"Article",
+         "isStoredInServer":true,
+         "hasShowOption":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":6,
+         "section":2,
+         "archivable":false,
+         "id":102,
+         "name":"testUnit",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":8,
+         "class":"col-md-3",
+         "title":"Test Unit",
+         "isStoredInServer":true,
+         "searchable":[
+            "name",
+            "type"
+         ],
+         "error":false,
+         "optionsInUse":[""]
       },
       {
          "options":[
-
+            {
+               "serverId":1,
+               "id":5,
+               "text":"EP"
+            },
+            {
+               "serverId":2,
+               "id":6,
+               "text":"AB"
+            },
+            {
+               "serverId":3,
+               "id":7,
+               "text":"Container Probe"
+            }
          ],
+         "isEditable":true,
+         "isDragable":true,
+         "order":7,
+         "htmlId":"#draggableMultiSelectionField",
+         "id":535,
+         "idInFields":535,
+         "dynamicFieldId":18,
+         "section":2,
+         "name":"Muster",
+         "type":8,
+         "typeNameStr":"Multiple Select",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":false,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"Muster",
+         "en":"sample",
+         "de":"Muster",
+         "key":"Muster",
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
-         "order":11,
+         "order":8,
          "section":2,
          "archivable":false,
-         "id":119,
+         "id":80,
          "name":"testDate",
          "isDynamic":false,
          "isArchived":false,
@@ -335,287 +234,25 @@
          "searchable":[
             "name"
          ],
-         "optionsInUse":[
-
-         ]
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":12,
-         "section":2,
-         "archivable":true,
-         "id":126,
-         "name":"attachment",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Attachments",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":13,
-         "section":1,
-         "archivable":false,
-         "id":149,
-         "name":"number",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Analysis No.",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":14,
-         "section":1,
-         "archivable":false,
-         "id":143,
-         "name":"orderType",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Order",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":15,
-         "section":1,
-         "archivable":false,
-         "id":158,
-         "name":"result",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Result",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":16,
-         "section":1,
-         "archivable":false,
-         "id":114,
-         "name":"orderNumber",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Order No.",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":17,
-         "section":1,
-         "archivable":true,
-         "id":156,
-         "name":"receiptDate",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Arrival Date",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":18,
-         "section":1,
-         "archivable":false,
-         "id":118,
-         "name":"contact",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Contact",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":19,
-         "section":1,
-         "archivable":false,
-         "id":157,
-         "name":"status",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Status",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":20,
-         "section":1,
-         "archivable":true,
-         "id":162,
-         "name":"analysis_attachment",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Attachments",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[
-
-         ]
-      }
-   ],
-   "archivedFields":[
-      {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
-         "order":1,
-         "htmlId":"#draggableTextField",
-         "id":534,
-         "idInFields":534,
-         "dynamicFieldId":347,
-         "section":2,
-         "name":"aaaaaaaaa",
-         "type":1,
-         "typeNameStr":"Text",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
-         "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"aaaaaaaaa",
-         "en":"aaaaaaaaa",
-         "de":"aaaaaaaaa",
-         "key":"aaaaaaaaa"
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":2,
+         "order":9,
          "htmlId":"#draggableNumberField",
-         "id":533,
-         "idInFields":533,
-         "dynamicFieldId":346,
+         "id":91,
+         "idInFields":91,
+         "dynamicFieldId":3,
          "section":2,
-         "name":"Date field1",
+         "name":"Herstelldatum",
          "type":2,
          "typeNameStr":"Date",
          "isUnique":false,
          "isRequired":false,
-         "isArchived":true,
+         "isArchived":false,
          "componentId":8,
          "isDynamic":true,
          "viewByoptions":[
@@ -630,29 +267,257 @@
          "optionsComponentId":null,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"Date field1",
-         "en":"Date field1",
-         "de":"Date field1",
-         "key":"Date field1"
+         "title":"Herstelldatum",
+         "en":"manfactureDate",
+         "de":"manfactureDate",
+         "key":"Herstelldatum",
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
          "order":10,
-         "htmlId":"#draggableMultiSelectionField",
-         "id":141,
-         "idInFields":141,
-         "dynamicFieldId":309,
+         "htmlId":"#draggableNumberField",
+         "id":92,
+         "idInFields":92,
+         "dynamicFieldId":4,
          "section":2,
-         "name":"MS3analysisx",
+         "name":"Haltbarkeit",
+         "type":2,
+         "typeNameStr":"Date",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":false,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"Haltbarkeit",
+         "en":"expirationDate",
+         "de":"expirationDate",
+         "key":"Haltbarkeit",
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":true,
+         "isDragable":true,
+         "order":11,
+         "htmlId":"#draggableTextField",
+         "id":82,
+         "idInFields":82,
+         "dynamicFieldId":1,
+         "section":2,
+         "name":"Picking Time",
+         "type":1,
+         "typeNameStr":"Text",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":false,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"Picking Time",
+         "en":"pickingTime",
+         "de":"pickingTime",
+         "key":"Picking Time",
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":true,
+         "isDragable":true,
+         "order":12,
+         "htmlId":"#draggableTextField",
+         "id":530,
+         "idInFields":530,
+         "dynamicFieldId":16,
+         "section":2,
+         "name":"interne Lieferschein Nr.",
+         "type":1,
+         "typeNameStr":"Text",
+         "isUnique":true,
+         "isRequired":false,
+         "isArchived":false,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"interne Lieferschein Nr.",
+         "en":"interne Lieferschein Nr.",
+         "de":"interne Lieferschein Nr.",
+         "key":"interne Lieferschein Nr.",
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":13,
+         "section":2,
+         "archivable":true,
+         "id":84,
+         "name":"departments",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":8,
+         "class":"col-md-3",
+         "title":"Departments",
+         "isStoredInServer":true,
+         "hasShowOption":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[
+            {
+               "serverId":1,
+               "id":12,
+               "text":"Kammer 1"
+            },
+            {
+               "serverId":2,
+               "id":13,
+               "text":"Kammer 2"
+            },
+            {
+               "serverId":3,
+               "id":14,
+               "text":"Kammer 3"
+            },
+            {
+               "serverId":4,
+               "id":15,
+               "text":"Kammer 4"
+            }
+         ],
+         "isEditable":true,
+         "isDragable":true,
+         "order":14,
+         "htmlId":"#draggableMultiSelectionField",
+         "id":538,
+         "idInFields":538,
+         "dynamicFieldId":20,
+         "section":2,
+         "name":"Tank",
          "type":8,
          "typeNameStr":"Multiple Select",
          "isUnique":false,
          "isRequired":false,
-         "isArchived":true,
+         "isArchived":false,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"Tank",
+         "en":"Tank",
+         "de":"Tank",
+         "key":"Tank",
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":true,
+         "isDragable":true,
+         "order":15,
+         "htmlId":"#draggableTextField",
+         "id":539,
+         "idInFields":539,
+         "dynamicFieldId":21,
+         "section":2,
+         "name":"Lauf Nr.",
+         "type":1,
+         "typeNameStr":"Text",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":false,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"Lauf Nr.",
+         "en":"Lauf Nr.",
+         "de":"Lauf Nr.",
+         "key":"Lauf Nr.",
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":true,
+         "isDragable":true,
+         "order":16,
+         "htmlId":"#draggableSingleSelectionField",
+         "id":542,
+         "idInFields":542,
+         "dynamicFieldId":24,
+         "section":2,
+         "name":"Nachkontrolle",
+         "type":7,
+         "typeNameStr":"Single Select",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":false,
          "componentId":8,
          "isDynamic":true,
          "viewByoptions":[
@@ -667,33 +532,55 @@
          "optionsComponentId":10,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"MS3analysisx",
-         "en":"MS3analysisx",
-         "de":"MS3analysisx",
-         "key":"MS3analysisx"
+         "title":"Nachkontrolle",
+         "en":"Nachkontrolle",
+         "de":"Nachkontrolle",
+         "key":"Nachkontrolle",
+         "error":false,
+         "optionsInUse":[""]
       },
       {
          "options":[
             {
                "serverId":1,
-               "id":41,
-               "text":"test 1"
+               "id":8,
+               "text":"Eurofins"
+            },
+            {
+               "serverId":2,
+               "id":9,
+               "text":"Envilab"
+            },
+            {
+               "serverId":3,
+               "id":10,
+               "text":"SQTS"
+            },
+            {
+               "serverId":4,
+               "id":11,
+               "text":"Mabritec"
+            },
+            {
+               "serverId":5,
+               "id":16,
+               "text":"Micarna"
             }
          ],
          "isEditable":true,
          "isDragable":true,
-         "order":11,
+         "order":17,
          "htmlId":"#draggableSingleSelectionField",
-         "id":146,
-         "idInFields":146,
-         "dynamicFieldId":337,
+         "id":536,
+         "idInFields":536,
+         "dynamicFieldId":19,
          "section":2,
-         "name":"Single Select UD",
+         "name":"externes Labor",
          "type":7,
          "typeNameStr":"Single Select",
          "isUnique":false,
          "isRequired":false,
-         "isArchived":true,
+         "isArchived":false,
          "componentId":8,
          "isDynamic":true,
          "viewByoptions":[
@@ -708,29 +595,29 @@
          "optionsComponentId":null,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"Single Select UD",
-         "en":"Single Select UD",
-         "de":"Single Select UD",
-         "key":"Single Select UD"
+         "title":"externes Labor",
+         "en":"externes Labor",
+         "de":"externes Labor",
+         "key":"externes Labor",
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
-         "order":12,
-         "htmlId":"#draggableSingleSelectionField",
-         "id":142,
-         "idInFields":142,
-         "dynamicFieldId":311,
+         "order":18,
+         "htmlId":"#draggableTextField",
+         "id":529,
+         "idInFields":529,
+         "dynamicFieldId":15,
          "section":2,
-         "name":"SStestunits",
-         "type":7,
-         "typeNameStr":"Single Select",
-         "isUnique":false,
+         "name":"Monitoring Bereich",
+         "type":1,
+         "typeNameStr":"Text",
+         "isUnique":true,
          "isRequired":false,
-         "isArchived":true,
+         "isArchived":false,
          "componentId":8,
          "isDynamic":true,
          "viewByoptions":[
@@ -742,32 +629,32 @@
          "searchable":[
             "name"
          ],
-         "optionsComponentId":4,
+         "optionsComponentId":null,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"SStestunits",
-         "en":"SStestunits",
-         "de":"SStestunits",
-         "key":"SStestunits"
+         "title":"Monitoring Bereich",
+         "en":"Monitoring Bereich",
+         "de":"Monitoring Bereich",
+         "key":"Monitoring Bereich",
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
-         "order":13,
-         "htmlId":"#draggableSingleSelectionField",
-         "id":139,
-         "idInFields":139,
-         "dynamicFieldId":305,
+         "order":19,
+         "htmlId":"#draggableTextField",
+         "id":86,
+         "idInFields":86,
+         "dynamicFieldId":12,
          "section":2,
-         "name":"SSarticles",
-         "type":7,
-         "typeNameStr":"Single Select",
+         "name":"Kommentieren",
+         "type":1,
+         "typeNameStr":"Text",
          "isUnique":false,
          "isRequired":false,
-         "isArchived":true,
+         "isArchived":false,
          "componentId":8,
          "isDynamic":true,
          "viewByoptions":[
@@ -779,138 +666,223 @@
          "searchable":[
             "name"
          ],
-         "optionsComponentId":2,
+         "optionsComponentId":null,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"SSarticles",
-         "en":"SSarticles",
-         "de":"SSarticles",
-         "key":"SSarticles"
+         "title":"Kommentieren",
+         "en":"comment",
+         "de":"comment",
+         "key":"Kommentieren",
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
-         "isEditable":true,
+         "options":[""],
+         "isEditable":false,
          "isDragable":true,
-         "order":13,
-         "htmlId":"#draggableDateField",
-         "id":182,
-         "idInFields":182,
-         "dynamicFieldId":332,
+         "order":20,
          "section":2,
-         "name":"Chbox analysis",
-         "type":5,
-         "typeNameStr":"Checkbox",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
+         "archivable":true,
+         "id":90,
+         "name":"attachment",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":8,
+         "class":"col-md-3",
+         "title":"Attachments",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":21,
+         "section":1,
+         "archivable":false,
+         "id":75,
+         "name":"orderNumber",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":8,
+         "class":"col-md-4",
+         "title":"Order No.",
+         "isStoredInServer":true,
+         "hasShowOption":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":22,
+         "section":1,
+         "archivable":false,
+         "id":101,
+         "name":"orderType",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":8,
+         "class":"col-md-4",
+         "title":"Order",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":23,
+         "section":1,
+         "archivable":false,
+         "id":113,
+         "name":"status",
+         "isDynamic":false,
+         "isArchived":false,
          "componentId":10,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
+         "class":"col-md-2 hide ",
+         "title":"Status",
+         "isStoredInServer":true,
+         "hasShowOption":true,
          "searchable":[
             "name"
          ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"Chbox analysis",
-         "en":"Chbox analysis",
-         "de":"Chbox analysis",
-         "key":"Chbox analysis"
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
-         "isEditable":true,
+         "options":[""],
+         "isEditable":false,
          "isDragable":true,
-         "order":14,
-         "htmlId":"#draggableSingleSelectionField",
-         "id":137,
-         "idInFields":137,
-         "dynamicFieldId":303,
-         "section":2,
-         "name":"SSorder",
-         "type":7,
-         "typeNameStr":"Single Select",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
+         "order":24,
+         "section":1,
+         "archivable":true,
+         "id":118,
+         "name":"analysis_attachment",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":10,
+         "class":"col-md-2 hide ",
+         "title":"Attachments",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":25,
+         "section":1,
+         "archivable":false,
+         "id":79,
+         "name":"contact",
+         "isDynamic":false,
+         "isArchived":false,
          "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
+         "class":"col-md-4",
+         "title":"Contact",
+         "isStoredInServer":true,
+         "hasShowOption":true,
+         "searchable":[
+            "name",
+            " number"
          ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":26,
+         "section":1,
+         "archivable":false,
+         "id":105,
+         "name":"number",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":10,
+         "class":"col-md-2 hide ",
+         "title":"Analysis No.",
+         "isStoredInServer":true,
          "searchable":[
             "name"
          ],
-         "optionsComponentId":8,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"SSorder",
-         "en":"SSorder",
-         "de":"SSorder",
-         "key":"SSorder"
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
-         "isEditable":true,
+         "options":[""],
+         "isEditable":false,
          "isDragable":true,
-         "order":15,
-         "htmlId":"#draggableMultiSelectionField",
-         "id":147,
-         "idInFields":147,
-         "dynamicFieldId":338,
-         "section":2,
-         "name":"Multiple524163",
-         "type":8,
-         "typeNameStr":"Multiple Select",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
-         "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
+         "order":27,
+         "section":1,
+         "archivable":true,
+         "id":112,
+         "name":"receiptDate",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":10,
+         "class":"col-md-2 hide ",
+         "title":"Arrival Date",
+         "isStoredInServer":true,
          "searchable":[
             "name"
          ],
-         "optionsComponentId":8,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"Multiple524163",
-         "en":"Multiple524163",
-         "de":"Multiple524163",
-         "key":"Multiple524163"
+         "error":false,
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":28,
+         "section":1,
+         "archivable":false,
+         "id":114,
+         "name":"result",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":10,
+         "class":"col-md-2 hide ",
+         "title":"Result",
+         "isStoredInServer":true,
+         "hasShowOption":true,
+         "searchable":[
+            "name"
          ],
+         "error":false,
+         "optionsInUse":[""]
+      }
+   ],
+   "archivedFields":[
+      {
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
-         "order":16,
+         "order":1,
          "htmlId":"#draggableEmailField",
-         "id":136,
-         "idInFields":136,
-         "dynamicFieldId":302,
+         "id":96,
+         "idInFields":96,
+         "dynamicFieldId":7,
          "section":2,
-         "name":"Numberrrrrrrrrrr",
+         "name":"Anzahl Proben",
          "type":4,
          "typeNameStr":"Num",
          "isUnique":false,
@@ -930,183 +902,80 @@
          "optionsComponentId":null,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"Numberrrrrrrrrrr",
-         "en":"Numberrrrrrrrrrr",
-         "de":"Numberrrrrrrrrrr",
-         "key":"Numberrrrrrrrrrr"
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":17,
-         "htmlId":"#draggableCheckboxField",
-         "id":135,
-         "idInFields":135,
-         "dynamicFieldId":299,
-         "section":2,
-         "name":"Emailllllllllll",
-         "type":3,
-         "typeNameStr":"Email",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
-         "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"Emailllllllllll",
-         "en":"Emailllllllllll",
-         "de":"Emailllllllllll",
-         "key":"Emailllllllllll"
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":18,
-         "htmlId":"#draggableNumberField",
-         "id":134,
-         "idInFields":134,
-         "dynamicFieldId":298,
-         "section":2,
-         "name":"Datex",
-         "type":2,
-         "typeNameStr":"Date",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
-         "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"Datex",
-         "en":"Datex",
-         "de":"Datex",
-         "key":"Datex"
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":19,
-         "htmlId":"#draggableDateField",
-         "id":133,
-         "idInFields":133,
-         "dynamicFieldId":297,
-         "section":2,
-         "name":"Chbox",
-         "type":5,
-         "typeNameStr":"Checkbox",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
-         "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"Chbox",
-         "en":"Chbox",
-         "de":"Chbox",
-         "key":"Chbox"
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":20,
-         "htmlId":"#draggableMultiSelectionField",
-         "id":138,
-         "idInFields":138,
-         "dynamicFieldId":304,
-         "section":2,
-         "name":"MStestplans",
-         "type":8,
-         "typeNameStr":"Multiple Select",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":true,
-         "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":5,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"MStestplans",
-         "en":"MStestplans",
-         "de":"MStestplans",
-         "key":"MStestplans"
+         "title":"Anzahl Proben",
+         "en":"noOfSamples",
+         "de":"noOfSamples",
+         "key":"Anzahl Proben"
       },
       {
          "options":[
             {
                "serverId":1,
-               "id":35,
-               "text":"x"
+               "id":1,
+               "text":"EP"
             },
             {
                "serverId":2,
-               "id":36,
-               "text":"y"
+               "id":2,
+               "text":"SB 10kg"
+            },
+            {
+               "serverId":3,
+               "id":3,
+               "text":"SB 2kg"
+            },
+            {
+               "serverId":4,
+               "id":4,
+               "text":"AB"
             }
          ],
          "isEditable":true,
          "isDragable":true,
-         "order":21,
-         "htmlId":null,
-         "id":132,
-         "idInFields":132,
-         "dynamicFieldId":296,
+         "order":7,
+         "htmlId":"#draggableMultiSelectionField",
+         "id":534,
+         "idInFields":534,
+         "dynamicFieldId":17,
          "section":2,
-         "name":"Chlistx",
-         "type":11,
-         "typeNameStr":"CheckList",
+         "name":"Mehrfachauswahl",
+         "type":8,
+         "typeNameStr":"Multiple Select",
+         "isUnique":false,
+         "isRequired":true,
+         "isArchived":true,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"Mehrfachauswahl",
+         "en":"Mehrfachauswahl",
+         "de":"Mehrfachauswahl",
+         "key":"Mehrfachauswahl"
+      },
+      {
+         "options":[""],
+         "isEditable":true,
+         "isDragable":true,
+         "order":9,
+         "htmlId":"#draggableEmailField",
+         "id":541,
+         "idInFields":541,
+         "dynamicFieldId":23,
+         "section":2,
+         "name":"Num",
+         "type":4,
+         "typeNameStr":"Num",
          "isUnique":false,
          "isRequired":false,
          "isArchived":true,
@@ -1124,63 +993,94 @@
          "optionsComponentId":null,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"Chlistx",
-         "en":"Chlistx",
-         "de":"Chlistx",
-         "key":"Chlistx"
+         "title":"Num",
+         "en":"Num",
+         "de":"Num",
+         "key":"Num"
       },
       {
-         "options":[
-
+         "options":[""],
+         "isEditable":true,
+         "isDragable":true,
+         "order":9,
+         "htmlId":"#draggableEmailField",
+         "id":93,
+         "idInFields":93,
+         "dynamicFieldId":5,
+         "section":2,
+         "name":"CAS-Nr",
+         "type":4,
+         "typeNameStr":"Num",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":true,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
          ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"CAS-Nr",
+         "en":"casNr",
+         "de":"casNr",
+         "key":"CAS-Nr"
+      },
+      {
+         "options":[""],
+         "isEditable":true,
+         "isDragable":true,
+         "order":13,
+         "htmlId":"#draggableEmailField",
+         "id":85,
+         "idInFields":85,
+         "dynamicFieldId":11,
+         "section":2,
+         "name":"Menge",
+         "type":4,
+         "typeNameStr":"Num",
+         "isUnique":false,
+         "isRequired":false,
+         "isArchived":true,
+         "componentId":8,
+         "isDynamic":true,
+         "viewByoptions":[
+            {
+               "id":0,
+               "text":"name"
+            }
+         ],
+         "searchable":[
+            "name"
+         ],
+         "optionsComponentId":null,
+         "isStoredInServer":true,
+         "class":"col-md-3",
+         "title":"Menge",
+         "en":"amount",
+         "de":"amount",
+         "key":"Menge"
+      },
+      {
+         "options":[""],
          "isEditable":true,
          "isDragable":true,
          "order":24,
          "htmlId":"#draggableTextField",
-         "id":130,
-         "idInFields":130,
-         "dynamicFieldId":294,
+         "id":94,
+         "idInFields":94,
+         "dynamicFieldId":6,
          "section":2,
-         "name":"Textx",
+         "name":"IUPAC",
          "type":1,
          "typeNameStr":"Text",
-         "isUnique":true,
-         "isRequired":false,
-         "isArchived":true,
-         "componentId":8,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-3",
-         "title":"Textx",
-         "en":"Textx",
-         "de":"Textx",
-         "key":"Textx"
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":true,
-         "isDragable":true,
-         "order":35,
-         "htmlId":null,
-         "id":131,
-         "idInFields":131,
-         "dynamicFieldId":295,
-         "section":2,
-         "name":"Tagsx",
-         "type":10,
-         "typeNameStr":"Tags",
          "isUnique":false,
          "isRequired":false,
          "isArchived":true,
@@ -1198,10 +1098,10 @@
          "optionsComponentId":null,
          "isStoredInServer":true,
          "class":"col-md-3",
-         "title":"Tagsx",
-         "en":"Tagsx",
-         "de":"Tagsx",
-         "key":"Tagsx"
+         "title":"IUPAC",
+         "en":"iupac",
+         "de":"iupac",
+         "key":"iupac"
       }
    ],
    "withYear":1,

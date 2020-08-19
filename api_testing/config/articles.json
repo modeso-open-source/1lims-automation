@@ -1,9 +1,7 @@
 {
    "fields":[
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
          "order":1,
@@ -21,14 +19,10 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[
-
-         ]
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
          "order":2,
@@ -46,14 +40,10 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[
-
-         ]
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
          "order":3,
@@ -71,17 +61,34 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[
-
-         ]
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
          "order":4,
+         "section":1,
+         "archivable":true,
+         "id":5,
+         "name":"unit",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":2,
+         "class":"col-md-4",
+         "title":"Unit",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[""]
+      },
+      {
+         "options":[""],
+         "isEditable":false,
+         "isDragable":true,
+         "order":5,
          "section":1,
          "archivable":true,
          "id":12,
@@ -96,14 +103,10 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[
-
-         ]
+         "optionsInUse":[""]
       },
       {
-         "options":[
-
-         ],
+         "options":[""],
          "isEditable":false,
          "isDragable":true,
          "order":1,
@@ -121,34 +124,7 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":2,
-         "section":2,
-         "archivable":true,
-         "id":5,
-         "name":"unit",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":2,
-         "class":"col-md-4",
-         "title":"Unit",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
+         "optionsInUse":[""]
       }
    ],
    "archivedFields":[
