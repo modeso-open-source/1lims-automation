@@ -73,7 +73,7 @@ class BasePages:
         self.confirm_popup(force)
 
     def confirm_popup(self, force=True):
-        self.base_selenium.LOGGER.info('confirming the popup')
+        self.info('confirming the popup')
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
             if force:
                 self.base_selenium.click(element='general:confirm_pop')
@@ -376,7 +376,7 @@ class BasePages:
                     checkbox.click()
                     return column_name
             except Exception as e:
-                self.base_selenium.LOGGER.info(
+                self.info(
                     "element with the id '{}' doesn't  exit in the configure table".format(column.get_attribute('id')))
                 self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
                 return ''

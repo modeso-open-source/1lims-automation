@@ -40,7 +40,7 @@ end_points = {
         'list_all_orders': '/api/orders',
         'get_order_by_id': '/api/orderInformation/get/orders/byId/',
         'create_new_order': '/api/orders',
-        'get_auto_generated_number': '/api/orders/auto/generatedId',
+        'get_auto_generated_number': '/api/orders/auto/generatedOrderNumber/?yearOption=',
         'archive_main_order': '/api/orderInformation/',
         'restore_main_order': '/api/orderInformation/',
         'delete_main_order': '/api/orderInformation/',

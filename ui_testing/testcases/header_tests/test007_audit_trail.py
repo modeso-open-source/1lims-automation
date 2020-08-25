@@ -24,12 +24,11 @@ class AuditTrailTestCases(BaseTest):
 
         LIMS-6357
         """
-        self.audit_trail_page.info(' + Download XSLX sheet')
+        self.audit_trail_page.info('download XSLX sheet')
         self.audit_trail_page.download_xslx_sheet()
-        rows_data = self.audit_trail_page.get_table_rows_data()
+        rows_data = list(filter(None, self.audit_trail_page.get_table_rows_data()))
         for index in range(len(rows_data)):
-            self.audit_trail_page.info(
-                ' + Comparing the audit trail no. {} '.format(index))
+            self.audit_trail_page.info('comparing the audit trail no. {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.audit_trail_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)

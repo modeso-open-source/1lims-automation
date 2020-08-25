@@ -85,3 +85,9 @@ class RolesAPI(RolesAPIFactory):
         roles = response['roles']
         editable_roles = [role for role in roles if role['name'] not in ['Admin', 'Contact']]
         return editable_roles
+
+    def get_role_id_from_name(self, name):
+        response, payload = self.get_all_roles()
+        for role in response['roles']:
+            if role['name'] == name:
+                return role['id']

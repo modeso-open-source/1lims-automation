@@ -500,11 +500,11 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-3672-case of all data
         """
-        self.info(' * Download XSLX sheet')
+        self.info('download XSLX sheet')
         self.test_unit_page.download_xslx_sheet()
-        rows_data = self.test_unit_page.get_table_rows_data()
+        rows_data = list(filter(None, self.test_unit_page.get_table_rows_data()))
         for index in range(len(rows_data)):
-            self.info(' * Comparing the test units with index : {} '.format(index))
+            self.info('comparing the test units with index : {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.test_unit_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)
@@ -698,10 +698,13 @@ class TestUnitsTestCases(BaseTest):
 
         self.assertEqual(response['status'], 1, 'test unit not created {}'.format(payload))
         test_unit_data, version_data = self.test_units_page.filter_and_get_version(payload['number'])
-        self.assertEqual(version_data[0]['Test Unit No.'], test_unit_data['Test Unit No.']+'.1')
-        for item in version_data[0].keys():
-            if item not in ['Test Unit No.', 'Comment', 'Enter Value', 'Quantification Limit Unit']:
-                self.assertEqual(version_data[0][item], test_unit_data[item])
+
+        for key, value in version_data[0].items():
+            if key in test_unit_data.keys():
+                if key == 'Test Unit No.':
+                    self.assertEqual(value, test_unit_data['Test Unit No.'] + '.1')
+                else:
+                    self.assertEqual(value, test_unit_data[key], key)
 
     @parameterized.expand(['ok', 'cancel'])
     def test026_create_approach_overview_button(self, ok):
@@ -793,8 +796,12 @@ class TestUnitsTestCases(BaseTest):
         LIMS-4160
         """
         self.info('select random quantitative unit with quantification only ')
-        test_unit_id = self.test_unit_api.get_test_unit_with_spec_or_quan_only('quan')
-        self.assertTrue(test_unit_id, "No test unit selected")
+        res, payload = self.test_unit_api.create_quantitative_testunit(useSpec=False,
+                                                                       useQuantification=True,
+                                                                       quantificationUpperLimit=100,
+                                                                       quantificationLowerLimit=10)
+        self.assertEqual(res['message'], 'operation_success')
+        test_unit_id = res['testUnit']['testUnitId']
         self.test_unit_page.open_test_unit_edit_page_by_id(id=test_unit_id)
         self.info('switch to specification')
         self.test_unit_page.switch_from_quan_to_spec(lower_limit=50, upper_limit=100)
@@ -827,6 +834,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('search for value of the unit field: {}'.format(test_unit_found['Unit']))
         self.assertIn(test_unit_found['Unit'], fixed_sheet_row_data)
 
+    @skip('need API to take round option ID and returns round option name')
     def test032_edit_category_affects_testplan_step_two(self):
         """
         New: Test unit: Category Approach: Any update in test unit category should
@@ -838,10 +846,11 @@ class TestUnitsTestCases(BaseTest):
         response, payload = self.test_unit_api.create_qualitative_testunit()
         self.assertEqual(response['status'], 1, payload)
         self.info('create new test plan with created test unit with name {}'.format(payload['name']))
+
         test_plan = TestPlanAPI().create_testplan_from_test_unit_id(response['testUnit']['testUnitId'])
         self.assertTrue(test_plan, "Test plan not created")
         self.info('created test unit with number {}'.format(test_plan['number']))
-        self.info('Navigate to test plan edit page ang get test unit category')
+        self.info('Navigate to test plan edit page and get test unit category')
         self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
         self.test_plan.sleep_small()
         random_category_before_edit = self.test_plan.get_test_unit_category()
@@ -1211,7 +1220,6 @@ class TestUnitsTestCases(BaseTest):
         New: Test units: Filter Approach: Make sure you can filter by created on
         LIMS-6431
         """
-
         data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute=filter_case)
         self.assertNotEqual(data_to_filter_with, False)
 

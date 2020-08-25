@@ -113,12 +113,13 @@ class ContactsTestCases(BaseTest):
                 search_results = self.contacts_page.search(row_data[column].lower())
             else:
                 search_results = self.contacts_page.search(row_data[column])
-            self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
+            self.assertGreater(len(search_results), 1, "There is no search results for it, Report a bug.")
+
             for search_result in search_results:
                 search_data = self.base_selenium.get_row_cells_dict_related_to_header(search_result)
-                if search_data[column] == row_data[column].replace("'", ''):
+                if search_data[column].replace("'", '') == row_data[column].replace("'", ''):
                     break
-            self.assertIn(search_data[column], row_data[column].replace("'", ''))
+            self.assertIn(search_data[column].replace("'", ''), row_data[column].replace("'", ''))
 
     #@skip('https://modeso.atlassian.net/browse/LIMS-6402')
     def test006_download_contact_sheet(self):
@@ -129,7 +130,7 @@ class ContactsTestCases(BaseTest):
         """
         self.info(' * Download XSLX sheet')
         self.contact_page.download_xslx_sheet()
-        rows_data = self.contact_page.get_table_rows_data()
+        rows_data = list(filter(None, self.contact_page.get_table_rows_data()))
         for index in range(len(rows_data)-1):
             self.info(' * Comparing the contact no. {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))

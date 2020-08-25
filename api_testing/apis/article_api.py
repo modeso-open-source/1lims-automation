@@ -207,6 +207,7 @@ class ArticleAPI(ArticleAPIFactory):
                                            selectedMaterialType=[material_type],
                                            materialTypeId=int(material_type['id']))
         if api['status'] == 1:
+            self.info('article has been created')
             return api['article']
 
     def get_random_article_articleID(self):

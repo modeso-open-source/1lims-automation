@@ -9,7 +9,7 @@ class Article(Articles):
     def create_new_article(self, material_type='', sleep=True, full_options=False):
         self.info(' + Create new article.')
         self.base_selenium.click(element='articles:new_article')
-        time.sleep(self.base_selenium.TIME_SMALL)
+        self.sleep_small()
         self.article_name = self.generate_random_text()
         self.set_name(name=self.article_name)
         if material_type:

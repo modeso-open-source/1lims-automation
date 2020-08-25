@@ -247,6 +247,7 @@ class ArticlesTestCases(BaseTest):
         self.info('{}'.format(random_order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
         self.order_page.set_material_type_of_first_suborder(material_type='Raw Material', sub_order_index=0)
+        self.order_page.confirm_popup()
         self.order_page.set_article(article=api['article']['name'])
         self.assertFalse(
             self.order_page.is_article_existing(article=api['article']['name']))
@@ -411,6 +412,7 @@ class ArticlesTestCases(BaseTest):
         self.article_page.create_new_article(full_options=True, material_type='Raw Material')
         self.article_page.sleep_tiny()
         article_text = self.article_page.search(value=self.article_page.article_name)[0].text
+
         self.assertIn(self.article_page.article_unit, article_text)
         self.assertIn(self.article_page.article_comment, article_text)
         self.assertIn(self.article_page.article_material_type, article_text)
@@ -429,11 +431,12 @@ class ArticlesTestCases(BaseTest):
         self.info("Navigate to archived  articles page")
         self.article_page.get_archived_articles()
         self.article_page.filter_and_select(test_plan['selectedArticleNos'][0]['name'])
-        self.info("Delete selected article")
+        self.info("delete selected article")
         self.assertFalse(self.article_page.delete_selected_article())
         row = self.article_page.get_the_latest_row_data()
         self.assertEqual(row['Article No.'].replace("'", ""), test_plan['selectedArticleNos'][0]['name'])
 
+    #@skip('waiting create order update')
     def test017_delete_article_with_order(self):
         """
         New: Articles: Delete Approach; I can't delete any article if this article related to some data
@@ -448,7 +451,7 @@ class ArticlesTestCases(BaseTest):
         self.article_api.archive_articles(ids=[str(payload[0]['article']['id'])])
         self.article_page.get_archived_articles()
         self.article_page.filter_and_select(article_number)
-        self.info(' + Delete this article, should fail.')
+        self.info('delete this article, should fail.')
         self.assertFalse(self.article_page.delete_selected_article())
         row = self.article_page.get_the_latest_row_data()
         self.assertEqual(row['Article No.'].replace("'", ""), article_number)
@@ -462,7 +465,7 @@ class ArticlesTestCases(BaseTest):
         """
         self.info(' * Download XSLX sheet')
         self.article_page.download_xslx_sheet()
-        rows_data = self.article_page.get_table_rows_data()
+        rows_data = list(filter(None, self.article_page.get_table_rows_data()))
         for index in range(len(rows_data)):
             self.info(' * Comparing the article no. {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))

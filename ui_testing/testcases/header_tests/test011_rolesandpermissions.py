@@ -41,7 +41,7 @@ class HeaderTestCases(BaseTest):
                                                archived_element='roles_and_permissions:archived')
         for role in selected_roles_and_permissions_data:
             role_name = role['Name']
-            self.info(' + {} role should be activated.'.format(role_name))
+            self.info('{} role should be activated.'.format(role_name))
             self.assertTrue(self.header_page.is_role_in_table(value=role_name))
 
     def test002_restore_roles_and_permissions(self):
@@ -130,9 +130,12 @@ class HeaderTestCases(BaseTest):
 
         LIMS-6108
         """
-        self.info("get random role edit page")
-        random_role = random.choice(self.roles_api.get_random_role())
-        self.header_page.get_role_edit_page_by_id(random_role['id'])
+        self.info('create role to be archived')
+        random_name = self.roles_api.generate_random_string()
+        re, pay = self.roles_api.create_role(random_name)
+        role_id = self.roles_api.get_role_id_from_name(pay['name'])
+
+        self.header_page.get_role_edit_page_by_id(role_id)
         new_name = self.generate_random_string()
         self.header_page.set_role_name(role_name=new_name)
         if 'save_btn' == save:
@@ -141,11 +144,11 @@ class HeaderTestCases(BaseTest):
             self.header_page.cancel(force=True)
 
         self.header_page.get_roles_page()
-        found_role = self.header_page.filter_role_by_no(random_role['id'])['Name']
+        found_role = self.header_page.filter_role_by_no(role_id)['Name']
         if 'save_btn' == save:
             self.assertEqual(found_role, new_name)
         else:
-            self.assertEqual(found_role, random_role['name'])
+            self.assertEqual(found_role, random_name)
 
     def test007_delete_role_not_used_in_other_entity(self):
         """
@@ -201,11 +204,11 @@ class HeaderTestCases(BaseTest):
 
         LIMS-6107
         """
-        self.info(' * Download XSLX sheet')
+        self.info('download XSLX sheet')
         self.header_page.download_xslx_sheet()
-        rows_data = self.header_page.get_table_rows_data()
+        rows_data = list(filter(None, self.header_page.get_table_rows_data()))
         for index in range(len(rows_data)-1):
-            self.info(' * Comparing the role no. {} '.format(index))
+            self.info('comparing the role no. {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.header_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)
@@ -238,6 +241,7 @@ class HeaderTestCases(BaseTest):
         if int(table_info['pagination_limit']) <= int(table_info['count']):
             self.assertEqual(table_info['pagination_limit'], table_records_count)
 
+    @skip("There is no edit option in the user table [atlassian]")
     def test011_delete_role_used_in_other_entity(self):
         """
         Roles & Permissions: Make sure that you can't delete any role record If this record used in other entity
@@ -277,22 +281,26 @@ class HeaderTestCases(BaseTest):
         result = self.header_page.search(value=role_random_name)
         self.assertIn(role_random_name, result[0].text)
 
+    @skip("There is no edit option in the user table [atlassian]")
     def test012_archived_role_not_displayed_in_the_user_role_drop_down(self):
         """
         Roles& Permissions: Archived roles shouldn't display in the user role drop down
 
         LIMS-6438
         """
-        self.info('select random archived role')
-        response, payload = self.roles_api.get_all_roles(deleted=1)
+        self.info('create role to be archived')
+        random_name = self.roles_api.generate_random_string()
+        re, pay = self.roles_api.create_role(random_name)
+        role_id = self.roles_api.get_role_id_from_name(pay['name'])
+
+        response, payload = self.roles_api.archive_roles([str(role_id)])
         self.assertEqual(response['status'], 1, response)
-        role_random_name = random.choice(response['roles'])['name']
-        self.info("archived role name {}".format(role_random_name))
-        # go to the user entity to search by it in the user drop down list
+
+        self.info("archived role id {}".format(role_id))
         self.header_page.get_users_page()
         self.header_page.get_random_user()
-        result = self.header_page.set_user_role(user_role=role_random_name)
-        self.assertEqual(result, '')
+        result = self.header_page.set_user_role(user_role=random_name)
+        self.assertTrue(result)
 
     def test013_cant_create_two_roles_with_the_same_name(self):
         """
@@ -412,6 +420,7 @@ class HeaderTestCases(BaseTest):
         roles_result = self.header_page.filter_role_by_no(random_role['id'])
         self.assertEqual(str(random_role['id']), roles_result['No'])
 
+    @skip('There is no created on in permission table')
     def test018_filter_created_on(self):
         """
         Header: Roles & Permissions Approach: Make sure that you can filter by role created on
