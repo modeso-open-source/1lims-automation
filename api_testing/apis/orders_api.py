@@ -44,6 +44,16 @@ class OrdersAPIFactory(BaseAPI):
         api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['get_suborder'], str(id) + '&deleted=0')
         return api, {}
 
+    @api_factory('get')
+    def get_suborder_of_archived_order(self, id=0):
+        """
+        param id: order ID
+        deleted '0' for active orders and '1' for archived orders
+        :return: response, payload
+        """
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['get_suborder'], str(id) + '&deleted=1')
+        return api, {}
+
     @api_factory('post')
     def create_new_order(self, **kwargs):
         """
@@ -111,10 +121,9 @@ class OrdersAPIFactory(BaseAPI):
     @api_factory('get')
     def get_auto_generated_order_no(self, year_option="1"):
         """
+        :param year_option:
         year_option = 1 : order no with year after (1668-2020)
         year_option = 0 : order no with year before (2020-1668)
-
-        :param year_option:
         :return:
         """
         api = '{}{}'.format(self.url, self.END_POINTS['orders_api']['get_auto_generated_number'])+year_option
@@ -127,7 +136,7 @@ class OrdersAPIFactory(BaseAPI):
         :param mainorder_id:
         :return: response, payload
         """
-        api = '{}{}{}/archive/mainOrder'.format(self.url, self.END_POINTS['orders_api']['archive_main_order'],
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['archive_main_order'],
                                                 str(mainorder_id))
         return api, {}
 
@@ -138,7 +147,7 @@ class OrdersAPIFactory(BaseAPI):
         :param mainorder_id:
         :return: response, payload
         """
-        api = '{}{}{}/restore/mainOrder'.format(self.url, self.END_POINTS['orders_api']['restore_main_order'],
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['restore_main_order'],
                                                 str(mainorder_id))
         return api, {}
 
@@ -149,7 +158,7 @@ class OrdersAPIFactory(BaseAPI):
         :param mainorder_id:
         :return: response, payload
         """
-        api = '{}{}{}/delete/mainOrder'.format(self.url, self.END_POINTS['orders_api']['delete_main_order'],
+        api = '{}{}{}'.format(self.url, self.END_POINTS['orders_api']['delete_main_order'],
                                                str(mainorder_id))
         return api, {}
 
