@@ -1320,3 +1320,29 @@ class TestUnitsTestCases(BaseTest):
         self.test_units_page.sleep_tiny()
         test_unit_found = self.test_units_page.filter_by_user_get_result(payload['username'])
         self.assertTrue(test_unit_found)
+
+    def test050_sub_and_super_scripts_in_active_table(self) :
+        """
+            New: Test units: Active table/unit: Sub & Super scripts: Allow unit to display with sub & super scripts in the active table
+
+            LIMS-5794
+            """
+
+        self.info('Create new Qualitative testunit')
+        response, payload = self.test_unit_api.create_qualitative_testunit(unit='m[g]{o}')
+        self.assertEqual(response['status'], 1, 'test unit not created {}'.format(payload))
+        self.test_unit_page.click_overview()
+        self.test_units_page.sleep_tiny()
+        data = self.test_unit_page.filter_and_get_result(text=response['testUnit']['No'])
+
+        import ipdb
+        span_label=self.base_selenium.find_element()
+
+        unit_name = self.base_selenium.get_attribute(element=span_label, attribute='ng-reflect-ngb-tooltip')
+        self.assertEqual(payload['unit'], unit_name)
+
+
+
+
+
+
