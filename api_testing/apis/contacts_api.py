@@ -61,8 +61,7 @@ class ContactsAPIFactory(BaseAPI):
         minimum require parameters:
             Param: companyNo: denoted company no
             Param: name: denotes contact name
-
-        Param: departments: array denotes the contact's departments and each element consist of 
+        Param: departments: array denotes the contact's departments and each element consist of
         {
             "display": department displayed name,
             "value": department saved value,
@@ -72,7 +71,7 @@ class ContactsAPIFactory(BaseAPI):
         Param: address: denotes contact address
         Param: postalCode: denotes contact postal code
         Param: location: denotes contact location
-        Param: selectedCountry: denotes contact selected country and it is object 
+        Param: selectedCountry: denotes contact selected country and it is object
         {
             "id": country id,
             "text": country displayed text,
@@ -86,14 +85,14 @@ class ContactsAPIFactory(BaseAPI):
         Param: isSupplier: True/False
         Param: isClient: True/False
         Param: country: text of the selected country
-        
+
         contact persons parameters
         Param: persons: array and each element consist of the following
             Param: "name": contact person name
-            Param: "position": contact person position 
-            Param: "email": contact person email 
-            Param: "phone": contact person phone 
-            Param: "skype": contact person skype 
+            Param: "position": contact person position
+            Param: "email": contact person email
+            Param: "phone": contact person phone
+            Param: "skype": contact person skype
             Param: "moreInfo": contact person information field
         """
         random_contact_departments = self.generate_random_string()
@@ -141,7 +140,7 @@ class ContactsAPI(ContactsAPIFactory):
             return False
 
     def get_contacts_with_department(self):
-        api, contacts_data = self.get_all_contacts(limit=50)
+        api, contacts_data = self.get_all_contacts()
         contacts = api['contacts']
         contacts_with_department = [contact for contact in contacts if contact['departments']]
         return contacts_with_department
@@ -176,6 +175,32 @@ class ContactsAPI(ContactsAPIFactory):
                   "email": {"text": "", "recipient": 0},
                   "phone": 0, "skype": 0, "moreInfo": 0}
         payload = {"persons": [person], "departments": []}
+        return self.create_contact(**payload)
+
+    def create_contact_with_multiple_departments(self):
+        random_contact_department1 = self.generate_random_string()
+        random_contact_department2 = self.generate_random_string()
+        random_contact_department3 = self.generate_random_string()
+        dep1 = {
+            "display": random_contact_department1,
+            "value": random_contact_department1,
+            "id": "new",
+            "text": random_contact_department1
+        }
+        dep2 = {
+            "display": random_contact_department2,
+            "value": random_contact_department2,
+            "id": "new",
+            "text": random_contact_department2
+        }
+        dep3 = {
+            "display": random_contact_department3,
+            "value": random_contact_department3,
+            "id": "new",
+            "text": random_contact_department3
+        }
+        payload = {"departments": [dep1, dep2, dep3]}
+
         return self.create_contact(**payload)
 
     def set_configuration(self):

@@ -11,25 +11,29 @@ class Orders(BasePages):
     def get_orders_page(self):
         self.base_selenium.get(url=self.orders_url)
         self.wait_until_page_is_loaded()
+        self.sleep_tiny()
 
     def get_order_edit_page_by_id(self, id):
         url_text = "{}sample/orders/" + str(id)
         self.base_selenium.get(url=url_text.format(self.base_selenium.url))
         self.wait_until_page_is_loaded()
+        self.sleep_tiny()
 
     def click_create_order_button(self):
-        self.base_selenium.LOGGER.info('Press create order button')
+        self.info('Press create order button')
         self.base_selenium.click(element='orders:new_order')
-        self.wait_until_page_is_loaded()
+        self.sleep_tiny()
+        self.base_selenium.refresh()
+        self.sleep_small()
 
     def archive_selected_orders(self, check_pop_up=False):
         self.base_selenium.scroll()
         self.base_selenium.click(element='orders:right_menu')
         self.base_selenium.click(element='orders:archive')
-        self.confirm_popup()
         if check_pop_up:
-            if self.base_selenium.wait_element(element='general:confirmation_pop_up'):
+            if not self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
                 return False
+        self.confirm_popup()
         return True
 
     def is_order_exist(self, value):
@@ -67,7 +71,8 @@ class Orders(BasePages):
         self.base_selenium.click(element='general:right_menu')
         self.sleep_tiny()
         self.base_selenium.click(element='orders:duplicate')
-        self.sleep_medium()
+        self.wait_until_page_is_loaded()
+        self.base_selenium.refresh()
 
     def duplicate_main_order_from_order_option(self, index=0):
         self.info('duplicate main order from the order\'s active table')
@@ -75,6 +80,7 @@ class Orders(BasePages):
         self.open_row_options(row=table_records[index])
         self.base_selenium.click(element='orders:mainorder_duplicate')
         self.wait_until_page_is_loaded()
+        self.base_selenium.refresh()
 
     def duplicate_sub_order_from_table_overview(self, index=0, number_of_copies=1):
         self.info('duplicate suborder from the order\'s active table')
@@ -116,7 +122,7 @@ class Orders(BasePages):
             self.cancel()
 
     def get_random_order(self):
-        self.base_selenium.LOGGER.info(' + Get random order.')
+        self.info(' + Get random order.')
         row = self.get_random_order_row()
         order_dict = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         self.open_edit_page(row=row)
@@ -125,11 +131,17 @@ class Orders(BasePages):
     def get_random_order_row(self):
         return self.get_random_table_row(table_element='orders:orders_table')
 
-    def filter_by_order_no(self, filter_text):
+    def filter_by_order_no(self, filter_text, reset=False):
         self.open_filter_menu()
+        if reset:
+            self.filter_reset()
         self.info('Filter by order no. : {}'.format(filter_text))
         self.filter_by(filter_element='orders:order_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
+        self.sleep_tiny()
+        self.base_selenium.scroll()
+        self.close_filter_menu()
+        self.sleep_tiny()
 
     def open_filter_menu(self):
         self.base_selenium.scroll()
@@ -137,11 +149,14 @@ class Orders(BasePages):
                                                             destination_element='general:filter')
         filter.click()
 
-    def filter_by_analysis_number(self, filter_text):
+    def filter_by_analysis_number(self, filter_text, reset=False):
         self.open_filter_menu()
+        if reset:
+            self.filter_reset()
         self.info('Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
+        self.sleep_tiny()
         
     def filter_by_date(self, first_filter_element, first_filter_text, second_filter_element, second_filter_text):
         self.open_filter_menu()
@@ -152,16 +167,17 @@ class Orders(BasePages):
         self.filter_apply()
 
     def get_orders_duplicate_data(self, order_no):
-        self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
+        self.info(' + Get orders duplicate data with no : {}.'.format(order_no))
         orders = self.search(order_no)[:-1]
         orders_data = [self.base_selenium.get_row_cells_dict_related_to_header(order) for order in orders]
-        self.base_selenium.LOGGER.info(' + {} duplicate orders.'.format(len(orders)))
+        self.info(' + {} duplicate orders.'.format(len(orders)))
         return orders_data, orders
 
     # Return all filter fields used in order
     def order_filters_element(self, key='all'):
         filter_fileds = {'orderNo': {'element': 'orders:order_filter', 'type': 'text'},
-                         'analysis': {'element': 'orders:analysis_filter', 'type': 'text','result_key': 'Analysis No.'},
+                         'analysis': {'element': 'orders:analysis_filter', 'type': 'text',
+                                      'result_key': 'Analysis No.'},
                          'Contact Name': {'element': 'orders:contact_filter', 'type': 'drop_down'},
                          'lastModifiedUser': {'element': 'orders:changed_by', 'type': 'drop_down',
                                              'result_key':'Changed By'},
@@ -192,7 +208,7 @@ class Orders(BasePages):
     def archive_table_suborder(self, index=0):
         self.info('archive suborder from the order\'s active table')
         child_table_records = self.result_table(element='general:table_child')
-        self.open_row_options(row=child_table_records[0])
+        self.open_row_options(row=child_table_records[index])
         self.base_selenium.click('orders:suborder_archive')
         self.confirm_popup()
         self.sleep_small()
@@ -214,7 +230,7 @@ class Orders(BasePages):
 
         suborders_data = []
 
-        self.base_selenium.LOGGER.info('getting suborders data')
+        self.info('getting suborders data')
 
         for suborder in order_row['suborders']:
             suborder_data = suborder
@@ -273,10 +289,9 @@ class Orders(BasePages):
         return main_order
 
     def get_orders_and_suborders_data(self, order_no):
-        self.base_selenium.LOGGER.info(' + Get orders duplicate data with no : {}.'.format(order_no))
+        self.info(' + Get orders data with no : {}.'.format(order_no))
         orders = self.search(order_no)[:-1]
         orders_data = self.get_child_table_data()
-
         return orders_data, orders
 
     def navigate_to_analysis_active_table(self):
@@ -297,5 +312,10 @@ class Orders(BasePages):
             if value in results[0].text:
                 return True
             else:
-                return False 
+                return False
+
+    def get_suborder_options(self, row):
+        self.open_row_options(row)
+        options = self.base_selenium.get_text(element='general:menu_options_value')
+        return options
 

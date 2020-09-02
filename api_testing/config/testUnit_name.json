@@ -7,17 +7,16 @@
          "isEditable":false,
          "isDragable":true,
          "order":1,
-         "section":2,
-         "archivable":true,
-         "id":93,
-         "name":"departments",
+         "section":1,
+         "archivable":false,
+         "id":40,
+         "name":"number",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Departments",
+         "componentId":4,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Test Unit No.",
          "isStoredInServer":true,
-         "hasShowOption":true,
          "searchable":[
             "name"
          ],
@@ -33,19 +32,22 @@
          "isEditable":false,
          "isDragable":true,
          "order":2,
-         "section":2,
+         "section":1,
          "archivable":false,
-         "id":86,
-         "name":"materialType",
+         "id":41,
+         "name":"name",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Material Type",
+         "componentId":4,
+         "class":"col-md-6   col-md-6 ",
+         "title":"Test Unit Name",
          "isStoredInServer":true,
-         "hasShowOption":true,
          "searchable":[
             "name"
+         ],
+         "optionsComponentId":4,
+         "viewByoptions":[
+               "name"
          ],
          "error":false,
          "optionsInUse":[
@@ -59,17 +61,16 @@
          "isEditable":false,
          "isDragable":true,
          "order":3,
-         "section":2,
+         "section":1,
          "archivable":false,
-         "id":87,
-         "name":"articleName",
+         "id":47,
+         "name":"materialTypes",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Article",
+         "componentId":4,
+         "class":"col-md-4",
+         "title":"Material Type",
          "isStoredInServer":true,
-         "hasShowOption":true,
          "searchable":[
             "name"
          ],
@@ -85,17 +86,16 @@
          "isEditable":false,
          "isDragable":true,
          "order":4,
-         "section":2,
+         "section":1,
          "archivable":false,
-         "id":92,
-         "name":"testPlan",
+         "id":44,
+         "name":"category",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Test Plan",
+         "componentId":4,
+         "class":"col-md-4",
+         "title":"Category",
          "isStoredInServer":true,
-         "hasShowOption":true,
          "searchable":[
             "name"
          ],
@@ -111,15 +111,136 @@
          "isEditable":false,
          "isDragable":true,
          "order":5,
-         "section":2,
+         "section":1,
          "archivable":false,
-         "id":103,
-         "name":"testUnit",
+         "id":42,
+         "name":"type",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":8,
+         "componentId":4,
+         "class":"col-md-4",
+         "title":"Type",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":false,
+         "order":1,
+         "section":2,
+         "archivable":false,
+         "id":63,
+         "name":"useSpec",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":4,
          "class":"col-md-3",
-         "title":"Test Unit",
+         "title":"Specification",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":false,
+         "order":2,
+         "section":2,
+         "archivable":false,
+         "id":58,
+         "name":"upperLimit",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":4,
+         "class":"col-md-3",
+         "title":"Upper Limit",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":false,
+         "order":3,
+         "section":2,
+         "archivable":false,
+         "id":57,
+         "name":"lowerLimit",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":4,
+         "class":"col-md-3",
+         "title":"Lower Limit",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":false,
+         "order":4,
+         "section":2,
+         "archivable":false,
+         "id":43,
+         "name":"unit",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":4,
+         "class":"col-md-4",
+         "title":"Unit",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":5,
+         "section":2,
+         "archivable":false,
+         "id":59,
+         "name":"textValueArray",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":4,
+         "class":"col-md-4",
+         "title":"Qualitative Value",
          "isStoredInServer":true,
          "searchable":[
             "name"
@@ -137,116 +258,14 @@
          "isDragable":true,
          "order":6,
          "section":2,
-         "archivable":true,
-         "id":91,
-         "name":"shipmentDate",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Shipment Date",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":7,
-         "section":2,
          "archivable":false,
-         "id":90,
-         "name":"testDate",
+         "id":60,
+         "name":"selectedConcs",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Test Date",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":8,
-         "section":2,
-         "archivable":true,
-         "id":97,
-         "name":"attachment",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
-         "class":"col-md-3",
-         "title":"Attachments",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":9,
-         "section":1,
-         "archivable":false,
-         "id":106,
-         "name":"number",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Analysis No.",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":10,
-         "section":1,
-         "archivable":false,
-         "id":102,
-         "name":"orderType",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
+         "componentId":4,
          "class":"col-md-4",
-         "title":"Order",
+         "title":"Test Concentrations",
          "isStoredInServer":true,
          "searchable":[
             "name"
@@ -262,68 +281,16 @@
          ],
          "isEditable":false,
          "isDragable":true,
-         "order":11,
-         "section":1,
+         "order":1,
+         "section":3,
          "archivable":false,
-         "id":115,
-         "name":"result",
+         "id":56,
+         "name":"iterations",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Result",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":12,
-         "section":1,
-         "archivable":false,
-         "id":85,
-         "name":"orderNumber",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":8,
+         "componentId":4,
          "class":"col-md-4",
-         "title":"Order No.",
-         "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":13,
-         "section":1,
-         "archivable":true,
-         "id":113,
-         "name":"receiptDate",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Arrival Date",
+         "title":"Iterations",
          "isStoredInServer":true,
          "searchable":[
             "name"
@@ -339,49 +306,42 @@
          ],
          "isEditable":false,
          "isDragable":true,
-         "order":14,
-         "section":1,
+         "order":2,
+         "section":3,
          "archivable":false,
-         "id":89,
-         "name":"contact",
+         "id":46,
+         "name":"method",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":8,
+         "componentId":4,
+         "class":"col-md-8",
+         "title":"Method",
+         "isStoredInServer":true,
+         "searchable":[
+            "name"
+         ],
+         "error":false,
+         "optionsInUse":[
+
+         ]
+      },
+      {
+         "options":[
+
+         ],
+         "isEditable":false,
+         "isDragable":true,
+         "order":1,
+         "section":4,
+         "archivable":true,
+         "id":266,
+         "name":"roundingOption",
+         "isDynamic":false,
+         "isArchived":false,
+         "componentId":4,
          "class":"col-md-4",
-         "title":"Contact",
+         "title":"Rounding",
          "isStoredInServer":true,
-         "hasShowOption":true,
-         "searchable":[
-            "name",
-            " number"
-         ],
-         "optionsComponentId":3,
-         "viewByoptions":[
-            "name"
-         ],
-         "error":false,
-         "optionsInUse":[
-
-         ]
-      },
-      {
-         "options":[
-
-         ],
-         "isEditable":false,
-         "isDragable":true,
-         "order":15,
-         "section":1,
-         "archivable":false,
-         "id":114,
-         "name":"status",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Status",
-         "isStoredInServer":true,
-         "hasShowOption":true,
          "searchable":[
             "name"
          ],
@@ -396,16 +356,16 @@
          ],
          "isEditable":false,
          "isDragable":true,
-         "order":16,
-         "section":1,
+         "order":2,
+         "section":4,
          "archivable":true,
-         "id":119,
-         "name":"analysis_attachment",
+         "id":48,
+         "name":"comment",
          "isDynamic":false,
          "isArchived":false,
-         "componentId":10,
-         "class":"col-md-2 hide ",
-         "title":"Attachments",
+         "componentId":4,
+         "class":"separate-row",
+         "title":"Comment",
          "isStoredInServer":true,
          "searchable":[
             "name"
@@ -418,7 +378,5 @@
    ],
    "archivedFields":[
 
-   ],
-   "withYear":1,
-   "analysisYearOption":1
+   ]
 }

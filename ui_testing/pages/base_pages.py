@@ -109,9 +109,10 @@ class BasePages:
         self.base_selenium.wait_element(element=filter_element)
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
+        self.sleep_tiny()
 
     def filter_reset(self):
-        self.base_selenium.LOGGER.info(' Reset Filter')
+        self.info(' Reset Filter')
         self.base_selenium.click(element='general:filter_reset_btn')
         time.sleep(self.base_selenium.TIME_SMALL)
 
@@ -193,6 +194,7 @@ class BasePages:
         self.wait_until_page_is_loaded()
 
     def get_archived_items(self):
+        self.sleep_tiny()
         self.base_selenium.scroll()
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:archived')
@@ -252,7 +254,7 @@ class BasePages:
         return self.base_selenium.get_text(element='general:table_info')
 
     def get_table_records(self):
-        self.base_selenium.LOGGER.info(' Get table records.')
+        self.info(' Get table records.')
         return int(self.get_table_info().split(' ')[5])
 
     def get_random_date(self):
@@ -267,7 +269,7 @@ class BasePages:
         pyperclip.copy(value)
 
     def _paste(self, element):
-        self.base_selenium.LOGGER.info(' past. {}'.format(pyperclip.paste()))
+        self.info(' past. {}'.format(pyperclip.paste()))
         self.base_selenium.paste(element=element)
 
     def copy_paste(self, element, value):
@@ -287,9 +289,15 @@ class BasePages:
         childtable_arrow.click()
         self.sleep_medium()
 
-    def get_child_table_data(self, index=0):
+    def close_child_table(self, source):
+        childtable_arrow = self.base_selenium.find_element_in_element(
+            destination_element='general:child_table_arrow', source=source)
+        childtable_arrow.click()
+
+    def get_child_table_data(self, index=0, open_child=True):
         rows = self.result_table()
-        self.open_child_table(source=rows[index])
+        if open_child:
+            self.open_child_table(source=rows[index])
         return self.get_table_data()
 
     def get_table_data(self, table_element='general:table_child'):
@@ -335,7 +343,7 @@ class BasePages:
         self.base_selenium.click(element='general:configurations_archived')
 
     def open_configure_table(self):
-        self.base_selenium.LOGGER.info('open configure table')
+        self.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
         configure_table_menu.click()
         self.sleep_small()
@@ -359,7 +367,7 @@ class BasePages:
                     hidden_columns_names.append(column_name)
 
         self.press_apply_in_configure_table()
-        self.base_selenium.LOGGER.info(hidden_columns_names)
+        self.info(hidden_columns_names)
         return hidden_columns_names
 
     def change_column_view(self, column, value, always_hidden_columns=[]):
@@ -430,7 +438,7 @@ class BasePages:
     def click_overview(self):
         # click on Overview, this will display an alert to the user
         self.base_selenium.scroll()
-        self.base_selenium.LOGGER.info('click on Overview')
+        self.info('click on Overview')
         self.base_selenium.click_by_script(element='general:overview')
         self.sleep_tiny()
 
@@ -457,21 +465,21 @@ class BasePages:
 
         # archive this item
         row = self.search(item_name)
-        self.base_selenium.LOGGER.info('Selecting the row')
+        self.info('Selecting the row')
         self.click_check_box(source=row[0])
         self.sleep_small()
-        self.base_selenium.LOGGER.info('Archiving the selected row')
+        self.info('Archiving the selected row')
         self.archive_selected_items()
-        self.base_selenium.LOGGER.info('Navigating to the Archived table')
+        self.info('Navigating to the Archived table')
         self.get_archived_items()
 
         # try to delete it
         archived_row = self.search(item_name)
         self.sleep_small()
-        self.base_selenium.LOGGER.info('Selecting the row')
+        self.info('Selecting the row')
         self.click_check_box(source=archived_row[0])
         self.sleep_small()
-        self.base_selenium.LOGGER.info('Attempting to delete item: {}'.format(item_name))
+        self.info('Attempting to delete item: {}'.format(item_name))
         self.delete_selected_item()
 
         if self.base_selenium.check_element_is_exist(element='general:cant_delete_message'):
@@ -489,25 +497,26 @@ class BasePages:
     def upload_file(self, file_name, drop_zone_element, remove_current_file=False, save=True):
         """
         Upload single file to a page that only have 1 drop zone
-        
-        
+
+
         :param file_name: name of the file to be uploaded
-        :param drop_zone_element: the dropZone element 
+        :param drop_zone_element: the dropZone element
         :return:
         """
-        self.base_selenium.LOGGER.info(" uploading file")
+        self.info(" uploading file")
 
         # remove the current file and save
         if remove_current_file:
-            self.base_selenium.LOGGER.info(" remove current file")
+            self.info(" remove current file")
             is_the_file_exist = self.base_selenium.check_element_is_exist(element='general:file_upload_success_flag')
             if is_the_file_exist:
                 self.sleep_tiny()
                 self.base_selenium.click('general:remove_file')
+                self.base_selenium.click('general:close_uploader_popup')
                 if save:
                     self.save()
             else:
-                self.base_selenium.LOGGER.info(" there is no current file")
+                self.info(" there is no current file")
 
         # get the absolute path of the file
         file_path = os.path.abspath('ui_testing/assets/{}'.format(file_name))
@@ -517,7 +526,7 @@ class BasePages:
             raise Exception(
                 "The file you are trying to upload doesn't exist localy")
         else:
-            self.base_selenium.LOGGER.info(
+            self.info(
                 "The {} file is ready for upload".format(file_name))
 
         # silence the click event of file input to prevent the opening of (Open  Files) Window
@@ -540,10 +549,10 @@ class BasePages:
 
         # send the path of the file to the input tag
         file_field.send_keys(file_path)
-        self.base_selenium.LOGGER.info("Uploading {}".format(file_name))
+        self.info("Uploading {}".format(file_name))
         # wait until the file uploads
         self.base_selenium.wait_until_element_located(element='general:file_upload_success_flag')
-        self.base_selenium.LOGGER.info(
+        self.info(
             "{} file is uploaded successfully".format(file_name))
 
     def open_pagination_menu(self):
@@ -551,7 +560,7 @@ class BasePages:
         self.base_selenium.click(element='general:pagination_button')
 
     def set_page_limit(self, limit='20'):
-        self.base_selenium.LOGGER.info('set the pagination limit to {}'.format(limit))
+        self.info('set the pagination limit to {}'.format(limit))
         self.open_pagination_menu()
         limit_index = self.pagination_elements_array.index(limit)
         self.base_selenium.wait_element(element='general:pagination_menu')
@@ -565,12 +574,12 @@ class BasePages:
         return self.base_selenium.find_element(element='general:pagination_button').text.split('\n')[0]
 
     def wait_until_page_is_loaded(self):
-        self.base_selenium.LOGGER.info('wait until page is loaded')
+        self.info('wait until page is loaded')
         self.base_selenium.wait_until_element_is_not_displayed('general:loading')
         self.sleep_tiny()
 
     def get_table_info_data(self):
-        self.base_selenium.LOGGER.info('get table information')
+        self.info('get table information')
         table_info = self.base_selenium.find_element('general:table_info')
         table_info_data = table_info.text
         table_info_elements = table_info_data.split(' ')

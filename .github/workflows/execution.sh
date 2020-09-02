@@ -24,8 +24,8 @@ WORK_DIR=$6;
 ATTR=$7;
 UUID=$8;
 
-echo 'NODE_TOTAL: ' $NODE_INDEX;
-echo 'NODE_INDEX: ' $NODE_TOTAL;
+echo 'NODE_TOTAL: ' $NODE_TOTAL;
+echo 'NODE_INDEX: ' $NODE_INDEX;
 echo 'TEST_REG: ' $TEST_REG;
 echo 'RUN_REF: ' $RUN_REF;
 echo 'RUN_ID: ' $RUN_ID;

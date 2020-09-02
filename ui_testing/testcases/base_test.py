@@ -166,6 +166,10 @@ class BaseTest(TestCase):
     def info(self):
         return self.base_selenium.LOGGER.info
 
+    @property
+    def debug(self):
+        return self.base_selenium.LOGGER.debug
+
     @classmethod
     def set_authorization(cls, auth):
         if "Admin" == auth.get('role'):

@@ -1,5 +1,4 @@
-#import IPython
-import requests, sys
+import requests, sys, uuid
 
 def get_project_launchs(project_name):
     API = f"{BASE_API}/{project_name}/launch"
@@ -52,7 +51,7 @@ def merge_launchs_with_same_description(project_name, launch_des):
               "start_time": launchs_res.json()['content'][0]['start_time'],
               "end_time": launchs_res.json()['content'][0]['end_time'],
               "name": project_name,
-              "description": launch_des,
+              "description": f"{launch_des}__{str(uuid.uuid4())[:8]}",
               "launches": ids,
               "extendSuitesDescription": False,
               "merge_type": "BASIC"

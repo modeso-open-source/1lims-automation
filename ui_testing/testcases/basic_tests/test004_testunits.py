@@ -1281,7 +1281,6 @@ class TestUnitsTestCases(BaseTest):
     def test048_filter_by_testunit_material_type_returns_only_correct_results(self):
         """
         New: Test units: Filter Approach: Make sure you can filter by material type
-
         LIMS-6433
         """
         data_to_filter_with = self.test_unit_api.get_first_record_with_data_in_attribute(attribute='materialTypes')
@@ -1320,3 +1319,4 @@ class TestUnitsTestCases(BaseTest):
         self.test_units_page.sleep_tiny()
         test_unit_found = self.test_units_page.filter_by_user_get_result(payload['username'])
         self.assertTrue(test_unit_found)
+

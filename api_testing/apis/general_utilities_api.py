@@ -45,3 +45,11 @@ class GeneralUtilitiesAPI(GeneralUtilitiesAPIFactory):
         for material in all_materials['materialTypes']:
             if material['name'] == material_type:
                 return material['id']
+
+    def get_material_types_without_duplicate(self, old_material):
+        all_materials, _ = self.list_all_material_types()
+        material_without_duplicate = []
+        for material in all_materials['materialTypes']:
+            if material['name'] != old_material:
+                material_without_duplicate.append(material['name'])
+        return material_without_duplicate

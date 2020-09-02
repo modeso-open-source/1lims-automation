@@ -186,7 +186,7 @@ class ArticleAPI(ArticleAPIFactory):
             if article['materialType'] == material_type:
                 return article['name']
 
-        self.info("No article with requested material type, So create atricle")
+        self.info("No article with requested material type, So create article")
         materialType = {"id": material_type_id, "text": material_type}
         api, payload = self.create_article(materialType=materialType,
                                            selectedMaterialType=[materialType],
@@ -194,16 +194,26 @@ class ArticleAPI(ArticleAPIFactory):
         if api['status'] == 1:
             return api['article']['name']
 
-    def get_formatted_article_with_formatted_material_type(self, material_type):
+    def get_article_with_different_material(self, old_material):
+        articles = self.get_all_articles_json()
+        articles_list = []
+        for article in articles:
+            if article['materialType'] != old_material:
+                articles_list.append(article)
+        return articles_list
+
+    def get_formatted_article_with_formatted_material_type(self, material_type, avoid_article=''):
         articles, payload = self.get_all_articles(limit=500)
         self.info("search for article with material type {}".format(material_type))
         for article in articles['articles']:
-            if article['materialType'] == material_type['name']:
+            if article['name'] == avoid_article:
+                break
+            elif article['materialType'] == material_type['text']:
                 formatted_article = {'id': article['id'], 'name': article['name']}
                 return formatted_article
 
-        self.info("No article with requested material type, So create atricle")
-        api, payload = self.create_article(materialType=material_type['name'],
+        self.info("No article with requested material type, So create article")
+        api, payload = self.create_article(materialType=material_type['text'],
                                            selectedMaterialType=[material_type],
                                            materialTypeId=int(material_type['id']))
         if api['status'] == 1:

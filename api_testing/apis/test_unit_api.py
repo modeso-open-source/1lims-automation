@@ -336,10 +336,10 @@ class TestUnitAPI(TestUnitAPIFactory):
         else:
             return False
 
-    def get_testunits_with_material_type(self, material_type='Raw Material'):
+    def get_testunits_with_material_type(self, material_types='Raw Material'):
         all_test_units, _ = self.get_all_test_units()
         test_units = all_test_units['testUnits']
-        selected_test_units = [test_unit for test_unit in test_units if test_unit['materialTypes'] == [material_type]]
+        selected_test_units = [test_unit for test_unit in test_units if test_unit['materialTypes'] == [material_types]]
         return selected_test_units
 
     def get_test_unit_name_with_value_with_material_type(self, material_type,
@@ -403,6 +403,12 @@ class TestUnitAPI(TestUnitAPIFactory):
         else:
             return None
 
+    def create_test_unit_with_long_text(self):
+        self.info('Generate random data for update')
+        long_txt = ''.join([self.generate_random_string() for _ in range(5)])
+        api, testunit_payload = self.create_qualitative_testunit(method=long_txt)
+        return api, testunit_payload
+
     def set_configuration(self):
         self.info('set test unit configuration')
         config_file = os.path.abspath('api_testing/config/testUnit.json')
@@ -410,4 +416,16 @@ class TestUnitAPI(TestUnitAPIFactory):
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
 
+    def set_name_configuration(self):
+        self.info('set test unit configuration')
+        config_file = os.path.abspath('api_testing/config/testUnit_unit.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_configuration(payload=payload)
 
+    def set_name_configuration_name_only(self):
+        self.info('set test unit configuration')
+        config_file = os.path.abspath('api_testing/config/testUnit_name.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_configuration(payload=payload)

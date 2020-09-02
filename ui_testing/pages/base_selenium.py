@@ -38,7 +38,6 @@ class PageLoadResources(object):
             self.count = 0
         return False
 
-
 class BaseSelenium:
     POLL_FREQUENCY = 0.1
 
@@ -405,6 +404,13 @@ class BaseSelenium:
             if ng_value.text in items_text:
                 cancel = self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
                 cancel.click()
+
+    def is_text_included_in_drop_down_items(self, element, item_text):
+        self.wait_until_element_located(element)
+        ng_values = self.find_element_in_element(destination_element='general:ng_values', source_element=element)
+        for ng_value in ng_values:
+            if item_text in ng_value.text:
+                return self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
 
     def check_element_is_exist(self, element):
         if self.wait_element(element):
