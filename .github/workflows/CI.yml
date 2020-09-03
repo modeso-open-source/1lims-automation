@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_cases: [0, 1, 2, 3]
+        test_cases: [0]
 
     steps:
       - uses: actions/checkout@master
@@ -20,6 +20,7 @@ jobs:
 
       - name: parallel execution for each module
         run: timeout 2h bash .github/workflows/execution.sh ${{ strategy.job-total }} ${{ matrix.test_cases }} ${{ github.head_ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'not series' ${{ secrets.UUID }}
+
 
   test_pull_request_in_series:
     runs-on: ubuntu-20.04
@@ -49,3 +50,4 @@ jobs:
 
       - name: merge launches
         run:  python3 fixReport.py ${{ secrets.UUID }} ${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }}
+
