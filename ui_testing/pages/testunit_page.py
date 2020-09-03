@@ -12,11 +12,6 @@ class TstUnit(TstUnits):
         self.info('Get testunit method')
         return self.base_selenium.get_value(element='test_unit:method').split('\n')[0]
 
-    def get_test_unit_edit_page_by_id(self, id):
-        url_text = "{}testUnits/edit/" + str(id)
-        self.base_selenium.get(url=url_text.format(self.base_selenium.url))
-        self.wait_until_page_is_loaded()
-
     def click_create_new_testunit(self):
         self.info('Click Create New Test Unit')
         self.base_selenium.click(element='test_units:new_testunit')
@@ -615,7 +610,7 @@ class TstUnit(TstUnits):
         self.wait_until_page_is_loaded()
         self.sleep_small()
 
-    def update_test_unit(self, id):
+    def update_test_unit(self, id, save=True):
         test_unit = {}
         self.open_test_unit_edit_page_by_id(id)
         self.sleep_medium()
@@ -625,18 +620,16 @@ class TstUnit(TstUnits):
         test_unit['categoryName'] = self.generate_random_string()
         test_unit['iterations'] = str(self.generate_random_number(upper=4))
         self.set_testunit_number(number=test_unit['number'])
-        self.sleep_tiny()
         self.set_testunit_name(name=test_unit['name'])
-        self.sleep_tiny()
         self.set_material_type()
-        self.sleep_small()
         test_unit['materialTypes'] = self.get_material_type()
         self.set_category(category=test_unit['categoryName'])
         self.set_testunit_iteration(iteration=test_unit['iterations'])
         self.set_method(method=test_unit['method'])
         self.sleep_tiny()
-        self.info('pressing save and create new version')
-        self.save_and_create_new_version(confirm=True)
+        if save:
+            self.info('pressing save and create new version')
+            self.save_and_create_new_version(confirm=True)
         return test_unit
 
     def refresh_and_get_updated_data(self):

@@ -643,7 +643,7 @@ class TestPlansTestCases(BaseTest):
         self.info("go to test units' active table and search for this test unit")
         self.test_unit_page.get_test_units_page()
         self.info('Navigating to test unit {} edit page'.format(testunit['name']))
-        self.test_unit_page.get_test_unit_edit_page_by_id(testunit['id'])
+        self.test_unit_page.open_test_unit_edit_page_by_id(testunit['id'])
         self.test_unit_page.sleep_small()
         new_iteration = str(int(first_testplan_testunit_iteration) + 1)
         new_category = self.generate_random_string()

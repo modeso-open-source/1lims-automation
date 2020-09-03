@@ -72,9 +72,14 @@ class BasePages:
             self.base_selenium.click(element='my_profile:cancel_button')
         self.confirm_popup(force)
 
-    def confirm_popup(self, force=True):
+    def confirm_popup(self, force=True, check_only=False):
+        """
+        :param check_only: this parameter (when true) is to check the existence of popup only without clicking ok/cancel
+        """
         self.info('confirming the popup')
         if self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
+            if check_only:
+                return True
             if force:
                 self.base_selenium.click(element='general:confirm_pop')
             else:

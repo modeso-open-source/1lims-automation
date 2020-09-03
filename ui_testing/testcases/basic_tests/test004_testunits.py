@@ -741,12 +741,15 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), '{}testUnits/add'.format(self.base_selenium.url))
             self.info('clicking on Overview cancelled')
 
-    def test027_edit_approach_overview_button(self):
+    @parameterized.expand(['No-edits', 'With_edits'])
+    def test027_edit_approach_overview_button(self, edit):
         """
         Edit: Overview Approach: Make sure after I press on
         the overview button, it redirects me to the active table
+        LIMS-6202/LIMS-6818
 
-        LIMS-6202
+        -Popup should appear when editing then clicking on overview without saving <All data will be lost>
+        LIMS-6812
         """
         self.info('open edit page of random test unit')
         random_test_unit = random.choice(self.test_unit_api.get_all_testunits_json())
@@ -754,10 +757,17 @@ class TestUnitsTestCases(BaseTest):
         test_units_url = self.base_selenium.get_url()
         self.info('test_units_url: {}'.format(test_units_url))
         self.info("click on Overview, it will redirect you to testunits' page")
-        self.test_unit_page.click_overview()
-        self.test_unit_page.sleep_tiny()
-        self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
-        self.info('clicking on Overview confirmed')
+        if edit == 'No-edits':
+            self.test_unit_page.click_overview()
+            self.test_unit_page.sleep_tiny()
+            self.info('Clicked overview without editing - Asserting active table is displayed')
+            self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
+            self.info('clicking on Overview confirmed')
+        else:
+            self.test_unit_page.update_test_unit(id=random_test_unit['id'], save=False)
+            self.test_unit_page.click_overview()
+            self.info('Clicked overview after editing without saving - Asserting popup appears')
+            self.assertTrue(self.test_unit_page.confirm_popup(check_only=True))
 
     @parameterized.expand(['Quantitative', 'Qualitative', 'Quantitative MiBi'])
     def test028_changing_testunit_type_update_fields_accordingly(self, testunit_type):
