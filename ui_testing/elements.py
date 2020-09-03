@@ -614,6 +614,12 @@ elements = {
             'value': "//label[@class='btn tab']"},
         'mainorder_duplicate': {'method': 'id',
                                 'value': 'main_table_duplicate'},
+        'mainorder-archive' : {'method' : 'id',
+                               'value' : 'main_table_archive'
+        },
+        'cancel_popup' : {'method' : 'xpath',
+                          'value' : '//button[@class="swal2-cancel btn btn-secondary m-btn m-btn--custom"]'
+        },
         'suborder_duplicate': {'method': 'id', 'value': 'child_table_duplicate'},
         'suborder_archive': {'method': 'id', 'value': 'child_table_archive'},
         'suborder_restore': {'method': 'id', 'value': 'child_table_restore'},

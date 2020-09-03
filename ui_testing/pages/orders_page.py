@@ -319,3 +319,18 @@ class Orders(BasePages):
         options = self.base_selenium.get_text(element='general:menu_options_value')
         return options
 
+    def archive_main_order_from_order_option(self, index=0, check_pop_up=False, confirm=True):
+        self.info('archive main order from the order\'s active table')
+        table_records = self.result_table(element='general:table')
+        self.open_row_options(row=table_records[index])
+        self.base_selenium.click(element='orders:mainorder-archive')
+        if check_pop_up:
+            if not self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'):
+                return False
+        if confirm:
+            self.confirm_popup()
+        else:
+            self.info('Cancel the popup')
+            self.base_selenium.click(element='orders:cancel_popup')
+        return True
+
