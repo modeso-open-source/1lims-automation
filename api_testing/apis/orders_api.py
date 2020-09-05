@@ -408,6 +408,27 @@ class OrdersAPI(OrdersAPIFactory):
         }
         return self.create_new_order(**payload)
 
+    def create_order_with_test_units(self, no_of_test_units):
+        test_units = []
+        material_type = {
+            'selectedMaterialTypes': [{
+                'id': 1,
+                'text': 'Raw Material'
+            }]
+        }
+        for _ in range(no_of_test_units):
+            res, payload = TestUnitAPI().create_qualitative_testunit(**material_type)
+            res_form, pay_form = TestUnitAPI().get_testunit_form_data(res['testUnit']['testUnitId'])
+            test_units.append({'id': res_form['testUnit']['id'],
+                               'name': res_form['testUnit']['name']})
+        payload = {
+            'testPlans': [],
+            'testUnits': test_units,
+            'materialType': {"id": 1, "text": 'Raw Material'},
+            'materialTypeId': 1
+        }
+        return self.create_new_order(**payload)
+
     def set_configuration(self):
         self.info('set order configuration')
         config_file = os.path.abspath('api_testing/config/order.json')
