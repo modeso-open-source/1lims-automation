@@ -129,3 +129,7 @@ class Contacts(BasePages):
         self.filter_by(filter_element='contact:contact_no_filter', filter_text=contact_no, field_type='text')
         self.filter_apply()
 
+    def search_find_row_open_edit_page(self, search_text):
+        rows = self.search(search_text)
+        self.open_edit_page_by_css_selector(row=rows[0])
+

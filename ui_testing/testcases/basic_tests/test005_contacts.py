@@ -4,11 +4,13 @@ from ui_testing.pages.login_page import Login
 from ui_testing.pages.base_pages import BasePages
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.contacts_page import Contacts
+from ui_testing.pages.my_profile_page import MyProfile
 from ui_testing.pages.header_page import Header
 from api_testing.apis.orders_api import OrdersAPI
 from api_testing.apis.contacts_api import ContactsAPI
 from api_testing.apis.users_api import UsersAPI
 from parameterized import parameterized
+from nose.plugins.attrib import attr
 import re, random
 
 
@@ -473,6 +475,7 @@ class ContactsTestCases(BaseTest):
                 self.assertIn(data_to_filter_with, row_data[key].split(', '))
             counter = counter + 1
 
+    @attr(series=True)        
     def test020_filter_by_contact_changed_by(self):
         """
         Contacts: Filter Approach: Make sure you can filter by changed by
@@ -519,3 +522,63 @@ class ContactsTestCases(BaseTest):
             contact_type = row_data['Contact Type'].split(', ')
             self.assertIn(data_to_filter_with, contact_type)
             counter = counter + 1
+
+    def test022_add_contact_title(self):
+        """
+        Contacts: Contact person will have a title field to choose (Mr. or Ms)
+
+        LIMS-6491
+        """
+        self.info("create contact")
+        contact_data = self.contact_page.create_update_contact(save=False, contact_persons=False)
+        self.info('Open contact persons page')
+        self.contacts_page.sleep_tiny()
+        self.contact_page.get_contact_persons_page()
+        self.info('Create contact person with Mr.')
+        contact_person_data = self.contact_page.create_update_contact_person(title='Mr.', save=False)
+        self.info('Asserting the title set to  Mr.')
+        self.assertEqual(contact_person_data[0]['title'], 'Mr.')
+        self.info("update Title to be Ms")
+        self.contacts_page.sleep_tiny()
+        self.contact_page.create_update_contact_person(create=False, title='Ms', save=True, indexToEdit=0)
+        self.contact_page.sleep_small()
+        self.contacts_page.search_find_row_open_edit_page(contact_data['Contact No'])
+        new_contact_person_data = self.contact_page.get_contact_persons_data()
+        self.info('Asserting the title was changed successfully to Ms')
+        self.assertEqual(new_contact_person_data[0]['title'], 'Ms')
+
+    #@attr(series=True)
+    def test023_contact_title_translation(self):
+        """
+        Contacts: Title translation approach:
+        Mr. >> Herr
+        Ms >> Frau
+        LIMS-6492
+        """
+        self.my_profile_page = MyProfile()
+        contact_with_mr, payload = self.contacts_api.create_contact_with_person()
+        self.assertEqual(contact_with_mr['status'], 1, 'cannot create contact')
+        contact_with_ms, payload = self.contacts_api.create_contact_with_person(gender='Ms')
+        self.assertEqual(contact_with_ms['status'], 1, 'cannot create contact')
+        self.info('Navigating to My profile to change the language to German')
+        self.my_profile_page.get_my_profile_page()
+        self.my_profile_page.chang_lang('DE')
+        self.info("Navigate to the contacts page to assert that the first contact's person is saved with title 'Herr'")
+        self.contact_page.get_contact_edit_page_by_id(contact_with_mr['company']['companyId'])
+        contact_person_data_first_contact = self.contact_page.navigate_to_contact_person_tab_get_data()
+        self.info('Asserting the title of the first contact person in the '
+                  'first contact: {} was translated successfully to Herr'.
+                  format(contact_with_ms['company']['name']))
+        self.assertEqual(contact_person_data_first_contact['title'], 'Herr')
+        self.info("Navigate to the contacts page to assert that the second contact's person is saved with title 'Frau'")
+        self.contact_page.get_contact_edit_page_by_id(contact_with_ms['company']['companyId'])
+        contact_person_data_second_contact = self.contact_page.navigate_to_contact_person_tab_get_data()
+        self.info('Asserting the title of the first contact person in the '
+                  'second contact: {} was translated successfully to Frau'.
+                  format(contact_with_ms['company']['name']))
+        self.assertEqual(contact_person_data_second_contact['title'], 'Frau')
+
+        # set the language back to english
+        self.info('Navigating to My Profile to change the language back to English')
+        self.my_profile_page.get_my_profile_page()
+        self.my_profile_page.chang_lang('EN')

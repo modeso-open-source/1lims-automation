@@ -169,11 +169,13 @@ class ContactsAPI(ContactsAPIFactory):
                 departments_list_with_contacts.append(contact_dict)
         return departments_list_with_contacts
 
-    def create_contact_with_person(self):
+    def create_contact_with_person(self, gender='Mr.'):
         person_name = self.generate_random_string()
-        person = {"gender": 0, "name": person_name, "position": 0,
+        person = {'gender': {'id': 0, 'text': "Mr."}, "name": person_name, "position": 0,
                   "email": {"text": "", "recipient": 0},
                   "phone": 0, "skype": 0, "moreInfo": 0}
+        if gender == 'Ms':
+            person['gender'] = {'id': 1, 'text': "Ms"}
         payload = {"persons": [person], "departments": []}
         return self.create_contact(**payload)
 
