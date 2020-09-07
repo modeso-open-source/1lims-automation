@@ -2872,7 +2872,37 @@ class OrdersTestCases(BaseTest):
             # close child table
             self.orders_page.close_child_table(source=results[i])
 
-    def test085_add_multiple_suborders_with_testplans_testunits(self):
+    def test085_update_contact_config_to_number_create_form(self):
+        """
+        Sample Management: Contact configuration approach: In case the user configures the
+        contact field to display number this action should reflect on the order form step one
+
+        LIMS-6626
+        """
+        self.info("set contact configuration to be searchable by number only")
+        self.orders_api.set_contact_configuration_to_number_only()
+        response, _ = self.contacts_api.get_all_contacts()
+        self.assertEqual(response['status'], 1)
+        self.assertGreaterEqual(response['count'], 1)
+        random_contact = random.choice(response['contacts'])
+        contact_no = random_contact['companyNo']
+        contact_name = random_contact['name']
+        testplan = TestPlanAPI().create_completed_testplan_random_data()
+        self.info("create new order with contact no {}".format(contact_no))
+        self.order_page.create_new_order(contact=contact_no, save=False,
+                                         material_type=testplan['materialType'][0]['text'],
+                                         article=testplan['selectedArticles'][0]['text'],
+                                         test_plans=[testplan['testPlan']['text']])
+        self.info("assert that contact set to {}".format(str('No: ' + contact_no)))
+        self.assertCountEqual(self.order_page.get_contact(), [str('No: ' + contact_no)])
+        self.order_page.clear_contact()
+        contact_name_result = self.base_selenium.get_drop_down_suggestion_list(element='order:contact',
+                                                                               item_text=contact_name)
+        self.info("assert that suggestion list of contact name {} is {}".format(contact_name, str('No: ' + contact_no)))
+
+        self.assertEqual(contact_name_result[0], str('No: ' + contact_no))
+
+    def test086_add_multiple_suborders_with_testplans_testunits(self):
         """
          New: Orders: table/create: Create 4 suborders from the table view with different
          test plans & units ( single select ) and make sure the correct corresponding analysis records.
@@ -2914,7 +2944,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(test_units_names[0], testunits_in_testplans[i])
             self.assertEqual(test_units_names[1], testunits[i])
 
-    def test086_add_sub_order_with_multiple_testplans_only(self):
+    def test087_add_sub_order_with_multiple_testplans_only(self):
         """
         Any new suborder with multiple test plans should create one analysis record
         only with those test plans and test units that corresponding to them.
@@ -2940,7 +2970,7 @@ class OrdersTestCases(BaseTest):
         self.assertCountEqual(test_plans, found_test_plans)
         self.assertNotEqual(test_units, found_test_units)
 
-    def test087_add_multiple_suborders_with_diff_departments(self):
+    def test088_add_multiple_suborders_with_diff_departments(self):
         """
         Orders: table: Departments Approach: In case I created multiple suborders
         the departments should open drop down list with the options that I can
@@ -2988,7 +3018,7 @@ class OrdersTestCases(BaseTest):
         for suborder in suborder_data:
             self.assertIn(suborder['departments'][0], department_list)
 
-    def test088_order_of_test_units_in_analysis(self):
+    def test089_order_of_test_units_in_analysis(self):
         """
         Orders: Ordering test units: Test units in the analysis section should display
         in the same order as in the order section
@@ -3007,7 +3037,7 @@ class OrdersTestCases(BaseTest):
         analysis_testunits = [test_unit['Test Unit'] for test_unit in table_data]
         self.assertCountEqual(order_testunits, analysis_testunits)
     
-    def test089_if_cancel_archive_order_no_order_suborder_analysis_will_archived(self):
+    def test090_if_cancel_archive_order_no_order_suborder_analysis_will_archived(self):
         """
         [Archiving][MainOrder]Make sure that if user cancel archive order,
         No order or suborders or analysis of the order will be archived

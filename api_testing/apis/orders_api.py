@@ -434,3 +434,10 @@ class OrdersAPI(OrdersAPIFactory):
         with open(config_file, "r") as read_file:
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
+
+    def set_contact_configuration_to_number_only(self):
+        self.info('set order configuration')
+        config_file = os.path.abspath('api_testing/config/order_contact_number.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_configuration(payload=payload)
