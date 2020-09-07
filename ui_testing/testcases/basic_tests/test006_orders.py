@@ -945,26 +945,32 @@ class OrdersTestCases(BaseTest):
 
     @skip("https://modeso.atlassian.net/browse/LIMSA-281")
     @skip("https://modeso.atlassian.net/browse/LIMSA-280")
-    def test029_archive_sub_order(self):
+    def test030_archive_sub_order(self):
         """
-        Orders: Table:  Suborder/Archive Approach: User can archive any suborder successfully
-
+        orders :Make sure that by clicking on Archive from Suborder options a confirmation popup will appear
+        and user can Archive this suborder with its corresponding analysis
         LIMS-3739
+        LIMS-5369
         """
-        self.info("select random order with multiple suborders")
-        order = self.orders_api.get_order_with_multiple_sub_orders()
-        order_no = order['orderNo']
-        suborders = self.orders_api.get_suborder_by_order_id(order['orderId'])[0]['orders']
-        self.order_page.filter_by_order_no(order_no)
-        self.info('archive first suborder of order no: {}'.format(order_no))
-        self.orders_page.open_child_table(self.orders_page.result_table()[0])
-        self.order_page.archive_table_suborder()
+        self.info('select random order')
+        random_row = self.orders_page.get_random_table_row(table_element='general:table')
+        self.info('open child table')
+        self.orders_page.open_child_table(source=random_row)
+        self.info('archive suborder from orders active table')
+        child_table_records = self.orders_page.result_table(element='general:table_child')
+        sub_orders = self.orders_page.get_table_data(table_element='general:table_child')
+        selected_sub_order = randint(0, len(sub_orders) - 1)
+        analysis_no = sub_orders[selected_sub_order]['Analysis No.']
+        self.orders_page.open_row_options(row=child_table_records[selected_sub_order])
+        self.base_selenium.click(element='orders:suborder_archive')
+        self.assertTrue(self.base_selenium.check_element_is_exist(element='general:confirmation_pop_up'))
+        self.orders_page.confirm_popup()
         self.orders_page.get_archived_items()
-        self.order_page.filter_by_order_no(filter_text=order_no, reset=True)
-        self.orders_page.sleep_tiny()
-        self.assertEqual(len(self.order_page.result_table()), 2)
-        results = self.order_page.get_child_table_data()
-        self.assertIn(suborders[0]['analysis'], results.replace("'", ""))
+        self.info('make sure that suborder is archived')
+        self.orders_page.filter_by_analysis_number(analysis_no)
+        self.orders_page.open_child_table(source=self.orders_page.result_table()[0])
+        results = self.order_page.result_table(element='general:table_child')[0].text
+        self.assertIn(analysis_no.replace("'", ""), results.replace("'", ""))
 
     # @parameterized.expand(['testPlans', 'testUnit'])
     # def test030_update_material_type(self, case):
