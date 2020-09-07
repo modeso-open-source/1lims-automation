@@ -61,7 +61,7 @@ class SingleAnalysisPage(AllAnalysesPage):
         return header_list
 
     def get_records_data(self, analysis_count):
-        records_data=[]
+        records_data = []
         for i in range(0, analysis_count):
             analysis_record = self.base_selenium.find_element_by_xpath(
                 xpath='//div[@id="m_accordion_7_item_head_{}"]'.format(i))
