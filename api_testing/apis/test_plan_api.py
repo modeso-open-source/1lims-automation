@@ -335,6 +335,8 @@ class TestPlanAPI(TestPlanAPIFactory):
                                                  materialTypeId=[material_type_id])
 
         if testplan['message'] == 'operation_success':
+            payload['testPlan']['id'] = testplan['testPlanDetails']['testPlanId']
+            payload['selectedTestPlan']['id'] = testplan['testPlanDetails']['testPlanId']
             return payload
         else:
             return None

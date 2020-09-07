@@ -312,34 +312,33 @@ class OrdersAPI(OrdersAPIFactory):
                     return suborders[i]['departments']
 
     def create_order_with_double_test_plans(self, only_test_plans=False):
-        testplan = random.choice(TestPlanAPI().get_completed_testplans())
-        testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
-        testplan['id'] = testplan_form_data['testPlan']['testPlanEntity']['id']
-        article = testplan_form_data['testPlan']['selectedArticles'][0]['name']
-        article_id = testplan_form_data['testPlan']['selectedArticles'][0]['id']
+        testplan1 = TestPlanAPI().create_completed_testplan_random_data()
+        article = testplan1['selectedArticles'][0]['text']
+        article_id = testplan1['selectedArticles'][0]['id']
         if article == 'all':
             article, article_id = ArticleAPI().get_random_article_articleID()
-        material_type = testplan['materialType']
-        material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
-        testunit1 = testplan_form_data['testPlan']['specifications'][0]
-        testunit2 = TestUnitAPI().get_test_unit_name_with_value_with_material_type(
-            material_type=material_type, avoid_duplicate=True, duplicated_test_unit=testunit1['name'])
-        testunit_list = [testunit1, testunit2]
+        material_type = testplan1['materialType'][0]
 
-        testunit_data = TestUnitAPI().get_testunit_form_data(id=testunit2['id'])[0]['testUnit']
-        formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
-
+        tu_response1, tu_payload1 = TestUnitAPI().create_qualitative_testunit()
+        testunit1 = TestUnitAPI().get_testunit_form_data(id=tu_response1['testUnit']['testUnitId'])[0]['testUnit']
+        tu_response2, tu_payload2 = TestUnitAPI().create_qualitative_testunit()
+        testunit2 = TestUnitAPI().get_testunit_form_data(id=tu_response2['testUnit']['testUnitId'])[0]['testUnit']
+        if only_test_plans:
+            testunit_list = []
+        else:
+            testunit_list = [testunit1, testunit2]
+        formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit2)
         formatted_article = {'id': article_id, 'text': article}
-
-        formatted_material = {'id': material_type_id, 'text': material_type}
-
-        testplan2, _ = TestPlanAPI().create_testplan(
-            testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
-
-        if testplan2['status'] != 1:
-            testplan2, _ = TestPlanAPI().create_testplan(
-                testUnits=[formated_testunit], selectedArticles=[formatted_article], materialType=formatted_material)
-
+        testplan2, _ = TestPlanAPI().create_testplan(testUnits=[formated_testunit],
+                                                     selectedArticles=[formatted_article],
+                                                     materialTypes=material_type)
+        firsr_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan1['testPlan']['id'])
+        testPlan1 = {
+            'id': int(firsr_testPlan_data[0]['testPlan']['testPlanEntity']['id']),  # article_test_plan_id
+            'testPlanName': firsr_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
+            'number': int(firsr_testPlan_data[0]['testPlan']['number']),
+            'version': 1
+        }
         second_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan2['testPlanDetails']['id'])
         testPlan2 = {
             'id': int(second_testPlan_data[0]['testPlan']['testPlanEntity']['id']),  # article_test_plan_id
@@ -347,13 +346,13 @@ class OrdersAPI(OrdersAPIFactory):
             'number': int(second_testPlan_data[0]['testPlan']['number']),
             'version': 1
         }
-        testplan_list = [testplan, testPlan2]
+        testplan_list = [testPlan1, testPlan2]
 
         payload = {
             'testPlans': testplan_list,
             'testUnits': testunit_list,
-            'materialType': {"id": material_type_id, "text": material_type},
-            'materialTypeId': material_type_id,
+            'materialType': material_type,
+            'materialTypeId': material_type['id'],
             'article': {'id': article_id, 'text': article},
             'articleId': article_id
         }
