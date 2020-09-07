@@ -2872,7 +2872,49 @@ class OrdersTestCases(BaseTest):
             # close child table
             self.orders_page.close_child_table(source=results[i])
 
-    def test085_add_sub_order_with_multiple_testplans_only(self):
+    def test085_add_multiple_suborders_with_testplans_testunits(self):
+        """
+         New: Orders: table/create: Create 4 suborders from the table view with different
+         test plans & units ( single select ) and make sure the correct corresponding analysis records.
+
+         LIMS-4247
+        """
+        self.test_plan_api = TestPlanAPI()
+        self.analysis_page = SingleAnalysisPage()
+        testplans = []
+        testunits_in_testplans = []
+        for i in range(4):
+            testplans.append(self.test_plan_api.create_completed_testplan_random_data())
+            testunits_in_testplans.extend(self.test_plan_api.get_testunits_in_testplan_by_No(testplans[i]['number']))
+        test_units = TestUnitAPI().get_testunits_with_material_type('All')
+        test_units_names_only = [testunit['name'] for testunit in test_units]
+        testunits = random.sample(test_units_names_only, 4)
+        self.info("create new order")
+        self.order_page.create_new_order(material_type=testplans[0]['materialType'][0]['text'],
+                                         article=testplans[0]['selectedArticles'][0]['text'],
+                                         test_plans=[testplans[0]['testPlan']['text']],
+                                         test_units=[testunits[0]], save=False)
+
+        for i in range(1, 4):
+            self.info("add new suborder with test plan {} and test unit {}".
+                      format(testplans[i]['testPlan']['text'], testunits[i]))
+            self.order_page.create_new_suborder(material_type=testplans[i]['materialType'][0]['text'],
+                                                article_name=testplans[i]['selectedArticles'][0]['text'],
+                                                test_plan=testplans[i]['testPlan']['text'],
+                                                test_unit=testunits[i])
+
+        self.order_page.save(save_btn='order:save_btn')
+        self.order_page.navigate_to_analysis_tab()
+        self.assertEqual(self.analysis_page.get_analysis_count(), 4)
+        for i in range(4):
+            row = self.analysis_page.open_accordion_for_analysis_index(i)
+            test_units = self.analysis_page.get_testunits_in_analysis(row)
+            test_units_names = [name['Test Unit Name'].split(' ')[0] for name in test_units]
+            self.assertEqual(len(test_units_names), 2)
+            self.assertEqual(test_units_names[0], testunits_in_testplans[i])
+            self.assertEqual(test_units_names[1], testunits[i])
+
+    def test086_add_sub_order_with_multiple_testplans_only(self):
         """
         Any new suborder with multiple test plans should create one analysis record
         only with those test plans and test units that corresponding to them.
@@ -2898,7 +2940,7 @@ class OrdersTestCases(BaseTest):
         self.assertCountEqual(test_plans, found_test_plans)
         self.assertNotEqual(test_units, found_test_units)
 
-    def test086_add_multiple_suborders_with_diff_departments(self):
+    def test087_add_multiple_suborders_with_diff_departments(self):
         """
         Orders: table: Departments Approach: In case I created multiple suborders
         the departments should open drop down list with the options that I can
@@ -2946,7 +2988,7 @@ class OrdersTestCases(BaseTest):
         for suborder in suborder_data:
             self.assertIn(suborder['departments'][0], department_list)
 
-    def test087_order_of_test_units_in_analysis(self):
+    def test088_order_of_test_units_in_analysis(self):
         """
         Orders: Ordering test units: Test units in the analysis section should display
         in the same order as in the order section
@@ -2964,8 +3006,8 @@ class OrdersTestCases(BaseTest):
         table_data = self.analyses_page.get_child_table_data()
         analysis_testunits = [test_unit['Test Unit'] for test_unit in table_data]
         self.assertCountEqual(order_testunits, analysis_testunits)
-        
-    def test088_if_cancel_archive_order_no_order_suborder_analysis_will_archived(self):
+    
+    def test089_if_cancel_archive_order_no_order_suborder_analysis_will_archived(self):
         """
         [Archiving][MainOrder]Make sure that if user cancel archive order,
         No order or suborders or analysis of the order will be archived

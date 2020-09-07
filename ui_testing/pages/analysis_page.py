@@ -8,7 +8,8 @@ class SingleAnalysisPage(AllAnalysesPage):
     def open_accordion_for_analysis_index(self, index=0):
         all_accordion_items = self.base_selenium.find_element('analysis_page:all_rows')
         required_row = all_accordion_items[index + 1] # index is increased by 1 because index 0 is the header element
-        required_accordion_item_clickable_item = self.base_selenium.find_element_in_element(source=required_row, destination_element='analysis_page:accordion_item')
+        required_accordion_item_clickable_item = self.base_selenium.find_element_in_element(
+            source=required_row, destination_element='analysis_page:accordion_item')
         required_accordion_item_clickable_item.click()
         self.sleep_medium()
 
@@ -16,10 +17,12 @@ class SingleAnalysisPage(AllAnalysesPage):
         
     def get_testunits_in_analysis(self, source):
         testunits = []
-        testunits_table = self.base_selenium.find_element_in_element(source=source, destination_element='analysis_page:testunits_table')
+        testunits_table = self.base_selenium.find_element_in_element(
+            source=source, destination_element='analysis_page:testunits_table')
         rows = self.base_selenium.get_table_rows(source=testunits_table)
         for row in rows:
-            row_data = self.base_selenium.get_row_cells_dict_related_to_header(table_element='analysis_page:testunits_table', row=row)
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(
+                table_element='analysis_page:testunits_table', row=row)
             testunits.append(row_data)
 
         return testunits
@@ -46,12 +49,13 @@ class SingleAnalysisPage(AllAnalysesPage):
         
         return analysis_mapped_data
 
-
     def get_analysis_headers(self):
-        headers = self.base_selenium.find_elements_in_element(source_element='analysis_page:headers', destination_element='general:th')
+        headers = self.base_selenium.find_elements_in_element(
+            source_element='analysis_page:headers', destination_element='general:th')
         header_list = []
         for header in headers:
-            if header.text != 'Attachments' and header.text != 'Save' and header.text != 'Arrival Date' and header.text != '':
+            if header.text != 'Attachments' and header.text != 'Save' and \
+                    header.text != 'Arrival Date' and header.text != '':
                 header_list.append(header.text)
 
         return header_list
@@ -59,8 +63,10 @@ class SingleAnalysisPage(AllAnalysesPage):
     def get_records_data(self, analysis_count):
         records_data=[]
         for i in range(0, analysis_count):
-            analysis_record = self.base_selenium.find_element_by_xpath(xpath='//div[@id="m_accordion_7_item_head_{}"]'.format(i))
-            cells = self.base_selenium.find_elements_in_element(source=analysis_record, destination_element='general:td')
+            analysis_record = self.base_selenium.find_element_by_xpath(
+                xpath='//div[@id="m_accordion_7_item_head_{}"]'.format(i))
+            cells = self.base_selenium.find_elements_in_element(
+                source=analysis_record, destination_element='general:td')
             temp_record = []
             for cell in cells:
                 if cell.text != '':
