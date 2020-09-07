@@ -1,13 +1,15 @@
 {
    "fields":[
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
          "section":1,
          "archivable":false,
-         "id":32,
+         "id":40,
          "name":"number",
          "isDynamic":false,
          "isArchived":false,
@@ -19,16 +21,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":2,
          "section":1,
          "archivable":false,
-         "id":33,
+         "id":41,
          "name":"name",
          "isDynamic":false,
          "isArchived":false,
@@ -38,19 +44,27 @@
          "isStoredInServer":true,
          "searchable":[
             "name",
-            "type"
+            " type"
+         ],
+         "optionsComponentId":4,
+         "viewByoptions":[
+            "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":3,
          "section":1,
          "archivable":false,
-         "id":39,
+         "id":47,
          "name":"materialTypes",
          "isDynamic":false,
          "isArchived":false,
@@ -62,16 +76,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":4,
          "section":1,
          "archivable":false,
-         "id":36,
+         "id":44,
          "name":"category",
          "isDynamic":false,
          "isArchived":false,
@@ -83,16 +101,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":5,
          "section":1,
          "archivable":false,
-         "id":34,
+         "id":42,
          "name":"type",
          "isDynamic":false,
          "isArchived":false,
@@ -104,16 +126,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":false,
          "order":1,
          "section":2,
          "archivable":false,
-         "id":55,
+         "id":63,
          "name":"useSpec",
          "isDynamic":false,
          "isArchived":false,
@@ -124,16 +150,20 @@
          "searchable":[
             "name"
          ],
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":false,
          "order":2,
          "section":2,
          "archivable":false,
-         "id":50,
+         "id":58,
          "name":"upperLimit",
          "isDynamic":false,
          "isArchived":false,
@@ -144,16 +174,20 @@
          "searchable":[
             "name"
          ],
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":false,
          "order":3,
          "section":2,
          "archivable":false,
-         "id":49,
+         "id":57,
          "name":"lowerLimit",
          "isDynamic":false,
          "isArchived":false,
@@ -164,16 +198,20 @@
          "searchable":[
             "name"
          ],
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":false,
          "order":4,
          "section":2,
          "archivable":false,
-         "id":35,
+         "id":43,
          "name":"unit",
          "isDynamic":false,
          "isArchived":false,
@@ -184,16 +222,20 @@
          "searchable":[
             "name"
          ],
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":5,
          "section":2,
          "archivable":false,
-         "id":51,
+         "id":59,
          "name":"textValueArray",
          "isDynamic":false,
          "isArchived":false,
@@ -205,96 +247,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
-         "isDragable":false,
+         "isDragable":true,
          "order":6,
          "section":2,
          "archivable":false,
-         "id":56,
-         "name":"useQuantification",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":4,
-         "class":"col-md-3",
-         "title":"Quantification Limit",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[""]
-      },
-      {
-         "options":[""],
-         "isEditable":false,
-         "isDragable":false,
-         "order":7,
-         "section":2,
-         "archivable":false,
-         "id":59,
-         "name":"quantificationUpperLimit",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":4,
-         "class":"col-md-3",
-         "title":"Upper Limit",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[""]
-      },
-      {
-         "options":[""],
-         "isEditable":false,
-         "isDragable":false,
-         "order":8,
-         "section":2,
-         "archivable":false,
-         "id":58,
-         "name":"quantificationLowerLimit",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":4,
-         "class":"col-md-3",
-         "title":"Lower Limit",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[""]
-      },
-      {
-         "options":[""],
-         "isEditable":false,
-         "isDragable":false,
-         "order":9,
-         "section":2,
-         "archivable":false,
-         "id":57,
-         "name":"quantificationUnit",
-         "isDynamic":false,
-         "isArchived":false,
-         "componentId":4,
-         "class":"col-md-3",
-         "title":"Unit",
-         "isStoredInServer":true,
-         "searchable":[
-            "name"
-         ],
-         "optionsInUse":[""]
-      },
-      {
-         "options":[""],
-         "isEditable":false,
-         "isDragable":true,
-         "order":10,
-         "section":2,
-         "archivable":false,
-         "id":52,
+         "id":60,
          "name":"selectedConcs",
          "isDynamic":false,
          "isArchived":false,
@@ -306,16 +272,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
          "section":3,
          "archivable":false,
-         "id":48,
+         "id":56,
          "name":"iterations",
          "isDynamic":false,
          "isArchived":false,
@@ -327,16 +297,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":2,
          "section":3,
          "archivable":false,
-         "id":38,
+         "id":46,
          "name":"method",
          "isDynamic":false,
          "isArchived":false,
@@ -348,16 +322,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
-         "section":4,
+         "section":5,
          "archivable":true,
-         "id":537,
+         "id":266,
          "name":"roundingOption",
          "isDynamic":false,
          "isArchived":false,
@@ -369,132 +347,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
-         "isEditable":true,
-         "isDragable":true,
-         "order":2,
-         "htmlId":"#draggableDateField",
-         "id":53,
-         "idInFields":53,
-         "dynamicFieldId":13,
-         "section":4,
-         "name":"Verrechnung externes Labor",
-         "type":5,
-         "typeNameStr":"Checkbox",
-         "isUnique":false,
-         "isRequired":false,
-         "isArchived":false,
-         "componentId":4,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
+         "options":[
+
          ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-4",
-         "title":"Verrechnung externes Labor",
-         "en":"Verrechnung externes Labor",
-         "de":"Verrechnung externes Labor",
-         "key":"Verrechnung externes Labor",
-         "error":false,
-         "optionsInUse":[""]
-      },
-      {
-         "options":[""],
-         "isEditable":true,
-         "isDragable":true,
-         "order":3,
-         "htmlId":"#draggableSingleSelectionField",
-         "id":44,
-         "idInFields":44,
-         "dynamicFieldId":10,
-         "section":4,
-         "name":"Kontakt",
-         "type":7,
-         "typeNameStr":"Single Select",
-         "isUnique":false,
-         "isRequired":null,
-         "isArchived":false,
-         "componentId":4,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            },
-            {
-               "id":1,
-               "text":"number"
-            }
-         ],
-         "searchable":[
-            "name",
-            "number"
-         ],
-         "optionsComponentId":3,
-         "isStoredInServer":true,
-         "class":"col-md-4",
-         "title":"Kontakt",
-         "en":"Kontakt",
-         "de":"Kontakt",
-         "key":"Kontakt",
-         "error":false,
-         "optionsInUse":[""]
-      },
-      {
-         "options":[""],
-         "isEditable":true,
-         "isDragable":true,
-         "order":4,
-         "htmlId":"#draggableTextField",
-         "id":46,
-         "idInFields":46,
-         "dynamicFieldId":9,
-         "section":4,
-         "name":"Analysekosten",
-         "type":1,
-         "typeNameStr":"Text",
-         "isUnique":false,
-         "isRequired":null,
-         "isArchived":false,
-         "componentId":4,
-         "isDynamic":true,
-         "viewByoptions":[
-            {
-               "id":0,
-               "text":"name"
-            }
-         ],
-         "searchable":[
-            "name"
-         ],
-         "optionsComponentId":null,
-         "isStoredInServer":true,
-         "class":"col-md-4",
-         "title":"Analysekosten",
-         "en":"Analysekosten",
-         "de":"Analysekosten",
-         "key":"Analysekosten",
-         "error":false,
-         "optionsInUse":[""]
-      },
-      {
-         "options":[""],
          "isEditable":false,
          "isDragable":true,
-         "order":5,
-         "section":4,
+         "order":2,
+         "section":5,
          "archivable":true,
-         "id":40,
+         "id":48,
          "name":"comment",
          "isDynamic":false,
          "isArchived":false,
@@ -506,7 +372,9 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       }
    ],
    "archivedFields":[

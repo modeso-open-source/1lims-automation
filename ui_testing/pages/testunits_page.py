@@ -100,7 +100,6 @@ class TstUnits(BasePages):
 
     def open_testunit_name_configurations_options(self):
         self.info('open testunits name configurations options')
-        self.base_selenium.scroll()
         self.sleep_tiny()
         self.base_selenium.click(element='configurations_page:display_options_menu')
         self.sleep_tiny()

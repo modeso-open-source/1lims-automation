@@ -384,8 +384,8 @@ class BaseSelenium:
             cancel = self.find_element_in_element(destination_element='general:cancel_span', source=ng_value)
             cancel.click()
             if confirm_popup:
-                self.wait_element(element='general:form_popup_warning_window')
-                self.click(element='order:confirm_pop')
+                if self.check_element_is_exist(element='general:form_popup_warning_window'):
+                    self.click(element='order:confirm_pop')
             if one_item_only:
                 break
 
