@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 EXECUTION_FILES=(
@@ -46,6 +45,3 @@ EXECUTION_FILES=(
      exit 1;
    fi
  done
-
-
-

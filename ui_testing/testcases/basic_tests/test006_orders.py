@@ -4,6 +4,7 @@ from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.contacts_page import Contacts
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testunits_page import TstUnits
+from ui_testing.pages.testunit_page import TstUnit
 from api_testing.apis.orders_api import OrdersAPI
 from ui_testing.pages.analysis_page import AllAnalysesPage
 from api_testing.apis.article_api import ArticleAPI
@@ -3304,10 +3305,9 @@ class OrdersTestCases(BaseTest):
             if result['test_plan'] == testPlan['testPlan']['text']:
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
-
                   
     @parameterized.expand(['Name','No','Name:No'])
-    def test101_change_contact_config(self,search_by):
+    def test095_change_contact_config(self,search_by):
         '''
          Orders: Contact configuration approach: In case the user
          configures the contact field to display name & number this action
@@ -3346,8 +3346,7 @@ class OrdersTestCases(BaseTest):
         self.info('assert contact appear in format {}'.format(search_by))
         self.assertEqual(order_data['Contact Name'],search_text)
 
-
-    def test095_check_list_menu(self):
+    def test096_check_list_menu(self):
         """
           [Orders][Active table] Make sure that list menu will contain
           (COA,Archive , XSLX - Archived - Configurations) Only
@@ -3362,7 +3361,7 @@ class OrdersTestCases(BaseTest):
                            ('Unit', 'No'),
                            ('Quantification Limit', '')])
     @attr(series=True)
-    def test096_test_unit_name_allow_user_to_filter_with_selected_two_options_order(self, search_view_option1,
+    def test097_test_unit_name_allow_user_to_filter_with_selected_two_options_order(self, search_view_option1,
                                                                                     search_view_option2):
         """
          Orders: Filter test unit Approach: Allow the search criteria in
@@ -3424,7 +3423,7 @@ class OrdersTestCases(BaseTest):
             # close child table
             self.orders_page.close_child_table(source=results[i])
 
-    def test097_filter_configuration_fields(self):
+    def test098_filter_configuration_fields(self):
         """
           Orders: Make sure that user can filter order TestUnit that exist
           on order only(TestUnit in Analysis not Included)
@@ -3450,7 +3449,7 @@ class OrdersTestCases(BaseTest):
         for field in required_fields:
             self.assertIn(field, found_fields)
 
-    def test098_year_format_in_suborder_sheet(self):
+    def test099_year_format_in_suborder_sheet(self):
         """
          Analysis number format: In case the analysis number displayed with full year,
          this should reflect on the export file
@@ -3481,7 +3480,7 @@ class OrdersTestCases(BaseTest):
         self.assertIn(order_no, fixed_sheet_row_data)
         self.assertIn(analysis_no, fixed_sheet_row_data)
 
-    def test099_create_multiple_suborders_with_testplans_testunits(self):
+    def test100_create_multiple_suborders_with_testplans_testunits(self):
         """
          New: Orders: table view: Create Approach: when you create suborders with multiple
          test plans & units select the corresponding analysis that triggered according to that.
@@ -3539,3 +3538,56 @@ class OrdersTestCases(BaseTest):
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
 
+    @parameterized.expand(['before', 'after'])
+    def test101_create_order_with_test_plans_with_same_name(self, save_before):
+        """
+        Orders: Create Approach: Make sure In case you create two test plans with the same name
+        and different materiel type, the test units that belongs to them displayed correct in
+        analysis step two
+
+        LIMS-6296
+        """
+        self.test_plan_api = TestPlanAPI()
+        self.info("create completed test plan with random data")
+        testplan1 = self.test_plan_api.create_completed_testplan_random_data()
+        test_plan_name_dict = {'id': 'new', 'text': testplan1['testPlan']['text']}
+        new_material = random.choice(GeneralUtilitiesAPI().get_material_types_without_duplicate(
+            testplan1['materialType'][0]['text']))
+        new_material_id = GeneralUtilitiesAPI().get_material_id(new_material)
+        formatted_material = {'id': new_material_id, 'text': new_material}
+        tu_response, _ = TestUnitAPI().create_qualitative_testunit(selectedMaterialTypes=[formatted_material])
+        testunit_data = TestUnitAPI().get_testunit_form_data(id=tu_response['testUnit']['testUnitId'])[0]['testUnit']
+        formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
+        self.info("create completed test plan with same name {} and new material {}".format(
+            testplan1['testPlan']['text'], new_material))
+        formatted_article = ArticleAPI().get_formatted_article_with_formatted_material_type(
+            material_type=formatted_material)
+
+        test_units_list = [testplan1['testUnits'][0]['name'], formated_testunit['name']]
+        response, testplan2 = self.test_plan_api.create_testplan(selectedTestPlan=test_plan_name_dict,
+                                                                 testPlan=test_plan_name_dict,
+                                                                 testUnits=[formated_testunit],
+                                                                 selectedArticles=[formatted_article],
+                                                                 materialType=[formatted_material],
+                                                                 materialTypeId=[new_material_id])
+        self.assertEqual(response['message'], 'name_already_exist')
+        self.order_page.create_new_order(material_type=testplan1['materialType'][0]['text'],
+                                         article=testplan1['selectedArticles'][0]['text'],
+                                         test_plans=[testplan1['testPlan']['text']],
+                                         with_testunits=False, save=False)
+        if save_before == 'before':
+            self.order_page.save(save_btn='order:save_btn')
+        self.order_page.create_new_suborder(material_type=new_material,
+                                            article_name=formatted_article['name'],
+                                            test_plan=testplan1['testPlan']['text'],
+                                            with_test_unit=False)
+        self.order_page.save(save_btn='order:save_btn')
+        self.order_page.navigate_to_analysis_tab()
+        self.analysis_page = SingleAnalysisPage()
+        self.assertEqual(self.analysis_page.get_analysis_count(), 2)
+        for i in range(2):
+            row = self.analysis_page.open_accordion_for_analysis_index(i)
+            test_units = self.analysis_page.get_testunits_in_analysis(row)
+            self.assertEqual(len(test_units), 1)
+            test_units_name = test_units[0]['Test Unit Name'].split(' ')[0]
+            self.assertEqual(test_units_name, test_units_list[i])
