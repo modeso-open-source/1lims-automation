@@ -172,7 +172,7 @@ class Order(Orders):
         self.save(save_btn='order:save_btn', sleep=True)
         return order_no
 
-    def get_department_suggestion_lists(self, open_suborder_table=False, contacts=[]):
+    def get_department_suggestion_lists(self, open_suborder_table=False, contacts=[], index=0):
         """
         :param open_suborder_table:
 
@@ -181,7 +181,7 @@ class Order(Orders):
         :return: 2 lists , departments with contacts and departments only
         """
         if open_suborder_table:
-            suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[0]
+            suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[index]
             suborder_row.click()
         department = self.base_selenium.find_element(element='order:departments')
         department.click()

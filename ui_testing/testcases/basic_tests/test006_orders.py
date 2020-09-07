@@ -2872,7 +2872,55 @@ class OrdersTestCases(BaseTest):
             # close child table
             self.orders_page.close_child_table(source=results[i])
 
-    def test085_order_of_test_units_in_analysis(self):
+    def test085_add_multiple_suborders_with_diff_departments(self):
+        """
+        Orders: table: Departments Approach: In case I created multiple suborders
+        the departments should open drop down list with the options that I can
+        select different departments in each one.
+
+        LIMS-4258
+        """
+        self.info('create contact with multiple departments')
+        response, payload = self.contacts_api.create_contact_with_multiple_departments()
+        self.assertEqual(response['status'], 1, "contact with {} Not created".format(payload))
+        department_list = [dep['text'] for dep in payload['departments']]
+        self.info('create order with contact {} and first department {}'.
+                  format(response['company']['name'], payload['departments'][0]['text']))
+        order_response, order_payload = \
+            self.orders_api.create_order_with_department_by_contact_id(
+                response['company']['companyId'])
+        self.assertEqual(order_response['status'], 1, "order with {} Not created".format(order_payload))
+        self.info('edit order with No {}'.format(order_payload[0]['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(order_response['order']['mainOrderId'])
+        self.order_page.sleep_tiny()
+        self.order_page.create_new_suborder(material_type=order_payload[0]['materialType']['text'],
+                                            article_name=order_payload[0]['article']['text'],
+                                            test_plan=order_payload[0]['testPlans'][0]['name'])
+        self.order_page.sleep_tiny()
+        self.info("get departments suggestion list for first suborder")
+        _, department_suggestion_list1 = self.order_page.get_department_suggestion_lists(
+            open_suborder_table=True, index=1)
+        self.assertCountEqual(department_suggestion_list1, department_list)
+        self.info("set department to {}".format(payload['departments'][1]['text']))
+        self.order_page.set_departments(payload['departments'][1]['text'])
+        self.order_page.sleep_tiny()
+        self.order_page.create_new_suborder(material_type=order_payload[0]['materialType']['text'],
+                                            article_name=order_payload[0]['article']['text'],
+                                            test_plan=order_payload[0]['testPlans'][0]['name'])
+        self.order_page.sleep_tiny()
+        self.info("get departments suggestion list for second suborder")
+        _, department_suggestion_list2 = self.order_page.get_department_suggestion_lists(
+            open_suborder_table=True, index=2)
+        self.assertCountEqual(department_suggestion_list2, department_list)
+        self.info("set department to {}".format(payload['departments'][2]['text']))
+        self.order_page.set_departments(payload['departments'][2]['text'])
+        self.order_page.save_and_wait('order:save_btn')
+        self.info("assert that department of each suborder in department lis")
+        suborder_data = self.order_page.get_suborder_data()["suborders"]
+        for suborder in suborder_data:
+            self.assertIn(suborder['departments'][0], department_list)
+
+    def test086_order_of_test_units_in_analysis(self):
         """
         Orders: Ordering test units: Test units in the analysis section should display
         in the same order as in the order section
@@ -2891,7 +2939,7 @@ class OrdersTestCases(BaseTest):
         analysis_testunits = [test_unit['Test Unit'] for test_unit in table_data]
         self.assertCountEqual(order_testunits, analysis_testunits)
         
-    def test090_if_cancel_archive_order_no_order_suborder_analysis_will_archived(self):
+    def test087_if_cancel_archive_order_no_order_suborder_analysis_will_archived(self):
         """
         [Archiving][MainOrder]Make sure that if user cancel archive order,
         No order or suborders or analysis of the order will be archived
