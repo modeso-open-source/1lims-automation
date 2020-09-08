@@ -251,12 +251,12 @@ class OrdersAPI(OrdersAPIFactory):
         orders_response, _ = self.get_all_orders(**kwargs)
         return orders_response['orders']
 
-    def get_order_with_multiple_sub_orders(self):
+    def get_order_with_multiple_sub_orders(self, no_suborders=1):
         api, payload = self.get_all_orders(limit=100)
         all_orders = api['orders']
         for order in all_orders:
             suborder = self.get_suborder_by_order_id(id=order['orderId'])[0]['orders']
-            if len(suborder) > 1:
+            if len(suborder) > no_suborders:
                 return order
 
     def get_order_with_field_name(self, field, no_of_field):
