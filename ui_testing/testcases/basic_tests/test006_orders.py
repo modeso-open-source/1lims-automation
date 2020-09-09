@@ -3042,7 +3042,7 @@ class OrdersTestCases(BaseTest):
         table_data = self.analyses_page.get_child_table_data()
         analysis_testunits = [test_unit['Test Unit'] for test_unit in table_data]
         self.assertCountEqual(order_testunits, analysis_testunits)
-    
+
     def test090_if_cancel_archive_order_no_order_suborder_analysis_will_archived(self):
         """
         [Archiving][MainOrder]Make sure that if user cancel archive order,
@@ -3072,13 +3072,43 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_archived_items()
         self.orders_page.filter_by_order_no(filter_text=order_no)
         self.assertEqual(len(self.order_page.result_table()) - 1, 0)
-        for i in range(0,len(analysis_no)-1):
+        for i in range(0, len(analysis_no) - 1):
             self.base_selenium.refresh()
             self.orders_page.get_archived_items()
             self.orders_page.filter_by_analysis_number(filter_text=analysis_no[i])
             self.assertEqual(len(self.order_page.result_table()) - 1, 0)
 
-    def test091_same_testunits_in_different_testplans(self):
+    def test091_order_of_testunits_in_analysis_section(self):
+        """
+        Ordering test units Approach: In case I put test plans and test units at the same time , the order of
+        the analysis section should be the test units of the test plans then the order test units
+
+        LIMS-7416
+        """
+        response, _ = self.test_unit_api.get_all_test_units()
+        random_testunit = random.choice(response['testUnits'])
+        testunits_formated = [{'id': random_testunit['id'],
+                               'name': random_testunit['name']}]
+        res, payload = self.orders_api.create_new_order(testUnits=testunits_formated)
+
+        testunit_of_test_plan = TestPlanAPI().get_testunits_in_testplan(payload[0]['testPlans'][0]['id'])
+        testunits = [tu['name'] for tu in testunit_of_test_plan]
+        testunits.append(testunits_formated[0]['name'])
+
+        order_id = res['order']['mainOrderId']
+        suborders = self.orders_api.get_suborder_by_order_id(id=order_id)[0]['orders']
+        self.assertEqual(len(suborders), 1)
+        analysis_number = suborders[0]['analysis'][0]
+        self.order_page.get_orders_page()
+        self.info('Navigating to analysis page')
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.filter_by_analysis_number(analysis_number)
+        analysis_data = self.analyses_page.get_child_table_data(index=0)
+        self.info('checking order of testunits in analysis section')
+        test_units_list_in_analysis = [analysis['Test Unit'] for analysis in analysis_data]
+        self.assertCountEqual(testunits, test_units_list_in_analysis)
+
+    def test092_same_testunits_in_different_testplans(self):
         """
         Order: Add Same test units in different test plan
         LIMS-4354
@@ -3157,7 +3187,7 @@ class OrdersTestCases(BaseTest):
                   .format(analysis_data[0]['Test Unit'], tp1_pd['testUnits'][0]['name']))
         self.assertEqual(analysis_data[0]['Test Unit'], tp1_pd['testUnits'][0]['name'])
 
-    def test092_select_large_number_of_test_units_in_one_testplan(self):
+    def test093_select_large_number_of_test_units_in_one_testplan(self):
         """
           Orders: Test plan Approach: In case I select large number of test units in one test plan,
           they should display successfully in the pop up
@@ -3183,4 +3213,5 @@ class OrdersTestCases(BaseTest):
             if result['test_plan'] == testPlan['testPlan']['text']:
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
+
 
