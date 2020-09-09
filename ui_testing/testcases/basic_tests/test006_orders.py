@@ -2314,7 +2314,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.click_create_order_button()
         self.order_page.sleep_tiny()
         self.order_page.click_overview()
-        self.info('Asserting correct redirection to orders active table ')
+        self.info('asserting correct redirection to orders active table ')
         self.info('Active table url is {} , current url is {}'.format(
             self.orders_page.orders_url, self.base_selenium.get_url()))
         self.assertEqual(self.orders_page.orders_url, self.base_selenium.get_url())
@@ -2427,7 +2427,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_archived_items()
         for i in range(len(orders_data)):
             order_no = orders_data[i]['Order No.']
-            self.info('Asserting order with order number {} is successfully archived'.format(order_no))
+            self.info('asserting order with order number {} is successfully archived'.format(order_no))
             self.orders_page.filter_by_order_no(order_no)
             results = self.order_page.result_table()
             self.assertEqual(len(results), 2)
@@ -2516,7 +2516,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_orders_page()
         self.order_page.sleep_tiny()
         self.order_page.navigate_to_analysis_tab()
-        self.info('Asserting that contact has changed for this order')
+        self.info('asserting that contact has changed for this order')
         for i in range(len(response['orders'])):
             analysis_no = response['orders'][i]['analysis']
             self.analyses_page.filter_by_analysis_number(analysis_no)
@@ -2812,10 +2812,10 @@ class OrdersTestCases(BaseTest):
                                          multiple_suborders=5, with_testplan=False)
         order_id = self.order_page.get_order_id()
         suborders = self.orders_api.get_suborder_by_order_id(id=order_id)
-        self.info('Asserting api success')
+        self.info('asserting api success')
         self.assertEqual(suborders[0]['status'], 1)
         analysis_numbers = [suborder['analysis'][0] for suborder in suborders[0]['orders']]
-        self.info('Asserting there are 5 suborders analysis triggered')
+        self.info('asserting there are 5 suborders analysis triggered')
         self.assertEqual(len(analysis_numbers), 6)
         self.info('checking testunit for each suborder ')
         self.order_page.get_orders_page()
@@ -3078,7 +3078,86 @@ class OrdersTestCases(BaseTest):
             self.orders_page.filter_by_analysis_number(filter_text=analysis_no[i])
             self.assertEqual(len(self.order_page.result_table()) - 1, 0)
 
-    def test091_select_large_number_of_test_units_in_one_testplan(self):
+    def test091_same_testunits_in_different_testplans(self):
+        """
+        Order: Add Same test units in different test plan
+        LIMS-4354
+        """
+        self.test_plan_api = TestPlanAPI()
+        self.info('create two identical test plans')
+        tp1_pd = self.test_plan_api.create_completed_testplan_random_data()
+        self.assertTrue(tp1_pd)
+        testplan1_name = tp1_pd['testPlan']['text']
+        # formated_testunit, formatted_article, formatted_material, material_type_id = self.test_plan_api.create_random_data_for_testplan()
+        response2, testplan2 = self.test_plan_api.create_testplan(testUnits=tp1_pd['testUnits'],
+                                                                  selectedArticles=tp1_pd['selectedArticles'],
+                                                                  materialType=tp1_pd['materialType'],
+                                                                  materialTypeId=tp1_pd['materialTypeId'])
+        self.info('asserting api success')
+        self.assertEqual(response2['message'], 'operation_success')
+        testplan2_name = testplan2['testPlan']['text']
+
+        testplans = testplan1_name + ', ' + testplan2_name
+        self.order_page.get_orders_page()
+        self.order_page.sleep_tiny()
+        self.order_page.create_new_order(material_type=tp1_pd['materialType'][0]['text'],
+                                         article=tp1_pd['selectedArticles'][0]['text'],
+                                         test_plans=[testplan1_name, testplan2_name], with_testunits=False)
+        self.order_page.sleep_tiny()
+        order_id = self.order_page.get_order_id()
+        suborders = self.orders_api.get_suborder_by_order_id(id=order_id)
+        
+        self.info('asserting api success')
+        self.assertEqual(suborders[0]['status'], 1)
+        analysis_number = [suborder['analysis'][0] for suborder in suborders[0]['orders']]
+        self.info('asserting there is only one analysis for this order')
+        self.assertEqual(len(analysis_number), 1)
+        
+        self.info('checking testunit for each testplan record ')
+        self.order_page.get_orders_page()
+        self.order_page.navigate_to_analysis_tab()
+        self.analyses_page.sleep_tiny()
+        self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
+                                                 filter_text=analysis_number, field_type='text')
+        analysis = self.analyses_page.get_the_latest_row_data()
+        self.info('asserting status of analysis is open')
+        self.assertEqual(analysis['Status'], 'Open')
+
+        self.info('asserting correct testplans selected')
+        self.assertEqual(analysis['Test Plans'], testplans)
+
+        analysis_data = self.analyses_page.get_child_table_data(index=0)
+        self.info('asserting 2 child records, one for each test plan')
+        self.assertEqual(len(analysis_data), 2)
+        self.orders_page.open_child_table(source=self.analyses_page.result_table()[0])
+        for i in range(2):
+            self.info('asserting testunit for testplan {} is {} = selected testunit {}'
+                      .format(i + 1, analysis_data[i]['Test Unit'], tp1_pd['testUnits'][0]['name']))
+            self.assertEqual(analysis_data[i]['Test Unit'], tp1_pd['testUnits'][0]['name'])
+
+        self.orders_page.get_order_edit_page_by_id(order_id)
+        self.info('Delete one of the testplans from the order ')
+        self.order_page.sleep_tiny()
+        self.info('click on first row and remove a testplan')
+        self.order_page.open_suborder_edit()
+        self.base_selenium.clear_items_in_drop_down(element='order:test_plan', confirm_popup=True, one_item_only=True)
+        self.order_page.save(save_btn='order:save')
+        self.order_page.get_orders_page()
+        self.order_page.sleep_tiny()
+        self.analyses_page.apply_filter_scenario(filter_element='analysis_page:analysis_no_filter',
+                                                 filter_text=analysis_number, field_type='text')
+        self.info('asserting correct testplans selected')
+        self.order_page.sleep_tiny()
+        self.assertEqual(self.analyses_page.get_the_latest_row_data()['Test Plans'], testplan1_name)
+        analysis_data = self.analyses_page.get_child_table_data(index=0)
+        self.info('asserting only 1 child record; as only one test plan is now selected')
+        self.assertEqual(len(analysis_data), 1)
+        self.orders_page.open_child_table(source=self.analyses_page.result_table()[0])
+        self.info('asserting testunit for testplan2 is {} = selected testunit {}'
+                  .format(analysis_data[0]['Test Unit'], tp1_pd['testUnits'][0]['name']))
+        self.assertEqual(analysis_data[0]['Test Unit'], tp1_pd['testUnits'][0]['name'])
+
+    def test092_select_large_number_of_test_units_in_one_testplan(self):
         """
           Orders: Test plan Approach: In case I select large number of test units in one test plan,
           they should display successfully in the pop up
@@ -3104,3 +3183,4 @@ class OrdersTestCases(BaseTest):
             if result['test_plan'] == testPlan['testPlan']['text']:
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
+
