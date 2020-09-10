@@ -2936,28 +2936,28 @@ class OrdersTestCases(BaseTest):
     #     self.info("select multiple orders and archive them")
     #     orders_data, rows = self.order_page.select_random_multiple_table_rows(element='orders:orders_table')
     #     for i in range(len(orders_data)) :
-    #       order_no = orders_data[i]['Order No.']
-    #       self.info('Asserting order with order number {} is successfully archived'.format(order_no))
-    #       row=self.orders_page.filter_by_order_no(order_no)
-    #       random_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row)
-    #       self.orders_page.open_child_table(source=random_row)
-    #       child_table_data = self.order_page.get_table_data()
-    #       order_data_list = []
-    #       order_dict = {}
-    #       for sub_order in child_table_data:
-    #          order_dict.update(random_row_data)
-    #          order_dict.update(sub_order)
-    #          order_data_list.append(order_dict)
-    #          order_dict = {}
+    #        order_no = orders_data[i]['Order No.']
+    #        self.info('Asserting order with order number {} is successfully archived'.format(order_no))
+    #        row=self.orders_page.filter_by_order_no(order_no)
+    #        random_row_data = self.base_selenium.get_row_cells_dict_related_to_header(row)
+    #        self.orders_page.open_child_table(source=random_row_data)
+    #        child_table_data = self.order_page.get_table_data()
+    #        order_data_list = []
+    #        order_dict = {}
+    #        for sub_order in child_table_data:
+    #           order_dict.update(random_row_data)
+    #           order_dict.update(sub_order)
+    #           order_data_list.append(order_dict)
+    #           order_dict = {}
     #
-    #      formatted_orders = self.order_page.match_format_to_sheet_format(order_data_list)
-    #      self.order_page.download_xslx_sheet()
-    #      for index in range(len(formatted_orders)):
-    #         self.info('Comparing the order no {} '.format(formatted_orders[index][0]))
-    #         values = self.order_page.sheet.iloc[index].values
-    #         fixed_sheet_row_data = self.reformat_data(values)
-    #         self.assertCountEqual(fixed_sheet_row_data, formatted_orders[index],
+    #        formatted_orders = self.order_page.match_format_to_sheet_format(order_data_list)
+    #        self.order_page.download_xslx_sheet()
+    #        for index in range(len(formatted_orders)):
+    #           self.info('Comparing the order no {} '.format(formatted_orders[index][0]))
+    #           values = self.order_page.sheet.iloc[index].values
+    #           fixed_sheet_row_data = self.reformat_data(values)
+    #           self.assertCountEqual(fixed_sheet_row_data, formatted_orders[index],
     #                               f"{str(fixed_sheet_row_data)} : {str(formatted_orders[index])}")
-    #         for item in formatted_orders[index]:
-    #             self.assertIn(item, fixed_sheet_row_data)
+    #           for item in formatted_orders[index]:
+    #              self.assertIn(item, fixed_sheet_row_data)
 
