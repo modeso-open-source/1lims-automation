@@ -1364,6 +1364,7 @@ class TestUnitsTestCases(BaseTest):
         required_value = span.get_attribute('ng-reflect-ngb-tooltip')
         self.assertEqual(payload['unit'],required_value)
 
+
     @parameterized.expand([('Name', 'Type'),
                            ('Name', 'Method'),
                            ('Name', 'No'),
@@ -1431,3 +1432,20 @@ class TestUnitsTestCases(BaseTest):
             self.assertTrue(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
+            
+    def test052_cancel_testunit_name_configuration(self):
+        """
+        Test unit: Configuration: make sure that when you select from test unit name configuration
+        drop down list and press on cancel button, nothing changed
+        LIMS-5650
+        """
+        self.info('open test unit configurations')
+        self.test_unit_page.open_configurations()
+        self.info('get selected view and search options in test unit name configuration')
+        selected_option = self.test_unit_page.get_view_and_search_options()
+        self.info('select another option and press cancel')
+        self.test_unit_page.set_view_and_search_option(save=False)
+        self.info('open test unit configuration pop up to assert that nothing changed ')
+        selected_option_after_cancel = self.test_unit_page.get_view_and_search_options()
+        self.assertEqual(selected_option, selected_option_after_cancel)        
+

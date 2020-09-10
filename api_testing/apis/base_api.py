@@ -92,6 +92,14 @@ class BaseAPI:
     def info(self):
         return BaseAPI.LOGGER.info
 
+    @property
+    def debug(self):
+        return BaseAPI.LOGGER.debug
+
+    @property
+    def error(self):
+        return BaseAPI.LOGGER.error
+
     @staticmethod
     def generate_random_string():
         return str(uuid4()).replace("-", "")[:10]
@@ -126,7 +134,9 @@ def api_factory(method):
             else:
                 response_json = base_api.session.__getattribute__(method)(api, params=payload, headers=base_api.headers,
                                                                           verify=False).json()
-            base_api.info('Status code: {}'.format(response_json['status']))
+            base_api.debug('status code: {}'.format(response_json['status']))
+            if response_json['status'] != 1:
+                base_api.error(response_json)
             return response_json, payload
 
         return wrapper

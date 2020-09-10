@@ -320,7 +320,8 @@ class TestPlanAPI(TestPlanAPIFactory):
         else:
             raise Exception(f'cant create the test plan with payload {payload}')
 
-    def create_completed_testplan_random_data(self,no_testunits=1):
+
+    def create_completed_testplan_random_data(self, no_testunits=1):
         random_article = random.choice(ArticleAPI().get_all_articles_json())
         formatted_article = {'id': random_article['id'], 'text': random_article['name']}
         material_type_id = GeneralUtilitiesAPI().get_material_id(random_article['materialType'])
@@ -335,6 +336,7 @@ class TestPlanAPI(TestPlanAPIFactory):
                 'testUnit']
             formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
             formated_testunits.append(formated_testunit)
+
         testplan, payload = self.create_testplan(testUnits=formated_testunits,
                                                  selectedArticles=[formatted_article],
                                                  materialType=[formatted_material],

@@ -653,3 +653,17 @@ class TstUnit(TstUnits):
         self.base_selenium.click(element='general:save')
         self.sleep_medium()
         self.wait_until_page_is_loaded()
+
+    def get_view_and_search_options(self):
+        self.open_testunit_name_configurations_options()
+        return self.base_selenium.get_text(element='configurations_page:selected_option').replace('×', '')
+
+    def set_view_and_search_option(self, save=True):
+        self.base_selenium.select_item_from_drop_down(element='configurations_page:view_search_ddl')
+        if save:
+            self.base_selenium.click(element='configurations_page:configuration_popup_save_btn')
+        else:
+            self.base_selenium.click(element='configurations_page:configuration_popup_cancel_btn')
+
+
+
