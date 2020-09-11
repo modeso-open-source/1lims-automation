@@ -533,17 +533,23 @@ class OrdersTestCases(BaseTest):
         I can filter by any order No.
 
         LIMS-3495
+
+        Filter: Order number format: In case the order number displayed with full year, I can filter by it
+
+        LIMS-7426
         """
         self.info('select random order using api')
         orders, _ = self.orders_api.get_all_orders()
         order = random.choice(orders['orders'])
+        self.assertIn('-2020', order['orderNo'], 'selected order with format {}'.format(order['orderNo']))
         self.info('filter by order No. {}'.format(order['orderNo']))
         self.orders_page.filter_by_order_no(order['orderNo'])
         result_order = self.orders_page.result_table()
         self.assertEqual(len(self.order_page.result_table()), 2)
         self.assertIn(order['orderNo'], result_order[0].text.replace("'", ""))
+        self.assertIn('-2020', result_order[0].text.replace("'", ""))
 
-    def test016_filter_by_Status_or_anlysis_result(self):
+    def test016_filter_by_status(self):
         """
         I can filter by status
 
