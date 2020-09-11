@@ -240,13 +240,13 @@ class Order(Orders):
         return order_no
 
     def create_existing_order_with_auto_fill(self, no=''):
-        self.info(' Create new order.')
+        self.info('Create order from existing order')
         self.click_create_order_button()
         self.set_existing_order()
         order_no = self.set_existing_number(no)
         self.sleep_tiny()
         self.click_auto_fill()
-        self.info(' Order Auto filled with data from order no : {} '.format(order_no))
+        self.info('Order Auto filled with data from order no : {} '.format(order_no))
         return order_no
 
     def get_no(self, order_row=None):
