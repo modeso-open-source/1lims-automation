@@ -2573,36 +2573,45 @@ class OrdersTestCases(BaseTest):
         self.assertEquals(multiple_lines_properties['textOverflow'], 'clip')
         self.assertEquals(multiple_lines_properties['lineBreak'], 'auto')
 
-    @attr(series=True)
-    def test076_search_with_test_unit_name(self):
+    # @attr(series=True)
+    @parameterized.expand(['Name', 'Method', 'Unit', 'No'])
+    def test076_search_with_test_unit_name_method(self, search_by):
         """
         Orders:Test unit search approach
         allow user to search with test unit name in the drop down list of the order form
-
         LIMS-6664
+        allow user to search with test unit method in the drop down list of order form
+        LIMS-6666
+        allow user to search with test unit type in the drop down list of order form
+        LIMS-6668
+        allow user to search with test unit number in the drop down list of order form
+        LIMS-6665
+
         """
         self.test_units_page = TstUnits()
-        self.info("get random test unit data to get its material type")
-        response, payload = TestUnitAPI().get_all_test_units()
-        self.assertEqual(response['status'], 1, payload)
-        random_test_unit = random.choice(response['testUnits'])
+        response, payload = TestUnitAPI().create_quantitative_testunit(unit="RandomUnit")
+        self.assertEqual(response['status'], 1)
         self.test_units_page.get_test_units_page()
         self.orders_page.sleep_tiny()
         self.test_units_page.open_configurations()
         self.orders_page.sleep_tiny()
         self.test_units_page.open_testunit_name_configurations_options()
-        self.test_units_page.select_option_to_view_search_with(view_search_options=['Name'])
-        self.info('go to orders page')
+        self.test_units_page.select_option_to_view_search_with(view_search_options=[search_by])
         self.order_page.get_orders_page()
-        if random_test_unit['materialTypes'][0] != 'All':
-            test_unit_suggestion_list = Order().create_new_order_get_test_unit_suggetion_list(
-                material_type=random_test_unit['materialTypes'][0], test_unit_name=' ')
-        else:
-            test_unit_suggestion_list = Order().create_new_order_get_test_unit_suggetion_list(
-                material_type='', test_unit_name=' ')
-        self.info('checking name field only is displayed')
-        for test_unit in test_unit_suggestion_list:
-            self.assertNotIn(':', test_unit)
+
+        if search_by == 'Name':
+            testunit_search = payload['name']
+        elif search_by == 'Method':
+            testunit_search = payload['method']
+        elif search_by == 'Unit':
+            testunit_search = payload['unit']
+        elif search_by == 'No':
+            testunit_search = str(payload['number'])
+
+        testunits = self.order_page.create_new_order_get_test_unit_suggetion_list(test_unit_name=testunit_search)
+
+        self.info('checking {} field only is displayed'.format(search_by))
+        self.assertGreater(len(testunits), 0)
 
     @parameterized.expand(['Quantitative', 'Qualitative', 'Quantitative MiBi'])
     @attr(series=True)

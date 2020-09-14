@@ -722,8 +722,8 @@ class Order(Orders):
             results.append({'test_plan': test_plan, 'test_units': test_units})
         return results
 
-    def create_new_order_get_test_unit_suggetion_list(self, material_type='', test_unit_name=' '):
-        self.info(' Create new order.')
+    def create_new_order_get_test_unit_suggetion_list(self, material_type='', test_unit_name=' ',check_option=False):
+        self.info('Create new order.')
         self.click_create_order_button()
         self.sleep_small()
         self.set_new_order()
@@ -734,9 +734,14 @@ class Order(Orders):
         self.set_article(article='')
         self.sleep_small()
         self.info('get test unit suggestion list')
-        test_units = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
+        if check_option:
+            is_option_exist = self.base_selenium.select_item_from_drop_down(element='order:test_unit',
+                                                                            item_text=test_unit_name)
+            return is_option_exist
+        else:
+            test_units = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
                                                                       item_text=test_unit_name)
-        return test_units
+            return test_units
 
     def is_contact_existing(self, contact):
         self.set_contact(contact=contact)
