@@ -3265,7 +3265,38 @@ class OrdersTestCases(BaseTest):
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
 
-    def test100_create_multiple_suborders_with_testplans_testunits(self):
+    def test100_year_format_in_suborder_sheet(self):
+        """
+         Analysis number format: In case the analysis number displayed with full year,
+         this should reflect on the export file
+
+         LIMS-7424
+
+         Order number format: In case the order number displayed with full year,
+         this should reflect on the export file
+
+         LIMS-7423
+        """
+        self.info('select random order')
+        order = random.choice(self.orders_api.get_all_orders_json())
+        order_no = order['orderNo']
+        self.assertIn('-2020', order_no)
+        response, _ = self.orders_api.get_suborder_by_order_id(order['orderId'])
+        self.assertEqual(response['status'], 1)
+        analysis_no = response['orders'][0]['analysis'][0]
+        self.assertIn('-2020', analysis_no)
+        self.orders_page.filter_by_order_no(order_no)
+        row = self.orders_page.result_table()[0]
+        self.assertTrue(row)
+        self.orders_page.click_check_box(source=row)
+        self.order_page.download_xslx_sheet()
+        self.info('Comparing the downloaded  order ')
+        values = self.order_page.sheet.iloc[0].values
+        fixed_sheet_row_data = self.reformat_data(values)
+        self.assertIn(order_no, fixed_sheet_row_data)
+        self.assertIn(analysis_no, fixed_sheet_row_data)
+
+    def test101_create_multiple_suborders_with_testplans_testunits(self):
         """
          New: Orders: table view: Create Approach: when you create suborders with multiple
          test plans & units select the corresponding analysis that triggered according to that.
@@ -3322,3 +3353,4 @@ class OrdersTestCases(BaseTest):
                 self.assertCountEqual(test_units_names, second_suborder_test_units)
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
+
