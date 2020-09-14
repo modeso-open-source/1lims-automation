@@ -4,7 +4,7 @@ EXECUTION_FILES=(
      ui_testing/testcases/basic_tests/test006_orders.py
   )
 
- TEST_REG='test076'
+ TEST_REG='test094'
 
 
  NODE_TOTAL=$1;

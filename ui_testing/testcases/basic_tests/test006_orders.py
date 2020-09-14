@@ -3239,4 +3239,24 @@ class OrdersTestCases(BaseTest):
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
 
-
+    def test097_get_order_list_column(self):
+        '''
+        [Orders][Archived Table]Make sure that order List columns will be(order number, contact,
+        created at and options) plus the dynamic fields
+        LIMS-5366
+        :return:
+        '''
+        self.info('add extra dynamic field')
+        payload = self.orders_api.order_with_added_dynamic_field()
+        heads = ['Order No.', 'Options', 'Contact Name']
+        for item in payload['fields']:
+            if item['section'] == 1 and item['isDynamic'] == True:
+                heads.append(item['name'])
+        self.base_selenium.refresh()
+        self.order_page.get_orders_page()
+        self.orders_page.get_archived_items()
+        self.info('get column head list')
+        headers = self.base_selenium.get_table_head_elements(element='general:table')
+        for text in headers:
+            if text.text != '':
+                self.assertIn(text.text, heads)
