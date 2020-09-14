@@ -347,6 +347,11 @@ class BasePages:
         self.sleep_tiny()
         self.base_selenium.click(element='general:configurations_archived')
 
+    def open_analysis_configuration(self):
+        self.open_configuration()
+        self.sleep_tiny()
+        self.base_selenium.click(element='general:configurations_analysis')
+
     def open_configure_table(self):
         self.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')

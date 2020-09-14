@@ -123,13 +123,14 @@ elements = {
         'col_6': {'method': 'class_name',
                   'value': 'col-md-6',
                   'order': -1},
-        'configurations': {
-            'method': 'xpath',
-            'value': '//*[@id="custom-accordion-panel"]//a[4]'
+        'configurations_analysis': {
+            'method': 'id',
+            'value': 'analysis_tab'
         },
         'configurations_archived': {
             'method': 'xpath',
             'value': '//*[@id="tabs"]/li[2]/a'
+
         },
         'configure_table': {'method': 'xpath',
                             'value': '//a[@class="m-dropdown__toggle btn no-padding"]'},
@@ -1029,6 +1030,12 @@ elements = {
         'confirm_button': {'method': 'class_name',
                            'value': 'btn-success',
                            'order': 0},
+        'analysis_no_option_menu': {'method': 'id',
+                                    'value': 'year_options_menu'},
+        'selected_analysis_no_format': {'method': 'css_selector',
+                                        'value': '#year_options_menu + .dropdown-menu .dropdown-item'},
+        'year_before_option': {'method': 'link_text',
+                               'value': 'Year before number'}
     },
 
     'roles_and_permissions': {
