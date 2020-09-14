@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # EXECUTION_FILES=(
 #    ui_testing/testcases/basic_tests/test002_articles.py
 #    ui_testing/testcases/basic_tests/test003_testplans.py
@@ -52,3 +51,4 @@
 #      exit 1;
 #    fi
 #  done
+
