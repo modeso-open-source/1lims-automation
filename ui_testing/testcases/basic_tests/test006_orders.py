@@ -2649,6 +2649,7 @@ class OrdersTestCases(BaseTest):
          Make sure that user can filter by sub & super scripts in the filter drop down list
 
          LIMS-7447
+         LIMS-7444
         """
         self.test_unit_api = TestUnitAPI()
         self.test_unit_api.set_name_configuration()
@@ -3265,6 +3266,72 @@ class OrdersTestCases(BaseTest):
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
 
+    @parameterized.expand([('Name', 'Type'),
+                           ('Unit', 'No'),
+                           ('Quantification Limit', '')])
+    @attr(series=True)
+    def test100_test_unit_name_allow_user_to_filter_with_selected_two_options_order(self, search_view_option1,
+                                                                                    search_view_option2):
+        """
+         Orders: Filter test unit Approach: Allow the search criteria in
+         the drop down list in the filter section to be same as in the form
+
+         LIMS-7411
+        """
+        self.test_units_page = TstUnits()
+        self.test_units_page.get_test_units_page()
+        self.test_units_page.open_configurations()
+        self.test_units_page.open_testunit_name_configurations_options()
+        self.test_units_page.select_option_to_view_search_with(
+            view_search_options=[search_view_option1, search_view_option2])
+
+        upperLimit = self.generate_random_number(lower=50, upper=100)
+        lowerLimit = self.generate_random_number(lower=1, upper=49)
+        self.info('Create new quantitative test unit with unit and quantification')
+        response, payload = self.test_unit_api.create_quantitative_testunit(
+            useSpec=False, useQuantification=True, quantificationUpperLimit=upperLimit,
+            quantificationLowerLimit=lowerLimit, unit='m[g]{o}')
+        self.assertEqual(response['status'], 1, payload)
+        formated_tu, _ = TestUnitAPI().get_testunit_form_data(response['testUnit']['testUnitId'])
+        test_unit = [{'id': formated_tu['testUnit']['id'], 'name': formated_tu['testUnit']['name']}]
+        self.info('create new order created test unit number'.format(payload))
+        res, order = self.orders_api.create_new_order(testUnits=test_unit)
+        self.assertEqual(res['status'], 1, 'order not created with {}'.format(order))
+        if search_view_option1 == 'Name' and search_view_option2 == 'Type':
+            filter_text = payload['name']
+        elif search_view_option1 == 'Unit' and search_view_option2 == 'No':
+            filter_text = str(payload['number'])
+        else:
+            filter_text = str(payload['quantificationLowerLimit']) + '-' + str(payload['quantificationUpperLimit'])
+
+        self.orders_page.get_orders_page()
+        self.orders_page.sleep_tiny()
+        self.orders_page.open_filter_menu()
+        self.base_selenium.wait_element(element='orders:test_units_filter')
+        self.orders_page.filter_by(filter_element='orders:test_units_filter', filter_text=filter_text)
+        found_filter_text = self.base_selenium.get_text('orders:test_units_filter').replace("\n×", "")
+        if search_view_option1 == 'Name' and search_view_option2 == 'Type':
+            self.assertEqual(found_filter_text, payload['name'] + ': Quantitative')
+        elif search_view_option1 == 'Unit' and search_view_option2 == 'No':
+            self.assertEqual(found_filter_text, 'm[g]{o}: ' + str(payload['number']))
+        else:
+            self.assertEqual(found_filter_text, filter_text)
+
+        self.orders_page.filter_apply()
+        self.orders_page.sleep_tiny()
+        results = self.order_page.result_table()
+        self.assertGreaterEqual(len(results), 1)
+        for i in range(len(results) - 1):
+            suborders = self.orders_page.get_child_table_data(index=i)
+            key_found = False
+            for suborder in suborders:
+                if payload['name'] == suborder['Test Units']:
+                    key_found = True
+                    break
+            self.assertTrue(key_found)
+            # close child table
+            self.orders_page.close_child_table(source=results[i])
+
     def test095_filter_configuration_fields(self):
         """
           Orders: Make sure that user can filter order TestUnit that exist
@@ -3379,3 +3446,4 @@ class OrdersTestCases(BaseTest):
                 self.assertCountEqual(test_units_names, second_suborder_test_units)
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
+

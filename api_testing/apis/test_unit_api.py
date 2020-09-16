@@ -224,6 +224,7 @@ class TestUnitAPIFactory(BaseAPI):
             'quantificationUpperLimit': '',
             'quantificationLowerLimit': '',
             'useSpec': True,
+            'unit': '',
             'iterations': '1',
             "roundingOption": {"id": 0, "text": "No Rounding"}
         }
