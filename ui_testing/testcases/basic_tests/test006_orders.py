@@ -2835,7 +2835,7 @@ class OrdersTestCases(BaseTest):
         if material_type == "All":
             material_type = ''
         self.order_page.create_new_order(material_type=material_type, test_units=[testunit_name],
-                                         multiple_suborders=5, with_testplan=False)
+                                         multiple_suborders=5, test_plans=[])
         order_id = self.order_page.get_order_id()
         suborders = self.orders_api.get_suborder_by_order_id(id=order_id)
         self.info('asserting api success')
@@ -3183,7 +3183,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.sleep_tiny()
         self.order_page.create_new_order(material_type=tp1_pd['materialType'][0]['text'],
                                          article=tp1_pd['selectedArticles'][0]['text'],
-                                         test_plans=[testplan1_name, testplan2_name], with_testunits=False)
+                                         test_plans=[testplan1_name, testplan2_name], test_units=[])
         self.order_page.sleep_tiny()
         order_id = self.order_page.get_order_id()
         suborders = self.orders_api.get_suborder_by_order_id(id=order_id)
@@ -3353,4 +3353,3 @@ class OrdersTestCases(BaseTest):
                 self.assertCountEqual(test_units_names, second_suborder_test_units)
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
-

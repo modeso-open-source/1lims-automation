@@ -349,6 +349,15 @@ class TestPlanAPI(TestPlanAPIFactory):
         else:
             return None
 
+    def get_testplans_material_types(self, testplans):
+        testplan_materials = []
+        for testplan in testplans:
+            testplan_info = self.get_testplan_with_quicksearch(quickSearchText=testplan)
+            if testplan_info is not None:
+                for tp in testplan_info:
+                    testplan_materials.append(tp['materialTypes'][0])
+        return testplan_materials
+
     def set_configuration(self):
         self.info('set test Plan configuration')
         config_file = os.path.abspath('api_testing/config/test_plan.json')

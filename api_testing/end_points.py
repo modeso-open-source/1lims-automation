@@ -89,5 +89,9 @@ end_points = {
     },
     'field_data': {
         'configuration_update': '/api/field_data/update'
+    },
+    'modules': {
+        'disable_article': '/api/modulesConfigurations/disableArticles',
+        'has_articles': '/api/modulesConfigurations/getComponentConfigs'
     }
 }

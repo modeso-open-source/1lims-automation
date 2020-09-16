@@ -17,6 +17,20 @@ class GeneralUtilitiesAPIFactory(BaseAPI):
         api = '{}{}'.format(self.url, self.END_POINTS['materialTypes']['list_material_types']) 
         return api, {}
 
+    @api_factory('put')
+    def enable_article(self, **kwargs):
+        payload = {
+               "entityId": 2,
+               "status": True,
+               "id": 1
+            }
+        api = '{}{}'.format(self.url, self.END_POINTS['modules']['disable_article'])
+        return api, payload
+
+    @api_factory('get')
+    def has_articles(self, **kwargs):
+        api = '{}{}'.format(self.url, self.END_POINTS['modules']['has_articles'])
+        return api, {}
 
 class GeneralUtilitiesAPI(GeneralUtilitiesAPIFactory):
     @staticmethod
@@ -53,3 +67,15 @@ class GeneralUtilitiesAPI(GeneralUtilitiesAPIFactory):
             if material['name'] != old_material:
                 material_without_duplicate.append(material['name'])
         return material_without_duplicate
+
+    def get_formatted_material_types_without_duplicate(self, old_material):
+        all_materials, _ = self.list_all_material_types()
+        material_without_duplicate = []
+        for material in all_materials['materialTypes']:
+            if material['name'] != old_material:
+                material_without_duplicate.append(material)
+        return material_without_duplicate
+
+    def is_article_enabled(self):
+        response, _ = self.has_articles()
+        return response['reponse'][0]['isAllowed']

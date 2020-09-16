@@ -356,7 +356,23 @@ class BasePages:
         self.info('open configure table')
         configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
         configure_table_menu.click()
-        self.sleep_small()
+        self.sleep_tiny()
+
+    def close_configure_table(self):
+        self.info('open configure table')
+        configure_table_menu = self.base_selenium.find_element(element='general:configure_table')
+        configure_table_menu.click()
+
+    def navigate_to_child_table_configuration(self):
+        self.open_configure_table()
+        configure_child_table_menu = self.base_selenium.find_element(element='general:configure_child_table')
+        configure_child_table_menu.click()
+        self.sleep_tiny()
+        active_columns = self.base_selenium.find_elements_in_element(
+            source_element='general:configure_child_table_items', destination_element='general:li')
+        coulmns_text = [column.text for column in active_columns]
+        self.close_configure_table()
+        return coulmns_text
 
     def hide_columns(self, random=True, count=3, index_arr=[], always_hidden_columns=[]):
         self.open_configure_table()

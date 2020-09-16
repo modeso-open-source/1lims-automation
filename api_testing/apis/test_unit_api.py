@@ -409,6 +409,15 @@ class TestUnitAPI(TestUnitAPIFactory):
         api, testunit_payload = self.create_qualitative_testunit(method=long_txt)
         return api, testunit_payload
 
+    def get_testunits_material_types(self, testunits=[]):
+        testunit_materials = []
+        for testunit in testunits:
+            testunit_info = self.get_testunit_with_quicksearch(quickSearchText=testunit)
+            if testunit_info is not None:
+                for tu in testunit_info:
+                    testunit_materials.append(tu['materialTypes'][0])
+        return testunit_materials
+
     def set_configuration(self):
         self.info('set test unit configuration')
         config_file = os.path.abspath('api_testing/config/testUnit.json')
