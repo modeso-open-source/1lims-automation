@@ -149,6 +149,14 @@ class Orders(BasePages):
                                                             destination_element='general:filter')
         filter.click()
 
+    def list_filter_feilds(self):
+        config_btn = self.base_selenium.find_element('general:filter_configuration')
+        config_btn.click()
+        self.sleep_tiny()
+        elements = self.base_selenium.find_elements('general:filter_Configure_options')
+        fields = [elem.text for elem in elements]
+        return fields
+
     def filter_by_analysis_number(self, filter_text, reset=False):
         self.open_filter_menu()
         if reset:

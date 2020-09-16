@@ -3265,6 +3265,32 @@ class OrdersTestCases(BaseTest):
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
 
+    def test095_filter_configuration_fields(self):
+        """
+          Orders: Make sure that user can filter order TestUnit that exist
+          on order only(TestUnit in Analysis not Included)
+
+          LIMS-5379
+
+          Orders: Filter Approach: Make sure that the user can filter from the
+          default filter ( with status & dynamic fields )
+
+          LIMS-5486
+        """
+        self.info("open filter menu")
+        self.orders_page.open_filter_menu()
+        self.info("open filter configuration")
+        found_fields = self.orders_page.list_filter_feilds()
+        self.info("fields in filter are {}".format(found_fields))
+        required_fields = ['Analysis Results', 'Test Units', 'Material Type', 'Analysis No.',
+                           'Departments', 'Test Plans', 'Changed By', 'Created On', 'Shipment Date',
+                           'Test Date', 'Contact Name', 'Article Name', 'Order No.',
+                           'Forwarding', 'Status']
+
+        self.assertGreaterEqual(len(found_fields), len(required_fields))
+        for field in required_fields:
+            self.assertIn(field, found_fields)
+
     def test100_year_format_in_suborder_sheet(self):
         """
          Analysis number format: In case the analysis number displayed with full year,
