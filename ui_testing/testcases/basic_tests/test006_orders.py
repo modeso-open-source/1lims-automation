@@ -3188,13 +3188,13 @@ class OrdersTestCases(BaseTest):
         self.order_page.sleep_tiny()
         order_id = self.order_page.get_order_id()
         suborders = self.orders_api.get_suborder_by_order_id(id=order_id)
-        
+
         self.info('asserting api success')
         self.assertEqual(suborders[0]['status'], 1)
         analysis_number = [suborder['analysis'][0] for suborder in suborders[0]['orders']]
         self.info('asserting there is only one analysis for this order')
         self.assertEqual(len(analysis_number), 1)
-        
+
         self.info('checking testunit for each testplan record ')
         self.order_page.get_orders_page()
         self.order_page.navigate_to_analysis_tab()
@@ -3266,11 +3266,22 @@ class OrdersTestCases(BaseTest):
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
 
+    def test095_check_list_menu(self):
+        """
+          [Orders][Active table] Make sure that list menu will contain
+          (COA,Archive , XSLX - Archived - Configurations) Only
+
+          LIMS-5358
+        """
+        options = ['Duplicate', 'CoA', 'Archive', 'XSLX', 'Archived', 'Configurations']
+        list = self.orders_page.get_right_menu_options()
+        self.assertCountEqual(list, options)
+
     @parameterized.expand([('Name', 'Type'),
                            ('Unit', 'No'),
                            ('Quantification Limit', '')])
     @attr(series=True)
-    def test100_test_unit_name_allow_user_to_filter_with_selected_two_options_order(self, search_view_option1,
+    def test096_test_unit_name_allow_user_to_filter_with_selected_two_options_order(self, search_view_option1,
                                                                                     search_view_option2):
         """
          Orders: Filter test unit Approach: Allow the search criteria in
@@ -3332,7 +3343,7 @@ class OrdersTestCases(BaseTest):
             # close child table
             self.orders_page.close_child_table(source=results[i])
 
-    def test095_filter_configuration_fields(self):
+    def test097_filter_configuration_fields(self):
         """
           Orders: Make sure that user can filter order TestUnit that exist
           on order only(TestUnit in Analysis not Included)
@@ -3358,7 +3369,7 @@ class OrdersTestCases(BaseTest):
         for field in required_fields:
             self.assertIn(field, found_fields)
 
-    def test100_year_format_in_suborder_sheet(self):
+    def test098_year_format_in_suborder_sheet(self):
         """
          Analysis number format: In case the analysis number displayed with full year,
          this should reflect on the export file
@@ -3389,7 +3400,7 @@ class OrdersTestCases(BaseTest):
         self.assertIn(order_no, fixed_sheet_row_data)
         self.assertIn(analysis_no, fixed_sheet_row_data)
 
-    def test101_create_multiple_suborders_with_testplans_testunits(self):
+    def test099_create_multiple_suborders_with_testplans_testunits(self):
         """
          New: Orders: table view: Create Approach: when you create suborders with multiple
          test plans & units select the corresponding analysis that triggered according to that.
@@ -3446,4 +3457,3 @@ class OrdersTestCases(BaseTest):
                 self.assertCountEqual(test_units_names, second_suborder_test_units)
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
-

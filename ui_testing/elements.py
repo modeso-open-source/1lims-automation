@@ -561,6 +561,7 @@ elements = {
                       'value': 'add-btn'},
         'right_menu': {'method': 'xpath',
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+        'dropdown_options': {'method': 'class_name', 'value': 'dropdown-menu', 'order': 0},
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
         'active': {'method': 'link_text',
