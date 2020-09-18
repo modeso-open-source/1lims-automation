@@ -224,7 +224,7 @@ class Orders(BasePages):
     def restore_table_suborder(self, index=0):
         self.info('restore suborder from the order\'s active table')
         child_table_records = self.result_table(element='general:table_child')
-        self.open_row_options(row=child_table_records[0])
+        self.open_row_options(row=child_table_records[index])
         self.base_selenium.click('orders:suborder_restore')
         self.confirm_popup()
         self.sleep_small()

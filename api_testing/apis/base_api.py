@@ -85,7 +85,7 @@ class BaseAPI:
     @staticmethod
     def update_payload(payload, **kwargs):
         if type(payload) == list:
-            return [BaseAPI._update_payload(payload[0], **kwargs)]
+            return [BaseAPI._update_payload(_payload, **kwargs) for _payload in payload]
         return BaseAPI._update_payload(payload, **kwargs)
 
     @property
