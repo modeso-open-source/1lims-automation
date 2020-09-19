@@ -11,6 +11,7 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.login_page import Login
 from api_testing.apis.users_api import UsersAPI
 from unittest import skip
+from random import randint
 from parameterized import parameterized
 from nose.plugins.attrib import attr
 import re, random
@@ -1370,7 +1371,9 @@ class TestUnitsTestCases(BaseTest):
                            ('Name', 'No'),
                            ('Type', 'Method'),
                            ('Type', 'No'),
-                           ('Method', 'No')
+                           ('No', 'Method'),
+                           ('Unit', 'No'),
+                           ('Quantification Limit', '')
                            ])
     @attr(series=True)
     def test051_test_unit_name_allow_user_to_search_with_selected_two_options_order(self, search_view_option1,
@@ -1380,15 +1383,26 @@ class TestUnitsTestCases(BaseTest):
         rom the test unit configuration, this action should reflect on the order form
 
         LIMS-6672
+
+        Orders: Default filter test unit Approach: Allow the search criteria in the drop down list
+        in the filter section to be same as in the form
+
+        LIMS-7414
         """
         self.order_page = Order()
         self.test_unit_page.open_configurations()
         self.test_unit_page.open_testunit_name_configurations_options()
         self.test_unit_page.select_option_to_view_search_with(
             view_search_options=[search_view_option1, search_view_option2])
-        self.info('Create new test unit with qualitative and random generated data')
-        response, payload = self.test_unit_api.create_qualitative_testunit()
+        upperLimit = self.generate_random_number(lower=50, upper=100)
+        lowerLimit = self.generate_random_number(lower=1, upper=49)
+        self.info('Create new quantitative test unit with unit and quantification')
+        response, payload = self.test_unit_api.create_quantitative_testunit(
+            useSpec=False, useQuantification=True, quantificationUpperLimit=upperLimit,
+            quantificationLowerLimit=lowerLimit, unit='m[g]{o}')
         self.assertEqual(response['status'], 1, payload)
+        quantification_limit = '{}-{}'.format(payload['quantificationLowerLimit'],
+                                              payload['quantificationUpperLimit'])
         self.info('new test unit created with number  {}'.format(payload['number']))
         self.info('get random order')
         radndom_order = random.choice(OrdersAPI().get_all_orders_json())
@@ -1399,39 +1413,60 @@ class TestUnitsTestCases(BaseTest):
         self.info("select first suborder")
         is_name_exist = self.order_page.search_test_unit_not_set(test_unit=payload['name'])
         is_number_exist = self.order_page.search_test_unit_not_set(test_unit=str(payload['number']))
-        is_type_exist = self.order_page.search_test_unit_not_set(test_unit='Qualitative')
+        is_type_exist = self.order_page.search_test_unit_not_set(test_unit='Quantitative')
         is_method_exist = self.order_page.search_test_unit_not_set(test_unit=payload['method'])
+        is_unit_exist = self.order_page.search_test_unit_not_set(test_unit=payload['unit'])
+        is_quant_limit_exist = self.order_page.search_test_unit_not_set(test_unit=quantification_limit)
 
         if search_view_option1 == 'Name' and search_view_option2 == 'Type':
             self.assertTrue(is_name_exist)
             self.assertFalse(is_number_exist)
             self.assertTrue(is_type_exist)
             self.assertFalse(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Name' and search_view_option2 == 'Method':
             self.assertTrue(is_name_exist)
             self.assertFalse(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Name' and search_view_option2 == 'No':
             self.assertTrue(is_name_exist)
             self.assertTrue(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertFalse(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Type' and search_view_option2 == 'Method':
             self.assertFalse(is_name_exist)
             self.assertFalse(is_number_exist)
             self.assertTrue(is_type_exist)
             self.assertTrue(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Type' and search_view_option2 == 'No':
             self.assertFalse(is_name_exist)
             self.assertTrue(is_number_exist)
             self.assertTrue(is_type_exist)
             self.assertFalse(is_method_exist)
-        elif search_view_option1 == 'Method' and search_view_option2 == 'No':
+            self.assertFalse(is_unit_exist)
+        elif search_view_option1 == 'No' and search_view_option2 == 'Method':
             self.assertFalse(is_name_exist)
             self.assertTrue(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
+            self.assertFalse(is_unit_exist)
+        elif search_view_option1 == 'Unit' and search_view_option2 == 'No':
+            self.assertFalse(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+            self.assertTrue(is_unit_exist)
+        elif search_view_option1 == 'Quantification Limit':
+            self.assertFalse(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+            self.assertFalse(is_unit_exist)
+            self.assertTrue(is_quant_limit_exist)
             
     def test052_cancel_testunit_name_configuration(self):
         """
@@ -1448,4 +1483,3 @@ class TestUnitsTestCases(BaseTest):
         self.info('open test unit configuration pop up to assert that nothing changed ')
         selected_option_after_cancel = self.test_unit_page.get_view_and_search_options()
         self.assertEqual(selected_option, selected_option_after_cancel)        
-
