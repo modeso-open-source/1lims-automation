@@ -51,4 +51,3 @@
 #
 #      - name: merge launches
 #        run:  python3 fixReport.py ${{ secrets.UUID }} ${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }}
-

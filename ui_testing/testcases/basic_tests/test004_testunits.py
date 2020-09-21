@@ -635,18 +635,14 @@ class TestUnitsTestCases(BaseTest):
                            ('unitsuper', 'qualitative'),
                            ('unitsuper', 'quantitative'),
                            ('unitsub', 'quantitative MiBi'),
-                           ('unitsuper', 'quantitative MiBi')
-                           ])
+                           ('unitsuper', 'quantitative MiBi'),
+                           ('empty', 'qualitative')])
     def test024_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self, unit_with_sub_or_super, type):
         """
         New: Test unit: Export: Sub & Super scripts Approach: Allow user to see the
         sub & super scripts in the export file
 
         LIMS-5795
-
-        Test unit : Unit: Subscript and superscript scripts Approach: Allow the unit
-        filed to accept sub and super scripts in the test unit form
-
         LIMS-5784
 
         Test unit form: Unit accepts subscript and superscript characters in case of
@@ -654,15 +650,16 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-5785
 
-        Test unit: Export: Sub & Super scripts Approach:  Allow user to see the sub &
-        super scripts in the export file
-
-        LIMS-5810
-
         Test unit: Export: Sub & Super scripts Approach: Allow user to see the sub
          & super scripts in the export file ( quantitative MiBi )
+
+         LIMS-5810
+
+         Test unit: Unit: XSLX Approach: In case the test unit field is empty,
+         it should dispaly ( - ) in the export file
+
+         LIMS-6289
         """
-        
         if unit_with_sub_or_super == 'unitsub' and type == 'qualitative':
             response, payload = self.test_unit_api.create_qualitative_testunit(unit='[sub]')
             preview_unit = 'sub'
@@ -675,27 +672,27 @@ class TestUnitsTestCases(BaseTest):
         elif unit_with_sub_or_super == 'unitsuper' and type == 'quantitative':
             response, payload = self.test_unit_api.create_quantitative_testunit(unit='{super}')
             preview_unit = 'super'
-        elif unit_with_sub_or_super == 'unitsub' and type == 'quantitative MiBi ':
+        elif unit_with_sub_or_super == 'unitsub' and type == 'quantitative MiBi':
             response, payload = self.test_unit_api.create_mibi_testunit(unit='[sub]')
             preview_unit = 'sub'
-        else :
+        elif unit_with_sub_or_super == 'unitsuper' and type == 'quantitative MiBi':
             response, payload = self.test_unit_api.create_mibi_testunit(unit='{super}')
             preview_unit = 'super'
+        else:
+            response, payload = self.test_unit_api.create_qualitative_testunit()
+            preview_unit = '-'
 
-
-        self.assertEqual(response['status'], 1, 'test unit not createed {}'.format(payload))
+        self.assertEqual(response['status'], 1, 'test unit not created {}'.format(payload))
         self.test_unit_page.apply_filter_scenario(
             filter_element='test_units:testunit_number_filter',
             filter_text=payload['number'], field_type='text')
         self.test_unit_page.download_xslx_sheet()
-        rows_data = self.test_unit_page.get_table_rows_data()
-        self.info('Comparing the unit name in test unit table')
-        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
-        self.assertIn(preview_unit, fixed_row_data)
-        self.info('Comparing the unit name in xsxl sheet')
-        values = self.test_unit_page.sheet.iloc[0].values
-        fixed_sheet_row_data = self.fix_data_format(values)
-        self.assertIn(preview_unit, fixed_sheet_row_data)
+        self.info('Assert that unit field in active table updated')
+        rows_data = self.test_unit_page.get_the_latest_row_data()
+        self.assertEqual(preview_unit, rows_data['Unit'])
+        self.info('Comparing the unit in xsxl sheet')
+        unit_value_in_sheet = self.test_unit_page.sheet.iloc[0]['Unit']
+        self.assertEqual(preview_unit, unit_value_in_sheet)
 
     @parameterized.expand(['quantitative', 'qualitative'])
     def test025_create_test_unit_appears_in_version_table(self, unit_type):
@@ -1136,8 +1133,7 @@ class TestUnitsTestCases(BaseTest):
                            ('Name', 'No'),
                            ('Type', 'Method'),
                            ('Type', 'No'),
-                           ('Method', 'No')
-                           ])
+                           ('Method', 'No')])
     @attr(series=True)
     def test042_test_unit_name_allow_user_to_search_with_selected_two_options_testplan(self, search_view_option1,
                                                                                        search_view_option2):
@@ -1346,25 +1342,25 @@ class TestUnitsTestCases(BaseTest):
         test_unit_found = self.test_units_page.filter_by_user_get_result(payload['username'])
         self.assertTrue(test_unit_found)
         
-    def test050_sub_and_super_scripts_in_active_table(self) :
+    def test050_sub_and_super_scripts_in_active_table(self):
         """
-            New: Test units: Active table/unit: Sub & Super scripts: Allow unit to display with sub & super scripts in the active table
+            New: Test units: Active table/unit: Sub & Super scripts: Allow unit to display
+            with sub & super scripts in the active table
 
             LIMS-5794
-            """
-
+        """
         self.info('Create new Qualitative testunit')
         response, payload = self.test_unit_api.create_qualitative_testunit(unit='m[g]{o}')
         self.assertEqual(response['status'], 1, 'test unit not created {}'.format(payload))
         self.test_unit_page.click_overview()
         self.test_units_page.sleep_tiny()
-        self.test_unit_page.apply_filter_scenario(filter_element='test_units:testunit_number_filter',filter_text=payload['number'], field_type='text')
+        self.test_unit_page.apply_filter_scenario(filter_element='test_units:testunit_number_filter',
+                                                  filter_text=payload['number'], field_type='text')
         rows = self.base_selenium.get_table_rows('general:table')
         cells = self.base_selenium.get_row_cells_elements_related_to_header(rows[0])
         span = cells['Unit'].find_element_by_class_name('white-tooltip')
         required_value = span.get_attribute('ng-reflect-ngb-tooltip')
-        self.assertEqual(payload['unit'],required_value)
-
+        self.assertEqual(payload['unit'], required_value)
 
     @parameterized.expand([('Name', 'Type'),
                            ('Name', 'Method'),
