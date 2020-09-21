@@ -1415,46 +1415,60 @@ class OrdersTestCases(BaseTest):
     #     self.assertFalse(self.order_page.is_testunit_existing(
     #         test_unit=payload['name']))
     #
-    # def test039_duplicate_sub_order_table_with_add(self):
-    #     """
-    #     Orders: User can duplicate any suborder from the order form ( table with add )
-    #     LIMS-3738
-    #     :return:
-    #     """
-    #     # get random order
-    #     self.info('select random record')
-    #     orders, payload = self.orders_api.get_all_orders(limit=20)
-    #     data_before_duplicate_main_order = random.choice(orders['orders'])
-    #
-    #     self.orders_page.get_order_edit_page_by_id(id=data_before_duplicate_main_order['id'])
-    #     data_before_duplicate = self.order_page.get_suborder_data()
-    #
-    #     self.order_page.duplicate_from_table_view(index_to_duplicate_from=0)
-    #     after_duplicate_order = self.order_page.get_suborder_data()
-    #
-    #     # make sure that the new order has same order No
-    #     self.assertEqual(data_before_duplicate['orderNo'].replace("'", ""),
-    #                      after_duplicate_order['orderNo'].replace("'", ""))
-    #     # compare the contacts between two records
-    #     self.assertCountEqual(data_before_duplicate['contacts'], after_duplicate_order['contacts'])
-    #     # compare the data of suborders data in both orders
-    #     self.assertNotEqual(data_before_duplicate['suborders'], after_duplicate_order['suborders'])
-    #
-    #     # save the duplicated order
-    #     self.order_page.save(save_btn='orders:save_order')
-    #     # go back to the table view
-    #     self.order_page.get_orders_page()
-    #     # search for the created order no
-    #     self.order_page.search(after_duplicate_order['orderNo'])
-    #     suborder_data = self.order_page.get_child_table_data()[0]
-    #     order_result = self.order_page.result_table()[0].text
-    #     # check that it exists
-    #     self.assertIn(after_duplicate_order['orderNo'].replace("'", ""), order_result.replace("'", ""))
-    #     self.orders_page.navigate_to_analysis_active_table()
-    #     self.order_page.search(suborder_data['Analysis No.'])
-    #     analysis_result = self.order_page.result_table()[0].text
-    #     self.assertIn(suborder_data['Analysis No.'].replace("'", ""), analysis_result.replace("'", ""))
-    #
+    def test039_duplicate_sub_order_table_with_add(self):
+        """
+         Orders: User can duplicate any suborder from the order form ( table with add )
+
+         LIMS-3738
+
+         [Orders][Active Table]Make sure that every record should display the main order
+         and when user click on it suborders will be expanded
+
+         LIMS-5356
+         
+         [Orders][Archive Table]Make sure that every record should display the main order
+         and when user click on it will display suborders under order record
+         
+         LIMS-5357
+        """
+        self.info('select random record')
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        suborders = self.orders_api.get_suborder_by_order_id(random_order['orderId'])[0]['orders']
+        contacts = [contact['name'] for contact in random_order['company']]
+        self.orders_page.filter_by_order_no(random_order['orderNo'])
+        row = self.orders_page.result_table()[0]
+        self.info('assert that child table arrow exist')
+        childtable_arrow = self.base_selenium.find_element_in_element(
+            destination_element='general:child_table_arrow', source=row)
+        self.assertTrue(childtable_arrow)
+        childtable_arrow.click()
+        self.orders_page.sleep_tiny()
+        self.info("assert when click in child table arrow, all suborders appears")
+        suborders_data = self.orders_page.get_table_data()
+        self.assertEqual(len(suborders), len(suborders_data))
+        for i in range(len(suborders)):
+            self.assertEqual(suborders_data[i]['Analysis No.'].replace("'", ""), suborders[i]['analysis'][0])
+        self.info("open order edit page")
+        self.orders_page.open_edit_page_by_css_selector(row)
+        self.orders_page.sleep_small()
+        self.info("Duplicate first suborder from table view")
+        self.order_page.duplicate_from_table_view(index_to_duplicate_from=0)
+        after_duplicate_order = self.order_page.get_suborder_data()
+        self.info("make sure that the new order has same order No and contact")
+        self.assertEqual(random_order['orderNo'], after_duplicate_order['orderNo'].replace("'", ""))
+        self.assertCountEqual(contacts, after_duplicate_order['contacts'])
+        self.info("save the duplicated order")
+        self.order_page.save(save_btn='orders:save_order')
+        self.info("go back to the table view, and assert that duplicated suborder added to child table")
+        self.order_page.get_orders_page()
+        self.order_page.filter_by_order_no(random_order['orderNo'])
+        suborder_data = self.order_page.get_child_table_data()
+        self.assertTrue(len(suborder_data), len(suborders)+1)
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.filter_by_analysis_number(suborder_data[0]['Analysis No.'])
+        analysis_result = self.analyses_page.get_the_latest_row_data()['Analysis No.'].replace("'", "")
+        self.assertEqual(suborder_data[0]['Analysis No.'].replace("'", ""), analysis_result)
+
     # def test040_Duplicate_sub_order_and_cahange_materiel_type(self):
     #     """
     #     duplicate sub-order of any order then change the materiel type

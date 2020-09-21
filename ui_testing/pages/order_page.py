@@ -75,11 +75,12 @@ class Order(Orders):
         return self.get_contact()
 
     def get_contact(self):
-        contacts = self.base_selenium.get_text(element='order:contact')
-        if "×" in contacts:
-            return contacts.replace("×", "").split('\n')
-        else:
-            return []
+        contacts = self.base_selenium.get_text(element='order:contact').split("\n")
+        all_contacts = []
+        for contact in contacts:
+            if "×" in contact:
+                all_contacts.append(contact.replace("×", "").split(' No')[0])
+        return all_contacts
 
     def set_test_plan(self, test_plan=''):
         if test_plan:
