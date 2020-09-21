@@ -3481,3 +3481,44 @@ class OrdersTestCases(BaseTest):
                 self.assertCountEqual(test_units_names, second_suborder_test_units)
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
+
+
+    def test100_analysis_number_displayed_in_order_child_table(self) :
+        """
+
+          Orders: Analysis number Approach: Make sure that the analysis number
+          should display in the order child table
+
+          LIMS-2622
+        """
+
+
+        self.order_page.get_orders_page()
+        self.orders_page.open_child_table(self.orders_page.result_table()[0])
+        self.info("Check if Analysis No. heading is displayed in Child Table")
+        Child_table_headings = []
+        headers = self.base_selenium.get_table_head_elements(element='general:table_child')
+        for i in headers:
+                Child_table_headings.append(i.text)
+
+        if 'Analysis No.' not in Child_table_headings :
+            self.info("Go to configure table and check the Analysis No. box to display it in child table")
+            self.orders_page.get_orders_page()
+            self.info("open Configure Table")
+            self.orders_page.check_analysis_no_box_in_child_table()
+
+
+
+        self.info("make sure that the analysis number displayed in the child table and I can search by it ")
+        random_row = self.orders_page.get_random_table_row(table_element='general:table')
+        self.orders_page.click_check_box(source=random_row)
+        self.base_selenium.get_row_cells_dict_related_to_header(random_row)
+        self.orders_page.open_child_table(source=random_row)
+        child_table_data= self.order_page.get_table_data()
+        self.info("Searching by the analysis number displayed in child table")
+        self.orders_page.filter_by_analysis_number(filter_text=child_table_data[0]['Analysis No.'])
+        child_data_after_filter = self.order_page.get_child_table_data()
+        self.assertEqual(child_table_data[0]['Analysis No.'].replace("'", ""),child_data_after_filter[0]['Analysis No.'])
+        color =self.base_selenium.element_background_color(element='orders:highlighted_element')
+        self.info("Hightlight colour 'yellow' in rgb equals'Hex=ffff00,dec(255,255,0) and in rgba equals 'Hex=ffff0059' ")
+        self.assertEqual(color,'rgba(255, 255, 0, 0.35)')

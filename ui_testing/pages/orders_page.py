@@ -348,3 +348,11 @@ class Orders(BasePages):
         items = self.base_selenium.find_elements(element='orders:dropdown_options')
         list = items[0].text.split('\n')
         return list
+
+
+    def check_analysis_no_box_in_child_table (self):
+        self.base_selenium.click(element='orders:configurations_options')
+        self.base_selenium.click(element='orders:child_config')
+        self.base_selenium.click(element='orders:Analysis_No')
+        self.base_selenium.click(element='orders:Apply')
+        self.sleep_small()

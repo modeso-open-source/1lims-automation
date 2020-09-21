@@ -553,6 +553,21 @@ elements = {
                                'order': 4},
         'edit order header': {'method': 'xpath',
                               'value': '//span[contains(text(),"Edit Order")]'},
+        'configurations_options' : {
+            'method' : 'id',
+            'value' : 'config'
+        },
+        'child_config' : {'method' : 'xpath',
+                          'value' : '//*[@id="container"]/div/div/div/div/div[1]/div[1]/div/span[2]'},
+        'Analysis_No' :
+            {'method' : 'xpath',
+             'value' : '//*[@id="analysis"]/a/span/div/span/label/span'},
+        'Apply' :
+            {'method' : 'xpath',
+             'value' : '//*[@id="container"]/div/div/div/div/div[2]/a/span'},
+        'highlighted_element' :
+            {'method' : 'xpath',
+             'value' : '//*[@id="DataTables_Table_1"]/tbody/tr[1]/td[15]/app-column-display/span/span/mark'},
         'analysis_order_tab': {'method': 'xpath',
                                'value': '//span[contains(text(),"Analysis")]'},
         'order_analysis_tab': {'method': 'xpath',
