@@ -133,3 +133,25 @@ class Contacts(BasePages):
         rows = self.search(search_text)
         self.open_edit_page_by_css_selector(row=rows[0])
 
+    def open_contact_configurations_options(self):
+        self.base_selenium.click(element='configurations_page:display_options_menu')
+        self.sleep_tiny()
+        self.base_selenium.click(element='configurations_page:field_options')
+        self.sleep_tiny()
+
+    def clear_all_selected_view_and_search_options(self):
+        self.info('clear selected view and search options of contact name')
+        self.base_selenium.click(element='configurations_page:clear_all')
+        self.sleep_tiny()
+
+    def select_option_to_view_search_with(self, view_search_options):
+        self.info('change view search options')
+        self.clear_all_selected_view_and_search_options()
+        for view_search_option in view_search_options:
+            if view_search_option != '':
+                self.base_selenium.select_item_from_drop_down(element='configurations_page:view_search_ddl',
+                                                              item_text=view_search_option.replace('×',''))
+        self.base_selenium.click(element='configurations_page:popup_save_button')
+        self.sleep_small()
+        self.base_selenium.click(element='configurations_page:save_button')
+        self.sleep_small()

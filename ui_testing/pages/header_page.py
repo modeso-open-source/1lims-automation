@@ -8,10 +8,16 @@ class Header(BasePages):
         super().__init__()
         self.user_url = "{}users".format(self.base_selenium.url)
         self.role_url = "{}roles".format(self.base_selenium.url)
+        self.modules_config = "{}modulesConfigurations".format(self.base_selenium.url)
 
     def get_users_page(self):
         self.info('get users page.')
         self.base_selenium.get(url=self.user_url)
+        self.wait_until_page_is_loaded()
+        self.sleep_tiny()
+
+    def get_modules_config_page(self):
+        self.base_selenium.get(url=self.modules_config)
         self.wait_until_page_is_loaded()
         self.sleep_tiny()
 
@@ -356,6 +362,11 @@ class Header(BasePages):
         self.base_selenium.click(element='user_management:config_table')
         self.sleep_small()
 
+    def click_on_modules_config_btn(self):
+        self.info('click on the table configuration button')
+        self.base_selenium.click(element='header:modules_configurations_button')
+        self.sleep_small()
+
     def checked_user_changed_by(self):
         self.info(
             'checked the changed by field from the table configuration to display in the active table ')
@@ -418,3 +429,8 @@ class Header(BasePages):
 
         self.info(' No. of selected rows {} '.format(no_of_rows))
         return selected_rows_data, selected_rows
+
+    def disable_article_option(self):
+        check_box = self.base_selenium.find_element(element='general:checkbox')
+        check_box.click()
+        self.save(save_btn='modules_configurations:save')

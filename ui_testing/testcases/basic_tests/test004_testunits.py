@@ -11,6 +11,7 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.login_page import Login
 from api_testing.apis.users_api import UsersAPI
 from unittest import skip
+from random import randint
 from parameterized import parameterized
 from nose.plugins.attrib import attr
 import re, random
@@ -634,18 +635,14 @@ class TestUnitsTestCases(BaseTest):
                            ('unitsuper', 'qualitative'),
                            ('unitsuper', 'quantitative'),
                            ('unitsub', 'quantitative MiBi'),
-                           ('unitsuper', 'quantitative MiBi')
-                           ])
+                           ('unitsuper', 'quantitative MiBi'),
+                           ('empty', 'qualitative')])
     def test024_test_unit_with_sub_and_super_scripts_appears_in_exported_sheet(self, unit_with_sub_or_super, type):
         """
         New: Test unit: Export: Sub & Super scripts Approach: Allow user to see the
         sub & super scripts in the export file
 
         LIMS-5795
-
-        Test unit : Unit: Subscript and superscript scripts Approach: Allow the unit
-        filed to accept sub and super scripts in the test unit form
-
         LIMS-5784
 
         Test unit form: Unit accepts subscript and superscript characters in case of
@@ -653,15 +650,16 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-5785
 
-        Test unit: Export: Sub & Super scripts Approach:  Allow user to see the sub &
-        super scripts in the export file
-
-        LIMS-5810
-
         Test unit: Export: Sub & Super scripts Approach: Allow user to see the sub
          & super scripts in the export file ( quantitative MiBi )
+
+         LIMS-5810
+
+         Test unit: Unit: XSLX Approach: In case the test unit field is empty,
+         it should dispaly ( - ) in the export file
+
+         LIMS-6289
         """
-        
         if unit_with_sub_or_super == 'unitsub' and type == 'qualitative':
             response, payload = self.test_unit_api.create_qualitative_testunit(unit='[sub]')
             preview_unit = 'sub'
@@ -674,27 +672,27 @@ class TestUnitsTestCases(BaseTest):
         elif unit_with_sub_or_super == 'unitsuper' and type == 'quantitative':
             response, payload = self.test_unit_api.create_quantitative_testunit(unit='{super}')
             preview_unit = 'super'
-        elif unit_with_sub_or_super == 'unitsub' and type == 'quantitative MiBi ':
+        elif unit_with_sub_or_super == 'unitsub' and type == 'quantitative MiBi':
             response, payload = self.test_unit_api.create_mibi_testunit(unit='[sub]')
             preview_unit = 'sub'
-        else :
+        elif unit_with_sub_or_super == 'unitsuper' and type == 'quantitative MiBi':
             response, payload = self.test_unit_api.create_mibi_testunit(unit='{super}')
             preview_unit = 'super'
+        else:
+            response, payload = self.test_unit_api.create_qualitative_testunit()
+            preview_unit = '-'
 
-
-        self.assertEqual(response['status'], 1, 'test unit not createed {}'.format(payload))
+        self.assertEqual(response['status'], 1, 'test unit not created {}'.format(payload))
         self.test_unit_page.apply_filter_scenario(
             filter_element='test_units:testunit_number_filter',
             filter_text=payload['number'], field_type='text')
         self.test_unit_page.download_xslx_sheet()
-        rows_data = self.test_unit_page.get_table_rows_data()
-        self.info('Comparing the unit name in test unit table')
-        fixed_row_data = self.fix_data_format(rows_data[0].split('\n'))
-        self.assertIn(preview_unit, fixed_row_data)
-        self.info('Comparing the unit name in xsxl sheet')
-        values = self.test_unit_page.sheet.iloc[0].values
-        fixed_sheet_row_data = self.fix_data_format(values)
-        self.assertIn(preview_unit, fixed_sheet_row_data)
+        self.info('Assert that unit field in active table updated')
+        rows_data = self.test_unit_page.get_the_latest_row_data()
+        self.assertEqual(preview_unit, rows_data['Unit'])
+        self.info('Comparing the unit in xsxl sheet')
+        unit_value_in_sheet = self.test_unit_page.sheet.iloc[0]['Unit']
+        self.assertEqual(preview_unit, unit_value_in_sheet)
 
     @parameterized.expand(['quantitative', 'qualitative'])
     def test025_create_test_unit_appears_in_version_table(self, unit_type):
@@ -1135,8 +1133,7 @@ class TestUnitsTestCases(BaseTest):
                            ('Name', 'No'),
                            ('Type', 'Method'),
                            ('Type', 'No'),
-                           ('Method', 'No')
-                           ])
+                           ('Method', 'No')])
     @attr(series=True)
     def test042_test_unit_name_allow_user_to_search_with_selected_two_options_testplan(self, search_view_option1,
                                                                                        search_view_option2):
@@ -1345,32 +1342,34 @@ class TestUnitsTestCases(BaseTest):
         test_unit_found = self.test_units_page.filter_by_user_get_result(payload['username'])
         self.assertTrue(test_unit_found)
         
-    def test050_sub_and_super_scripts_in_active_table(self) :
+    def test050_sub_and_super_scripts_in_active_table(self):
         """
-            New: Test units: Active table/unit: Sub & Super scripts: Allow unit to display with sub & super scripts in the active table
+            New: Test units: Active table/unit: Sub & Super scripts: Allow unit to display
+            with sub & super scripts in the active table
 
             LIMS-5794
-            """
-
+        """
         self.info('Create new Qualitative testunit')
         response, payload = self.test_unit_api.create_qualitative_testunit(unit='m[g]{o}')
         self.assertEqual(response['status'], 1, 'test unit not created {}'.format(payload))
         self.test_unit_page.click_overview()
         self.test_units_page.sleep_tiny()
-        self.test_unit_page.apply_filter_scenario(filter_element='test_units:testunit_number_filter',filter_text=payload['number'], field_type='text')
+        self.test_unit_page.apply_filter_scenario(filter_element='test_units:testunit_number_filter',
+                                                  filter_text=payload['number'], field_type='text')
         rows = self.base_selenium.get_table_rows('general:table')
         cells = self.base_selenium.get_row_cells_elements_related_to_header(rows[0])
         span = cells['Unit'].find_element_by_class_name('white-tooltip')
         required_value = span.get_attribute('ng-reflect-ngb-tooltip')
-        self.assertEqual(payload['unit'],required_value)
-
+        self.assertEqual(payload['unit'], required_value)
 
     @parameterized.expand([('Name', 'Type'),
                            ('Name', 'Method'),
                            ('Name', 'No'),
                            ('Type', 'Method'),
                            ('Type', 'No'),
-                           ('Method', 'No')
+                           ('No', 'Method'),
+                           ('Unit', 'No'),
+                           ('Quantification Limit', '')
                            ])
     @attr(series=True)
     def test051_test_unit_name_allow_user_to_search_with_selected_two_options_order(self, search_view_option1,
@@ -1380,15 +1379,26 @@ class TestUnitsTestCases(BaseTest):
         rom the test unit configuration, this action should reflect on the order form
 
         LIMS-6672
+
+        Orders: Default filter test unit Approach: Allow the search criteria in the drop down list
+        in the filter section to be same as in the form
+
+        LIMS-7414
         """
         self.order_page = Order()
         self.test_unit_page.open_configurations()
         self.test_unit_page.open_testunit_name_configurations_options()
         self.test_unit_page.select_option_to_view_search_with(
             view_search_options=[search_view_option1, search_view_option2])
-        self.info('Create new test unit with qualitative and random generated data')
-        response, payload = self.test_unit_api.create_qualitative_testunit()
+        upperLimit = self.generate_random_number(lower=50, upper=100)
+        lowerLimit = self.generate_random_number(lower=1, upper=49)
+        self.info('Create new quantitative test unit with unit and quantification')
+        response, payload = self.test_unit_api.create_quantitative_testunit(
+            useSpec=False, useQuantification=True, quantificationUpperLimit=upperLimit,
+            quantificationLowerLimit=lowerLimit, unit='m[g]{o}')
         self.assertEqual(response['status'], 1, payload)
+        quantification_limit = '{}-{}'.format(payload['quantificationLowerLimit'],
+                                              payload['quantificationUpperLimit'])
         self.info('new test unit created with number  {}'.format(payload['number']))
         self.info('get random order')
         radndom_order = random.choice(OrdersAPI().get_all_orders_json())
@@ -1399,39 +1409,60 @@ class TestUnitsTestCases(BaseTest):
         self.info("select first suborder")
         is_name_exist = self.order_page.search_test_unit_not_set(test_unit=payload['name'])
         is_number_exist = self.order_page.search_test_unit_not_set(test_unit=str(payload['number']))
-        is_type_exist = self.order_page.search_test_unit_not_set(test_unit='Qualitative')
+        is_type_exist = self.order_page.search_test_unit_not_set(test_unit='Quantitative')
         is_method_exist = self.order_page.search_test_unit_not_set(test_unit=payload['method'])
+        is_unit_exist = self.order_page.search_test_unit_not_set(test_unit=payload['unit'])
+        is_quant_limit_exist = self.order_page.search_test_unit_not_set(test_unit=quantification_limit)
 
         if search_view_option1 == 'Name' and search_view_option2 == 'Type':
             self.assertTrue(is_name_exist)
             self.assertFalse(is_number_exist)
             self.assertTrue(is_type_exist)
             self.assertFalse(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Name' and search_view_option2 == 'Method':
             self.assertTrue(is_name_exist)
             self.assertFalse(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Name' and search_view_option2 == 'No':
             self.assertTrue(is_name_exist)
             self.assertTrue(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertFalse(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Type' and search_view_option2 == 'Method':
             self.assertFalse(is_name_exist)
             self.assertFalse(is_number_exist)
             self.assertTrue(is_type_exist)
             self.assertTrue(is_method_exist)
+            self.assertFalse(is_unit_exist)
         elif search_view_option1 == 'Type' and search_view_option2 == 'No':
             self.assertFalse(is_name_exist)
             self.assertTrue(is_number_exist)
             self.assertTrue(is_type_exist)
             self.assertFalse(is_method_exist)
-        elif search_view_option1 == 'Method' and search_view_option2 == 'No':
+            self.assertFalse(is_unit_exist)
+        elif search_view_option1 == 'No' and search_view_option2 == 'Method':
             self.assertFalse(is_name_exist)
             self.assertTrue(is_number_exist)
             self.assertFalse(is_type_exist)
             self.assertTrue(is_method_exist)
+            self.assertFalse(is_unit_exist)
+        elif search_view_option1 == 'Unit' and search_view_option2 == 'No':
+            self.assertFalse(is_name_exist)
+            self.assertTrue(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+            self.assertTrue(is_unit_exist)
+        elif search_view_option1 == 'Quantification Limit':
+            self.assertFalse(is_name_exist)
+            self.assertFalse(is_number_exist)
+            self.assertFalse(is_type_exist)
+            self.assertFalse(is_method_exist)
+            self.assertFalse(is_unit_exist)
+            self.assertTrue(is_quant_limit_exist)
             
     def test052_cancel_testunit_name_configuration(self):
         """
@@ -1448,4 +1479,3 @@ class TestUnitsTestCases(BaseTest):
         self.info('open test unit configuration pop up to assert that nothing changed ')
         selected_option_after_cancel = self.test_unit_page.get_view_and_search_options()
         self.assertEqual(selected_option, selected_option_after_cancel)        
-

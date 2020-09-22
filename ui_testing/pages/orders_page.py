@@ -149,12 +149,27 @@ class Orders(BasePages):
                                                             destination_element='general:filter')
         filter.click()
 
+    def list_filter_feilds(self):
+        config_btn = self.base_selenium.find_element('general:filter_configuration')
+        config_btn.click()
+        self.sleep_tiny()
+        elements = self.base_selenium.find_elements('general:filter_Configure_options')
+        fields = [elem.text for elem in elements]
+        return fields
+
     def filter_by_analysis_number(self, filter_text, reset=False):
         self.open_filter_menu()
         if reset:
             self.filter_reset()
         self.info('Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
+        self.filter_apply()
+        self.sleep_tiny()
+
+    def filter_by_contact(self, filter_text):
+        self.open_filter_menu()
+        self.info('Filter by contact : {}'.format(filter_text))
+        self.filter_by(filter_element='orders:contact_filter', filter_text=filter_text,field_type='drop_down')
         self.filter_apply()
         self.sleep_tiny()
         
@@ -216,7 +231,7 @@ class Orders(BasePages):
     def restore_table_suborder(self, index=0):
         self.info('restore suborder from the order\'s active table')
         child_table_records = self.result_table(element='general:table_child')
-        self.open_row_options(row=child_table_records[0])
+        self.open_row_options(row=child_table_records[index])
         self.base_selenium.click('orders:suborder_restore')
         self.confirm_popup()
         self.sleep_small()
@@ -333,4 +348,19 @@ class Orders(BasePages):
             self.info('Cancel the popup')
             self.base_selenium.click(element='orders:cancel_popup')
         return True
+
+
+    def open_order_config(self):
+        self.info('open testunits configurations')
+        self.base_selenium.scroll()
+        self.base_selenium.click(element='orders:right_menu')
+        self.base_selenium.click(element='general:configurations')
+
+
+    def get_right_menu_options(self):
+        self.base_selenium.click(element='orders:right_menu')
+        self.info('get right menu drop down options ')
+        items = self.base_selenium.find_elements(element='orders:dropdown_options')
+        list = items[0].text.split('\n')
+        return list
 

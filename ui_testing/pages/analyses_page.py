@@ -25,3 +25,14 @@ class AllAnalysesPage(BasePages):
                        filter_text=str(filter_text), field_type='drop_down')
         self.filter_apply()
 
+    def set_analysis_no_with_year(self):
+        self.base_selenium.click(element='configurations_page:analysis_no_option_menu')
+        selected_option = self.base_selenium.get_text(element='configurations_page:selected_analysis_no_format')
+        if selected_option != 'Year before number':
+            self.base_selenium.click(element='configurations_page:year_before_option')
+        self.sleep_tiny()
+        self.base_selenium.click(element='configurations_page:save_button')
+
+
+
+

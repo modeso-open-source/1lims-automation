@@ -160,7 +160,7 @@ class OrdersAPIFactory(BaseAPI):
         }
         suborders = []
         for i in range(no_suborders):
-            sub_order_dict = {** suborders_common_data}
+            sub_order_dict = {**suborders_common_data}
             if len(suborders_fields) > i:
                 for dict_key in suborders_fields[i].keys():
                     sub_order_dict[dict_key] = suborders_fields[i][dict_key]

@@ -65,7 +65,8 @@ elements = {
         'filter_apply_btn': {'method': 'class_name',
                              'value': 'btn-primary',
                              'order': 0},
-        'filter_configuration': {'method': 'xpath', 'value': '//*[@id="filter_body"]/div/div/ul/li'},
+        'filter_configuration': {'method': 'id', 'value': 'settings'},
+        'filter_Configure_options': {'method': 'xpath', 'value': '//div[@class="col-lg-4 filter-padding"]'},
         # 'filter_reset_btn': {'method': 'class_name',
         #              'value': 'btn-secondary',
         #              'order': 1},
@@ -123,20 +124,25 @@ elements = {
         'col_6': {'method': 'class_name',
                   'value': 'col-md-6',
                   'order': -1},
-        'configurations': {
-            'method': 'xpath',
-            'value': '//*[@id="custom-accordion-panel"]//a[4]'
+        'configurations_analysis': {
+            'method': 'id',
+            'value': 'analysis_tab'
         },
         'configurations_archived': {
             'method': 'xpath',
             'value': '//*[@id="tabs"]/li[2]/a'
+
         },
         'configure_table': {'method': 'xpath',
                             'value': '//a[@class="m-dropdown__toggle btn no-padding"]'},
+        'configure_child_table': {'method': 'xpath',
+                                  'value': "//a[contains(text(),'Child')]"},
         'configure_table_items': {'method': 'xpath',
                                   'value': '//ul[@class="m-nav sortable sortable-table1 ui-sortable"]'},
         'configure_table_archive_items': {'method': 'xpath',
                                           'value': '//ul[@class="m-nav sortable sortable-table2 ui-sortable"]'},
+        'configure_child_table_items': {'method': 'xpath',
+                                        'value': '//ul[@class="m-nav sortable sortable-table3 ui-sortable"]'},
         'apply_configure_table': {'method': 'xpath',
                                   'value': "//span[contains(text(),'Apply')]"},
         'overview': {'method': 'xpath',
@@ -555,6 +561,7 @@ elements = {
                       'value': 'add-btn'},
         'right_menu': {'method': 'xpath',
                        'value': '//*[@id="custom-accordion-panel"]/div/a/i'},
+        'dropdown_options': {'method': 'class_name', 'value': 'dropdown-menu', 'order': 0},
         'archive': {'method': 'link_text',
                     'value': 'Archive'},
         'active': {'method': 'link_text',
@@ -772,11 +779,17 @@ elements = {
                              'value': '//*[contains(text(),"My Profile")]'},
         'companyprofile_button': {'method': 'xpath',
                                   'value': '//*[contains(text(),"Company Profile")]'},
+        'modules_configurations_button': {'method': 'xpath',
+                                         'value': "//span[contains(text(),'Modules Configurations')]"},
         'logout': {
             'method': 'xpath',
             'value': "//a[@class='btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder']"
         },
 
+    },
+    'modules_configurations': {
+        'save': {'method': 'xpath',
+                 'value': "//button[@class='btn btn-primary mb-md-0 mr-md-3']"}
     },
     'user_management': {
         'right_menu': {'method': 'xpath',
@@ -1029,6 +1042,12 @@ elements = {
         'confirm_button': {'method': 'class_name',
                            'value': 'btn-success',
                            'order': 0},
+        'analysis_no_option_menu': {'method': 'id',
+                                    'value': 'year_options_menu'},
+        'selected_analysis_no_format': {'method': 'css_selector',
+                                        'value': '#year_options_menu + .dropdown-menu .dropdown-item'},
+        'year_before_option': {'method': 'link_text',
+                               'value': 'Year before number'}
     },
 
     'roles_and_permissions': {
@@ -1134,7 +1153,6 @@ elements = {
         'order_no_filter': {'method': 'id', 'value': 'orderNofield'}
 
     },
-
     'company_profile': {
         'country_field': {'method': 'id', 'value': 'selectedCountryfield'},
         'name_field': {'method': 'id', 'value': 'namefield'},

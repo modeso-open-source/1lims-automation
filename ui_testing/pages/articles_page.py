@@ -91,4 +91,3 @@ class Articles(BasePages):
         self.base_selenium.get(url=url_text.format(self.base_selenium.url))
         self.wait_until_page_is_loaded()
 
-

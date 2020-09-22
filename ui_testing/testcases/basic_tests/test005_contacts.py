@@ -336,24 +336,42 @@ class ContactsTestCases(BaseTest):
             self.assertEqual(self.base_selenium.get_url(), '{}contacts/add'.format(self.base_selenium.url))
             self.info('clicking on Overview cancelled')
 
-    def test014_edit_approach_overview_button(self):
+    @parameterized.expand(['edit_overview', 'edit_cancel', 'overview'])
+    def test014_edit_approach_overview_button(self, case):
         """
         Edit: Overview Approach: Make sure after I press on
         the overview button, it redirects me to the active table
-
         LIMS-6202
 
         New: Contact: Cancel button: After I edit in any field
         then press on cancel button, a pop up will appear that
         the data will be lost
         LIMS-3585
+
+        Contacts: No popup should appear when clicking on overview without changing anything
+        LIMS-6816
+
+        Contacts: Popup should appear when clicking on overview without saving <All data will be lost>
+        LIMS-6808
         """
         self.info("open edit page random contact")
         self.contacts_page.get_random_contact()
         contact_url = self.base_selenium.get_url()
         self.contacts_page.info('contact_url : {}'.format(contact_url))
-        self.contacts_page.info('click on Overview ')
-        self.base_page.click_overview()
+        if case in ['edit_overview', 'edit_cancel']:
+            new_name = self.generate_random_string()
+            self.contact_page.set_contact_name(new_name)
+
+        if case == 'edit_cancel':
+            self.base_selenium.click(element='general:cancel')
+        else:
+            self.contacts_page.info('click on Overview ')
+            self.base_page.click_overview()
+
+        if case in ['edit_overview', 'edit_cancel']:
+            self.info('Clicked overview after editing without saving - Asserting popup appears')
+            self.assertTrue(self.contacts_page.confirm_popup(check_only=True))
+            self.base_selenium.click(element='general:confirm_pop')
         self.contacts_page.sleep_tiny()
         self.assertEqual(self.base_selenium.get_url(), '{}contacts'.format(self.base_selenium.url))
         self.contacts_page.info('clicking on Overview confirmed')
