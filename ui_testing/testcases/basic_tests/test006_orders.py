@@ -4,6 +4,7 @@ from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.contacts_page import Contacts
 from ui_testing.pages.login_page import Login
 from ui_testing.pages.testunits_page import TstUnits
+from ui_testing.pages.testunit_page import TstUnit
 from api_testing.apis.orders_api import OrdersAPI
 from ui_testing.pages.analysis_page import AllAnalysesPage
 from api_testing.apis.article_api import ArticleAPI
@@ -3537,7 +3538,7 @@ class OrdersTestCases(BaseTest):
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
 
-    def test102_choose_test_plans_without_test_units(self):
+    def test101_choose_test_plans_without_test_units(self):
         """
         Orders: Create: Orders Choose test plans without test units
 
@@ -3575,3 +3576,32 @@ class OrdersTestCases(BaseTest):
             test_units = [item['Test Unit'] for item in child_data]
             self.assertCountEqual(test_units, test_units_names[i * 2:(i * 2) + 2])
 
+    def test102_create_order_with_test_plans_with_same_name(self):
+        """
+        Orders: Create Approach: Make sure In case you create two test plans with the same name
+        and different materiel type, the test units that belongs to them displayed correct in
+        analysis step two
+
+        LIMS-6296
+        """
+        test_plans_list = TestPlanAPI().create_double_completed_testplan_same_name_diff_material()
+        self.assertTrue(test_plans_list)
+        test_units_list = [tu['testUnits'][0]['name'] for tu in test_plans_list]
+        update_suborder = self.orders_api.get_suborders_data_of_test_plan_list(test_plans_list)
+        self.info("create order with two suborders")
+        response, payload = self.orders_api.create_order_with_multiple_suborders(
+            no_suborders=2, suborders_fields=update_suborder)
+        self.assertEqual(response['message'], 'created_success')
+        self.info("open edit page of order {}".format(response['order']['mainOrderId']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        self.info("Navigate to analysis step 2")
+        self.order_page.navigate_to_analysis_tab()
+        self.analysis_page = SingleAnalysisPage()
+        self.info("assert that only 2 analysis triggered")
+        self.assertEqual(self.analysis_page.get_analysis_count(), 2)
+        for i in range(2):
+            row = self.analysis_page.open_accordion_for_analysis_index(i)
+            test_units = self.analysis_page.get_testunits_in_analysis(row)
+            self.assertEqual(len(test_units), 1)
+            test_units_name = test_units[0]['Test Unit Name'].split(' ')[0]
+            self.assertEqual(test_units_name, test_units_list[i])

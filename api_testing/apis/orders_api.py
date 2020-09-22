@@ -521,3 +521,28 @@ class OrdersAPI(OrdersAPIFactory):
             suborder['articleId'] = created_suborder_data['article']['id']
             suborders.append(suborder)
         return self.create_order_with_multiple_suborders(no_suborders=no_suborders, suborders_fields=suborders)
+
+    def get_suborders_data_of_test_plan_list(self, test_plans_list):
+        first_test_plan_dict = {'id': int(test_plans_list[0]['selectedTestPlan']['id']),
+                                'name': test_plans_list[0]['selectedTestPlan']['text'],
+                                'version': 1}
+        second_test_plan_dict = {'id': int(test_plans_list[1]['selectedTestPlan']['id']),
+                                 'name': test_plans_list[1]['selectedTestPlan']['text'],
+                                 'version': 1}
+        first_material = test_plans_list[0]['materialType'][0]
+        second_material = test_plans_list[1]['materialType'][0]
+        first_article = test_plans_list[0]['selectedArticles'][0]
+        second_article = test_plans_list[1]['selectedArticles'][0]
+        update_suborder = [{'testPlans': [first_test_plan_dict],
+                            'selectedTestPlans': [first_test_plan_dict],
+                            'materialType': first_material,
+                            'materialTypeId': first_material['id'],
+                            'article': first_article,
+                            'articleId': first_article['id']},
+                           {'testPlans': [second_test_plan_dict],
+                            'selectedTestPlans': [second_test_plan_dict],
+                            'materialType': second_material,
+                            'materialTypeId': second_material['id'],
+                            'article': second_article,
+                            'articleId': second_article['id']}]
+        return update_suborder
