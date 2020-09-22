@@ -181,7 +181,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_archived_items()
         self.orders_page.filter_by_order_no(order_no)
         if order_type == 'suborder':
-            random_index = randint(0, len(suborders)-1)
+            random_index = randint(0, len(suborders) - 1)
             suborders_data = self.order_page.get_child_table_data()
             self.info("Restore suborder with analysis No {}".format(suborders_data[random_index]['Analysis No.']))
             self.order_page.restore_table_suborder(index=random_index)
@@ -1465,7 +1465,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.get_orders_page()
         self.order_page.filter_by_order_no(random_order['orderNo'])
         suborder_data = self.order_page.get_child_table_data()
-        self.assertTrue(len(suborder_data), len(suborders)+1)
+        self.assertTrue(len(suborder_data), len(suborders) + 1)
         self.orders_page.navigate_to_analysis_active_table()
         self.analyses_page.filter_by_analysis_number(suborder_data[0]['Analysis No.'])
         analysis_result = self.analyses_page.get_the_latest_row_data()['Analysis No.'].replace("'", "")
@@ -2540,7 +2540,7 @@ class OrdersTestCases(BaseTest):
         self.info('asserting the order with order number {} is created'.format(order_no))
         self.assertIn(order_no_with_year, results[0].text.replace("'", ""))
 
-    #@skip("https://modeso.atlassian.net/browse/LIMSA-299")
+    # @skip("https://modeso.atlassian.net/browse/LIMSA-299")
     def test074_create_existing_order_change_contact(self):
         """
          Create existing order then change the contact for this existing one,
@@ -3305,9 +3305,9 @@ class OrdersTestCases(BaseTest):
             if result['test_plan'] == testPlan['testPlan']['text']:
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
-                  
-    @parameterized.expand(['Name','No','Name:No'])
-    def test095_change_contact_config(self,search_by):
+
+    @parameterized.expand(['Name', 'No', 'Name:No'])
+    def test095_change_contact_config(self, search_by):
         '''
          Orders: Contact configuration approach: In case the user
          configures the contact field to display name & number this action
@@ -3318,18 +3318,18 @@ class OrdersTestCases(BaseTest):
         '''
         self.contacts_page = Contacts()
         self.info('get random contact')
-        contacts_response,_ = ContactsAPI().get_all_contacts(limit=10)
+        contacts_response, _ = ContactsAPI().get_all_contacts(limit=10)
         self.assertEqual(contacts_response['status'], 1)
         payload = random.choice(contacts_response['contacts'])
         self.orders_page.open_order_config()
         self.info('change contact view by options')
         self.contacts_page.open_contact_configurations_options()
-        if  search_by == 'Name':
+        if search_by == 'Name':
             search_text = payload['name']
             result = payload['name']
             search_by = [search_by]
-        elif search_by== 'No':
-            search_text = 'No: '+ str(payload['companyNo'])
+        elif search_by == 'No':
+            search_text = 'No: ' + str(payload['companyNo'])
             result = str(payload['companyNo'])
             search_by = [search_by]
         elif search_by == 'Name:No':
@@ -3344,7 +3344,7 @@ class OrdersTestCases(BaseTest):
         rows = self.orders_page.result_table()
         order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
         self.info('assert contact appear in format {}'.format(search_by))
-        self.assertEqual(order_data['Contact Name'],search_text)
+        self.assertEqual(order_data['Contact Name'], search_text)
 
     def test096_check_list_menu(self):
         """
@@ -3632,3 +3632,33 @@ class OrdersTestCases(BaseTest):
             test_units_name = test_units[0]['Test Unit Name'].split(' ')[0]
             self.assertEqual(test_units_name, test_units_list[i])
 
+    @parameterized.expand(['without year', 'number before year', 'number after year'])
+    def test103_search_by_all_formats(self,format):
+        '''
+        Orders: Search/filter Approach: User can search/filter by all the new number format ( without year, number before year, number after year
+        LIMS-4110
+        :return:
+        '''
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        if format == 'without year':
+            order_no = random_order['orderNo'].split('-')[0]
+        elif format == 'number before year':
+            order_no = random_order['orderNo']
+        elif format == 'number after year':
+            order_no = random_order['orderNo'].split('-')[1]+'-'+random_order['orderNo'].split('-')[0]
+        self.info('can filter in order active table with order no in format .{}'.format(format))
+        self.orders_page.filter_by_order_no(order_no)
+        rows = self.orders_page.result_table()
+        self.assertGreater(len(rows)-1,0)
+        self.base_selenium.refresh()
+        self.info('can search in order active table with order no in format .{}'.format(format))
+        self.orders_page.search(order_no)
+        self.assertGreater(len(rows) - 1, 0)
+        self.orders_page.navigate_to_analysis_active_table()
+        self.info('can filter in analysis active table with order no in format .{}'.format(format))
+        self.analyses_page.filter_by_order_no(order_no)
+        self.base_selenium.refresh()
+        self.info('can search in analysis active table with order no in format .{}'.format(format))
+        self.orders_page.search(order_no)
+        self.assertGreater(len(rows) - 1, 0)
+        self.orders_page.navigate_to_order_active_table()#in order to open on order tab in the second run

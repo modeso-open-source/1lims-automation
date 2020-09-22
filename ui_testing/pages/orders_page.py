@@ -364,3 +364,7 @@ class Orders(BasePages):
         list = items[0].text.split('\n')
         return list
 
+    def navigate_to_order_active_table(self):
+        self.base_selenium.click(element='orders:order_tab')
+        self.sleep_medium()
+

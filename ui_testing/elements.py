@@ -619,6 +619,9 @@ elements = {
         'analysis_tab': {
             'method': 'xpath',
             'value': "//label[@class='btn tab']"},
+        'order_tab': {
+            'method': 'xpath',
+            'value': "//label[@class='btn tab']"},
         'mainorder_duplicate': {'method': 'id',
                                 'value': 'main_table_duplicate'},
         'mainorder-archive' : {'method' : 'id',
