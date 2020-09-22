@@ -32,6 +32,12 @@ class GeneralUtilitiesAPIFactory(BaseAPI):
         api = '{}{}'.format(self.url, self.END_POINTS['modules']['has_articles'])
         return api, {}
 
+    @api_factory('get')
+    def get_configuration(self):
+        api = f'{self.url}{self.END_POINTS["field_data"]["get_configuration"]}'
+        return api, {}
+
+
 class GeneralUtilitiesAPI(GeneralUtilitiesAPIFactory):
     @staticmethod
     def map_component_to_permission(component):
@@ -79,3 +85,12 @@ class GeneralUtilitiesAPI(GeneralUtilitiesAPIFactory):
     def is_article_enabled(self):
         response, _ = self.has_articles()
         return response['reponse'][0]['isAllowed']
+
+    def is_dynamic_field_existing(self, field_name):
+        response, _ = self.get_configuration()
+        for field in response['fields']:
+            if field.get('dynamicComponent'):
+                if field_name in field['dynamicComponent']['fieldName']:
+                    return True
+        else:
+            return False

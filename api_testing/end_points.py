@@ -88,7 +88,8 @@ end_points = {
         'list_material_types': '/api/materialTypes'
     },
     'field_data': {
-        'configuration_update': '/api/field_data/update'
+        'configuration_update': '/api/field_data/update',
+        'get_configuration': '/api/field_data/7'
     },
     'modules': {
         'disable_article': '/api/modulesConfigurations/disableArticles',
