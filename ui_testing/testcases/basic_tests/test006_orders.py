@@ -3538,8 +3538,7 @@ class OrdersTestCases(BaseTest):
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
 
-    @parameterized.expand(['before', 'after'])
-    def test101_create_order_with_test_plans_with_same_name(self, save_before):
+    def test101_create_order_with_test_plans_with_same_name(self):
         """
         Orders: Create Approach: Make sure In case you create two test plans with the same name
         and different materiel type, the test units that belongs to them displayed correct in
@@ -3547,43 +3546,42 @@ class OrdersTestCases(BaseTest):
 
         LIMS-6296
         """
-        self.test_plan_api = TestPlanAPI()
-        self.info("create completed test plan with random data")
-        testplan1 = self.test_plan_api.create_completed_testplan_random_data()
-        test_plan_name_dict = {'id': 'new', 'text': testplan1['testPlan']['text']}
-        new_material = random.choice(GeneralUtilitiesAPI().get_material_types_without_duplicate(
-            testplan1['materialType'][0]['text']))
-        new_material_id = GeneralUtilitiesAPI().get_material_id(new_material)
-        formatted_material = {'id': new_material_id, 'text': new_material}
-        tu_response, _ = TestUnitAPI().create_qualitative_testunit(selectedMaterialTypes=[formatted_material])
-        testunit_data = TestUnitAPI().get_testunit_form_data(id=tu_response['testUnit']['testUnitId'])[0]['testUnit']
-        formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
-        self.info("create completed test plan with same name {} and new material {}".format(
-            testplan1['testPlan']['text'], new_material))
-        formatted_article = ArticleAPI().get_formatted_article_with_formatted_material_type(
-            material_type=formatted_material)
+        test_plans_list = TestPlanAPI().create_double_completed_testplan_same_name_diff_material()
+        self.assertTrue(test_plans_list)
+        test_units_list = [tu['testUnits'][0]['name'] for tu in test_plans_list]
+        first_test_plan_dict = {'id': int(test_plans_list[0]['selectedTestPlan']['id']),
+                                'name': test_plans_list[0]['selectedTestPlan']['text'],
+                                'version': 1}
+        second_test_plan_dict = {'id': int(test_plans_list[1]['selectedTestPlan']['id']),
+                                 'name': test_plans_list[1]['selectedTestPlan']['text'],
+                                 'version': 1}
+        first_material = test_plans_list[0]['materialType'][0]
+        second_material = test_plans_list[1]['materialType'][0]
+        first_article = test_plans_list[0]['selectedArticles'][0]
+        second_article = test_plans_list[1]['selectedArticles'][0]
+        update_suborder = [{'testPlans': [first_test_plan_dict],
+                            'selectedTestPlans': [first_test_plan_dict],
+                            'materialType': first_material,
+                            'materialTypeId': first_material['id'],
+                            'article': first_article,
+                            'articleId': first_article['id']},
+                           {'testPlans': [second_test_plan_dict],
+                            'selectedTestPlans': [second_test_plan_dict],
+                            'materialType': second_material,
+                            'materialTypeId': second_material['id'],
+                            'article': second_article,
+                            'articleId': second_article['id']}]
 
-        test_units_list = [testplan1['testUnits'][0]['name'], formated_testunit['name']]
-        response, testplan2 = self.test_plan_api.create_testplan(selectedTestPlan=test_plan_name_dict,
-                                                                 testPlan=test_plan_name_dict,
-                                                                 testUnits=[formated_testunit],
-                                                                 selectedArticles=[formatted_article],
-                                                                 materialType=[formatted_material],
-                                                                 materialTypeId=[new_material_id])
-        self.assertEqual(response['message'], 'name_already_exist')
-        self.order_page.create_new_order(material_type=testplan1['materialType'][0]['text'],
-                                         article=testplan1['selectedArticles'][0]['text'],
-                                         test_plans=[testplan1['testPlan']['text']],
-                                         with_testunits=False, save=False)
-        if save_before == 'before':
-            self.order_page.save(save_btn='order:save_btn')
-        self.order_page.create_new_suborder(material_type=new_material,
-                                            article_name=formatted_article['name'],
-                                            test_plan=testplan1['testPlan']['text'],
-                                            with_test_unit=False)
-        self.order_page.save(save_btn='order:save_btn')
+        self.info("create order with two suborders")
+        response, payload = self.orders_api.create_order_with_multiple_suborders(
+            no_suborders=2, suborders_fields=update_suborder)
+        self.assertEqual(response['message'], 'created_success')
+        self.info("open edit page of order {}".format(response['order']['mainOrderId']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        self.info("Navigate to analysis step 2")
         self.order_page.navigate_to_analysis_tab()
         self.analysis_page = SingleAnalysisPage()
+        self.info("assert that only 2 analysis triggered")
         self.assertEqual(self.analysis_page.get_analysis_count(), 2)
         for i in range(2):
             row = self.analysis_page.open_accordion_for_analysis_index(i)
