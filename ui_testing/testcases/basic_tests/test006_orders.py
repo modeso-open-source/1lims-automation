@@ -3576,6 +3576,32 @@ class OrdersTestCases(BaseTest):
             test_units = [item['Test Unit'] for item in child_data]
             self.assertCountEqual(test_units, test_units_names[i * 2:(i * 2) + 2])
 
+    def test106_multiple_suborders(self):
+        """
+        Orders: Table with add: Allow user to add any number of the suborders records not only 5 suborders
+
+        LIMS-5220
+        """
+        response, payload = self.orders_api.create_order_with_multiple_suborders(no_suborders=10)
+        self.assertEqual(response['status'], 1)
+        testPlan = TestPlanAPI().create_completed_testplan_random_data()
+        self.assertTrue(testPlan)
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        suborder_table = self.base_selenium.get_table_rows(element='order:suborder_table')
+        self.assertEqual(len(suborder_table), 10)
+        self.order_page.create_new_suborder(material_type=testPlan['materialType'][0]['text'],
+                                            article_name=testPlan['selectedArticles'][0]['text'],
+                                            test_plans=[testPlan['testPlan']['text']], test_units=[])
+        self.order_page.sleep_tiny()
+        self.order_page.save(save_btn='order:save_btn')
+        self.info('duplicate 5 suborders')
+        self.order_page.duplicate_from_table_view(number_of_duplicates=5)
+        self.order_page.save_and_wait(save_btn='order:save_btn')
+        table_after2 = self.base_selenium.get_table_rows(element='order:suborder_table')
+        self.assertEqual(len(table_after2), 16)
+        self.order_page.navigate_to_analysis_tab()
+        self.assertEqual(SingleAnalysisPage().get_analysis_count(), 16)
+
     def test102_create_order_with_test_plans_with_same_name(self):
         """
         Orders: Create Approach: Make sure In case you create two test plans with the same name
@@ -3605,3 +3631,4 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(len(test_units), 1)
             test_units_name = test_units[0]['Test Unit Name'].split(' ')[0]
             self.assertEqual(test_units_name, test_units_list[i])
+
