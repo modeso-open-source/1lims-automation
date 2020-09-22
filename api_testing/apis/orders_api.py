@@ -62,19 +62,15 @@ class OrdersAPIFactory(BaseAPI):
         :return: response, payload
         """
         order_no = self.get_auto_generated_order_no()[0]['id']
-        testplan = random.choice(TestPlanAPI().get_completed_testplans(limit=1000))
-        material_type = testplan['materialTypes'][0]
-        material_type_id = GeneralUtilitiesAPI().get_material_id(material_type)
-        testplan_form_data = TestPlanAPI()._get_testplan_form_data(id=testplan['id'])[0]
-        article = testplan_form_data['testPlan']['selectedArticles'][0]['name']
-        article_id = testplan_form_data['testPlan']['selectedArticles'][0]['id']
-        if article == 'all':
-            article, article_id = ArticleAPI().get_random_article_articleID()
+        testplan = TestPlanAPI().create_completed_testplan_random_data()
+        material_type = testplan['materialType'][0]['text']
+        material_type_id = testplan['materialType'][0]['id']
+        article = testplan['selectedArticles'][0]['text']
+        article_id = testplan['selectedArticles'][0]['id']
+        tu_response, tu_payload = TestUnitAPI().create_quantitative_testunit(
+            selectedMaterialTypes=[testplan['materialType'][0]])
 
-        # modify_test_plan_ID
-        testplan['id'] = testplan_form_data['testPlan']['testPlanEntity']['id']
-        testunit = testplan_form_data['testPlan']['specifications'][0]
-
+        testunit = TestUnitAPI().get_testunit_form_data(tu_response['testUnit']['testUnitId'])[0]['testUnit']
         test_date = self.get_current_date()
         shipment_date = self.get_current_date()
         current_year = self.get_current_year()
@@ -164,7 +160,7 @@ class OrdersAPIFactory(BaseAPI):
         }
         suborders = []
         for i in range(no_suborders):
-            sub_order_dict = {**suborders_common_data}
+            sub_order_dict = {** suborders_common_data}
             if len(suborders_fields) > i:
                 for dict_key in suborders_fields[i].keys():
                     sub_order_dict[dict_key] = suborders_fields[i][dict_key]
@@ -254,9 +250,9 @@ class OrdersAPIFactory(BaseAPI):
             selected_testplan_arr = []
             for testplan in payload['testPlans']:
                 selected_testplan_arr.append({
-                    'id': int(testplan['id']),
-                    'name': testplan['testPlanName'],
-                    'version': testplan['version']
+                    'id': int(testplan['testPlan']['id']),
+                    'name': testplan['testPlan']['text'],
+                    'version': 1
                 })
             payload['selectedTestPlans'] = selected_testplan_arr
             payload['testPlans'] = selected_testplan_arr
@@ -511,3 +507,17 @@ class OrdersAPI(OrdersAPIFactory):
         with open(config_file, "r") as read_file:
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
+
+    def create_order_with_multiple_suborders_double_tp(self, no_suborders=3):
+        suborders = []
+        for _ in range(no_suborders):
+            suborder = {}
+            created_suborder_data = TestPlanAPI().create_multiple_test_plan_with_same_article(no_of_testplans=2)
+            suborder['testPlans'] = created_suborder_data['testPlans']
+            suborder['selectedTestPlans'] = created_suborder_data['testPlans']
+            suborder['materialType'] = created_suborder_data['material_type']
+            suborder['materialTypeId'] = created_suborder_data['material_type']['id']
+            suborder['article'] = created_suborder_data['article']
+            suborder['articleId'] = created_suborder_data['article']['id']
+            suborders.append(suborder)
+        return self.create_order_with_multiple_suborders(no_suborders=no_suborders, suborders_fields=suborders)

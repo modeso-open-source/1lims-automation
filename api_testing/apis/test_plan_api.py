@@ -364,3 +364,21 @@ class TestPlanAPI(TestPlanAPIFactory):
         with open(config_file, "r") as read_file:
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
+
+    def create_multiple_test_plan_with_same_article(self, no_of_testplans=2):
+        materialType = {"id": 1, "text": 'Raw Material'}
+        article_data = ArticleAPI().get_formatted_article_with_formatted_material_type(materialType)
+        article_name = article_data['name']
+        formatted_article = {'id': article_data['id'], 'text': article_name}
+        formatted_material_type = {'id': 1, 'text': 'Raw Material'}
+        testPlans = []
+        for _ in range(no_of_testplans):
+            tp = TestPlanAPI().create_completed_testplan(
+                        material_type='Raw Material', formatted_article=formatted_article)
+            testPlans.append({'id': int(tp['id']), 'name': tp['testPlanEntity']['name'], 'version': 1})
+
+        created_data = {'material_type': formatted_material_type,
+                        'article': formatted_article,
+                        'testPlans': testPlans}
+        return created_data
+

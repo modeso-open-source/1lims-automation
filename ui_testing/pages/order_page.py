@@ -396,6 +396,7 @@ class Order(Orders):
             self.sleep_tiny()
             self.set_article(article_name)
         self.sleep_tiny()
+
         self.info('Set test plan : {}'.format(test_plans))
         for test_plan in test_plans:
             self.set_test_plan(test_plan)

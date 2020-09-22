@@ -12,7 +12,7 @@ class ArticleAPIFactory(BaseAPI):
                     "limit": 100,
                     "start": 0,
                     "sort_order": "DESC",
-                    "filter": "{}",
+                    "filter": '{"quickSearch": ""}',
                     "deleted": "0"}
         return api, _payload
 

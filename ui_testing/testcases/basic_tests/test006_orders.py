@@ -3304,10 +3304,9 @@ class OrdersTestCases(BaseTest):
             if result['test_plan'] == testPlan['testPlan']['text']:
                 for testunit in testunit_names:
                     self.assertIn(testunit, result['test_units'])
-
                   
     @parameterized.expand(['Name','No','Name:No'])
-    def test101_change_contact_config(self,search_by):
+    def test095_change_contact_config(self,search_by):
         '''
          Orders: Contact configuration approach: In case the user
          configures the contact field to display name & number this action
@@ -3346,8 +3345,7 @@ class OrdersTestCases(BaseTest):
         self.info('assert contact appear in format {}'.format(search_by))
         self.assertEqual(order_data['Contact Name'],search_text)
 
-
-    def test095_check_list_menu(self):
+    def test096_check_list_menu(self):
         """
           [Orders][Active table] Make sure that list menu will contain
           (COA,Archive , XSLX - Archived - Configurations) Only
@@ -3362,7 +3360,7 @@ class OrdersTestCases(BaseTest):
                            ('Unit', 'No'),
                            ('Quantification Limit', '')])
     @attr(series=True)
-    def test096_test_unit_name_allow_user_to_filter_with_selected_two_options_order(self, search_view_option1,
+    def test097_test_unit_name_allow_user_to_filter_with_selected_two_options_order(self, search_view_option1,
                                                                                     search_view_option2):
         """
          Orders: Filter test unit Approach: Allow the search criteria in
@@ -3424,7 +3422,7 @@ class OrdersTestCases(BaseTest):
             # close child table
             self.orders_page.close_child_table(source=results[i])
 
-    def test097_filter_configuration_fields(self):
+    def test098_filter_configuration_fields(self):
         """
           Orders: Make sure that user can filter order TestUnit that exist
           on order only(TestUnit in Analysis not Included)
@@ -3450,7 +3448,7 @@ class OrdersTestCases(BaseTest):
         for field in required_fields:
             self.assertIn(field, found_fields)
 
-    def test098_year_format_in_suborder_sheet(self):
+    def test099_year_format_in_suborder_sheet(self):
         """
          Analysis number format: In case the analysis number displayed with full year,
          this should reflect on the export file
@@ -3481,7 +3479,7 @@ class OrdersTestCases(BaseTest):
         self.assertIn(order_no, fixed_sheet_row_data)
         self.assertIn(analysis_no, fixed_sheet_row_data)
 
-    def test099_create_multiple_suborders_with_testplans_testunits(self):
+    def test100_create_multiple_suborders_with_testplans_testunits(self):
         """
          New: Orders: table view: Create Approach: when you create suborders with multiple
          test plans & units select the corresponding analysis that triggered according to that.
@@ -3538,4 +3536,42 @@ class OrdersTestCases(BaseTest):
                 self.assertCountEqual(test_units_names, second_suborder_test_units)
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
+
+    def test102_choose_test_plans_without_test_units(self):
+        """
+        Orders: Create: Orders Choose test plans without test units
+
+        LIMS-4350
+        """
+        self.test_plan_api = TestPlanAPI()
+        response, payload = self.orders_api.create_order_with_multiple_suborders_double_tp()
+        self.assertEqual(response['message'], 'created_success')
+        order_no = response['order']['orderNo']
+        suborders_data, _ = self.orders_api.get_suborder_by_order_id(response['order']['mainOrderId'])
+        self.assertEqual(len(suborders_data['orders']), 3)
+        analysis_no = [suborder['analysis'][0] for suborder in suborders_data['orders']]
+        test_units = []
+        for i in range(3):
+            for j in range(2):
+                test_units.extend(self.test_plan_api.get_testunits_in_testplan(payload[i]['testPlans'][j]['id']))
+        test_units_names = [tu['name'] for tu in test_units]
+        self.orders_page.sleep_tiny()
+        self.orders_page.filter_by_order_no(filter_text=order_no)
+        self.orders_page.sleep_tiny()
+        suborders_data = self.order_page.get_child_table_data()
+        analysis_no_list = [suborder['Analysis No.'].replace("'", "") for suborder in suborders_data]
+        self.info('assert the order table has been updated')
+        self.assertCountEqual(analysis_no, analysis_no_list)
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.filter_by_order_no(filter_text=order_no)
+        analysis_data = self.base_selenium.get_rows_cells_dict_related_to_header()
+        self.assertEqual(len(analysis_data), 3)
+        found_analysis_no = [analysis['Analysis No.'].replace("'", "") for analysis in analysis_data]
+        self.info('assert the analysis table has been updated')
+        self.assertCountEqual(analysis_no, found_analysis_no)
+        for i in range(3):
+            child_data = self.orders_page.get_child_table_data(index=2 - i)
+            self.orders_page.sleep_tiny()
+            test_units = [item['Test Unit'] for item in child_data]
+            self.assertCountEqual(test_units, test_units_names[i * 2:(i * 2) + 2])
 
