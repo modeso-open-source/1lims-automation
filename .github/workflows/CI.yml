@@ -10,7 +10,7 @@
      strategy:
        fail-fast: false
        matrix:
-         test_cases: [0, 1]
+         test_cases: [0]
 
      steps:
        - uses: actions/checkout@master
