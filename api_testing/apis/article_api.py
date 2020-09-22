@@ -12,7 +12,7 @@ class ArticleAPIFactory(BaseAPI):
                     "limit": 100,
                     "start": 0,
                     "sort_order": "DESC",
-                    "filter": "{}",
+                    "filter": '{"quickSearch": ""}',
                     "deleted": "0"}
         return api, _payload
 
@@ -213,16 +213,22 @@ class ArticleAPI(ArticleAPIFactory):
                 return formatted_article
 
         self.info("No article with requested material type, So create article")
-        api, payload = self.create_article(materialType=material_type['text'],
+        api, payload = self.create_article(materialType=material_type,
                                            selectedMaterialType=[material_type],
                                            materialTypeId=int(material_type['id']))
         if api['status'] == 1:
             self.info('article has been created')
-            return api['article']
+            return {'id': api['article']['id'], 'name': payload['name']}
 
     def get_random_article_articleID(self):
         selected_article = random.choice(self.get_all_articles(limit=30)[0]['articles'])
         return selected_article['name'], selected_article['id']
+
+    def get_article_id(self, article_no, article_name):
+        articles = self.quick_search_article(name=article_name)
+        for article in articles['articles']:
+            if article['No'] == article_no:
+                return article['id']
 
     def set_configuration(self):
         self.info('set article configuration')
@@ -230,4 +236,3 @@ class ArticleAPI(ArticleAPIFactory):
         with open(config_file, "r") as read_file:
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
-
