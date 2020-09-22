@@ -160,7 +160,7 @@ class OrdersAPIFactory(BaseAPI):
         }
         suborders = []
         for i in range(no_suborders):
-            sub_order_dict = {**suborders_common_data}
+            sub_order_dict = {** suborders_common_data}
             if len(suborders_fields) > i:
                 for dict_key in suborders_fields[i].keys():
                     sub_order_dict[dict_key] = suborders_fields[i][dict_key]
@@ -507,3 +507,17 @@ class OrdersAPI(OrdersAPIFactory):
         with open(config_file, "r") as read_file:
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
+
+    def create_order_with_multiple_suborders_double_tp(self, no_suborders=3):
+        suborders = []
+        for _ in range(no_suborders):
+            suborder = {}
+            created_suborder_data = TestPlanAPI().create_multiple_test_plan_with_same_article(no_of_testplans=2)
+            suborder['testPlans'] = created_suborder_data['testPlans']
+            suborder['selectedTestPlans'] = created_suborder_data['testPlans']
+            suborder['materialType'] = created_suborder_data['material_type']
+            suborder['materialTypeId'] = created_suborder_data['material_type']['id']
+            suborder['article'] = created_suborder_data['article']
+            suborder['articleId'] = created_suborder_data['article']['id']
+            suborders.append(suborder)
+        return self.create_order_with_multiple_suborders(no_suborders=no_suborders, suborders_fields=suborders)
