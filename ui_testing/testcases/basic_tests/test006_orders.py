@@ -3538,7 +3538,45 @@ class OrdersTestCases(BaseTest):
             else:
                 self.assertCountEqual(test_units_names, third_suborder_test_units)
 
-    def test101_create_order_with_test_plans_with_same_name(self):
+    def test101_choose_test_plans_without_test_units(self):
+        """
+        Orders: Create: Orders Choose test plans without test units
+
+        LIMS-4350
+        """
+        self.test_plan_api = TestPlanAPI()
+        response, payload = self.orders_api.create_order_with_multiple_suborders_double_tp()
+        self.assertEqual(response['message'], 'created_success')
+        order_no = response['order']['orderNo']
+        suborders_data, _ = self.orders_api.get_suborder_by_order_id(response['order']['mainOrderId'])
+        self.assertEqual(len(suborders_data['orders']), 3)
+        analysis_no = [suborder['analysis'][0] for suborder in suborders_data['orders']]
+        test_units = []
+        for i in range(3):
+            for j in range(2):
+                test_units.extend(self.test_plan_api.get_testunits_in_testplan(payload[i]['testPlans'][j]['id']))
+        test_units_names = [tu['name'] for tu in test_units]
+        self.orders_page.sleep_tiny()
+        self.orders_page.filter_by_order_no(filter_text=order_no)
+        self.orders_page.sleep_tiny()
+        suborders_data = self.order_page.get_child_table_data()
+        analysis_no_list = [suborder['Analysis No.'].replace("'", "") for suborder in suborders_data]
+        self.info('assert the order table has been updated')
+        self.assertCountEqual(analysis_no, analysis_no_list)
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.filter_by_order_no(filter_text=order_no)
+        analysis_data = self.base_selenium.get_rows_cells_dict_related_to_header()
+        self.assertEqual(len(analysis_data), 3)
+        found_analysis_no = [analysis['Analysis No.'].replace("'", "") for analysis in analysis_data]
+        self.info('assert the analysis table has been updated')
+        self.assertCountEqual(analysis_no, found_analysis_no)
+        for i in range(3):
+            child_data = self.orders_page.get_child_table_data(index=2 - i)
+            self.orders_page.sleep_tiny()
+            test_units = [item['Test Unit'] for item in child_data]
+            self.assertCountEqual(test_units, test_units_names[i * 2:(i * 2) + 2])
+
+    def test102_create_order_with_test_plans_with_same_name(self):
         """
         Orders: Create Approach: Make sure In case you create two test plans with the same name
         and different materiel type, the test units that belongs to them displayed correct in
@@ -3549,29 +3587,7 @@ class OrdersTestCases(BaseTest):
         test_plans_list = TestPlanAPI().create_double_completed_testplan_same_name_diff_material()
         self.assertTrue(test_plans_list)
         test_units_list = [tu['testUnits'][0]['name'] for tu in test_plans_list]
-        first_test_plan_dict = {'id': int(test_plans_list[0]['selectedTestPlan']['id']),
-                                'name': test_plans_list[0]['selectedTestPlan']['text'],
-                                'version': 1}
-        second_test_plan_dict = {'id': int(test_plans_list[1]['selectedTestPlan']['id']),
-                                 'name': test_plans_list[1]['selectedTestPlan']['text'],
-                                 'version': 1}
-        first_material = test_plans_list[0]['materialType'][0]
-        second_material = test_plans_list[1]['materialType'][0]
-        first_article = test_plans_list[0]['selectedArticles'][0]
-        second_article = test_plans_list[1]['selectedArticles'][0]
-        update_suborder = [{'testPlans': [first_test_plan_dict],
-                            'selectedTestPlans': [first_test_plan_dict],
-                            'materialType': first_material,
-                            'materialTypeId': first_material['id'],
-                            'article': first_article,
-                            'articleId': first_article['id']},
-                           {'testPlans': [second_test_plan_dict],
-                            'selectedTestPlans': [second_test_plan_dict],
-                            'materialType': second_material,
-                            'materialTypeId': second_material['id'],
-                            'article': second_article,
-                            'articleId': second_article['id']}]
-
+        update_suborder = self.orders_api.get_suborders_data_of_test_plan_list(test_plans_list)
         self.info("create order with two suborders")
         response, payload = self.orders_api.create_order_with_multiple_suborders(
             no_suborders=2, suborders_fields=update_suborder)

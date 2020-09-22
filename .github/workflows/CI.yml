@@ -35,7 +35,7 @@
 #        run:  docker pull 0xislamtaha/seleniumchromenose:83
 #
 #      - name: sequal execution for series
-#        run: timeout 1h bash .github/workflows/execution.sh ${{ strategy.job-total }} ${{ matrix.test_cases }} ${{ github.ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'series' ${{ secrets.UUID }}
+#        run: timeout 1h bash .github/workflows/execution.sh 1 1 ${{ github.head_ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'series' ${{ secrets.UUID }}
 #
 #  merge_launches:
 #    runs-on: ubuntu-20.04
@@ -48,4 +48,4 @@
 #      - uses: actions/checkout@master
 #
 #      - name: merge launches
-#
+#        run:  python3 fixReport.py ${{ secrets.UUID }} ${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }}
