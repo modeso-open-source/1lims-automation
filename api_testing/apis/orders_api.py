@@ -443,6 +443,40 @@ class OrdersAPI(OrdersAPIFactory):
         }
         return self.create_new_order(**payload)
 
+    def create_order_multiple_contacts_multiple_departments(self):
+        res1, pd1 = ContactsAPI().create_contact_with_multiple_departments()
+        first_contact_data = ContactsAPI().get_contact_form_data(id=res1['company']['companyId'])[0]['contact']
+        first_department_data = first_contact_data['departments'][0]
+        res2, pd2 = ContactsAPI().create_contact_with_multiple_departments()
+        second_contact_data = ContactsAPI().get_contact_form_data(id=res2['company']['companyId'])[0]['contact']
+        second_department_data = second_contact_data['departments'][0]
+        res3, pd3 = ContactsAPI().create_contact_with_multiple_departments()
+        third_contact_data = ContactsAPI().get_contact_form_data(id=res3['company']['companyId'])[0]['contact']
+        third_department_data = third_contact_data['departments'][0]
+
+        payload1 = {
+            'contact': [
+                {"id": res1['company']['companyId'],
+                 "text": res1['company']['name'],
+                 'No': res1['company']['companyNumber']},
+                {"id": res2['company']['companyId'],
+                 "text": res2['company']['name'],
+                 'No': res2['company']['companyNumber']},
+                {"id": res3['company']['companyId'],
+                 "text": res3['company']['name'],
+                 'No': res3['company']['companyNumber']}
+            ],
+            'departments': [{"id": first_department_data['id'], "text": first_department_data['name'],
+                             "group": first_contact_data['id'], "groupName": first_contact_data['name']},
+                            {"id": second_department_data['id'], "text": second_department_data['name'],
+                             "group": second_contact_data['id'], "groupName": second_contact_data['name']},
+                            {"id": third_department_data['id'], "text": third_department_data['name'],
+                             "group": third_contact_data['id'], "groupName": third_contact_data['name']}
+                            ],
+
+        }
+        return self.create_new_order(**payload1)
+
     def create_order_with_department_by_contact_id(self, contact_id):
         contact = ContactsAPI().get_contact_form_data(contact_id)[0]['contact']
         department_data = contact['departments'][0]

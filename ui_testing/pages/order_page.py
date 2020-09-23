@@ -580,10 +580,21 @@ class Order(Orders):
             self.base_selenium.update_item_value(item=row['testUnits'],
                                                  item_text=testunit.replace("'", ''))
 
-    def update_departments_suborder(self, row, departments):
+    def update_departments_suborder(self, sub_order_index=0, departments=[], remove_old=False, check_departments= False):
+        displayed_departments=[]
         self.info(' Set departments : {}'.format(departments))
+        suborder_table_rows = self.base_selenium.get_table_rows(
+            element='order:suborder_table')
+        suborder_row = suborder_table_rows[sub_order_index]
+        suborder_row.click()
+        if remove_old:
+            self.base_selenium.clear_items_in_drop_down(element='order:departments')
+        if check_departments:
+            contact_dep_dict, displayed_departments = self.get_department_suggestion_lists()
         for department in departments:
-            self.base_selenium.update_item_value(item=row['departments'], item_text=department)
+            self.set_departments(departments=department)
+        self.save(save_btn='order:save_btn')
+        return displayed_departments
 
     def archive_suborder(self, index, check_pop_up=False):
         self.get_suborder_table()

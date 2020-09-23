@@ -3632,3 +3632,51 @@ class OrdersTestCases(BaseTest):
             test_units_name = test_units[0]['Test Unit Name'].split(' ')[0]
             self.assertEqual(test_units_name, test_units_list[i])
 
+    def test103_update_department_multiple_contacts(self):
+        """
+        Orders: Child table: Department Approach:  Any update in the order field should be reflected on the order
+        child table In case I have multiple contacts.
+        LIMS-5774
+        """
+        selected_departments = []
+        selected_contacts_departments = []
+        response, payload = self.orders_api.create_order_multiple_contacts_multiple_departments()
+        self.assertEqual(response['status'], 1)
+        for department in payload[0]['departments']:
+            selected_departments.append(department['text'])
+        order_no = payload[0]['orderNo']
+        contact1 = self.contacts_api.get_contact_form_data(id=payload[0]['contact'][0]['id'])
+        contact2 = self.contacts_api.get_contact_form_data(id=payload[0]['contact'][1]['id'])
+        contact3 = self.contacts_api.get_contact_form_data(id=payload[0]['contact'][2]['id'])
+        dep2_contact1 = contact1[0]['contact']['departments'][1]['name']
+        dep2_contact2 = contact2[0]['contact']['departments'][1]['name']
+        dep2_contact3 = contact3[0]['contact']['departments'][1]['name']
+        self.order_page.filter_by_order_no(filter_text=order_no)
+        row = self.orders_page.result_table()[0]
+        self.info('asserting all departments selected are correctly displayed when expanding the order')
+        suborders_data = self.order_page.get_child_table_data(index=0)
+        displayed_departments = suborders_data[0]['Departments'].split(', ')
+        for department in selected_departments:
+            self.assertIn(department, displayed_departments)
+        self.order_page.open_edit_page(row=row)
+        departments_suggestion_list = self.order_page.update_departments_suborder(
+            departments=[dep2_contact1, dep2_contact2,
+                         dep2_contact3], remove_old=True, check_departments=True)
+        self.info('getting all departments of selected contacts')
+        for (contact1_department, contact2_department, contact3_department) in zip(
+                contact1[0]['contact']['departments'], contact2[0]['contact']['departments'],
+                contact3[0]['contact']['departments']):
+            selected_contacts_departments.append(contact1_department['name'])
+            selected_contacts_departments.append(contact2_department['name'])
+            selected_contacts_departments.append(contact3_department['name'])
+        self.info('asserting all departments shown in suggestion list are correctly related to the selected contacts')
+        for department in departments_suggestion_list:
+            self.assertIn(department, selected_contacts_departments)
+        self.order_page.get_orders_page()
+        self.info('asserting all departments selected are correctly updated when expanding the order')
+        self.order_page.filter_by_order_no(filter_text=order_no)
+        row = self.orders_page.result_table()[0]
+        suborders_data = self.order_page.get_child_table_data(index=0)
+        saved_departments = suborders_data[0]['Departments'].split(', ')
+        for dep in saved_departments:
+            self.assertIn(dep, [dep2_contact1, dep2_contact2, dep2_contact3])
