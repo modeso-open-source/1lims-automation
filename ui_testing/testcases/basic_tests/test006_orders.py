@@ -3658,7 +3658,7 @@ class OrdersTestCases(BaseTest):
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())  
 
-    def test103_update_department_multiple_contacts(self):
+    def test104_update_department_multiple_contacts(self):
         """
         Orders: Child table: Department Approach:  Any update in the order field should be reflected on the order
         child table In case I have multiple contacts.
