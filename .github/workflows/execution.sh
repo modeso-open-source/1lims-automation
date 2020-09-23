@@ -5,7 +5,7 @@
    )
 
 
- TEST_REG='test103'
+ TEST_REG='test104'
 
 
   NODE_TOTAL=$1;
