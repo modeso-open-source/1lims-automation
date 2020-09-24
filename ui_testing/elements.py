@@ -768,7 +768,26 @@ elements = {
         'filter_analysis_no': {
             'method': 'id',
             'value': 'nofield'
-        }
+        },
+'analysis_result_icon':{
+          'method':'xpath',
+           'value':'//i[contains(@class,"la la-info")]'
+
+        },
+        'analysis_testunits_popup':{
+            'method': 'xpath',
+            'value': '//*[@class="modal-content"]'
+        },
+        'analysis_testunits_table':{
+            'method':'xpath',
+            'value':"//div[@class='modal-content']//div[@id='scrolling_horizontal']"
+        },
+
+        'close_testunits_table':{
+            'method': 'xpath',
+            'value':'//*[@class="btn btn-default"]'
+
+                                 }
     },
 
     'header': {
