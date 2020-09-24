@@ -3659,46 +3659,45 @@ class OrdersTestCases(BaseTest):
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
 
-    def test105_check_analysis(self):
+    def test105_check_analysis_result_active_table(self):
+        """
+        [Orders][Active Table][Suborders] Make Sure that Next to the analysis result an icon will be displayed
+        upon click a dialog will open containing (the current child table of analysis page ) table with the test units
+        in it and it's specs and values.
+        LIMS-5373
+        """
         self.single_analysis_page = SingleAnalysisPage()
         self.test_plan_api = TestPlanAPI()
         displayed_testunits = []
         response, payload = self.orders_api.create_new_order()
         self.assertEqual(response['status'], 1)
-        # print(response)
         order_id = response['order']['mainOrderId']
         order_no = payload[0]['orderNo']
         testplan_id = payload[0]['testPlans'][0]['id']
         testunit_id = payload[0]['testUnits'][0]['id']
         testunit_name = payload[0]['testUnits'][0]['name']
         testplan_info = self.test_plan_api.get_testplan_form_data(id=testplan_id)
-        if testplan_info['specifications'][0]['useSpec']:
-            testplan_lower = testplan_info['specifications'][0]['lowerLimit']
-            testplan_upper = testplan_info['specifications'][0]['upperLimit']
-            testplan_specs = testplan_lower + '-' + testplan_upper
+        testplan_specs = testplan_info['specifications'][0]['lowerLimit'] + '-' + testplan_info['specifications'][0]['upperLimit']
         testunit_in_testplan = testplan_info['specifications'][0]['name']
         testunit_info = self.test_unit_api.get_testunit_form_data(id=testunit_id)
-        if testunit_info[0]['testUnit']['useSpec']:
-            testunit_lower = testunit_info[0]['testUnit']['lowerLimit']
-            testunit_upper = testunit_info[0]['testUnit']['upperLimit']
-            testunit_specs = testunit_lower + '-' + testunit_upper
+        testunit_specs = testunit_info[0]['testUnit']['lowerLimit'] + '-' + testunit_info[0]['testUnit']['upperLimit']
 
-        # self.orders_page.get_order_edit_page_by_id(order_id)
-        # self.order_page.sleep_small()
-        # self.info('navigate to analysis tab')
-        # self.order_page.navigate_to_analysis_tab()
-        # value = self.single_analysis_page.set_testunit_values(save=False)
-        # self.info('change validation options ')
-        # analysis_result = self.single_analysis_page.change_validation_options()
-        # print(value)
-        # print(analysis_result)
+        self.orders_page.get_order_edit_page_by_id(order_id)
+        self.order_page.sleep_small()
+        self.info('navigate to analysis tab')
+        self.order_page.navigate_to_analysis_tab()
+        value = self.single_analysis_page.set_testunit_values(save=False)
+        self.info('change validation options ')
+        analysis_result = self.single_analysis_page.change_validation_options()
+        print(value)
+        print(analysis_result)
 
         self.order_page.get_orders_page()
         self.single_analysis_page.navigate_to_order_tab()
-
         self.order_page.filter_by_order_no(filter_text=order_no)
         row = self.order_page.result_table()[0]
         suborders = self.order_page.get_child_table_data()
+        self.info('asserting analysis result is displayed correctly')
         # for suborder in suborders:
         #     if 'Conform W. Rest.' == analysis_result:
         #         self.assertEqual(suborder['Analysis Results'], 'Conform With Restrictions (1)')
@@ -3707,16 +3706,16 @@ class OrdersTestCases(BaseTest):
         #         self.assertEqual(suborder['Analysis Results'], analysis_result)
 
         # print(suborder['Analysis Results'])
-        self.info('asserting icon exists')
+        self.info('asserting icon exists beside analysis results')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='order:analysis_result_icon'))
         self.base_selenium.click(element='order:analysis_result_icon')
         testunits_table = self.base_selenium.get_rows_cells_dict_related_to_header(
             table_element='order:analysis_testunits_table')
         self.order_page.sleep_tiny()
         self.base_selenium.click(element='order:close_testunits_table')
-        print(testunits_table)
         for testunit_record in testunits_table:
             displayed_testunits.append(testunit_record['Test Unit'])
+        self.info('asserting all selected testunits are displayed')
         self.assertIn(testunit_name, displayed_testunits)
         self.assertIn(testunit_in_testplan, displayed_testunits)
         for testunit_record in testunits_table:
