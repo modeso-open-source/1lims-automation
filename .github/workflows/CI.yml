@@ -4,7 +4,7 @@
    pull_request:
      branches: [ master ]
 
-  jobs:
+ jobs:
    test_pull_request_in_parallel:
      runs-on: ubuntu-20.04
      strategy:
