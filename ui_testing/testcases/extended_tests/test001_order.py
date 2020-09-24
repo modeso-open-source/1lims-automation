@@ -16,6 +16,7 @@ from api_testing.apis.base_api import BaseAPI
 from parameterized import parameterized
 from datetime import date
 from nose.plugins.attrib import attr
+import random
 
 
 class OrdersWithoutArticleTestCases(BaseTest):
@@ -139,6 +140,56 @@ class OrdersWithoutArticleTestCases(BaseTest):
         self.orders_page.filter_by_order_no(filter_text=order_no)
         results = self.order_page.result_table()[0].text
         self.assertIn(order_no.replace("'", ""), results.replace("'", ""))
+
+    @parameterized.expand(['cancel', 'confirm'])
+    @attr(series=True)
+    def test003_edit_material_type_order_without_article(self, case):
+        """
+        Orders without articles: When editing an order with test plan, the form should  be opened without article
+
+        LIMS-3255 (edit material type case)
+        """
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        response, payload = self.orders_api.get_suborder_by_order_id(random_order['orderId'])
+        self.assertEqual(response['status'], 1)
+        first_suborder = response['orders'][0]
+        new_material = random.choice(
+            self.general_utilities.get_formatted_material_types_without_duplicate(first_suborder['materialType']))
+        material_type = new_material['name']
+        new_suborder = self.orders_api.get_suborder_valid_data({'id': new_material['id'], 'text': new_material['name']})
+        self.assertTrue(new_suborder)
+        new_testunit_list = [new_suborder['tp_attached_tu'], new_suborder['Test Unit']]
+        self.info('edit material type of first suborder of order No {}'.format(random_order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(random_order['orderId'])
+        first_suborder_before_edit = self.order_page.get_suborder_data()['suborders'][0]
+        self.order_page.open_suborder_edit(sub_order_index=0)
+        self.info('update material type from {} to {}'.format(first_suborder['materialType'],
+                                                              new_suborder['Material Type']))
+        self.order_page.set_material_type(material_type=material_type)
+        pop_up = self.base_selenium.find_element(element='general:confirmation_pop_up')
+        self.assertIn("All analysis created with this order and test plan will be deleted", pop_up.text)
+        if case == 'cancel':
+            self.order_page.confirm_popup(force=False)
+            self.base_selenium.refresh()
+            self.order_page.sleep_tiny()
+            suborder_after_cancel = self.order_page.get_suborder_data()['suborders'][0]
+            self.assertCountEqual(first_suborder_before_edit, suborder_after_cancel)
+        else:
+            self.order_page.confirm_popup()
+            self.assertEqual(self.base_selenium.get_value(element='order:test_unit'), None)
+            self.assertEqual(self.base_selenium.get_value(element='order:test_plan'), None)
+            self.order_page.set_test_plan(new_suborder['Test Plan'])
+            self.order_page.set_test_unit(new_suborder['Test Unit'])
+            self.order_page.save(save_btn='order:save_btn')
+            self.info('assert that analysis updated is created successfully')
+            self.orders_page.get_orders_page()
+            self.orders_page.navigate_to_analysis_active_table()
+            self.analyses_page.filter_by_analysis_number(first_suborder['analysis'][0])
+            data_found = self.analyses_page.get_the_latest_row_data()
+            self.assertEqual(data_found['Test Plans'], new_suborder['Test Plan'])
+            child_data = self.analyses_page.get_child_table_data()
+            testunit_list = [tu['Test Unit'] for tu in child_data]
+            self.assertCountEqual(testunit_list, new_testunit_list)
 
 
 class OrdersExtendedTestCases(BaseTest):

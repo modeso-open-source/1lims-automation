@@ -442,10 +442,10 @@ class Order(Orders):
         for suborder in table_suborders:
             suborder_data = self.base_selenium.get_row_cells_id_dict_related_to_header(
                 row=suborder, table_element='order:suborder_table')
-
-            article = \
-                {"name": suborder_data['article'].split(' No:')[0], "no": suborder_data['article']
-                    .split(' No:')[1]} if len(suborder_data['article'].split(' No:')) > 1 else '-'
+            if 'article' in suborder_data.keys():
+                article = \
+                    {"name": suborder_data['article'].split(' No:')[0], "no": suborder_data['article']
+                        .split(' No:')[1]} if len(suborder_data['article'].split(' No:')) > 1 else '-'
 
             testunits = []
             rawTestunitArr = suborder_data['testUnits'].split(',\n')
@@ -473,12 +473,13 @@ class Order(Orders):
                 'analysis_no': suborder_data['analysisNo'],
                 'departments': suborder_data['departments'].split(',\n'),
                 'material_type': suborder_data['materialType'],
-                'article': article,
                 'testplans': suborder_data['testPlans'].split(',\n'),
                 'testunits': testunits,
                 'shipment_date': suborder_data['shipmentDate'],
                 'test_date': suborder_data['testDate']
             }
+            if 'article' in suborder_data.keys():
+                temp_suborder_data['article'] = article
             suborders_data.append(temp_suborder_data)
         order_data['suborders'] = suborders_data
         return order_data

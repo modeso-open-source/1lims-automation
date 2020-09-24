@@ -491,6 +491,7 @@ class OrdersAPI(OrdersAPIFactory):
         data = {'Material Type': formatted_material['text'],
                 'Article': formatted_article['text'],
                 'Test Plan': test_plan['testPlanEntity']['name'],
+                'tp_attached_tu': test_plan['specifications'][0]['name'],
                 'Test Unit': tu_payload['name']}
         return data
 
