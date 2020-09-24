@@ -94,7 +94,7 @@ class SingleAnalysisPage(AllAnalysesPage):
 
         self.base_selenium.click(element='analysis_page:save_analysis')
         self.sleep_small()
-        return self.get_validation_option().split('\n')
+        return self.get_validation_option().split('\n')[0]
 
     def get_validation_option(self):
         return self.base_selenium.get_text(element='analysis_page:validation_options')

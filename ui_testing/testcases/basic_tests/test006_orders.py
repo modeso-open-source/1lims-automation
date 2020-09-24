@@ -3662,7 +3662,7 @@ class OrdersTestCases(BaseTest):
     def test105_check_analysis(self):
         self.single_analysis_page = SingleAnalysisPage()
         self.test_plan_api = TestPlanAPI()
-        displayed_testunits=[]
+        displayed_testunits = []
         response, payload = self.orders_api.create_new_order()
         self.assertEqual(response['status'], 1)
         # print(response)
@@ -3675,108 +3675,53 @@ class OrdersTestCases(BaseTest):
         if testplan_info['specifications'][0]['useSpec']:
             testplan_lower = testplan_info['specifications'][0]['lowerLimit']
             testplan_upper = testplan_info['specifications'][0]['upperLimit']
-            print(testplan_lower + '-' + testplan_upper)
-        testplan_specs = testplan_lower + '-' + testplan_upper
+            testplan_specs = testplan_lower + '-' + testplan_upper
         testunit_in_testplan = testplan_info['specifications'][0]['name']
-        print(testunit_in_testplan)
-
-        print(self.test_unit_api.get_testunit_form_data(id=testunit_id))
         testunit_info = self.test_unit_api.get_testunit_form_data(id=testunit_id)
         if testunit_info[0]['testUnit']['useSpec']:
             testunit_lower = testunit_info[0]['testUnit']['lowerLimit']
             testunit_upper = testunit_info[0]['testUnit']['upperLimit']
-            print(testunit_lower + '-' + testunit_upper)
-        testunit_specs = testunit_lower + '-' + testunit_upper
+            testunit_specs = testunit_lower + '-' + testunit_upper
 
-        self.orders_page.get_order_edit_page_by_id(order_id)
-        self.order_page.sleep_small()
-        self.info('navigate to analysis tab')
-        self.order_page.navigate_to_analysis_tab()
-        value = self.single_analysis_page.set_testunit_values(save=False)
-        self.info('change validation options ')
-        analysis_result = self.single_analysis_page.change_validation_options()
-        print(value)
-        print(analysis_result[0])
+        # self.orders_page.get_order_edit_page_by_id(order_id)
+        # self.order_page.sleep_small()
+        # self.info('navigate to analysis tab')
+        # self.order_page.navigate_to_analysis_tab()
+        # value = self.single_analysis_page.set_testunit_values(save=False)
+        # self.info('change validation options ')
+        # analysis_result = self.single_analysis_page.change_validation_options()
+        # print(value)
+        # print(analysis_result)
 
         self.order_page.get_orders_page()
-        self.analysis_page.navigate_to_order_tab()
+        self.single_analysis_page.navigate_to_order_tab()
 
         self.order_page.filter_by_order_no(filter_text=order_no)
         row = self.order_page.result_table()[0]
         suborders = self.order_page.get_child_table_data()
-        for suborder in suborders:
-            if 'Conform W. Rest.' == analysis_result[0]:
-                self.assertEqual(suborder['Analysis Results'], 'Conform With Restrictions (1)')
+        # for suborder in suborders:
+        #     if 'Conform W. Rest.' == analysis_result:
+        #         self.assertEqual(suborder['Analysis Results'], 'Conform With Restrictions (1)')
+        #
+        #     else:
+        #         self.assertEqual(suborder['Analysis Results'], analysis_result)
 
-            else:
-                self.assertEqual(suborder['Analysis Results'], analysis_result[0])
-
-            print(suborder['Analysis Results'])
-
+        # print(suborder['Analysis Results'])
         self.info('asserting icon exists')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='order:analysis_result_icon'))
         self.base_selenium.click(element='order:analysis_result_icon')
         testunits_table = self.base_selenium.get_rows_cells_dict_related_to_header(
-        table_element='order:analysis_testunits_table')
+            table_element='order:analysis_testunits_table')
         self.order_page.sleep_tiny()
         self.base_selenium.click(element='order:close_testunits_table')
         print(testunits_table)
         for testunit_record in testunits_table:
             displayed_testunits.append(testunit_record['Test Unit'])
         self.assertIn(testunit_name, displayed_testunits)
-        self.assertIn(testunit_in_testplan,displayed_testunits)
+        self.assertIn(testunit_in_testplan, displayed_testunits)
         for testunit_record in testunits_table:
             if testunit_record['Test Unit'] == testunit_in_testplan:
-                self.assertEqual(testunit_record['Specifications'],testplan_specs)
+                self.assertEqual(testunit_record['Specifications'], testplan_specs)
             elif testunit_record['Test Unit'] == testunit_name:
-                self.assertEqual(testunit_record['Specifications'],testplan_specs)
-
-        # order_info = self.orders_api.get_suborder_by_order_id(order_id)
-        # print(order_info[0]['orders'][0]['testUnit'])
-        # testunit=order_info[0]['orders'][0]['testUnit']
-        # testunit_number = testunit[0]['testUnit']['number']
-        # testunit_name = testunit[0]['testUnit']['name']
-        # testunit_category = testunit[0]['testUnit']['additionalFields']['category']
-        # testunits_in_order.append([testunit_in_testplan_name,testunit_in_testplan_number,testunit_in_testplan_category,testunit_number,testunit_name,testunit_category])
-        # print(testunits_in_order)
-        # # #testunit_value=da el ana hahoto b random
-        # # #result=de ana l ha3mlaha set
-        # # if testunit[0]['testUnit']['additionalFields']['quantificationUnit']:
-        # #  testunit_quantification_limit=testunit[0]['testUnit']['additionalFields']['quantificationUnit']
-        # # else:
-        # #     testunit_quantification_limit = 'N/A'
-        # # print(testunit_name)
-        # # print(testunit_category)
-        # # print(testunit_number)
-        # # print(testunit_quantification_limit)
-        # res, payload=self.orders_api.create_new_order()
-        # print(res)
-        # print(payload)
-        # ageb l testunit w a3ml get testunit form data w same m3 l testplan 3shan a3raf l tstunits l gwaha
-        # self.order_page.navigate_to_analysis_tab()
-        # self.base_selenium.click(element='order:suborder_records_analysis')
-        # self.order_page.sleep_medium()
-        # self.order_page.filter_by_order_no(filter_text='3-2020')
-        # row=self.order_page.result_table()[0]
-        # suborders = self.order_page.get_child_table_data()
-        # get suborder by ordr id aw ashof law mwgoda f create order api mlhash lzma
-        # # #check l analysis result
-        # # # for suborder in suborders:
-        # # #     print(suborder['Analysis Results'])
-        # # # self.info('asserting icon exists')
-        # self.assertTrue(self.base_selenium.check_element_is_exist(element='order:analysis_result_icon'))
-        # self.base_selenium.click(element='order:analysis_result_icon')
-        # testunits_table = self.base_selenium.get_rows_cells_dict_related_to_header(
-        # table_element='order:analysis_testunits_table')
-        # self.order_page.sleep_tiny()
-        # self.base_selenium.click(element='order:close_testunits_table')
-        # print(testunits_table)
-
-        # self.order_page.open_edit_page(row=row)
-        # self.analysis_page.set_testunit_values(order_id='32')
-        # analysis_res=self.analysis_page.set_analysis_result(result='')
-        # print(analysis_res)
-        # self.order_page.sleep_tiny()
-
-
-
+                self.assertEqual(testunit_record['Specifications'], testunit_specs)
+            # self.assertEqual(testunit_record['Value'],str(value))
