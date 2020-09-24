@@ -224,7 +224,4 @@ class OrdersExtendedTestCases(BaseTest):
         self.orders_page.navigate_to_order_active_table()  # in order to open on order tab in the second run
 
 
-    def test100(self):
-        response, payload = self.orders_api.create_new_order()
-        print(payload)
-        print(response)
+ 
