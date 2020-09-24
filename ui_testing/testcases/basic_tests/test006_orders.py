@@ -3658,3 +3658,31 @@ class OrdersTestCases(BaseTest):
             self.assertFalse(self.order_page.confirm_popup(check_only=True))
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
+
+    @parameterized.expand(['new_order', 'configurations'])
+    def test105_add_dynamic_field_in_order_section1(self, page_to_check):
+        """
+        order : create new order: check that dynamic field added in order section 1 will be displayed
+        in create new order screen
+        LIMS-7870
+        orders : configuration : check that user can add dynamic field in order section 1
+        LIMS-7864
+        """
+        section1_fields = []
+        self.general_utilities_api = GeneralUtilitiesAPI()
+        if not self.general_utilities_api.is_dynamic_field_existing(field_name='Text'):
+            self.orders_api.order_with_added_dynamic_field()
+        self.info('Rename the added field ')
+        self.order_page.rename_dynamic_field(field='orders:text_field_dragged', value='Additional Field')
+        self.order_page.get_orders_page()
+        if page_to_check == 'new_order':
+            self.order_page.click_create_order_button()
+            visible_fields = self.base_selenium.find_elements(element='order:section1_titles')
+            for field in visible_fields:
+                section1_fields.append(field.text)
+            self.info('Assert the added field is visible in create new order page')
+            self.assertIn('Additional Field:', section1_fields)
+
+        else:
+            fields_configurations = self.orders_page.get_configurations_options().split('\n')
+            self.assertIn('Additional Field', fields_configurations)

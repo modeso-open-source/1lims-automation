@@ -367,3 +367,11 @@ class Orders(BasePages):
     def navigate_to_order_active_table(self):
         self.base_selenium.click(element='orders:order_tab')
         self.sleep_medium()
+
+    def get_configurations_options(self, child=False):
+        self.base_selenium.click(element='orders:configurations_options')
+        if child:
+            self.base_selenium.click(element='orders:child_config')
+            self.sleep_tiny()
+        options = self.base_selenium.get_text(element='orders:configurations_options_values')
+        return options
