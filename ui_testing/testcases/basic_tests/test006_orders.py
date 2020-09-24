@@ -3658,3 +3658,26 @@ class OrdersTestCases(BaseTest):
             self.assertFalse(self.order_page.confirm_popup(check_only=True))
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
+
+    def test105_check_multiple_contact_in_export_file(self):
+        '''
+        Orders: Contact multiple select approach: Export has multiple contact select
+        LIMS-5779
+        :return:
+        '''
+        self.info('create order with multiple contacts')
+        response, payload = self.orders_api.create_order_with_multiple_contacts()
+        self.assertEqual(response['status'], 1)
+        contacts = [contact['text'] for contact in payload[0]['contact']]
+        self.orders_page.filter_by_order_no(payload[0]['orderNo'])
+        row = self.orders_page.result_table()[0]
+        self.orders_page.click_check_box(row)
+        self.info('downlod excel sheet of order {}'.format(payload[0]['orderNo']))
+        self.order_page.download_xslx_sheet()
+        values = self.order_page.sheet.iloc[0].values
+        fixed_sheet_row_data = self.fix_data_format(values)
+        xslx_values = [str(x).replace(' ','') for x in fixed_sheet_row_data]#because some contacts have extra space at the begining in excel sheet
+        for i in range(len(contacts)):
+            self.info('assert contact : {} in the excel sheet'.format(contacts[i]))
+            self.assertIn(contacts[i],xslx_values)
+
