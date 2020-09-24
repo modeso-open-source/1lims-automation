@@ -1182,6 +1182,10 @@ elements = {
            'method': 'xpath',
            'value': "//*[contains(@id,'testunit_')]"
         },
+        'save_analysis':{
+            'method':'xpath',
+            'value' : '//a[@class="btn btn-primary mb-md-0 mr-md-3 save-button-style"]'
+        }
 
     },
     'company_profile': {

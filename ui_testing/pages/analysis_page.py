@@ -92,7 +92,7 @@ class SingleAnalysisPage(AllAnalysesPage):
             self.base_selenium.select_item_from_drop_down(
                 element='analysis_page:validation_options', options_element='general:drop_down_div')
 
-        self.base_selenium.click(element='general:save')
+        self.base_selenium.click(element='analysis_page:save_analysis')
         self.sleep_small()
         return self.get_validation_option().split('\n')
 
