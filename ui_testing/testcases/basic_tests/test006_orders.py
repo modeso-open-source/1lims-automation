@@ -17,6 +17,7 @@ from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from parameterized import parameterized
 from random import randint
 from unittest import skip
+from datetime import date
 import random, re
 from nose.plugins.attrib import attr
 
@@ -2540,7 +2541,7 @@ class OrdersTestCases(BaseTest):
         self.info('asserting the order with order number {} is created'.format(order_no))
         self.assertIn(order_no_with_year, results[0].text.replace("'", ""))
 
-    #@skip("https://modeso.atlassian.net/browse/LIMSA-299")
+    # @skip("https://modeso.atlassian.net/browse/LIMSA-299")
     def test074_create_existing_order_change_contact(self):
         """
          Create existing order then change the contact for this existing one,
@@ -3576,7 +3577,7 @@ class OrdersTestCases(BaseTest):
             test_units = [item['Test Unit'] for item in child_data]
             self.assertCountEqual(test_units, test_units_names[i * 2:(i * 2) + 2])
 
-    def test106_multiple_suborders(self):
+    def test102_multiple_suborders(self):
         """
         Orders: Table with add: Allow user to add any number of the suborders records not only 5 suborders
 
@@ -3602,7 +3603,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.navigate_to_analysis_tab()
         self.assertEqual(SingleAnalysisPage().get_analysis_count(), 16)
 
-    def test102_create_order_with_test_plans_with_same_name(self):
+    def test103_create_order_with_test_plans_with_same_name(self):
         """
         Orders: Create Approach: Make sure In case you create two test plans with the same name
         and different materiel type, the test units that belongs to them displayed correct in
@@ -3633,7 +3634,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(test_units_name, test_units_list[i])
              
     @parameterized.expand(['update_a_field', 'no_updates'])
-    def test103_edit_order_page_then_overview(self, edit_case):
+    def test104_edit_order_page_then_overview(self, edit_case):
         """
         Orders: Popup should appear when editing then clicking on overview without saving <All data will be lost>
         LIMS-6814
@@ -3656,5 +3657,4 @@ class OrdersTestCases(BaseTest):
         else:
             self.assertFalse(self.order_page.confirm_popup(check_only=True))
             self.info('asserting redirection to active table')
-            self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())  
-
+            self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
