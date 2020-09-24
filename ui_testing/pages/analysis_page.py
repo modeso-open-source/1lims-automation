@@ -83,6 +83,7 @@ class SingleAnalysisPage(AllAnalysesPage):
             field.send_keys(value)
         if save:
             self.base_selenium.click(element='general:save')
+        return value
 
     def change_validation_options(self, text=''):
         if text:

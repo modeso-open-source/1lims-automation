@@ -3687,25 +3687,22 @@ class OrdersTestCases(BaseTest):
         self.info('navigate to analysis tab')
         self.order_page.navigate_to_analysis_tab()
         value = self.single_analysis_page.set_testunit_values(save=False)
+        self.base_selenium.scroll()
         self.info('change validation options ')
         analysis_result = self.single_analysis_page.change_validation_options()
-        print(value)
-        print(analysis_result)
-
         self.order_page.get_orders_page()
         self.single_analysis_page.navigate_to_order_tab()
         self.order_page.filter_by_order_no(filter_text=order_no)
         row = self.order_page.result_table()[0]
         suborders = self.order_page.get_child_table_data()
         self.info('asserting analysis result is displayed correctly')
-        # for suborder in suborders:
-        #     if 'Conform W. Rest.' == analysis_result:
-        #         self.assertEqual(suborder['Analysis Results'], 'Conform With Restrictions (1)')
-        #
-        #     else:
-        #         self.assertEqual(suborder['Analysis Results'], analysis_result)
+        for suborder in suborders:
+            if 'Conform W. Rest.' == analysis_result:
+                self.assertEqual(suborder['Analysis Results'], 'Conform With Restrictions (1)')
 
-        # print(suborder['Analysis Results'])
+            else:
+                self.assertEqual(suborder['Analysis Results'], analysis_result)
+
         self.info('asserting icon exists beside analysis results')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='order:analysis_result_icon'))
         self.base_selenium.click(element='order:analysis_result_icon')
@@ -3723,4 +3720,4 @@ class OrdersTestCases(BaseTest):
                 self.assertEqual(testunit_record['Specifications'], testplan_specs)
             elif testunit_record['Test Unit'] == testunit_name:
                 self.assertEqual(testunit_record['Specifications'], testunit_specs)
-            # self.assertEqual(testunit_record['Value'],str(value))
+            self.assertEqual(testunit_record['Value'], str(value))
