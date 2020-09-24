@@ -1000,7 +1000,7 @@ elements = {
         'dynamic_field_option_menu': {'method': 'id',
                                       'value': 'dynamicFields_menu_options'},
         'year_options_menu': {'method': 'id',
-                              'value': 'year_options_menu'},
+                              'value': "year_options_menu"},
         'display_options_menu': {'method': 'id',
                                  'value': 'field_display_options_menu'},
         'grouped_fields_option_menu': {'method': 'id',

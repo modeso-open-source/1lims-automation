@@ -3632,33 +3632,4 @@ class OrdersTestCases(BaseTest):
             test_units_name = test_units[0]['Test Unit Name'].split(' ')[0]
             self.assertEqual(test_units_name, test_units_list[i])
 
-    @parameterized.expand(['without year', 'number before year', 'number after year'])
-    def test103_search_by_all_formats(self,format):
-        '''
-        Orders: Search/filter Approach: User can search/filter by all the new number format ( without year, number before year, number after year
-        LIMS-4110
-        :return:
-        '''
-        random_order = random.choice(self.orders_api.get_all_orders_json())
-        if format == 'without year':
-            order_no = random_order['orderNo'].split('-')[0]
-        elif format == 'number before year':
-            order_no = random_order['orderNo']
-        elif format == 'number after year':
-            order_no = random_order['orderNo'].split('-')[1]+'-'+random_order['orderNo'].split('-')[0]
-        self.info('can filter in order active table with order no in format .{}'.format(format))
-        self.orders_page.filter_by_order_no(order_no)
-        rows = self.orders_page.result_table()
-        self.assertGreater(len(rows)-1,0)
-        self.base_selenium.refresh()
-        self.info('can search in order active table with order no in format .{}'.format(format))
-        self.orders_page.search(order_no)
-        self.assertGreater(len(rows) - 1, 0)
-        self.orders_page.navigate_to_analysis_active_table()
-        self.info('can filter in analysis active table with order no in format .{}'.format(format))
-        self.analyses_page.filter_by_order_no(order_no)
-        self.base_selenium.refresh()
-        self.info('can search in analysis active table with order no in format .{}'.format(format))
-        self.orders_page.search(order_no)
-        self.assertGreater(len(rows) - 1, 0)
-        self.orders_page.navigate_to_order_active_table()#in order to open on order tab in the second run
+
