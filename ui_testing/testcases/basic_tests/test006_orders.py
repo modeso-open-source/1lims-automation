@@ -3666,10 +3666,10 @@ class OrdersTestCases(BaseTest):
         check that added dynamic field will be displayed in order main table
         LIMS-7865
         """
-        self.info("set order configuration to add dynamic field to section 1")
         self.general_utilities_api = GeneralUtilitiesAPI()
         if not self.general_utilities_api.is_dynamic_field_existing(field_name='Text'):
-            self.orders_api.order_with_added_dynamic_field()
+            self.orders_api.order_with_added_dynamic_field()     
+        self.info("set order configuration to add dynamic field to section 1")
         self.info('Rename the added field ')
         random_name = self.generate_random_string()
         self.order_page.rename_dynamic_field(field='orders:text_field_dragged', value=random_name)
