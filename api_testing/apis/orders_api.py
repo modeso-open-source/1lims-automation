@@ -547,3 +547,11 @@ class OrdersAPI(OrdersAPIFactory):
                             'articleId': second_article['id']}]
         return update_suborder
 
+
+    def order_with_added_dynamic_field(self) :
+        self.info('set order configuration')
+        config_file = os.path.abspath('api_testing/config/order_with_added_text_field.json')
+        with open(config_file, "r") as read_file :
+            payload = json.load(read_file)
+        super().set_configuration(payload=payload) 
+
