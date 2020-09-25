@@ -293,6 +293,8 @@ class OrdersAPIFactory(BaseAPI):
             payload['orderNoWithYear'] = "{}-{}".format((payload['orderNo']), payload['year'])
         elif payload['yearOption'] == 2:
             payload['orderNoWithYear'] = "{}-{}".format(payload['year'], payload['orderNo'])
+        else:
+            payload['orderNoWithYear'] = payload['orderNo']
 
         return [payload]
 

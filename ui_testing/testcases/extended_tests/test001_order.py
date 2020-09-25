@@ -191,19 +191,23 @@ class OrdersExtendedTestCases(BaseTest):
             self.assertIn(header, displayed_child_headers)
             self.assertIn(header, displayed_Configuration_headers)
 
-    @parameterized.expand(['0','1','2'])
-    def test103_search_and_filter_by_all_formats(self, year_option):
-        '''
-        Orders: Search/filter Approach: User can search/filter by all the new number format ( without year, number before year, number after year
-        LIMS-4110
-        :return:
-        '''
+    @parameterized.expand(['0', '1', '2'])
+    @attr(series=True)
+    def test004_search_and_filter_by_all_formats(self, year_option):
+        """
+         Orders: Search/filter Approach: User can search/filter by all the new number format
+         (without year, number before year, number after year)
+         :param year_option:
+
+         LIMS-4110
+        """
         #default set config year_option=1
         if year_option == '0':
             self.orders_api.set_configuration_without_year()
         elif year_option == '2':
             self.orders_api.set_configuration_year_before_no()
-        response,payload = self.orders_api.create_new_order(yearOption=int(year_option))
+        import ipdb;ipdb.set_trace()
+        response, payload = self.orders_api.create_new_order(yearOption=int(year_option))
         self.assertEqual(response['status'], 1)
         order_no = response['order']['orderNo']
         self.info('can filter in order active table with order no in format .{}'.format(format))
@@ -222,6 +226,3 @@ class OrdersExtendedTestCases(BaseTest):
         self.orders_page.search(order_no)
         self.assertGreater(len(rows) - 1, 0)
         self.orders_page.navigate_to_order_active_table()  # in order to open on order tab in the second run
-
-
- 
