@@ -17,6 +17,7 @@ from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from parameterized import parameterized
 from random import randint
 from unittest import skip
+from datetime import date
 import random, re
 from nose.plugins.attrib import attr
 
@@ -2540,7 +2541,7 @@ class OrdersTestCases(BaseTest):
         self.info('asserting the order with order number {} is created'.format(order_no))
         self.assertIn(order_no_with_year, results[0].text.replace("'", ""))
 
-    #@skip("https://modeso.atlassian.net/browse/LIMSA-299")
+    # @skip("https://modeso.atlassian.net/browse/LIMSA-299")
     def test074_create_existing_order_change_contact(self):
         """
          Create existing order then change the contact for this existing one,

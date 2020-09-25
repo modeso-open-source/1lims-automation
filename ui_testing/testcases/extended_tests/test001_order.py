@@ -2,16 +2,19 @@ from ui_testing.testcases.base_test import BaseTest
 from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.header_page import Header
+from ui_testing.pages.login_page import Login
 from api_testing.apis.orders_api import OrdersAPI
-from api_testing.apis.article_api import ArticleAPI
 from ui_testing.pages.analysis_page import AllAnalysesPage
+from ui_testing.pages.analysis_page import SingleAnalysisPage
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.contacts_api import ContactsAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
 from ui_testing.pages.my_profile_page import MyProfile
+from api_testing.apis.users_api import UsersAPI
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from api_testing.apis.base_api import BaseAPI
 from parameterized import parameterized
+from datetime import date
 from nose.plugins.attrib import attr
 
 
@@ -190,3 +193,58 @@ class OrdersExtendedTestCases(BaseTest):
             self.info('asserting {} is displayed '.format(header))
             self.assertIn(header, displayed_child_headers)
             self.assertIn(header, displayed_Configuration_headers)
+
+    @attr(series=True)
+    def test004_check_validation_date_validation_by(self):
+        """
+         Orders: Validation date & Validation by : check that when user update the validation date &
+         the validation by, the update should reflect on order's child table
+
+         LIMS-7729
+        """
+        today = date.today()
+        current_date = today.strftime("%d.%m.%Y")
+        self.info('Calling the users api to create a new user with username')
+        response, payload = UsersAPI().create_new_user()
+        self.assertEqual(response['status'], 1, payload)
+        self.single_analysis_page = SingleAnalysisPage()
+        self.login_page = Login()
+        self.info("create new order and update its validation option to be conform")
+        order_response, order_payload = self.orders_api.create_new_order()
+        self.assertEqual(order_response['status'], 1, order_payload)
+        order_no = order_payload[0]['orderNo']
+        self.info('edit order with No {}'.format(order_no))
+        self.orders_page.get_order_edit_page_by_id(order_response['order']['mainOrderId'])
+        self.order_page.sleep_small()
+        self.info('navigate to analysis tab')
+        self.order_page.navigate_to_analysis_tab()
+        self.single_analysis_page.set_testunit_values()
+        self.info('change validation options to conform')
+        self.single_analysis_page.change_validation_options(text='Conform')
+        self.order_page.get_orders_page()
+        self.orders_page.filter_by_order_no(filter_text=order_no)
+        suborders_data = self.order_page.get_child_table_data(index=0)
+        self.info('assert validation by is set correctly')
+        self.assertEqual(suborders_data[0]['Validation by'], self.base_selenium.username)
+        self.assertEqual(suborders_data[0]['Validation date'], current_date)
+        self.info('go to analysis table and assert validation by and validation options'
+                  ' are set correctly as in order active table')
+        self.orders_page.navigate_to_analysis_active_table()
+        self.analyses_page.filter_by_analysis_number(suborders_data[0]['Analysis No.'])
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        self.assertEqual(suborders_data[0]['Validation by'], analysis_data['Validation by'])
+        self.assertEqual(suborders_data[0]['Validation date'], analysis_data['Validation date'])
+        self.info("Logout then login again using new user {}".format(payload['username']))
+        self.login_page.logout()
+        self.login_page.login(username=payload['username'], password=payload['password'])
+        self.base_selenium.wait_until_page_url_has(text='dashboard')
+        self.orders_page.get_order_edit_page_by_id(order_response['order']['mainOrderId'])
+        self.info('change validation options so validation by is changed to {}', payload['username'])
+        self.order_page.navigate_to_analysis_tab()
+        self.single_analysis_page.change_validation_options(text='Approved')
+        self.orders_page.get_orders_page()
+        self.orders_page.navigate_to_order_active_table()
+        self.orders_page.filter_by_order_no(filter_text=order_no)
+        suborders_after = self.order_page.get_child_table_data(index=0)
+        self.assertEqual(suborders_after[0]['Validation by'], payload['username'])
+        self.assertEqual(suborders_after[0]['Validation date'], current_date)

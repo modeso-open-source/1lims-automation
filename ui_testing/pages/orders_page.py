@@ -312,7 +312,7 @@ class Orders(BasePages):
     def navigate_to_analysis_active_table(self):
         self.base_selenium.click(element='orders:analysis_tab')
         self.sleep_small()
-        
+
     def search_by_analysis_number(self,analysis_number):
         self.base_selenium.click(element='general:filter_button')
         self.base_selenium.set_text(element='orders:analysis_filter',value=analysis_number)
@@ -364,3 +364,6 @@ class Orders(BasePages):
         list = items[0].text.split('\n')
         return list
 
+    def navigate_to_order_active_table(self):
+        self.base_selenium.click(element='orders:order_tab')
+        self.sleep_medium()
