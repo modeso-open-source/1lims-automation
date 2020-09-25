@@ -3576,7 +3576,7 @@ class OrdersTestCases(BaseTest):
             test_units = [item['Test Unit'] for item in child_data]
             self.assertCountEqual(test_units, test_units_names[i * 2:(i * 2) + 2])
 
-    def test106_multiple_suborders(self):
+    def test102_multiple_suborders(self):
         """
         Orders: Table with add: Allow user to add any number of the suborders records not only 5 suborders
 
@@ -3602,7 +3602,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.navigate_to_analysis_tab()
         self.assertEqual(SingleAnalysisPage().get_analysis_count(), 16)
 
-    def test102_create_order_with_test_plans_with_same_name(self):
+    def test103_create_order_with_test_plans_with_same_name(self):
         """
         Orders: Create Approach: Make sure In case you create two test plans with the same name
         and different materiel type, the test units that belongs to them displayed correct in
@@ -3633,7 +3633,7 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(test_units_name, test_units_list[i])
              
     @parameterized.expand(['update_a_field', 'no_updates'])
-    def test103_edit_order_page_then_overview(self, edit_case):
+    def test104_edit_order_page_then_overview(self, edit_case):
         """
         Orders: Popup should appear when editing then clicking on overview without saving <All data will be lost>
         LIMS-6814
@@ -3658,18 +3658,16 @@ class OrdersTestCases(BaseTest):
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())  
 
-    def test104_update_department_multiple_contacts(self):
+    def test105_update_department_multiple_contacts(self):
         """
         Orders: Child table: Department Approach:  Any update in the order field should be reflected on the order
         child table In case I have multiple contacts.
+
         LIMS-5774
         """
-        selected_departments = []
-        selected_contacts_departments = []
         response, payload = self.orders_api.create_order_multiple_contacts_multiple_departments()
         self.assertEqual(response['status'], 1)
-        for department in payload[0]['departments']:
-            selected_departments.append(department['text'])
+        selected_departments = [dep['text'] for dep in payload[0]['departments']]
         order_no = payload[0]['orderNo']
         contact1 = self.contacts_api.get_contact_form_data(id=payload[0]['contact'][0]['id'])
         contact2 = self.contacts_api.get_contact_form_data(id=payload[0]['contact'][1]['id'])
@@ -3677,6 +3675,15 @@ class OrdersTestCases(BaseTest):
         dep2_contact1 = contact1[0]['contact']['departments'][1]['name']
         dep2_contact2 = contact2[0]['contact']['departments'][1]['name']
         dep2_contact3 = contact3[0]['contact']['departments'][1]['name']
+        self.info('getting all departments of selected contacts')
+        selected_contacts_departments = []
+        for (contact1_department, contact2_department, contact3_department) in zip(
+                contact1[0]['contact']['departments'], contact2[0]['contact']['departments'],
+                contact3[0]['contact']['departments']):
+            selected_contacts_departments.append(contact1_department['name'])
+            selected_contacts_departments.append(contact2_department['name'])
+            selected_contacts_departments.append(contact3_department['name'])
+
         self.order_page.filter_by_order_no(filter_text=order_no)
         row = self.orders_page.result_table()[0]
         self.info('asserting all departments selected are correctly displayed when expanding the order')
@@ -3686,15 +3693,8 @@ class OrdersTestCases(BaseTest):
             self.assertIn(department, displayed_departments)
         self.order_page.open_edit_page(row=row)
         departments_suggestion_list = self.order_page.update_departments_suborder(
-            departments=[dep2_contact1, dep2_contact2,
-                         dep2_contact3], remove_old=True, check_departments=True)
-        self.info('getting all departments of selected contacts')
-        for (contact1_department, contact2_department, contact3_department) in zip(
-                contact1[0]['contact']['departments'], contact2[0]['contact']['departments'],
-                contact3[0]['contact']['departments']):
-            selected_contacts_departments.append(contact1_department['name'])
-            selected_contacts_departments.append(contact2_department['name'])
-            selected_contacts_departments.append(contact3_department['name'])
+            departments=[dep2_contact1, dep2_contact2, dep2_contact3], remove_old=True, check_departments=True)
+
         self.info('asserting all departments shown in suggestion list are correctly related to the selected contacts')
         for department in departments_suggestion_list:
             self.assertIn(department, selected_contacts_departments)
