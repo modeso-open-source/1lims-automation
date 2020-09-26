@@ -94,3 +94,11 @@ class GeneralUtilitiesAPI(GeneralUtilitiesAPIFactory):
                     return True
         else:
             return False
+
+    def get_dynamic_feilds(self, section=1):
+        response, _ = self.get_configuration()
+        dynamic_feilds = []
+        for field in response['fields']:
+            if field.get('dynamicComponent') and field.get('section') == section:
+                dynamic_feilds.append(field['dynamicComponent']['fieldName'])
+        return dynamic_feilds

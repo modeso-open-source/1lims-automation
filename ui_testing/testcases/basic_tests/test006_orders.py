@@ -3658,3 +3658,23 @@ class OrdersTestCases(BaseTest):
             self.assertFalse(self.order_page.confirm_popup(check_only=True))
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
+
+    def test105_get_order_list_column(self):
+        """
+         [Orders][Archived Table]Make sure that order List columns will be(order number, contact,
+         created at and options) plus the dynamic fields
+
+         LIMS-5366
+        """
+        heads = ['Order No.', 'Options', 'Contact Name', 'Created On']
+        self.info('get dynamic fields if exist')
+        fields = GeneralUtilitiesAPI().get_dynamic_feilds()
+        if fields:
+            heads.extend(fields)
+        self.info("check that these fields {} in archived header".format(heads))
+        self.orders_page.get_archived_items()
+        self.info('get column head list')
+        headers_elements = self.base_selenium.get_table_head_elements(element='general:table')
+        headers = [h.text for h in headers_elements if h.text != '']
+        for head in heads:
+            self.assertIn(head, headers)
