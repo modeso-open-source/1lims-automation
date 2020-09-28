@@ -798,8 +798,8 @@ class Order(Orders):
         return multiple_line_properties
 
     def rename_dynamic_field(self, field, value):
-        self.base_selenium.click(element='orders:right_menu')
-        self.base_selenium.click(element='orders:configurations')
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:configurations')
         self.base_selenium.click(element=field)
         self.base_selenium.set_text(element=field, value=value)
         self.base_selenium.click(element='orders:save_config')

@@ -248,3 +248,27 @@ class OrdersExtendedTestCases(BaseTest):
         suborders_after = self.order_page.get_child_table_data(index=0)
         self.assertEqual(suborders_after[0]['Validation by'], payload['username'])
         self.assertEqual(suborders_after[0]['Validation date'], current_date)
+
+    @attr(series=True)
+    def test005_add_dynamic_field_in_order_section1(self):
+        """
+        order : create new order: check that dynamic field added in order section 1 will be displayed
+        in create new order screen
+        LIMS-7870
+
+        orders : configuration : check that user can add dynamic field in order section 1
+        LIMS-7864
+        """
+        if not GeneralUtilitiesAPI().is_dynamic_field_existing(field_name='Text'):
+            self.orders_api.order_with_added_dynamic_field()
+        self.info('Rename the added field ')
+        new_name = self.generate_random_string()
+        self.order_page.rename_dynamic_field(field='orders:text_field_dragged', value=new_name)
+        self.order_page.get_orders_page()
+        fields_configurations = self.orders_page.get_configurations_options().split('\n')
+        self.assertIn(new_name, fields_configurations)
+        self.order_page.click_create_order_button()
+        visible_fields = self.base_selenium.find_elements(element='order:section1_titles')
+        section1_fields = [field.text for field in visible_fields]
+        self.info('Assert the added field is visible in create new order page')
+        self.assertIn(new_name+':', section1_fields)

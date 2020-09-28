@@ -349,13 +349,10 @@ class Orders(BasePages):
             self.base_selenium.click(element='orders:cancel_popup')
         return True
 
-
     def open_order_config(self):
-        self.info('open testunits configurations')
         self.base_selenium.scroll()
         self.base_selenium.click(element='orders:right_menu')
         self.base_selenium.click(element='general:configurations')
-
 
     def get_right_menu_options(self):
         self.base_selenium.click(element='orders:right_menu')
@@ -369,9 +366,9 @@ class Orders(BasePages):
         self.sleep_medium()
 
     def get_configurations_options(self, child=False):
-        self.base_selenium.click(element='orders:configurations_options')
+        self.base_selenium.click(element='general:configure_table')
         if child:
-            self.base_selenium.click(element='orders:child_config')
+            self.base_selenium.click(element='general:configure_child_table')
             self.sleep_tiny()
-        options = self.base_selenium.get_text(element='orders:configurations_options_values')
+        options = self.base_selenium.get_text(element='general:configure_table_items')
         return options
