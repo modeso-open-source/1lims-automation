@@ -16,6 +16,7 @@ from api_testing.apis.base_api import BaseAPI
 from parameterized import parameterized
 from datetime import date
 from nose.plugins.attrib import attr
+import datetime
 
 
 class OrdersWithoutArticleTestCases(BaseTest):
@@ -140,6 +141,95 @@ class OrdersWithoutArticleTestCases(BaseTest):
         results = self.order_page.result_table()[0].text
         self.assertIn(order_no.replace("'", ""), results.replace("'", ""))
 
+    @attr(series=True)
+    def test003_export_xslx_file(self):
+        """
+         New: Orders without articles: exporting an order, should not have article and
+         article number fields in the xslx file
+
+         LIMS-3260
+        """
+        no_of_orders = len(self.orders_page.result_table())-1
+        orders_data = self.orders_api.get_all_orders(limit=no_of_orders, sort_order=-1)[0]['orders']
+        all_orders_data = []
+        for order in orders_data:
+            suborders = self.orders_api.get_suborder_by_order_id(order['orderId'])[0]['orders']
+            for suborder in suborders:
+                formatted_suborder_data = {'Order No.': suborder['orderNo'],
+                                         'Contact Name': [contact['name'] for contact in suborder['company']],
+                                         'Created On':self.orders_page.convert_to_dot_date_format(suborder['createdAt'].split('T')[0]),
+                                         'Test Date': self.orders_page.convert_to_dot_date_format(suborder['testDate'].split('T')[0]),
+                                         'Shipment Date': self.orders_page.convert_to_dot_date_format(suborder['shipmentDate'].split('T')[0]),
+                                         'Changed On': self.orders_page.convert_to_dot_date_format(suborder['lastModified'].split('T')[0]),
+                                         'Changed By': suborder['lastModifiedUser'],
+                                         'Material Type': suborder['materialType'],
+                                         'Test Plans': suborder['testPlans'],
+                                         'Departments': suborder['departments'],
+                                         'Analysis No.': suborder['analysis'][0],
+                                         'Test Units': [tu['testUnit']['name'] for tu in suborder['testUnit']]}
+
+                if suborder['reportsStatus'] == [3]:
+                    formatted_suborder_data['Status'] = 'Completed'
+                elif suborder['reportsStatus'] == [1]:
+                    formatted_suborder_data['Status'] = 'Open'
+
+                if 'analysisResults' in suborder.keys():
+                    if len(suborder['analysisResults']) >= 1:
+                        analysis_results = suborder['analysisResults'][0]['name']
+                        if analysis_results == 'approved':
+                            formatted_suborder_data['Analysis Results'] = 'approved (1)'
+                        elif analysis_results == 'conformwithrestrictions':
+                            formatted_suborder_data['Analysis Results'] = 'conformwithrestrictions (1)'
+                        elif analysis_results == 'notconform':
+                            formatted_suborder_data['Analysis Results'] = 'notconform (1)'
+                        elif analysis_results == 'conform':
+                            formatted_suborder_data['Analysis Results'] = 'conform (1)'
+                        else:
+                            formatted_suborder_data['Analysis Results'] = analysis_results
+                    else:
+                        formatted_suborder_data['Analysis Results'] = '-'
+
+                if 'validatedAt' in suborder.keys():
+                    formatted_suborder_data['Validation date'] = \
+                        self.orders_page.convert_to_dot_date_format(suborder['validatedAt'].split('T')[0])
+                else:
+                    formatted_suborder_data['Validation date'] = '-'
+
+                if 'forwarding' in suborder.keys():
+                    if suborder['forwarding'] == 'not_sent':
+                        formatted_suborder_data['Forwarding'] = 'Not Forwarded'
+                    elif suborder['forwarding'] == 'sent':
+                        formatted_suborder_data['Forwarding'] = 'Forwarded'
+                else:
+                    formatted_suborder_data['Forwarding'] = '-'
+
+                if 'validatedBy' in suborder.keys():
+                    formatted_suborder_data['Validation by'] = suborder['validatedBy']
+                else:
+                    formatted_suborder_data['Validation date'] = '-'
+
+                all_orders_data.append(formatted_suborder_data)
+
+        self.info(' * Download XSLX sheet')
+        self.order_page.select_all_records()
+        self.order_page.download_xslx_sheet()
+        for index in range(len(all_orders_data)):
+            self.info('Comparing the order no. {} '.format(index + 1))
+            sheet_keys = self.order_page.sheet.iloc[index].keys()
+            self.assertNotIn('Article', sheet_keys)
+            self.assertNotIn('Article No.', sheet_keys)
+            for key in all_orders_data[index].keys():
+                if not(all_orders_data[index][key]):
+                    self.assertEqual(self.order_page.sheet.iloc[index][key], '-', '{} of order {}'.format(key, index))
+                elif key in ['Test Plans', 'Test Units']:
+                    value = self.order_page.sheet.iloc[index][key].split(' & ')
+                    self.assertCountEqual(all_orders_data[index][key], value, '{} of order {}'.format(key, index))
+                elif key in ['Contact Name']:
+                    value = self.order_page.sheet.iloc[index][key].split(', ')
+                    self.assertCountEqual(all_orders_data[index][key], value, '{} of order {}'.format(key, index))
+                else:
+                    value = self.order_page.sheet.iloc[index][key].replace("'", "")
+                    self.assertEqual(all_orders_data[index][key], value, '{} of order {}'.format(key, index))
 
 class OrdersExtendedTestCases(BaseTest):
     def setUp(self):
@@ -168,7 +258,7 @@ class OrdersExtendedTestCases(BaseTest):
 
     @parameterized.expand(['EN', 'DE'])
     @attr(series=True)
-    def test003_new_fields_are_displayed_in_order_child_table(self, lang):
+    def test004_new_fields_are_displayed_in_order_child_table(self, lang):
         """
         Orders : child table: check that new fields of "Forwarding" , "Report sent by", "validation date" and
         "validation by"have been added to order's child table in both EN and DE
@@ -195,7 +285,7 @@ class OrdersExtendedTestCases(BaseTest):
             self.assertIn(header, displayed_Configuration_headers)
 
     @attr(series=True)
-    def test004_check_validation_date_validation_by(self):
+    def test005_check_validation_date_validation_by(self):
         """
          Orders: Validation date & Validation by : check that when user update the validation date &
          the validation by, the update should reflect on order's child table
