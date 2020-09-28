@@ -250,7 +250,8 @@ class OrdersExtendedTestCases(BaseTest):
         self.assertEqual(suborders_after[0]['Validation by'], payload['username'])
         self.assertEqual(suborders_after[0]['Validation date'], current_date)
 
-    def test006_check_added_dynamic_field_displayed_in_edit_order(self) :
+    @attr(series=True)
+    def test006_check_added_dynamic_field_displayed_in_edit_order(self):
         """
         check that added dynamic fields will be displayed in edit order screen
         LIMS-7871
@@ -274,4 +275,3 @@ class OrdersExtendedTestCases(BaseTest):
         section1_fields = [field.text for field in visible_fields_in_edit_order_screen]
         self.info('Assert the added field is visible in edit order page')
         self.assertIn('{}:'.format(random_name), section1_fields)
-
