@@ -151,65 +151,7 @@ class OrdersWithoutArticleTestCases(BaseTest):
         """
         no_of_orders = len(self.orders_page.result_table())-1
         orders_data = self.orders_api.get_all_orders(limit=no_of_orders, sort_order=-1)[0]['orders']
-        all_orders_data = []
-        for order in orders_data:
-            suborders = self.orders_api.get_suborder_by_order_id(order['orderId'])[0]['orders']
-            for suborder in suborders:
-                formatted_suborder_data = {'Order No.': suborder['orderNo'],
-                                         'Contact Name': [contact['name'] for contact in suborder['company']],
-                                         'Created On':self.orders_page.convert_to_dot_date_format(suborder['createdAt'].split('T')[0]),
-                                         'Test Date': self.orders_page.convert_to_dot_date_format(suborder['testDate'].split('T')[0]),
-                                         'Shipment Date': self.orders_page.convert_to_dot_date_format(suborder['shipmentDate'].split('T')[0]),
-                                         'Changed On': self.orders_page.convert_to_dot_date_format(suborder['lastModified'].split('T')[0]),
-                                         'Changed By': suborder['lastModifiedUser'],
-                                         'Material Type': suborder['materialType'],
-                                         'Test Plans': suborder['testPlans'],
-                                         'Departments': suborder['departments'],
-                                         'Analysis No.': suborder['analysis'][0],
-                                         'Test Units': [tu['testUnit']['name'] for tu in suborder['testUnit']]}
-
-                if suborder['reportsStatus'] == [3]:
-                    formatted_suborder_data['Status'] = 'Completed'
-                elif suborder['reportsStatus'] == [1]:
-                    formatted_suborder_data['Status'] = 'Open'
-
-                if 'analysisResults' in suborder.keys():
-                    if len(suborder['analysisResults']) >= 1:
-                        analysis_results = suborder['analysisResults'][0]['name']
-                        if analysis_results == 'approved':
-                            formatted_suborder_data['Analysis Results'] = 'approved (1)'
-                        elif analysis_results == 'conformwithrestrictions':
-                            formatted_suborder_data['Analysis Results'] = 'conformwithrestrictions (1)'
-                        elif analysis_results == 'notconform':
-                            formatted_suborder_data['Analysis Results'] = 'notconform (1)'
-                        elif analysis_results == 'conform':
-                            formatted_suborder_data['Analysis Results'] = 'conform (1)'
-                        else:
-                            formatted_suborder_data['Analysis Results'] = analysis_results
-                    else:
-                        formatted_suborder_data['Analysis Results'] = '-'
-
-                if 'validatedAt' in suborder.keys():
-                    formatted_suborder_data['Validation date'] = \
-                        self.orders_page.convert_to_dot_date_format(suborder['validatedAt'].split('T')[0])
-                else:
-                    formatted_suborder_data['Validation date'] = '-'
-
-                if 'forwarding' in suborder.keys():
-                    if suborder['forwarding'] == 'not_sent':
-                        formatted_suborder_data['Forwarding'] = 'Not Forwarded'
-                    elif suborder['forwarding'] == 'sent':
-                        formatted_suborder_data['Forwarding'] = 'Forwarded'
-                else:
-                    formatted_suborder_data['Forwarding'] = '-'
-
-                if 'validatedBy' in suborder.keys():
-                    formatted_suborder_data['Validation by'] = suborder['validatedBy']
-                else:
-                    formatted_suborder_data['Validation date'] = '-'
-
-                all_orders_data.append(formatted_suborder_data)
-
+        all_orders_data = self.orders_page.format_orders_suborders_to_match_sheet_format(orders_data)
         self.info(' * Download XSLX sheet')
         self.order_page.select_all_records()
         self.order_page.download_xslx_sheet()
