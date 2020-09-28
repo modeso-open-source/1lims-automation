@@ -16,7 +16,7 @@ from api_testing.apis.base_api import BaseAPI
 from parameterized import parameterized
 from datetime import date
 from nose.plugins.attrib import attr
-
+import random
 
 class OrdersWithoutArticleTestCases(BaseTest):
     def setUp(self):
@@ -248,3 +248,56 @@ class OrdersExtendedTestCases(BaseTest):
         suborders_after = self.order_page.get_child_table_data(index=0)
         self.assertEqual(suborders_after[0]['Validation by'], payload['username'])
         self.assertEqual(suborders_after[0]['Validation date'], current_date)
+
+    @parameterized.expand(['EN', 'DE'])
+    def test005_check_new_fields_are_displayed_in_XSLX(self, lang):
+        """
+        Orders: Export : check that the fields of "Forwarding" , "Report sent by", "validation date" and
+        "validation by" are displaying in excel sheet
+        LIMS-7727
+        """
+        self.single_analysis_page = SingleAnalysisPage()
+        today = date.today()
+        validation_date = today.strftime("%d.%m.%Y")
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        order_id = random_order['orderId']
+        order_no = random_order['orderNo']
+        username = self.base_selenium.username
+        self.info('edit order with No {}'.format(order_no))
+        self.orders_page.get_order_edit_page_by_id(order_id)
+        self.order_page.sleep_small()
+        self.info('navigate to analysis tab')
+        self.order_page.navigate_to_analysis_tab()
+        self.single_analysis_page.set_testunit_values(save=False)
+        self.info('change validation options to conform')
+        self.single_analysis_page.change_validation_options(text='Conform')
+
+        if lang == 'EN':
+            required_fields = ['Forwarding', 'Report sent by', 'Validation by', 'Validation date']
+        else:
+            self.selected_language = 'DE'
+            self.my_profile_page.get_my_profile_page()
+            self.my_profile_page.chang_lang(lang='DE')
+            required_fields = ['Versand', 'Bericht Versand duch', 'Probenfreigabe Datum', 'Probenfreigabe durch']
+
+        self.order_page.get_orders_page()
+        self.orders_page.filter_by_order_no(order_no)
+        row = self.orders_page.result_table()[0]
+        self.orders_page.click_check_box(source=row)
+        self.order_page.download_xslx_sheet()
+        self.info('Comparing the downloaded order ')
+        for field in required_fields:
+            self.info('asserting {} field is displayed in xslx sheet'.format(field))
+            self.assertIn(field, self.order_page.sheet)
+        self.info('asserting correct data displayed')
+        if lang == 'EN':
+            self.assertEqual(self.order_page.sheet.iloc[0]['Report sent by'], '-')
+            self.assertEqual(self.order_page.sheet.iloc[0]['Validation by'], username)
+            self.assertEqual(self.order_page.sheet.iloc[0]['Forwarding'], 'Not Forwarded')
+            self.assertEqual(self.order_page.sheet.iloc[0]['Validation date'], validation_date)
+        else:
+            self.assertEqual(self.order_page.sheet.iloc[0]['Bericht Versand duch'], '-')
+            self.assertEqual(self.order_page.sheet.iloc[0]['Probenfreigabe durch'], username)
+            self.assertEqual(self.order_page.sheet.iloc[0]['Versand'], 'Nicht Versand')
+            self.assertEqual(self.order_page.sheet.iloc[0]['Probenfreigabe Datum'], validation_date)
+
