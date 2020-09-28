@@ -17,6 +17,7 @@ from parameterized import parameterized
 from datetime import date
 from nose.plugins.attrib import attr
 import random
+import skip
 
 
 class OrdersWithoutArticleTestCases(BaseTest):
@@ -143,6 +144,7 @@ class OrdersWithoutArticleTestCases(BaseTest):
 
     @parameterized.expand(['cancel', 'confirm'])
     @attr(series=True)
+    @skip('https://modeso.atlassian.net/browse/LIMS-3255')
     def test003_edit_material_type_order_without_article(self, case):
         """
         Orders without articles: When editing an order with test plan, the form should  be opened without article
