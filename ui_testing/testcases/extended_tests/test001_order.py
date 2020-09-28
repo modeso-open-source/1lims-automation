@@ -257,12 +257,17 @@ class OrdersExtendedTestCases(BaseTest):
         LIMS-7871
         check that added dynamic field will be displayed in order main table
         LIMS-7865
+        orders : configuration menu : check that added dynamic field will be displayed in configuration main table
+        LIMS-7866
         """
         if not GeneralUtilitiesAPI().is_dynamic_field_existing(field_name='Text'):
             self.orders_api.order_with_added_dynamic_field()
         self.info('Rename the added field ')
         random_name = self.generate_random_string()
         self.order_page.rename_dynamic_field(field='orders:text_field_dragged', value=random_name)
+        self.info('Assert the added field is displayed in configuration main menu')
+        fields_in_main_configurations_menu = self.orders_page.get_configurations_options()
+        self.assertIn(random_name, fields_in_main_configurations_menu)
         self.order_page.get_orders_page()
         self.orders_page.sleep_tiny()
         self.info('Assert the added field is visible in main order table')
