@@ -16,8 +16,8 @@ from api_testing.apis.base_api import BaseAPI
 from parameterized import parameterized
 from datetime import date
 from nose.plugins.attrib import attr
+from unittest import skip
 import random
-import skip
 
 
 class OrdersWithoutArticleTestCases(BaseTest):
