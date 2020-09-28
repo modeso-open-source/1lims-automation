@@ -3664,45 +3664,38 @@ class OrdersTestCases(BaseTest):
         [Orders][Active Table][Suborders] Make Sure that Next to the analysis result an icon will be displayed
         upon click a dialog will open containing (the current child table of analysis page ) table with the test units
         in it and it's specs and values.
+
         LIMS-5373
         """
         self.single_analysis_page = SingleAnalysisPage()
-        self.test_plan_api = TestPlanAPI()
-        displayed_testunits = []
         response, payload = self.orders_api.create_new_order()
         self.assertEqual(response['status'], 1)
         order_id = response['order']['mainOrderId']
-        order_no = payload[0]['orderNo']
-        testplan_id = payload[0]['testPlans'][0]['id']
-        testunit_id = payload[0]['testUnits'][0]['id']
-        testunit_name = payload[0]['testUnits'][0]['name']
-        testplan_info = self.test_plan_api.get_testplan_form_data(id=testplan_id)
-        testplan_specs = testplan_info['specifications'][0]['lowerLimit'] + '-' + testplan_info['specifications'][0]['upperLimit']
-        testunit_in_testplan = testplan_info['specifications'][0]['name']
-        testunit_info = self.test_unit_api.get_testunit_form_data(id=testunit_id)
-        testunit_specs = testunit_info[0]['testUnit']['lowerLimit'] + '-' + testunit_info[0]['testUnit']['upperLimit']
+        testplan_info = TestPlanAPI().get_testplan_form_data(id=payload[0]['testPlans'][0]['id'])
+        testplan_specs = '{}-{}'.format(testplan_info['specifications'][0]['lowerLimit'],
+                                        testplan_info['specifications'][0]['upperLimit'])
+        testunit_list = [testplan_info['specifications'][0]['name'], payload[0]['testUnits'][0]['name']]
+        testunit_info = self.test_unit_api.get_testunit_form_data(id=payload[0]['testUnits'][0]['id'])
+        testunit_specs = '{}-{}'.format(testunit_info[0]['testUnit']['lowerLimit'],
+                                        testunit_info[0]['testUnit']['upperLimit'])
+        specs_list = [testplan_specs, testunit_specs]
 
         self.orders_page.get_order_edit_page_by_id(order_id)
-        self.order_page.sleep_small()
         self.info('navigate to analysis tab')
         self.order_page.navigate_to_analysis_tab()
         value = self.single_analysis_page.set_testunit_values(save=False)
         self.base_selenium.scroll()
-        self.info('change validation options ')
+        self.info('change validation options')
         analysis_result = self.single_analysis_page.change_validation_options()
         self.order_page.get_orders_page()
-        self.single_analysis_page.navigate_to_order_tab()
-        self.order_page.filter_by_order_no(filter_text=order_no)
-        row = self.order_page.result_table()[0]
+        self.order_page.filter_by_order_no(filter_text=payload[0]['orderNo'])
         suborders = self.order_page.get_child_table_data()
         self.info('asserting analysis result is displayed correctly')
         for suborder in suborders:
-            if 'Conform W. Rest.' == analysis_result:
+            if analysis_result == 'Conform W. Rest.':
                 self.assertEqual(suborder['Analysis Results'], 'Conform With Restrictions (1)')
-
             else:
                 self.assertEqual(suborder['Analysis Results'], analysis_result)
-
         self.info('asserting icon exists beside analysis results')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='order:analysis_result_icon'))
         self.base_selenium.click(element='order:analysis_result_icon')
@@ -3710,14 +3703,9 @@ class OrdersTestCases(BaseTest):
             table_element='order:analysis_testunits_table')
         self.order_page.sleep_tiny()
         self.base_selenium.click(element='order:close_testunits_table')
-        for testunit_record in testunits_table:
-            displayed_testunits.append(testunit_record['Test Unit'])
+        displayed_testunits = [testunit_record['Test Unit'] for testunit_record in testunits_table]
+        displayed_testunits_specs = [testunit_record['Specifications'] for testunit_record in testunits_table]
         self.info('asserting all selected testunits are displayed')
-        self.assertIn(testunit_name, displayed_testunits)
-        self.assertIn(testunit_in_testplan, displayed_testunits)
-        for testunit_record in testunits_table:
-            if testunit_record['Test Unit'] == testunit_in_testplan:
-                self.assertEqual(testunit_record['Specifications'], testplan_specs)
-            elif testunit_record['Test Unit'] == testunit_name:
-                self.assertEqual(testunit_record['Specifications'], testunit_specs)
-            self.assertEqual(testunit_record['Value'], str(value))
+        self.assertCountEqual(displayed_testunits, testunit_list)
+        self.info('asserting all selected testunits specification are displayed')
+        self.assertCountEqual(displayed_testunits_specs, specs_list)
