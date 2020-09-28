@@ -368,3 +368,16 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:order_tab')
         self.sleep_medium()
 
+    def is_order_no_match_config(self,year_option,order_no):
+        if year_option == '1':
+            if order_no.split('-')[1] == '2020':
+                return True
+            else:
+                return False
+        elif year_option == '2':
+            if order_no.split('-')[0].replace("'", "") == '2020':
+                return True
+            else:
+                return False
+
+

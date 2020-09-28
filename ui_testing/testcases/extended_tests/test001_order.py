@@ -191,25 +191,39 @@ class OrdersExtendedTestCases(BaseTest):
             self.assertIn(header, displayed_child_headers)
             self.assertIn(header, displayed_Configuration_headers)
 
-    @parameterized.expand(['0','1','2'])
-    def test103_search_and_filter_by_all_formats(self, year_option):
+    @parameterized.expand(['1','2'])
+    def test004_search_and_filter_by_all_formats(self, year_option):
         '''
         Orders: Search/filter Approach: User can search/filter by all the new number format ( without year, number before year, number after year
         LIMS-4110
+        LIMS-4109
         :return:
         '''
         #default set config year_option=1
-        if year_option == '0':
-            self.orders_api.set_configuration_without_year()
-        elif year_option == '2':
+        if year_option == '2':
             self.orders_api.set_configuration_year_before_no()
         response,payload = self.orders_api.create_new_order(yearOption=int(year_option))
         self.assertEqual(response['status'], 1)
-        order_no = response['order']['orderNo']
+        order_no = payload[0]['orderNoWithYear']
         self.info('can filter in order active table with order no in format .{}'.format(format))
         self.orders_page.filter_by_order_no(order_no)
         rows = self.orders_page.result_table()
-        self.assertGreater(len(rows) - 1, 0)
+        order_data = self.base_selenium.get_row_cells_dict_related_to_header(row=rows[0])
+        self.assertEqual(order_no,order_data['Order No.'])
+        self.assertTrue(self.orders_page.is_order_no_match_config(year_option=year_option,order_no=order_data['Order No.']))
+        self.orders_page.click_check_box(rows[0])
+        self.order_page.download_xslx_sheet()
+        order_in_sheet = self.order_page.sheet.iloc[0]['Order No.']
+        self.assertTrue(self.orders_page.is_order_no_match_config(year_option=year_option,order_no=order_in_sheet))
+        self.info('duplicate the main order')
+        self.orders_page.duplicate_main_order_from_table_overview()
+        #self.base_selenium.refresh()
+        import ipdb;ipdb.set_trace()
+        self.order_page.wait_until_page_is_loaded()
+        duplicated_order_number = self.order_page.get_no()
+        self.assertTrue(
+            self.orders_page.is_order_no_match_config(year_option=year_option, order_no=duplicated_order_number))
+        '''
         self.base_selenium.refresh()
         self.info('can search in order active table with order no in format .{}'.format(format))
         self.orders_page.search(order_no)
@@ -222,5 +236,6 @@ class OrdersExtendedTestCases(BaseTest):
         self.orders_page.search(order_no)
         self.assertGreater(len(rows) - 1, 0)
         self.orders_page.navigate_to_order_active_table()  # in order to open on order tab in the second run
+        '''
 
 
