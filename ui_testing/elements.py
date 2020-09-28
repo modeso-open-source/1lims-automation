@@ -662,9 +662,8 @@ elements = {
                           'value': "//td//*[@id='materialType']"},
         'article': {'method': 'xpath',
                     'value': '//td//*[@id="article"]'},
-        'section1_titles' : {
-              'method' : 'class_name',
-              'value' : 'field-title-limitations'},
+        'section1_titles': {'method': 'class_name',
+                            'value': 'field-title-limitations'},
         'departments': {'method': 'xpath',
                         'value': '//td//*[@id="departments"]'},
         'auto_fill': {'method': 'xpath', 'value': '//i[@class="flaticon-app"]'},
