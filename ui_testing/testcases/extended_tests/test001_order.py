@@ -279,8 +279,6 @@ class OrdersExtendedTestCases(BaseTest):
         self.base_selenium.set_text(element='orders:text_field_input', value=random_string)
         self.orders_page.save(save_btn='order:save_btn')
         self.orders_page.sleep_tiny()
-        self.info('asserting "oh snap message" is displayed')
-        self.assertTrue(self.base_selenium.check_element_is_exist(element='general:oh_snap_msg'))
         self.info('asserting "this value exists" message is displayed')
         self.assertTrue(self.base_selenium.check_element_is_exist(element='orders:value_exists_alert'))
 
