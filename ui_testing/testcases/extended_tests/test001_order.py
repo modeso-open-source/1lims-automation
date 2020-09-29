@@ -250,6 +250,7 @@ class OrdersExtendedTestCases(BaseTest):
         self.assertEqual(suborders_after[0]['Validation date'], current_date)
 
     @parameterized.expand(['EN', 'DE'])
+    @attr(series=True)
     def test005_check_new_fields_are_displayed_in_XSLX(self, lang):
         """
         Orders: Export : check that the fields of "Forwarding" , "Report sent by", "validation date" and
