@@ -251,7 +251,8 @@ class OrdersExtendedTestCases(BaseTest):
 
     def test005_mark_dynamic_field_required(self):
         """
-
+        Orders : configuration: When the user select the dynamic field as a required or unique it should applied successfully
+        LIMS-8130
         """
         if not GeneralUtilitiesAPI().is_dynamic_field_existing(field_name='Text'):
             self.orders_api.order_with_added_dynamic_field()
