@@ -1,6 +1,6 @@
 from ui_testing.pages.base_pages import BasePages
 from random import randint
-import time
+import time, random
 
 
 class Header(BasePages):
@@ -22,9 +22,60 @@ class Header(BasePages):
         self.sleep_tiny()
 
     def get_random_user(self):
-        row = self.get_random_user_row()
-        self.open_edit_page(row=row)
+        # we need to make sure that user selected not admin user or your username
+        if self.base_selenium.username == 'admin':
+            rejected_users = ['admin']
+        else:
+            rejected_users = [self.base_selenium.username, 'admin']
+
+        rows = self.base_selenium.get_table_rows(element='user_management:user_table')
+        all_users_rows_without_admin = []
+        for row in rows:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
+            if row_data:
+                if row_data['Name'] in rejected_users:
+                    continue
+                else:
+                    all_users_rows_without_admin.append(row)
+
+        if len(all_users_rows_without_admin) == 0:
+            raise Exception(f'users available only are your users : {rejected_users}')
+
+        selected_user_row = random.choice(all_users_rows_without_admin)
+        self.open_edit_page(row=selected_user_row)
         self.sleep_small()
+
+    def select_multiple_random_users_rows(self):
+        # we need to make sure that user selected not admin user or your username
+        if self.base_selenium.username == 'admin':
+            rejected_users = ['admin']
+        else:
+            rejected_users = [self.base_selenium.username, 'admin']
+
+        rows = self.base_selenium.get_table_rows(element='user_management:user_table')
+        all_users_rows_without_admin = []
+        for row in rows:
+            row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
+            if row_data:
+                if row_data['Name'] in rejected_users:
+                    continue
+                else:
+                    all_users_rows_without_admin.append(row)
+
+        if len(all_users_rows_without_admin) == 0:
+            raise Exception(f'users available only are your users : {rejected_users}')
+
+        no_of_rows = randint(min(2, len(all_users_rows_without_admin) - 1),
+                             min(5, len(all_users_rows_without_admin) - 1))
+        self.info(' No. of selected rows {} '.format(no_of_rows))
+        selected_user_rows = random.sample(all_users_rows_without_admin, no_of_rows)
+        selected_users_data = []
+        for selected_row in selected_user_rows:
+            self.click_check_box(source=selected_row)
+            self.sleep_tiny()
+            selected_users_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=selected_row))
+
+        return selected_users_data, selected_user_rows
 
     def get_random_user_row(self):
         return self.get_random_table_row(table_element='user_management:user_table')
@@ -219,7 +270,7 @@ class Header(BasePages):
                 return False
 
     def get_random_role(self):
-        row = self.get_random_user_row()
+        row = self.get_random_role_row()
         self.open_edit_page(row=row)
 
     def get_random_role_row(self):
@@ -397,38 +448,6 @@ class Header(BasePages):
         self.filter_apply()
         self.sleep_tiny()
         return self.get_the_latest_row_data()
-
-    def select_random_multiple_users_table_rows(self, element='general:table'):
-        _selected_rows_text = []
-        selected_rows_data = []
-        selected_rows = []
-        rows = self.base_selenium.get_table_rows(element=element)
-        no_of_rows = randint(min(2, len(rows) - 1), min(5, len(rows) - 1))
-        count = 0
-        self.info(' No. of selected rows {} '.format(no_of_rows))
-        while count < no_of_rows:
-            self.base_selenium.scroll()
-            row = rows[randint(0, len(rows) - 2)]
-            row_text = row.text
-            if 'Admin' in row_text:
-                no_of_rows = no_of_rows-1
-                continue
-            if 'Contact' in row_text:
-                no_of_rows = no_of_rows-1
-                continue
-            if not row_text:
-                continue
-            if row_text in _selected_rows_text:
-                continue
-            count = count + 1
-            self.click_check_box(source=row)
-            self.sleep_tiny()
-            _selected_rows_text.append(row_text)
-            selected_rows.append(row)
-            selected_rows_data.append(self.base_selenium.get_row_cells_dict_related_to_header(row=row))
-
-        self.info(' No. of selected rows {} '.format(no_of_rows))
-        return selected_rows_data, selected_rows
 
     def disable_article_option(self):
         check_box = self.base_selenium.find_element(element='general:checkbox')
