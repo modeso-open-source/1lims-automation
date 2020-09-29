@@ -3658,3 +3658,19 @@ class OrdersTestCases(BaseTest):
             self.assertFalse(self.order_page.confirm_popup(check_only=True))
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
+
+    def test107_check_that_two_testunits_with_same_name_displayed_in_one_testplan(self) :
+            """
+           Orders: Test plan Approach: test units pop-up: In case I have two test units with the same name
+           in one test plan, both of them should display in the test units pop-up.
+
+            LIMS-4800
+            """
+            self.test_plan_api = TestPlanAPI()
+            response, payload = self.test_unit_api.create_qualitative_testunit(name='xxx')
+            response2, payload2 = self.test_unit_api.create_qualitative_testunit(name='xxx')
+            import ipdb;
+            ipdb.set_trace()
+            testplan= self.test_plan_api.create_testplan_from_test_unit_id(test_unit_id=response['testUnit']['testUnitId'])
+
+   

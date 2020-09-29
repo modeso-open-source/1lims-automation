@@ -184,7 +184,7 @@ class ArticleAPI(ArticleAPIFactory):
         self.info("search for article with material type {}".format(material_type))
         for article in articles['articles']:
             if article['materialType'] == material_type:
-                return article['name']
+                return article
 
         self.info("No article with requested material type, So create article")
         materialType = {"id": material_type_id, "text": material_type}
@@ -236,4 +236,3 @@ class ArticleAPI(ArticleAPIFactory):
         with open(config_file, "r") as read_file:
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
-
