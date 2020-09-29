@@ -16,7 +16,7 @@ from api_testing.apis.base_api import BaseAPI
 from parameterized import parameterized
 from datetime import date
 from nose.plugins.attrib import attr
-
+import random
 
 class OrdersWithoutArticleTestCases(BaseTest):
     def setUp(self):
@@ -255,5 +255,34 @@ class OrdersExtendedTestCases(BaseTest):
         """
         if not GeneralUtilitiesAPI().is_dynamic_field_existing(field_name='Text'):
             self.orders_api.order_with_added_dynamic_field()
-        self.order_page.mark_dynamic_field_required(field='orders:text_field_dragged')
+        self.order_page.change_text_dynamic_field_options(option='required')
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        self.orders_page.get_order_edit_page_by_id(random_order['id'])
+        self.info('edit order with No {}'.format(random_order['orderNo']))
+        self.info('saving without entering data in the new required field')
+        self.orders_page.save(save_btn='order:save_btn')
+        self.orders_page.sleep_tiny()
+        self.info('asserting "oh snap message" is displayed')
+        self.assertTrue(self.base_selenium.check_element_is_exist(element='general:oh_snap_msg'))
+        self.orders_page.get_orders_page()
+        self.order_page.change_text_dynamic_field_options(option='unique')
+        random_string = self.generate_random_string()
+        random_orders = random.sample(self.orders_api.get_all_orders_json(), 2)
+        self.orders_page.get_order_edit_page_by_id(random_orders[0]['id'])
+        self.info('edit order with No {}'.format(random_orders[0]['orderNo']))
+        self.info('inserting {} into text field'.format(random_string))
+        self.base_selenium.set_text(element='orders:text_field_input', value=random_string)
+        self.orders_page.save(save_btn='order:save_btn')
+        self.orders_page.get_order_edit_page_by_id(random_orders[1]['id'])
+        self.info('edit order with No {}'.format(random_orders[1]['orderNo']))
+        self.info('inserting {} again into text field of another order'.format(random_string))
+        self.base_selenium.set_text(element='orders:text_field_input', value=random_string)
+        self.orders_page.save(save_btn='order:save_btn')
+        self.orders_page.sleep_tiny()
+        self.info('asserting "oh snap message" is displayed')
+        self.assertTrue(self.base_selenium.check_element_is_exist(element='general:oh_snap_msg'))
+        self.info('asserting "this value exists" message is displayed')
+        self.assertTrue(self.base_selenium.check_element_is_exist(element='orders:value_exists_alert'))
+
+
 

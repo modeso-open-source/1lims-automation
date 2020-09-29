@@ -637,12 +637,18 @@ elements = {
                              'value': 'child_table_delete'},
         'confirm_delete': {'method':'xpath',
                            'value': '//h2[@id="swal2-title"]'},
-        'text_field_dragged': {'method': 'xpath',
-                               'value': '//*[contains(concat( " ", @class, " " ), concat( " ", "color-label", " " ))]'},
         'save_config': {'method': 'xpath',
                         'value': '//button[@class="btn btn-primary mb-md-0 mr-md-3"]'},
-        'dynamic_field_options':{'method': 'xpath',
-                         'value':"//a[@class='btn m-btn m-btn--hover-accent m-btn--icon m-btn--icon-only m-btn--pill float-right dropdown-icon']//i[@class='la la-ellipsis-h']"},
+        'text_dynamic_field_options': {'method': 'xpath',
+                                  'value': "//div[@id='341_field']//div[@class='dropdown-icon']"},
+        'text_dynamic_field_required': {'method': 'xpath',
+                                   'value': "//a[contains(text(),'Mark as Required')]"},
+        'text_dynamic_field_unique': {'method': 'xpath',
+                                 'value': "//a[contains(text(),'Mark as Unique')]"},
+        'text_field_input': {'method': 'xpath',
+                             'value': "//div[5]//div[1]//input[1]"},
+        'value_exists_alert': {'method': 'xpath',
+                               'value': "//span[@class='m-form__help']"}
 
     },
 

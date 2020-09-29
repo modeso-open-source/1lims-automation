@@ -797,10 +797,13 @@ class Order(Orders):
                                                                                          dom_element)
         return multiple_line_properties
 
-    def mark_dynamic_field_required(self, field):
+    def change_text_dynamic_field_options(self, option):
         self.base_selenium.click(element='general:right_menu')
         self.base_selenium.click(element='general:configurations')
-        import ipdb; ipdb.set_trace()
-        self.base_selenium.click(element='orders:dynamic_field_options')
-        #choose mark as required
-        #self.base_selenium.click(element='orders:save_config')
+        self.base_selenium.click(element='orders:text_dynamic_field_options')
+        if option == 'required':
+            self.base_selenium.click(element='orders:text_dynamic_field_required')
+        elif option == 'unique':
+            self.base_selenium.click(element='orders:text_dynamic_field_unique')
+        self.base_selenium.click(element='orders:save_config')
+
