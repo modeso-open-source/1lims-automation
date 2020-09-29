@@ -86,6 +86,9 @@ class BasePages:
                 self.base_selenium.click(element='general:confirm_cancel')
         self.sleep_small()
 
+    def get_confirmation_pop_up_text(self):
+        return self.base_selenium.get_text(element='general:confirmation_pop_up')
+
     def open_filter_menu(self):
         self.info('open Filter')
         filter = self.base_selenium.find_element_in_element(source_element='general:menu_filter_view',
