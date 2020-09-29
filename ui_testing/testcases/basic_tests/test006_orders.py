@@ -3667,10 +3667,15 @@ class OrdersTestCases(BaseTest):
             LIMS-4800
             """
             self.test_plan_api = TestPlanAPI()
-            response, payload = self.test_unit_api.create_qualitative_testunit(name='xxx')
-            response2, payload2 = self.test_unit_api.create_qualitative_testunit(name='xxx')
+            tu_name = self.generate_random_string()
+            response, payload = self.test_unit_api.create_qualitative_testunit(name=tu_name)
+            first_tu = self.test_unit_api.get_testunit_form_data(response['testUnit']['testUnitId'])[0]['testUnit']
+            formatted_tu = TstUnit().map_testunit_to_testplan_format(testunit=first_tu)
+            response2, payload2 = self.test_unit_api.create_qualitative_testunit(name=tu_name)
+            second_tu = self.test_unit_api.get_testunit_form_data(response2['testUnit']['testUnitId'])[0]['testUnit']
+            formatted_tu_2 = TstUnit().map_testunit_to_testplan_format(testunit=second_tu)
             import ipdb;
             ipdb.set_trace()
-            testplan= self.test_plan_api.create_testplan_from_test_unit_id(test_unit_id=response['testUnit']['testUnitId'])
+            tp_response, tp_payload = self.test_plan_api.create_testplan(testUnits=[formatted_tu,formatted_tu_2],selectedTestUnits=[formatted_tu,formatted_tu_2])
 
    
