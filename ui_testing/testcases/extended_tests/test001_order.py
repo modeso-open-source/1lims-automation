@@ -249,7 +249,7 @@ class OrdersExtendedTestCases(BaseTest):
         self.assertEqual(suborders_after[0]['Validation by'], payload['username'])
         self.assertEqual(suborders_after[0]['Validation date'], current_date)
 
-    def test006_mark_dynamic_field_required(self):
+    def test005_mark_dynamic_field_required(self):
         """
 
         """
