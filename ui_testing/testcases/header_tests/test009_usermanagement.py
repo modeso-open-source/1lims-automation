@@ -18,6 +18,7 @@ class HeaderTestCases(BaseTest):
         self.roles_api = RolesAPI()
         self.set_authorization(auth=self.roles_api.AUTHORIZATION_RESPONSE)
         self.header_page.get_users_page()
+        self.header_page.set_all_configure_table_columns_to_specific_value()
 
     def test001_archive_user_management(self):
         """
