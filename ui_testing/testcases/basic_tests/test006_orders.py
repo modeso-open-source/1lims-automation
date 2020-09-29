@@ -17,6 +17,7 @@ from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
 from parameterized import parameterized
 from random import randint
 from unittest import skip
+from datetime import date
 import random, re
 from nose.plugins.attrib import attr
 
@@ -3576,7 +3577,7 @@ class OrdersTestCases(BaseTest):
             test_units = [item['Test Unit'] for item in child_data]
             self.assertCountEqual(test_units, test_units_names[i * 2:(i * 2) + 2])
 
-    def test106_multiple_suborders(self):
+    def test102_multiple_suborders(self):
         """
         Orders: Table with add: Allow user to add any number of the suborders records not only 5 suborders
 
@@ -3602,7 +3603,7 @@ class OrdersTestCases(BaseTest):
         self.order_page.navigate_to_analysis_tab()
         self.assertEqual(SingleAnalysisPage().get_analysis_count(), 16)
 
-    def test102_create_order_with_test_plans_with_same_name(self):
+    def test103_create_order_with_test_plans_with_same_name(self):
         """
         Orders: Create Approach: Make sure In case you create two test plans with the same name
         and different materiel type, the test units that belongs to them displayed correct in
@@ -3631,5 +3632,29 @@ class OrdersTestCases(BaseTest):
             self.assertEqual(len(test_units), 1)
             test_units_name = test_units[0]['Test Unit Name'].split(' ')[0]
             self.assertEqual(test_units_name, test_units_list[i])
-
+             
+    @parameterized.expand(['update_a_field', 'no_updates'])
+    def test104_edit_order_page_then_overview(self, edit_case):
+        """
+        Orders: Popup should appear when editing then clicking on overview without saving <All data will be lost>
+        LIMS-6814
+        Orders: No popup should appear when clicking on overview without changing anything
+        LIMS-6821
+        """
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        self.info('edit order with No {}'.format(random_order['orderNo']))
+        self.order_page.filter_by_order_no(random_order['orderNo'])
+        row = self.orders_page.result_table()[0]
+        self.order_page.open_edit_page(row=row)
+        if edit_case == 'update_a_field':
+            self.info('update the contact field')
+            self.order_page.set_contact(remove_old=True)
+        self.order_page.click_overview()
+        if edit_case == 'update_a_field':
+            self.assertIn('All data will be lost', self.order_page.get_confirmation_pop_up_text())
+            self.assertTrue(self.order_page.confirm_popup(check_only=True))
+        else:
+            self.assertFalse(self.order_page.confirm_popup(check_only=True))
+            self.info('asserting redirection to active table')
+            self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
 

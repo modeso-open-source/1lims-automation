@@ -1128,6 +1128,11 @@ elements = {
     },
 
     'analysis_page': {
+        'validation_options': {
+             'method': 'tag_name',
+             'value': 'ng-select',
+             'order':0
+         },
         'all_rows': {
             'method': 'class_name',
             'value': 'm-accordion__item',
@@ -1153,7 +1158,11 @@ elements = {
         'analysis_page_table': {'method': 'class_name', 'value': 'm_accordion_7', 'order': 0},
         'headers': {'method': 'id', 'value': 'headers'},
         'analysis_no_filter': {'method': 'id', 'value': 'nofield'},
-        'order_no_filter': {'method': 'id', 'value': 'orderNofield'}
+        'order_no_filter': {'method': 'id', 'value': 'orderNofield'},
+        'testunits_analysis':{
+           'method': 'xpath',
+           'value': "//*[contains(@id,'testunit_')]"
+        },
 
     },
     'company_profile': {

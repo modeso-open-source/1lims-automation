@@ -312,7 +312,7 @@ class Orders(BasePages):
     def navigate_to_analysis_active_table(self):
         self.base_selenium.click(element='orders:analysis_tab')
         self.sleep_small()
-        
+
     def search_by_analysis_number(self,analysis_number):
         self.base_selenium.click(element='general:filter_button')
         self.base_selenium.set_text(element='orders:analysis_filter',value=analysis_number)
@@ -367,4 +367,17 @@ class Orders(BasePages):
     def navigate_to_order_active_table(self):
         self.base_selenium.click(element='orders:order_tab')
         self.sleep_medium()
+
+
+    def is_order_no_match_config(self,year_option,order_no):
+        if year_option == '1':
+            if order_no.split('-')[1] == '2020':
+                return True
+            else:
+                return False
+        elif year_option == '2':
+            if order_no.split('-')[0].replace("'", "") == '2020':
+                return True
+            else:
+                return False
 
