@@ -250,18 +250,17 @@ class OrdersExtendedTestCases(BaseTest):
         self.assertEqual(suborders_after[0]['Validation date'], current_date)
 
     @parameterized.expand(['1', '2'])
-    def test005_search_and_filter_by_all_formats(self, year_option):
-        '''
-        Orders: Search/filter Approach: User can search/filter by all the new number format ( without year, number before year, number after year
-        LIMS-4110
-        LIMS-4109
-        :return:
-        '''
-        # default set config year_option=1
+    @attr(series=True)
+    def test005_order_no_format_in_XLSX_sheet(self, year_option):
+        """
+         Orders: Search/filter Approach: User can search/filter by all the new number format
+         (without year, number before year, number after year
+
+         LIMS-4110
+         LIMS-4109 format in XLSX sheet
+        """
         if year_option == '2':
             self.orders_api.set_configuration_year_before_no()
-        import ipdb;
-        ipdb.set_trace()
         response, payload = self.orders_api.create_new_order(yearOption=int(year_option))
         self.assertEqual(response['status'], 1)
         order_no = payload[0]['orderNoWithYear']
@@ -276,28 +275,41 @@ class OrdersExtendedTestCases(BaseTest):
         self.order_page.download_xslx_sheet()
         order_in_sheet = self.order_page.sheet.iloc[0]['Order No.']
         self.assertTrue(self.orders_page.is_order_no_match_config(year_option=year_option, order_no=order_in_sheet))
+
+    @parameterized.expand(['1', '2'])
+    @attr(series=True)
+    def test006_order_no_format_in_duplicate_main_order_page(self, year_option):
+        """
+         Orders: Search/filter Approach: User can search/filter by all the new number format
+         (without year, number before year, number after year
+
+         LIMS-4110
+         LIMS-4109 format in duplicate main order page
+        """
+        if year_option == '2':
+            self.orders_api.set_configuration_year_before_no()
+        response, payload = self.orders_api.create_new_order(yearOption=int(year_option))
+        self.assertEqual(response['status'], 1)
+        order_no = payload[0]['orderNoWithYear']
+        self.orders_page.filter_by_order_no(order_no)
         self.info('duplicate the main order')
         self.orders_page.duplicate_main_order_from_table_overview()
-        # self.base_selenium.refresh()
-        import ipdb;
-        ipdb.set_trace()
-        self.order_page.wait_until_page_is_loaded()
         duplicated_order_number = self.order_page.get_no()
         self.assertTrue(
             self.orders_page.is_order_no_match_config(year_option=year_option, order_no=duplicated_order_number))
-        '''
-        self.base_selenium.refresh()
-        self.info('can search in order active table with order no in format .{}'.format(format))
-        self.orders_page.search(order_no)
-        self.assertGreater(len(rows) - 1, 0)
-        self.orders_page.navigate_to_analysis_active_table()
-        self.info('can filter in analysis active table with order no in format .{}'.format(format))
-        self.analyses_page.filter_by_order_no(order_no)
-        self.base_selenium.refresh()
-        self.info('can search in analysis active table with order no in format .{}'.format(format))
-        self.orders_page.search(order_no)
-        self.assertGreater(len(rows) - 1, 0)
-        self.orders_page.navigate_to_order_active_table()  # in order to open on order tab in the second run
+
+        # self.base_selenium.refresh()
+        # self.info('can search in order active table with order no in format .{}'.format(format))
+        # self.orders_page.search(order_no)
+        # self.assertGreater(len(rows) - 1, 0)
+        # self.orders_page.navigate_to_analysis_active_table()
+        # self.info('can filter in analysis active table with order no in format .{}'.format(format))
+        # self.analyses_page.filter_by_order_no(order_no)
+        # self.base_selenium.refresh()
+        # self.info('can search in analysis active table with order no in format .{}'.format(format))
+        # self.orders_page.search(order_no)
+        # self.assertGreater(len(rows) - 1, 0)
+        # self.orders_page.navigate_to_order_active_table()  # in order to open on order tab in the second run
 
 
 
