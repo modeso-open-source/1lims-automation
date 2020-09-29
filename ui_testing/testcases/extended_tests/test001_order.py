@@ -293,23 +293,69 @@ class OrdersExtendedTestCases(BaseTest):
         order_no = payload[0]['orderNoWithYear']
         self.orders_page.filter_by_order_no(order_no)
         self.info('duplicate the main order')
+        rows = self.orders_page.result_table()
+        self.orders_page.click_check_box(rows[0])
         self.orders_page.duplicate_main_order_from_table_overview()
         duplicated_order_number = self.order_page.get_no()
         self.assertTrue(
             self.orders_page.is_order_no_match_config(year_option=year_option, order_no=duplicated_order_number))
 
-        # self.base_selenium.refresh()
-        # self.info('can search in order active table with order no in format .{}'.format(format))
-        # self.orders_page.search(order_no)
-        # self.assertGreater(len(rows) - 1, 0)
-        # self.orders_page.navigate_to_analysis_active_table()
-        # self.info('can filter in analysis active table with order no in format .{}'.format(format))
-        # self.analyses_page.filter_by_order_no(order_no)
-        # self.base_selenium.refresh()
-        # self.info('can search in analysis active table with order no in format .{}'.format(format))
-        # self.orders_page.search(order_no)
-        # self.assertGreater(len(rows) - 1, 0)
-        # self.orders_page.navigate_to_order_active_table()  # in order to open on order tab in the second run
 
+    @parameterized.expand(['1', '2'])
+    @attr(series=True)
+    def test007_order_no_format_in_create_form(self, year_option):
+        """
+        Orders: Search/filter Approach: User can search/filter by all the new number format
+        (without year, number before year, number after year
 
+        LIMS-4110
+        LIMS-4109 format in create order form
+        """
+        if year_option == '2':
+            self.orders_api.set_configuration_year_before_no()
+        self.info('open the create form')
+        self.order_page.create_new_order()
+        order_no = self.order_page.get_no()
+        self.assertTrue(
+                self.orders_page.is_order_no_match_config(year_option=year_option, order_no=order_no))
 
+    @parameterized.expand(['1', '2'])
+    @attr(series=True)
+    def test008_order_no_format_in_analysis_section(self, year_option):
+        """
+        Orders: Search/filter Approach: User can search/filter by all the new number format
+        (without year, number before year, number after year
+        LIMS-4110
+        LIMS-4109 format in the analysis section
+        """
+        self.analysis_page = SingleAnalysisPage()
+        if year_option == '2':
+            self.orders_api.set_configuration_year_before_no()
+        response, payload = self.orders_api.create_new_order(yearOption=int(year_option))
+        self.assertEqual(response['status'], 1)
+        order_no = payload[0]['orderNoWithYear']
+        self.info('edit order with No {}'.format(order_no))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        self.info('navigate to analysis tab')
+        self.order_page.navigate_to_analysis_tab()
+        analysis_record = self.analysis_page.get_all_analysis_records()
+        self.assertTrue(
+            self.orders_page.is_order_no_match_config(year_option=year_option, order_no=analysis_record[0]['Order No.']))
+
+    @parameterized.expand(['1', '2'])
+    @attr(series=True)
+    def test006_filter_by_order_no_format_in_analysis_active_table(self, year_option):
+        """
+         Orders: Search/filter Approach: User can search/filter by all the new number format
+         (without year, number before year, number after year
+
+         LIMS-4110 filter by order no in analysis active table
+         LIMS-4109
+        """
+        if year_option == '2':
+            self.orders_api.set_configuration_year_before_no()
+        response, payload = self.orders_api.create_new_order(yearOption=int(year_option))
+        self.assertEqual(response['status'], 1)
+        order_no = payload[0]['orderNoWithYear']
+        self.analyses_page.filter_by_order_no(order_no)
+        self.assertGreater(len(self.orders_page.result_table()) - 1, 0)
