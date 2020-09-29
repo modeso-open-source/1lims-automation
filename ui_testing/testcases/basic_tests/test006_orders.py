@@ -3658,3 +3658,54 @@ class OrdersTestCases(BaseTest):
             self.assertFalse(self.order_page.confirm_popup(check_only=True))
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
+
+
+    def test107_check_that_two_testunits_with_same_name_displayed_in_one_testplan(self) :
+            """
+           Orders: Test plan Approach: test units pop-up: In case I have two test units with the same name
+           in one test plan, both of them should display in the test units pop-up.
+            LIMS-4800
+            """
+            self.test_plan_api = TestPlanAPI()
+            self.analysis_page =SingleAnalysisPage()
+            tu_name = self.generate_random_string()
+            response, payload = self.test_unit_api.create_qualitative_testunit(name=tu_name)
+            first_tu = self.test_unit_api.get_testunit_form_data(response['testUnit']['testUnitId'])[0]['testUnit']
+            formatted_tu = TstUnit().map_testunit_to_testplan_format(testunit=first_tu)
+            response2, payload2 = self.test_unit_api.create_qualitative_testunit(name=tu_name)
+            second_tu = self.test_unit_api.get_testunit_form_data(response2['testUnit']['testUnitId'])[0]['testUnit']
+            formatted_tu_2 = TstUnit().map_testunit_to_testplan_format(testunit=second_tu)
+            tp_response, tp_payload = self.test_plan_api.create_testplan(testUnits=[formatted_tu,formatted_tu_2],selectedTestUnits=[formatted_tu,formatted_tu_2])
+            # testplan={'id': tp_payload['testPlan']['id'],'name':tp_payload['testPlan']['text']}
+            # article_id = tp_payload['selectedArticles'][0]['id']
+            # article_name= tp_payload['selectedArticles'][0]['text']
+            # material_type= {'id' :tp_payload['materialType'][0]['id'],'text': tp_payload['materialType'][0]['text']}
+            # material_type_id= tp_payload['materialTypeId'][0]
+            # self.orders_api.create_new_order(testPlans=testplan,testUnits=[],materialType=material_type,materialTypeId=material_type_id
+            #                                  ,article=article_name,articleId=article_id)
+            order_number=self.order_page.create_new_order(test_plans=[tp_payload['testPlan']['text']], material_type= tp_payload['materialType'][0]['text'],test_units=[])
+            data=self.order_page.get_testplan_pop_up()
+            testunit_names=data[0]['test_units']
+            for i in range(2) :
+                self.assertEqual(testunit_names[i],tu_name)
+            self.order_page.sleep_medium()
+            self.base_selenium.refresh()
+            self.info('checking that both testunits with same name appear in the analysis form')
+            self.order_page. navigate_to_analysis_tab()
+            row = self.analysis_page.open_accordion_for_analysis_index(0)
+            test_units = self.analysis_page.get_testunits_in_analysis(row)
+            for i in range(2):
+                 test_units_name = test_units[i]['Test Unit Name'].split(' ')[0]
+                 self.assertEqual(test_units_name,tu_name)
+            
+            self.info('checking that both testunits with same name appear in the analysis table')
+            self.orders_page.get_orders_page()
+            self.orders_page.navigate_to_analysis_active_table()
+            self.analyses_page.filter_by_order_no(filter_text=order_number)
+            analysis_data = self.analyses_page.get_child_table_data(index=0)
+            for i in range(2) :
+                self.assertEqual(analysis_data[i]['Test Unit'], tu_name)
+
+
+
+
