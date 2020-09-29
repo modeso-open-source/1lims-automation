@@ -796,3 +796,11 @@ class Order(Orders):
                                                                                          '"None").lineBreak',
                                                                                          dom_element)
         return multiple_line_properties
+
+    def mark_dynamic_field_required(self, field):
+        self.base_selenium.click(element='general:right_menu')
+        self.base_selenium.click(element='general:configurations')
+        import ipdb; ipdb.set_trace()
+        self.base_selenium.click(element='orders:dynamic_field_options')
+        #choose mark as required
+        #self.base_selenium.click(element='orders:save_config')

@@ -636,7 +636,14 @@ elements = {
         'suborder_delete': {'method': 'id',
                              'value': 'child_table_delete'},
         'confirm_delete': {'method':'xpath',
-                           'value': '//h2[@id="swal2-title"]'}
+                           'value': '//h2[@id="swal2-title"]'},
+        'text_field_dragged': {'method': 'xpath',
+                               'value': '//*[contains(concat( " ", @class, " " ), concat( " ", "color-label", " " ))]'},
+        'save_config': {'method': 'xpath',
+                        'value': '//button[@class="btn btn-primary mb-md-0 mr-md-3"]'},
+        'dynamic_field_options':{'method': 'xpath',
+                         'value':"//a[@class='btn m-btn m-btn--hover-accent m-btn--icon m-btn--icon-only m-btn--pill float-right dropdown-icon']//i[@class='la la-ellipsis-h']"},
+
     },
 
     'audit_trail': {

@@ -248,3 +248,17 @@ class OrdersExtendedTestCases(BaseTest):
         suborders_after = self.order_page.get_child_table_data(index=0)
         self.assertEqual(suborders_after[0]['Validation by'], payload['username'])
         self.assertEqual(suborders_after[0]['Validation date'], current_date)
+
+    def test006_add_dynamic_field_in_order_section1(self):
+        """
+        order : create new order: check that dynamic field added in order section 1 will be displayed
+        in create new order screen
+        LIMS-7870
+
+        orders : configuration : check that user can add dynamic field in order section 1
+        LIMS-7864
+        """
+        if not GeneralUtilitiesAPI().is_dynamic_field_existing(field_name='Text'):
+            self.orders_api.order_with_added_dynamic_field()
+        self.order_page.mark_dynamic_field_required(field='orders:text_field_dragged')
+
