@@ -727,7 +727,7 @@ class Order(Orders):
             row=suborders[index],
             table_element='order:suborder_table')
         popup_element = self.base_selenium.find_element_in_element(
-            source=suborders_elements['Test Plan:'], destination_element='order:testplan_popup_btn')
+            source=suborders_elements['Test Plan: *'], destination_element='order:testplan_popup_btn')
         popup_element.click()
         self.sleep_small()
         results = []
