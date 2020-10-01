@@ -246,6 +246,7 @@ class OrdersAPIFactory(BaseAPI):
     @staticmethod
     def _format_payload(payload):
         payload = payload[0]
+        import ipdb;ipdb.set_trace()
         if payload['testPlans']:
             selected_testplan_arr = []
             for testplan in payload['testPlans']:
@@ -547,3 +548,29 @@ class OrdersAPI(OrdersAPIFactory):
                             'articleId': second_article['id']}]
         return update_suborder
 
+    def create_order_with_testplan_with_double_tu_same_name(self):
+        self.test_unit_api = TestUnitAPI()
+        tu_name = self.generate_random_string()
+        response, payload = self.test_unit_api.create_qualitative_testunit(name=tu_name)
+        first_tu = self.test_unit_api.get_testunit_form_data(response['testUnit']['testUnitId'])[0]['testUnit']
+        formatted_tu = TstUnit().map_testunit_to_testplan_format(testunit=first_tu)
+        response2, payload2 = self.test_unit_api.create_qualitative_testunit(name=tu_name)
+        second_tu = self.test_unit_api.get_testunit_form_data(response2['testUnit']['testUnitId'])[0]['testUnit']
+        formatted_tu_2 = TstUnit().map_testunit_to_testplan_format(testunit=second_tu)
+        response, _ = GeneralUtilitiesAPI().list_all_material_types()
+        random_material = random.choice(response['materialTypes'])
+        formatted_material = {'id': random_material['id'], 'text': random_material['name']}
+        formatted_article = ArticleAPI().get_formatted_article_with_formatted_material_type(formatted_material)
+        tp_response, tp_payload = TestPlanAPI().create_testplan(selectedArticles=[formatted_article],
+                                                                materialType=[formatted_material],
+                                                                testUnits=[formatted_tu, formatted_tu_2],
+                                                                selectedTestUnits=[formatted_tu, formatted_tu_2])
+        tp_payload['testPlan']['id'] = tp_response['testPlanDetails']['testPlanId']
+        res, order = self.create_new_order(testPlans=[tp_payload], testUnits=[], materialType=formatted_material,
+                                       materialTypeId=random_material['id'], article=formatted_article,
+                                       articleId=formatted_article['id'])
+        dict = {'orderID': res['order']['mainOrderId'],
+                'tu_names': [tu_name, tu_name],
+                'orderNo': order[0]['orderNoWithYear']}
+        if res['status'] == 1:
+            return dict

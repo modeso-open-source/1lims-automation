@@ -737,6 +737,10 @@ class Order(Orders):
             results.append({'test_plan': test_plan, 'test_units': test_units})
         return results
 
+    def close_test_plan_pop_up(self, element='order:testplan_pop_up_close_btn'):
+        self.base_selenium.wait_until_element_clickable(element=element)
+        self.base_selenium.click(element='order:testplan_pop_up_close_btn')
+
     def create_new_order_get_test_unit_suggetion_list(self, material_type='', test_unit_name=' ', check_option=False):
         self.info('Create new order.')
         self.click_create_order_button()
