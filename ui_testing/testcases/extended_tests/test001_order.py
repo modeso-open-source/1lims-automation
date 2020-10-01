@@ -296,19 +296,18 @@ class OrdersExtendedTestCases(BaseTest):
         rows = self.orders_page.result_table()
         self.orders_page.click_check_box(rows[0])
         self.orders_page.duplicate_main_order_from_table_overview()
+        self.orders_page.sleep_tiny()
         duplicated_order_number = self.order_page.get_no()
         self.assertTrue(
             self.orders_page.is_order_no_match_config(year_option=year_option, order_no=duplicated_order_number))
-
 
     @parameterized.expand(['1', '2'])
     @attr(series=True)
     def test007_order_no_format_in_create_form(self, year_option):
         """
-        Orders: Search/filter Approach: User can search/filter by all the new number format
-        (without year, number before year, number after year
+        New: orders: No Approach: Number format should display in all sections
+        (Table view, XLSX, Duplication, Suborder table, QR Code) in the configuration section
 
-        LIMS-4110
         LIMS-4109 format in create order form
         """
         if year_option == '2':
@@ -323,10 +322,9 @@ class OrdersExtendedTestCases(BaseTest):
     @attr(series=True)
     def test008_order_no_format_in_analysis_section(self, year_option):
         """
-        Orders: Search/filter Approach: User can search/filter by all the new number format
-        (without year, number before year, number after year
-        LIMS-4110
-        LIMS-4109 format in the analysis section
+        New: orders: No Approach: Number format should display in: Table view of the analysis section
+
+        LIMS-4109
         """
         self.analysis_page = SingleAnalysisPage()
         if year_option == '2':
@@ -340,22 +338,28 @@ class OrdersExtendedTestCases(BaseTest):
         self.order_page.navigate_to_analysis_tab()
         analysis_record = self.analysis_page.get_all_analysis_records()
         self.assertTrue(
-            self.orders_page.is_order_no_match_config(year_option=year_option, order_no=analysis_record[0]['Order No.']))
+            self.orders_page.is_order_no_match_config(year_option=year_option,
+                                                      order_no=analysis_record[0]['Order No.']))
 
     @parameterized.expand(['1', '2'])
     @attr(series=True)
-    def test006_filter_by_order_no_format_in_analysis_active_table(self, year_option):
+    def test009_filter_by_order_no_format_in_analysis_active_table(self, year_option):
         """
          Orders: Search/filter Approach: User can search/filter by all the new number format
          (without year, number before year, number after year
 
          LIMS-4110 filter by order no in analysis active table
-         LIMS-4109
         """
         if year_option == '2':
             self.orders_api.set_configuration_year_before_no()
         response, payload = self.orders_api.create_new_order(yearOption=int(year_option))
         self.assertEqual(response['status'], 1)
         order_no = payload[0]['orderNoWithYear']
+        self.orders_page.navigate_to_analysis_active_table()
         self.analyses_page.filter_by_order_no(order_no)
-        self.assertGreater(len(self.orders_page.result_table()) - 1, 0)
+        self.analyses_page.sleep_tiny()
+        self.assertEqual(len(self.orders_page.result_table()) - 1, 1)
+        analysis_data = self.analyses_page.get_the_latest_row_data()
+        self.assertEqual(analysis_data['Order No.'].replace("'", ""), order_no)
+        self.assertTrue(self.orders_page.is_order_no_match_config(year_option=year_option,
+                                                                  order_no=analysis_data['Order No.']))
