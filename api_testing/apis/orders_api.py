@@ -246,7 +246,6 @@ class OrdersAPIFactory(BaseAPI):
     @staticmethod
     def _format_payload(payload):
         payload = payload[0]
-        import ipdb;ipdb.set_trace()
         if payload['testPlans']:
             selected_testplan_arr = []
             for testplan in payload['testPlans']:
