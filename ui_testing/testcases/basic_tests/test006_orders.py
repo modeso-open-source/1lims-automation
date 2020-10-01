@@ -3660,24 +3660,44 @@ class OrdersTestCases(BaseTest):
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
 
-    def test105_check_testunit_after_change_article(self):
+    def test110_check_testunit_after_change_article(self):
         """
          Orders with test units: Edit the article and check that test unit is not affected
+
          LIMS-3422
-               """
+        """
         self.info('create new order')
-        api, payload = self.orders_api.create_order_with_test_units(no_of_test_units=1)
-        self.assertEqual(api['status'], 1)
-        self.info('get order test unit')
-        selected_testunits = payload[0]['testUnits'][0]['name']
+        response, payload = self.orders_api.create_order_with_test_units(no_of_test_units=1)
+        self.assertEqual(response['status'], 1)
+        old_testunit = payload[0]['testUnits'][0]['name']
+        article_response, article_payload = ArticleAPI().create_article(
+            materialType=payload[0]['materialType'], selectedMaterialType=[payload[0]['materialType']],
+            materialTypeId=int(payload[0]['materialType']['id']))
+        self.assertEqual(article_response['status'], 1)
+        new_article = article_payload['name']
         self.info('edit order and update article')
-        self.order_page.get_order_edit_page_by_id(id=api['order']['mainOrderId'])
-        res, _ = self.article_api.get_all_articles()
-        new_article = random.choice(res['articles'])['name']
-        self.order_page.update_suborder(articles=new_article)
-        self.order_page.save()
+        self.order_page.get_order_edit_page_by_id(id=response['order']['mainOrderId'])
+        self.order_page.update_suborder(articles=[new_article], remove_old=True)
+        self.order_page.save_and_wait(save_btn='order:save_btn')
         self.info('get test unit after update article')
-        suborder = self.order_page.get_suborder_data()['suborders'][0]
-        testunits_after_edit_article = suborder['testunits'][0]['name']
+        suborder_after_edit = self.order_page.get_suborder_data()['suborders'][0]
         self.info('Assert that test unit doesnt affected by updating article')
-        self.assertEqual(selected_testunits, testunits_after_edit_article)
+        self.assertEqual(new_article, suborder_after_edit['article']['name'])
+        self.assertEqual(old_testunit, suborder_after_edit['testunits'][0]['name'])
+        self.info("Navigate to orders active table")
+        self.orders_page.get_orders_page()
+        self.orders_page.sleep_tiny()
+        self.orders_page.filter_by_order_no(response['order']['orderNo'])
+        rows = self.orders_page.result_table()
+        self.assertEqual(len(rows)-1, 1)
+        child_data = self.orders_page.get_child_table_data()
+        self.assertEqual(len(child_data), 1)
+        self.info("Assert that article modified and test unit not changed in orders active table")
+        self.assertEqual(child_data[0]['Test Units'], old_testunit)
+        self.assertEqual(child_data[0]['Article Name'], new_article)
+        self.orders_page.click_check_box(rows[0])
+        self.info("download XSLX shhet of order No {}".format(response['order']['orderNo']))
+        self.orders_page.download_xslx_sheet()
+        self.info("Assert that article modified and test unit not changed in sheet")
+        self.assertEqual(self.orders_page.sheet.iloc[0]['Article Name'], new_article)
+        self.assertEqual(self.orders_page.sheet.iloc[0]['Test Units'], old_testunit)
