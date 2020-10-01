@@ -93,7 +93,7 @@ class Order(Orders):
     def get_test_plan(self):
         test_plans = self.base_selenium.get_text(element='order:test_plan')
         if "×" in test_plans:
-            return test_plans.replace("× ", "").split('\n')
+            return test_plans.replace("×", "").split('\n')
         else:
             return []
 

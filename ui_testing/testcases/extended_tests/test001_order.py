@@ -9,6 +9,7 @@ from ui_testing.pages.analysis_page import SingleAnalysisPage
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.contacts_api import ContactsAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
+from api_testing.apis.article_api import ArticleAPI
 from ui_testing.pages.my_profile_page import MyProfile
 from api_testing.apis.users_api import UsersAPI
 from api_testing.apis.general_utilities_api import GeneralUtilitiesAPI
@@ -192,6 +193,121 @@ class OrdersWithoutArticleTestCases(BaseTest):
             child_data = self.analyses_page.get_child_table_data()
             testunit_list = [tu['Test Unit'] for tu in child_data]
             self.assertCountEqual(testunit_list, new_testunit_list)
+
+    @parameterized.expand(['cancel', 'confirm'])
+    @attr(series=True)
+    @skip('https://modeso.atlassian.net/browse/LIMS-3255')
+    def test004_edit_testplan_order_without_article(self, case):
+        """
+        Orders without articles: When editing an order with test plan, the form should  be opened without article
+
+        LIMS-3255 (edit test plan case)
+        """
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        response, payload = self.orders_api.get_suborder_by_order_id(random_order['orderId'])
+        self.assertEqual(response['status'], 1)
+        first_suborder = response['orders'][0]
+        article_id = ArticleAPI().get_article_id(article_no=first_suborder['articleNo'],
+                                                 article_name=first_suborder['article'])
+        formatted_article = {'id': article_id, 'text': first_suborder['article']}
+        new_test_plan = TestPlanAPI().create_completed_testplan(
+            material_type=first_suborder['materialType'],
+            formatted_article=formatted_article)['testPlanEntity']['name']
+        self.info('edit test plan of first suborder of order No {}'.format(random_order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(random_order['orderId'])
+        first_suborder_before_edit = self.order_page.get_suborder_data()['suborders'][0]
+        self.info('update test plan from {} to {}'.format(first_suborder['testPlans'], new_test_plan))
+        self.order_page.update_suborder(test_plans=[new_test_plan], remove_old=True)
+        if case == 'cancel':
+            self.order_page.cancel(force=False)
+            self.base_selenium.refresh()
+            self.order_page.sleep_tiny()
+            suborder_after_cancel = self.order_page.get_suborder_data()['suborders'][0]
+            self.assertCountEqual(first_suborder_before_edit, suborder_after_cancel)
+        else:
+            self.order_page.save_and_wait(save_btn='order:save_btn')
+            self.assertEqual(self.order_page.get_test_plan(), new_test_plan)
+            self.info('assert that analysis updated is created successfully')
+            self.orders_page.get_orders_page()
+            self.orders_page.navigate_to_analysis_active_table()
+            self.analyses_page.filter_by_analysis_number(first_suborder['analysis'][0])
+            data_found = self.analyses_page.get_the_latest_row_data()
+            self.assertEqual(data_found['Test Plans'], new_test_plan)
+
+    @attr(series=True)
+    @skip('https://modeso.atlassian.net/browse/LIMS-3255')
+    def test005_add_testplan_order_without_article(self):
+        """
+        Orders without articles: When editing an order with test plan, the form should  be opened without article
+
+        LIMS-3255 (Add test plan case)
+        """
+        data = TestPlanAPI().create_multiple_test_plan_with_same_article(no_of_testplans=2)
+        formatted_testplan = {'testPlan': {'id': data['testPlans'][0]['id'],
+                                           'text': data['testPlans'][0]['name']}}
+        response, payload = self.orders_api.create_new_order(
+            testPlans=[formatted_testplan], testUnits=[], materialType=data['material_type'],
+            materialTypeId=data['material_type']['id'], article=data['article'], articleId=data['article']['id'])
+        self.assertEqual(response['status'], 1)
+        test_units = [TestPlanAPI().get_testunits_in_testplan(data['testPlans'][0]['id'])[0][ 'name'],
+                      TestPlanAPI().get_testunits_in_testplan(data['testPlans'][1]['id'])[0][ 'name']]
+        self.info("open edit page of order no {}".format(response['order']['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(response['order']['mainOrderId'])
+        self.info('Add test plan {}'.format(data['testPlans'][1]['name']))
+        self.order_page.update_suborder(test_plans=[data['testPlans'][1]['name']], remove_old=False)
+        self.order_page.save(save_btn='order:save_btn')
+        self.order_page.open_suborder_edit()
+        self.assertCountEqual([data['testPlans'][0]['name'], data['testPlans'][1]['name']],
+                              self.order_page.get_test_plan())
+        self.info('assert that analysis updated is created successfully')
+        self.order_page.navigate_to_analysis_tab()
+        self.assertEqual(SingleAnalysisPage().get_analysis_count(), 1)
+        row = SingleAnalysisPage().open_accordion_for_analysis_index(index=0)
+        analysis_data = SingleAnalysisPage().get_testunits_in_analysis(row)
+        test_units_in_analysis = [tu['Test Unit Name'].split(' ()')[0] for tu in analysis_data]
+        self.assertCountEqual(test_units_in_analysis, test_units)
+
+    @attr(series=True)
+    @skip('https://modeso.atlassian.net/browse/LIMS-3255')
+    def test006_edit_order_number_without_article(self):
+        """
+         Orders without articles: When editing an order with test plan, the form should  be opened without article
+
+         LIMS-3255 (update order number)
+        """
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        self.info('edit order with No {}'.format(random_order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(random_order['id'])
+        order_url = self.base_selenium.get_url()
+        self.info('order_url : {}'.format(order_url))
+        new_number = self.generate_random_string()
+        self.order_page.set_no(new_number)
+        self.order_page.save(save_btn='order:save_btn')
+        self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_SMALL)
+        current_number = self.order_page.get_no().replace("'", "")
+        self.info('Assert {} (current_number) == {} (new_number)'.format(current_number, new_number))
+        self.assertEqual(current_number, new_number)
+
+    @attr(series=True)
+    @skip('https://modeso.atlassian.net/browse/LIMS-3255')
+    def test007_update_contact_order_without_article(self):
+        """
+         Orders without articles: When editing an order with test plan, the form should  be opened without article
+
+         LIMS-3255 (update contact)
+        """
+        random_order = random.choice(self.orders_api.get_all_orders_json())
+        self.info('edit order with No {}'.format(random_order['orderNo']))
+        self.orders_page.get_order_edit_page_by_id(random_order['id'])
+        order_url = self.base_selenium.get_url()
+        self.info('order_url : {}'.format(order_url))
+        new_contact = self.order_page.set_contact(remove_old=True)
+        self.order_page.save(save_btn='order:save_btn')
+        self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_SMALL)
+        current_contact = self.order_page.get_contact()
+        self.info('Assert {} (current_contact) == {} (new_contact)'.format(current_contact, new_contact))
+        self.assertEqual(current_contact, new_contact)
+
 
 
 class OrdersExtendedTestCases(BaseTest):
