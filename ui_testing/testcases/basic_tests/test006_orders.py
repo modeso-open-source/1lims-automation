@@ -3660,7 +3660,7 @@ class OrdersTestCases(BaseTest):
             self.info('asserting redirection to active table')
             self.assertEqual(self.order_page.orders_url, self.base_selenium.get_url())
 
-    def test105_check_testunit_after_change_article(self):
+    def test107_check_testunit_after_change_article(self):
         """
          Orders with test units: Edit the article and check that test unit is not affected
 
