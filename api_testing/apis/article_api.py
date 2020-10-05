@@ -225,7 +225,7 @@ class ArticleAPI(ArticleAPIFactory):
         return selected_article['name'], selected_article['id']
 
     def get_article_id(self, article_no, article_name):
-        articles = self.quick_search_article(name=article_name)
+        articles = self.quick_search_article(name=article_name)[0]
         for article in articles['articles']:
             if article['No'] == article_no:
                 return article['id']
