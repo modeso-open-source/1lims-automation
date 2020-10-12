@@ -1,29 +1,29 @@
- name: CI
+name: CI
 
- on:
-   pull_request:
-     branches: [ master ]
+on:
+  pull_request:
+    branches: [ master ]
 
- jobs:
-#   test_pull_request_in_parallel:
-#     runs-on: ubuntu-20.04
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#         test_cases: [0]
-#
-#     steps:
-#       - uses: actions/checkout@master
-#
-#       - name: pull docker image
-#         run:  docker pull 0xislamtaha/seleniumchromenose:83
-#
-#       - name: parallel execution for each module
-#         run: timeout 2h bash .github/workflows/execution.sh ${{ strategy.job-total }} ${{ matrix.test_cases }} ${{ github.ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'not series' ${{ secrets.UUID }}
+jobs:
+  test_pull_request_in_parallel:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        test_cases: [0, 1, 2, 3]
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: pull docker image
+        run:  docker pull 0xislamtaha/seleniumchromenose:83
+
+      - name: parallel execution for each module
+        run: timeout 2h bash .github/workflows/execution.sh ${{ strategy.job-total }} ${{ matrix.test_cases }} ${{ github.head_ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'not series' ${{ secrets.UUID }}
 
   test_pull_request_in_series:
     runs-on: ubuntu-20.04
-#    needs: test_pull_request_in_parallel
+    needs: test_pull_request_in_parallel
     if: always()
     strategy:
       fail-fast: false
@@ -37,15 +37,15 @@
       - name: sequal execution for series
         run: timeout 1h bash .github/workflows/execution.sh 1 1 ${{ github.head_ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'series' ${{ secrets.UUID }}
 
-#  merge_launches:
-#    runs-on: ubuntu-20.04
-#    needs: [test_pull_request_in_parallel, test_pull_request_in_series]
-#    if: always()
-#    strategy:
-#      fail-fast: false
-#
-#    steps:
-#      - uses: actions/checkout@master
-#
-#      - name: merge launches
-#        run:  python3 fixReport.py ${{ secrets.UUID }} ${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }}
+  merge_launches:
+    runs-on: ubuntu-20.04
+    needs: [test_pull_request_in_parallel, test_pull_request_in_series]
+    if: always()
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: merge launches
+        run:  python3 fixReport.py ${{ secrets.UUID }} ${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }}

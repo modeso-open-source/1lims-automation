@@ -106,7 +106,9 @@ headers = {'Content-Type': "application/json",
            'Authorization': AUTHONTICATION,
            'Connection': "keep-alive",
            'cache-control': "no-cache"}
-
+# import IPython
+# IPython.embed()
+#
 print(f'merge all launches with {LAUNCH_DES} description')
 merged_launch = merge_launchs_with_same_description(PROJECT_NAME, LAUNCH_DES)
 

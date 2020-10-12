@@ -43,7 +43,7 @@ class BaseAPI:
         if not BaseAPI.AUTHORIZATION:
             username = username or self.username
             password = password or self.password
-            self.info('Get authorized api session.')
+            self.info('get authorized api session.')
             self.info(f"{username}:{password}")
             api = self.url + "/api/auth"
             header = {'Content-Type': "application/json", 'Authorization': "Bearer", 'Connection': "keep-alive",
@@ -51,11 +51,11 @@ class BaseAPI:
             payload = {'username': username, 'password': password}
             response = self.session.post(api, json=payload, headers=header, verify=False)
             if response.json()['status'] == 0:
-                self.info(response.json())
+                self.debug(response.json())
                 raise Exception(f'authentication error : {username}:{password}')
             BaseAPI.AUTHORIZATION_RESPONSE = response.json()['data']
             BaseAPI.AUTHORIZATION = 'Bearer {}'.format(response.json()['data']['sessionId'])
-            self.info('session ID : {} .....'.format(response.json()['data']['sessionId'].split('.')[-1]))
+            self.debug('session ID : {} .....'.format(response.json()['data']['sessionId'].split('.')[-1]))
 
         self.headers['Authorization'] = BaseAPI.AUTHORIZATION
         return BaseAPI.AUTHORIZATION
@@ -127,7 +127,7 @@ def api_factory(method):
         def wrapper(*args, **kwargs):
             api, _payload = func(*args, **kwargs)
             payload = base_api.update_payload(_payload, **kwargs)
-            base_api.info('GET : {}'.format(api))
+            base_api.debug('GET : {}'.format(api))
             if method in ["post", "put"]:
                 response_json = base_api.session.__getattribute__(method)(api, json=payload, headers=base_api.headers,
                                                                           verify=False).json()

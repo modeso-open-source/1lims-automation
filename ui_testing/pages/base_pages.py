@@ -325,6 +325,10 @@ class BasePages:
     def info(self):
         return self.base_selenium.LOGGER.info
 
+    @property
+    def debug(self):
+        return self.base_selenium.LOGGER.debug
+
     def generate_random_email(self):
         name = str(uuid4()).replace("-", "")[:10]
         server = "@" + str(uuid4()).replace("-", "")[:6] + "." + 'com'
@@ -458,8 +462,8 @@ class BasePages:
                 self.change_column_view(column=column, value=False)
 
         parent_class = self.base_selenium.driver.find_element_by_xpath('//*[contains(text(), "Apply")]//parent::a')
-        class_srting = parent_class.get_attribute('class')
-        if 'disabled' in class_srting:
+        class_string = parent_class.get_attribute('class')
+        if 'disabled' in class_string:
             return True
         else:
             return False
@@ -603,7 +607,7 @@ class BasePages:
         return self.base_selenium.find_element(element='general:pagination_button').text.split('\n')[0]
 
     def wait_until_page_is_loaded(self):
-        self.info('wait until page is loaded')
+        self.debug('wait until page is loaded')
         self.base_selenium.wait_until_element_is_not_displayed('general:loading')
         self.sleep_tiny()
 

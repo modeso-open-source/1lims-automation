@@ -24,10 +24,11 @@ class Order(Orders):
         self.base_selenium.select_item_from_drop_down(
             element='order:order', item_text='Existing Order')
 
-    def open_suborder_edit(self, sub_order_index=0):
-        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
+    def open_suborder_edit_mode(self, suborder_index=0):
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
         suborder_row.click()
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        return suborder_row
 
     def set_material_type(self, material_type=''):
         if material_type:
@@ -38,8 +39,10 @@ class Order(Orders):
             self.sleep_tiny()
             return self.get_material_type()
 
-    def get_material_type(self):
-        return self.base_selenium.get_text(element='order:material_type').split('\n')[0]
+    def get_material_type(self, suborder_index=0):
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(suborder_row, table_element='order:suborder_table')
+        return suborder_data['Material Type: *']
 
     def get_article(self):
         article = self.base_selenium.get_text(element='order:article').split(' No')[0]
@@ -127,7 +130,7 @@ class Order(Orders):
 
     def search_test_unit_not_set(self, test_unit=''):
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
-        self.open_suborder_edit()
+        self.open_suborder_edit_mode()
         if self.get_test_unit():
             self.info("clear test unit")
             self.clear_test_unit()
@@ -138,9 +141,8 @@ class Order(Orders):
     def create_new_order(self, material_type='', article='', contact='', test_plans=[''], test_units=[''],
                          multiple_suborders=0, departments='', order_no='', save=True, check_testunits_testplans=False):
 
-        self.info(' Create new order.')
+        self.info('create new order.')
         self.click_create_order_button()
-        self.sleep_small()
         self.set_new_order()
         self.sleep_small()
         self.set_contact(contact=contact)
@@ -563,13 +565,14 @@ class Order(Orders):
         self.base_selenium.update_item_value(item=row['materialType'],
                                              item_text=material_type.replace("'", ''))
 
-    def update_article_suborder(self, row, article):
-        self.info(' Set article name : {}'.format(article))
-        self.base_selenium.update_item_value(item=row['article'],
+    def update_article_suborder(self, suborder_index, article):
+        self.info('set article name : {}'.format(article))
+        suborder_row = self.open_suborder_edit_mode(suborder_index)
+        self.base_selenium.update_item_value(item=suborder_row['Article: *'],
                                              item_text=article.replace("'", ''))
 
     def add_multiple_testplans_suborder(self, row, testplans):
-        self.info(' Set test plan : {} for {} time(s)'.format(testplans, len(testplans)))
+        self.info('set test plan : {} for {} time(s)'.format(testplans, len(testplans)))
         for testplan in testplans:
             self.base_selenium.update_item_value(item=row['testUnits'],
                                                  item_text=testplan.replace("'", ''))
@@ -648,16 +651,7 @@ class Order(Orders):
         else:
             self.base_selenium.select_item_from_drop_down(
                 element='order:material_type')
-            return self.get_material_type_of_first_suborder()
-
-    def get_material_type_of_first_suborder(self, sub_order_index=0):
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        suborder_row.click()
-        return self.base_selenium.get_text(element='order:material_type').split('\n')[0]
+            return self.get_material_type()
 
     def remove_article(self, testplans=''):
         self.info('clear article data')

@@ -62,7 +62,9 @@ class ArticleAPIFactory(BaseAPI):
                 }
             ],
             "materialTypeId": 1,
-            "dynamicFieldsValues": []
+            "dynamicFieldsValues": [],
+            "unit": self.generate_random_string(),
+            "comment": self.generate_random_string()
         }
 
         return api, _payload
@@ -208,7 +210,7 @@ class ArticleAPI(ArticleAPIFactory):
         for article in articles['articles']:
             if article['name'] == avoid_article:
                 break
-            elif article['materialType'] == material_type['text']:
+            elif article['materialType'] == material_type['name']:
                 formatted_article = {'id': article['id'], 'name': article['name']}
                 return formatted_article
 

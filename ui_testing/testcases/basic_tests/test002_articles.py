@@ -12,6 +12,7 @@ from api_testing.apis.users_api import UsersAPI
 from parameterized import parameterized
 from unittest import skip
 import random, re
+from datetime import date
 
 
 class ArticlesTestCases(BaseTest):
@@ -74,6 +75,8 @@ class ArticlesTestCases(BaseTest):
                 element1='article:default_filter_test_plan')
             self.default_filters_flags['test_plan'] = False
 
+        super().tearDown()
+
     @parameterized.expand(['save', 'cancel'])
     def test001_cancel_button_edit_unit(self, save):
         """
@@ -110,6 +113,7 @@ class ArticlesTestCases(BaseTest):
             self.assertEqual(current_unit, article_unit)
 
     @parameterized.expand(['save', 'cancel'])
+    @skip('https://modeso.atlassian.net/browse/LIMSA-380')
     def test002_cancel_button_edit_no(self, save):
         """
         New: Article: Save/Cancel button: After I edit no field then press on cancel button,
@@ -137,7 +141,6 @@ class ArticlesTestCases(BaseTest):
             url=article_url, sleep=self.base_selenium.TIME_MEDIUM)
         self.base_selenium.scroll()
         article_no = self.article_page.get_no()
-
         if 'save' == save:
             self.info(' Assert {} (new_no) == {} (article_no)'.format(new_no, article_no))
             self.assertEqual(new_no, article_no)
@@ -213,7 +216,6 @@ class ArticlesTestCases(BaseTest):
             self.info('Assert {} (current_comment) == {} (article_comment)'.format(current_comment, article_comment))
             self.assertEqual(current_comment, article_comment)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-200')
     def test005_archived_articles_shoudnt_dispaly_in_test_plan(self):
         """
         New: Article: In case I archived any article this article shouldn't display in the test plan module when
@@ -222,17 +224,17 @@ class ArticlesTestCases(BaseTest):
         LIMS-3668
         """
         article_created, payload = self.article_api.create_article()
-        self.info(' Archive the article.')
+        self.info(f'archive the article : {payload["name"]}')
         self.article_api.archive_articles(ids=[str(article_created['article']['id'])])
         self.test_plan_page.get_test_plans_page()
-        self.info('Create test plan with the same material type.')
+        self.info('create test plan with the same material type.')
         self.test_plan_page.click_create_test_plan_button()
         self.article_page.sleep_small()
         self.test_plan_page.set_material_type(material_type=payload['materialType']['text'])
         self.article_page.sleep_tiny()
-        self.info('Assert article is not existing in the list.')
+        self.info('assert article is not existing in the list.')
         self.assertFalse(self.test_plan_page.is_article_existing(
-            article=article_created['article']['name']))
+            article=payload['name']))
 
     def test006_archived_articles_shoudnt_dispaly_in_order(self):
         """
@@ -240,19 +242,21 @@ class ArticlesTestCases(BaseTest):
 
         LIMS-3668
         """
-        api, payload = self.article_api.create_article()
+        api, art_payload = self.article_api.create_article()
         self.article_api.archive_articles(ids=[str(api['article']['id'])])
         orders, payload = self.order_api.get_all_orders(limit=20)
         random_order = random.choice(orders['orders'])
-        self.info('{}'.format(random_order['orderNo']))
+        self.info('selected random order : {}'.format(random_order['orderNo']))
         self.orders_page.get_order_edit_page_by_id(random_order['id'])
-        self.order_page.set_material_type_of_first_suborder(material_type='Raw Material', sub_order_index=0)
-        self.order_page.confirm_popup()
-        self.order_page.set_article(article=api['article']['name'])
-        self.assertFalse(
-            self.order_page.is_article_existing(article=api['article']['name']))
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-200')
+        if self.order_page.get_material_type() != "Raw Material":
+            self.order_page.set_material_type_of_first_suborder(material_type='Raw Material', sub_order_index=0)
+            self.order_page.confirm_popup()
+
+        self.order_page.open_suborder_edit_mode()
+        self.assertFalse(
+            self.order_page.is_article_existing(article=art_payload['name']))
+
     def test007_created_article_appear_in_test_plan(self):
         """
         New: Article/Test plan: Any article I created should appear in the test plan according to the materiel type.
@@ -265,9 +269,8 @@ class ArticlesTestCases(BaseTest):
         self.test_plan_page.set_material_type(material_type=payload['materialType']['text'])
         self.article_page.sleep_tiny()
         self.assertTrue(
-            self.test_plan_page.is_article_existing(article=article_created['article']['name']))
+            self.test_plan_page.is_article_existing(article=payload['name']))
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-200')
     def test008_create_article_with_test_plan_search_by_test_plan(self):
         """
         In case I create test plan with the article that I created, this
@@ -275,28 +278,27 @@ class ArticlesTestCases(BaseTest):
 
         LIMS-3583
         """
-        article_created = self.article_page.create_new_article(material_type='Raw Material')
-        self.test_plan_page.get_test_plans_page()
-        self.test_plan_page.create_new_test_plan(material_type=article_created['material_type'],
-                                                 article=article_created['name'])
+        res, payload = self.article_api.create_article()
+        formatted_article = {'id': res['article']['id'], 'text': payload['name']}
+        _, t_payload = self.test_plan_api.create_testplan(selectedArticles=[formatted_article])
+
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
-        article = self.article_page.search(value=self.test_plan_page.test_plan_name)[0]
-        self.assertIn(self.test_plan_page.test_plan_name, article.text)
+        article = self.article_page.search(value=payload['name'])[0]
+        self.assertIn(t_payload['testPlan']['text'], article.text)
 
         self.test_plan_page.get_test_plans_page()
-        self.test_plan_page.get_test_plan_edit_page(name=self.test_plan_page.test_plan_name)
+        self.test_plan_page.get_test_plan_edit_page(name=t_payload['testPlan']['text'])
 
         self.test_plan_page.clear_article()
         self.test_plan_page.set_article(article='All')
-        self.test_plan.save(save_btn='test_plan:save_btn')
+        self.test_plan_page.save(save_btn='test_plan:save_btn')
         self.article_page.get_articles_page()
         self.article_page.sleep_small()
-        article = self.article_page.search(value=article_created['article']['name'])[0]
+        article = self.article_page.search(value=payload['name'])[0]
         self.article_page.sleep_small()
-        self.assertNotIn(self.test_plan_page.test_plan_name, article.text)
+        self.assertNotIn(t_payload['testPlan']['text'], article.text)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-200')
     def test009_create_article_with_test_plan_filter_by_test_plan(self):
         """
         In case I create test plan with the article that I created, user could filter with test plan
@@ -348,6 +350,7 @@ class ArticlesTestCases(BaseTest):
         for article_name in article_names:
             self.assertTrue(self.article_page.is_article_in_table(value=article_name))
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-383')
     def test012_create_new_material_type(self):
         """
         Article: Materiel type Approach: make sure you can create new materiel type
@@ -398,7 +401,7 @@ class ArticlesTestCases(BaseTest):
 
         LIMS-3597
         """
-        self.article_page.create_new_article(sleep=False, material_type='Raw Material')
+        self.article_page.create_new_article(material_type='Raw Material')
         self.article_page.sleep_small()
         self.assertEqual(self.base_selenium.get_text(element='general:alert_confirmation'),
                          'Successfully created')
@@ -436,7 +439,6 @@ class ArticlesTestCases(BaseTest):
         row = self.article_page.get_the_latest_row_data()
         self.assertEqual(row['Article No.'].replace("'", ""), test_plan['selectedArticleNos'][0]['name'])
 
-    #@skip('waiting create order update')
     def test017_delete_article_with_order(self):
         """
         New: Articles: Delete Approach; I can't delete any article if this article related to some data
@@ -463,11 +465,11 @@ class ArticlesTestCases(BaseTest):
 
         LIMS:3589-case of all sheet
         """
-        self.info(' * Download XSLX sheet')
+        self.info('download XSLX sheet')
         self.article_page.download_xslx_sheet()
         rows_data = list(filter(None, self.article_page.get_table_rows_data()))
         for index in range(len(rows_data)):
-            self.info(' * Comparing the article no. {} '.format(index))
+            self.info('Comparing the article no. {} '.format(index))
             fixed_row_data = self.fix_data_format(rows_data[index].split('\n'))
             values = self.article_page.sheet.iloc[index].values
             fixed_sheet_row_data = self.fix_data_format(values)
@@ -516,180 +518,42 @@ class ArticlesTestCases(BaseTest):
                          '{}articles'.format(self.base_selenium.url))
         self.info('clicking on Overview confirmed')
 
-    @skip('we will skip it until we fix the issue')
-    def test021_user_archive_optional_config_fields(self):
-        """
-            LIMS-4123
-            part-1:
-                User should be able to archive/restore field
-            steps:
-             - restore all fields using API
-             - archive it via the UI
-             - assert all fields have been archived
-        """
-        self.info('restore all option fields via api')
-        self.article_api.restore_all_optional_fields()
-
-        self.info('archive all option fields via ui')
-        self.article_page.archive_all_optional_fields()
-
-        self.info('assert all option fields have been archived')
-        self.assertFalse(self.article_page.is_field_active('unit'))
-        self.assertFalse(self.article_page.is_field_active('comment'))
-        self.assertFalse(self.article_page.is_field_active('related article'))
-
-    @skip('we will skip it until we fix the issue')
-    def test022_user_restore_optional_config_fields(self):
-        """
-            LIMS-4123
-            part-2:
-                User should be able to archive/restore field
-            steps:
-             - archive all fields using API
-             - restore it via the UI
-             - assert all fields have been restored
-        """
-        self.info('archive all option fields via api')
-        self.article_api.archive_all_optional_fields()
-
-        self.info('restore all option fields via ui')
-        self.article_page.restore_optional_fields()
-
-        self.info('assert all option fields have been archived')
-        self.assertFalse(self.article_page.is_field_restore('unit'))
-        self.assertFalse(self.article_page.is_field_restore('comment'))
-        self.assertFalse(self.article_page.is_field_restore('related article'))
-
-    @skip('we will skip it until we teh issue')
-    def test023_archive_optional_config_fields_does_not_effect_table(self):
-        """
-            LIMS-4123
-            part-4:
-                User should be able to archive/restore field
-            steps:
-             - archive options using api
-             - assert all fields have been displayed in table
-        """
-        self.info('archive all option fields via api')
-        self.article_api.archive_all_optional_fields()
-
-        self.info(' open article table')
-        self.article_page.get_articles_page()
-        article_headers = self.base_selenium.get_table_head_elements('general:table')
-        article_headers_text = [header.text for header in article_headers]
-
-        self.info(' assert comment field existance in the table')
-        self.assertIn('Comment', article_headers_text)
-
-        self.info(' assert unit field existance in the table')
-        self.assertIn('Unit', article_headers_text)
-
-    @parameterized.expand(['edit', 'create'])
-    @skip('we will skip it until we fix the issue')
-    def test024_archive_optional_config_fields_effect_(self, page):
-        """
-            LIMS-4123
-            part-3:
-                User should be able to archive/restore field
-            steps:
-             - archive options using api
-             - assert all fields have been not displayed from the create/edit page
-        """
-        self.info('archive all option fields via api')
-        self.article_api.archive_all_optional_fields()
-
-        if page == "edit":
-            self.info(' open article edit page')
-            self.article_page.open_edit_page(row=self.article_page.get_random_article_row())
-        else:
-            self.info(' open article create page')
-            self.base_selenium.click(element='articles:new_article')
-            self.article_page.wait_until_page_is_loaded()
-        self.info(' assert unit field is not existing in article page')
-        self.assertTrue(self.base_selenium.check_element_is_not_exist('article:unit'))
-
-        self.info(' assert comment field is not existing in article page')
-        self.assertTrue(self.base_selenium.check_element_is_not_exist('article:comment'))
-
-        self.info(' assert related article field is not existing in article page')
-        self.assertTrue(self.base_selenium.check_element_is_not_exist('article:related_article'))
-
-    @parameterized.expand(['edit', 'create'])
-    @skip('we will skip it until we decide that we fix the issue')
-    def test025_restore_optional_config_fields_effect_(self, page):
-        """
-            LIMS-4123
-            part-3:
-                User should be able to archive/restore field
-            steps:
-             - restore options using api
-             - assert all fields have been displayed from the create/edit page
-        """
-        self.info('archive all option fields via api')
-        self.article_api.restore_all_optional_fields()
-
-        if page == "edit":
-            self.info(' open article edit page')
-            self.article_page.open_edit_page(row=self.article_page.get_random_article_row())
-        else:
-            self.info(' open article create page')
-            self.base_selenium.click(element='articles:new_article')
-            self.article_page.wait_until_page_is_loaded()
-        self.info(' assert unit field is not existing in article page')
-        self.assertTrue(self.base_selenium.check_element_is_exist('article:unit'))
-
-        self.info(' assert comment field is not existing in article page')
-        self.assertTrue(self.base_selenium.check_element_is_exist('article:comment'))
-
-        self.info(' assert related article field is not existing in article page')
-        self.assertTrue(self.base_selenium.check_element_is_exist('article:related_article'))
-
     @parameterized.expand([('name', 'Article Name'),
                            ('number', 'Article No.'),
                            ('unit', 'Unit'),
                            ('created_at', 'Created On'),
                            ('material_type', 'Material Type')])
-    def test026_filter_article_by_any_field(self, filter_name, header):
+    def test021_filter_article_by_any_field(self, filter_name, header):
         """
         New: Article: Filter Approach: I can filter by any static field & and also from the default filter.
 
         LIMS-3595
         """
-        # set default material type and field type
-        material_type = 'Raw Material'
-        field_type = 'text'
-        full_options = False
-        # set the material type to None in case of material type filter to test with random material type name
-        if filter_name == 'material_type':
-            material_type = None
-            field_type = 'drop_down'
-        # use full options in case of unit field
-        if filter_name == 'unit':
-            full_options = True
-        # create new article with full options
-        article = self.article_page.create_new_article(
-            material_type=material_type, full_options=full_options)
-        # open article table page and open the filter menu
-        self.assertTrue(article, 'article not created')
-        self.article_page.sleep_medium()
+        response, payload = self.article_api.create_article()
+        payload['number'] = payload['No']
+        payload['material_type'] = payload['materialType']['text']
+        payload['created_at'] = date.today().strftime("%d.%m.%Y")
+
+        field_type = 'drop_down' if filter_name == 'material_type' else 'text'
+
         self.article_page.open_filter_menu()
         # filter the article and get the result
         article_results = self.article_page.filter_article_by(filter_element='article:filter_{}'.format(
-            filter_name), filter_text=article[filter_name], field_type=field_type)
+            filter_name), filter_text=payload[filter_name], field_type=field_type)
         for article_result in article_results:
-            self.assertEqual(article[filter_name].replace("'", ""), article_result[header].replace("'", ""))
+            self.assertEqual(str(payload[filter_name]), article_result[header].replace("'", ""))
 
-    def test027_filter_article_by_changed_by_filter(self):
+    def test022_filter_article_by_changed_by_filter(self):
         """
         New: Article: Filter Approach: I can filter by changed by.
 
         LIMS-3595
         """
         self.login_page = Login()
-        self.info('Calling the users api to create a new user with username')
+        self.info('create a new user with username')
         response, payload = UsersAPI().create_new_user()
         self.assertEqual(response['status'], 1, payload)
-        self.article_page.sleep_tiny()
+        self.info(f'username: {payload["username"]}')
         self.login_page.logout()
         self.article_page.sleep_tiny()
         self.login_page.login(username=payload['username'], password=payload['password'])
@@ -697,10 +561,9 @@ class ArticlesTestCases(BaseTest):
         self.article_page.get_articles_page()
         self.article_page.sleep_tiny()
         article = self.article_page.create_new_article()['name']
-        self.info('New article is created successfully with name: {}'.format(article))
+        self.info('new article is created successfully with name: {}'.format(article))
         self.article_page.set_all_configure_table_columns_to_specific_value(
             always_hidden_columns=['selectedArticles'])
-        # filter the article and get the results
         self.article_page.apply_filter_scenario(filter_element='article:filter_changed_by',
                                                 filter_text=payload['username'])
         self.article_page.sleep_tiny()
@@ -709,7 +572,7 @@ class ArticlesTestCases(BaseTest):
             self.assertEqual(article, article_result['Article Name'])
             self.assertEqual(payload['username'], article_result['Changed By'])
 
-    def test028_article_search_then_navigate(self):
+    def test023_article_search_then_navigate(self):
         """
         Search Approach: Make sure that you can search then navigate to any other page
 
@@ -733,11 +596,11 @@ class ArticlesTestCases(BaseTest):
         self.test_plan_page.get_test_plans_page()
         self.assertEqual(self.base_selenium.get_url(), '{}testPlans'.format(self.base_selenium.url))
 
-    def test029_hide_all_table_configurations(self):
+    def test024_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
 
         LIMS-6288
         """
         self.article_page.sleep_medium()
-        self.assertFalse(self.article_page.deselect_all_configurations())
+        self.assertTrue(self.article_page.deselect_all_configurations())

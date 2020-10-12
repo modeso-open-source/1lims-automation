@@ -6,10 +6,12 @@ from datetime import date
 
 
 class Article(Articles):
-    def create_new_article(self, material_type='', sleep=True, full_options=False):
-        self.info(' + Create new article.')
+    def create_new_article(self, material_type='', full_options=False):
+        self.info('create new article.')
         self.base_selenium.click(element='articles:new_article')
         self.sleep_small()
+        self.article_number = self.generate_random_number()
+        self.set_no(self.article_number)
         self.article_name = self.generate_random_text()
         self.set_name(name=self.article_name)
         if material_type:
@@ -23,7 +25,7 @@ class Article(Articles):
         self.article_create_user = config['site']['username']
 
         article_data = {
-            "number": self.get_no(),
+            "number": self.article_number,
             "name": self.article_name,
             "material_type": self.article_material_type,
             "created_at": self.article_create_date,
@@ -37,13 +39,13 @@ class Article(Articles):
             self.set_comment(comment=self.article_comment)
             self.article_unit = self.generate_random_text()
             self.set_unit(self.article_unit)
-            self.set_related_article()
-            self.article_related_article = self.get_related_article()
+            # self.set_related_article()
+            # self.article_related_article = self.get_related_article()
             article_data = {
                 "number": self.get_no(),
                 "name": self.article_name,
                 "material_type": self.article_material_type,
-                "related_article": self.article_related_article,
+                "related_article": None,
                 "unit": self.article_unit,
                 "comment": self.article_comment,
                 "created_at": self.article_create_date,
@@ -53,8 +55,7 @@ class Article(Articles):
             }
 
         self.save()
-        self.info(' + Article name : {}'.format(self.article_name))
-
+        self.info('article name : {}'.format(self.article_name))
         return article_data
 
     def edit_random_article(self, edit_method, edit_value, save=True):
@@ -108,7 +109,7 @@ class Article(Articles):
 
     def filter_article_by(self, filter_element, filter_text, field_type='text'):
         self.info(
-            ' + Filter by {} : {}'.format(filter_element.replace('article:filter_', '').replace('_', ' '), filter_text))
+            'Filter by {} : {}'.format(filter_element.replace('article:filter_', '').replace('_', ' '), filter_text))
         self.filter_by(filter_element=filter_element, filter_text=filter_text, field_type=field_type)
         self.filter_apply()
         self.sleep_tiny()
@@ -161,7 +162,7 @@ class Article(Articles):
         self.open_configuration()
         self._archive_field(field_name='unit')
         self._archive_field(field_name='comment')
-        self._archive_field(field_name='related_article')
+        #self._archive_field(field_name='related_article')
 
     def _restore_field(self, field_name):
         self.info(' restore field {}'.format(field_name))
@@ -174,7 +175,7 @@ class Article(Articles):
         self.open_archived_configuration()
         self._restore_field(field_name='unit')
         self._restore_field(field_name='comment')
-        self._restore_field(field_name='related_article')
+        # self._restore_field(field_name='related_article')
 
     def filter_and_select(self, article_no):
         self.info("filter by article No {}".format(article_no))

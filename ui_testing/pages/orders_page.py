@@ -14,6 +14,7 @@ class Orders(BasePages):
         self.sleep_tiny()
 
     def get_order_edit_page_by_id(self, id):
+        self.info(f'get order : {id} edit page')
         url_text = "{}sample/orders/" + str(id)
         self.base_selenium.get(url=url_text.format(self.base_selenium.url))
         self.wait_until_page_is_loaded()
