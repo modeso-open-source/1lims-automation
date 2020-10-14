@@ -128,15 +128,26 @@ class Order(Orders):
         else:
             return []
 
-    def search_test_unit_not_set(self, test_unit=''):
+    def is_test_unit_option_exist(self, search_field='', checked_text=None):
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
         self.open_suborder_edit_mode()
         if self.get_test_unit():
-            self.info("clear test unit")
+            self.debug("clear test unit")
             self.clear_test_unit()
-        self.info("Try to set test unit to {} and check if option exist".format(test_unit))
-        is_option_exist = self.base_selenium.select_item_from_drop_down(element='order:test_unit', item_text=test_unit)
-        return is_option_exist
+        self.debug("set test unit to {}, is option existing?".format(search_field))
+        suggestion_list = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
+                                                                          item_text=search_field)
+        if checked_text:
+            is_item_exist = checked_text in suggestion_list
+        else:
+            for suggestion_item in suggestion_list:
+                if search_field in suggestion_item:
+                    is_item_exist = True
+                    break
+            else:
+                is_item_exist = False
+        self.debug(is_item_exist)
+        return is_item_exist
 
     def create_new_order(self, material_type='', article='', contact='', test_plans=[''], test_units=[''],
                          multiple_suborders=0, departments='', order_no='', save=True, check_testunits_testplans=False):

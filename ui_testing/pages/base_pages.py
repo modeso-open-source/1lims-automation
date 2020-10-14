@@ -451,6 +451,7 @@ class BasePages:
 
     def deselect_all_configurations(self):
         self.open_configure_table()
+        self.info('deselect all configuration')
         active_columns = self.base_selenium.find_elements_in_element(
             source_element='general:configure_table_items', destination_element='general:li')
         for column in active_columns:
@@ -462,13 +463,14 @@ class BasePages:
         for column in archived_coloums:
             if column.text:
                 self.change_column_view(column=column, value=False)
-
         parent_class = self.base_selenium.driver.find_element_by_xpath('//*[contains(text(), "Apply")]//parent::a')
         class_string = parent_class.get_attribute('class')
         if 'disabled' in class_string:
-            return True
-        else:
+            self.info("can't apply")
             return False
+        else:
+            self.info("can apply")
+            return True
 
     def click_overview(self):
         # click on Overview, this will display an alert to the user

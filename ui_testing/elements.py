@@ -543,6 +543,8 @@ elements = {
         'configuration_testunit_comment': {'method': 'class_name',
                                            'value': 'comment',
                                            'order': 0},
+        'field_in_use': {'method': 'css_selector',
+                         'value': "[class='m-form__help error-display']"},
     },
     'orders': {
         'orders_table': {'method': 'id',

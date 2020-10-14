@@ -509,8 +509,9 @@ class BaseSelenium:
         :param options_element:
         :return:
         """
-        if item_text in self.get_drop_down_suggestion_list(element, item_text, options_element):
-            return True
+        for item in self.get_drop_down_suggestion_list(element, item_text, options_element):
+            if item_text in item:
+                return True
         else:
             return False
 
@@ -538,7 +539,6 @@ class BaseSelenium:
         """
 
         :param element: element refer to ng-select dom item.
-        :param element_source:  dom item.
         :param item_text:
         :param avoid_duplicate:
         :param options_element:

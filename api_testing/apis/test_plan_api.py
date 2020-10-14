@@ -290,21 +290,25 @@ class TestPlanAPI(TestPlanAPIFactory):
         testunit_data = TestUnitAPI().get_testunit_form_data(id=test_unit_id)[0]['testUnit']
         if testunit_data['materialTypesObject'][0]['name'] == 'All':
             response, _ = GeneralUtilitiesAPI().list_all_material_types()
-            formatted_material = random.choice(response['materialTypes'])
+            _formatted_material = random.choice(response['materialTypes'])
         else:
-            formatted_material = testunit_data['materialTypesObject'][0]
+            _formatted_material = testunit_data['materialTypesObject'][0]
 
-        tu_response, tu_payload = TestUnitAPI().create_qualitative_testunit()
+        formatted_material = {'id': _formatted_material['id'], 'text': _formatted_material['name']}
+
+        #tu_response, tu_payload = TestUnitAPI().create_qualitative_testunit()
         testunit_data = TestUnitAPI().get_testunit_form_data(
-            id=tu_response['testUnit']['testUnitId'])[0]['testUnit']
+            id=test_unit_id)[0]['testUnit']
         formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
         formatted_article = ArticleAPI().get_formatted_article_with_formatted_material_type(formatted_material)
+        #import ipdb; ipdb.set_trace()
         testplan, payload = self.create_testplan(testUnits=[formated_testunit],
                                                  selectedArticles=[formatted_article],
                                                  materialType=[formatted_material],
-                                                 materialTypeId=[material_type_id])
+                                                 materialTypeId=[formatted_material['id']])
+
         if testplan['message'] == 'operation_success':
-            return self.get_testplan_form_data(id= payload['number'])
+            return self.get_testplan_form_data(id=payload['number'])
         else:
             self.info(testplan)
 

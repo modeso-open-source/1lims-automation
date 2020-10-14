@@ -207,7 +207,7 @@ class Contact(Contacts):
                               departments=[''], contact_persons=True, save=True):
 
         if create:
-            self.info(' + Create new contact.')
+            self.info('Create new contact.')
             self.base_selenium.click(element='contacts:new_contact')
             self.info('Wait until data are loaded')
             self.sleep_small()

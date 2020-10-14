@@ -665,5 +665,3 @@ class TstUnit(TstUnits):
         else:
             self.base_selenium.click(element='configurations_page:configuration_popup_cancel_btn')
 
-
-

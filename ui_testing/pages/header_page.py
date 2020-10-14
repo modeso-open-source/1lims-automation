@@ -226,7 +226,7 @@ class Header(BasePages):
         return self.get_random_table_row(table_element='roles_and_permissions:user_table')
 
     def get_roles_page(self):
-        self.info(' + Get roles page.')
+        self.info('Get roles page.')
         self.base_selenium.get(url=self.role_url)
         self.sleep_small()
 
@@ -269,7 +269,7 @@ class Header(BasePages):
         self.sleep_small()
 
     def create_role_with_mater_data_permissions(self, sleep=True, role_name=''):
-        self.info(' + Create new role.')
+        self.info('Create new role.')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
         self.sleep_small()
         role_name = self.set_role_name(role_name)
@@ -296,7 +296,7 @@ class Header(BasePages):
         self.sleep_small()
 
     def create_role_with_sample_management_permissions(self, sleep=True, role_name=''):
-        self.info(' + Create new role.')
+        self.info('Create new role.')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
         self.sleep_small()
         role_name = self.set_role_name(role_name)

@@ -123,7 +123,7 @@ class Orders(BasePages):
             self.cancel()
 
     def get_random_order(self):
-        self.info(' + Get random order.')
+        self.info('Get random order.')
         row = self.get_random_order_row()
         order_dict = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         self.open_edit_page(row=row)
@@ -183,10 +183,10 @@ class Orders(BasePages):
         self.filter_apply()
 
     def get_orders_duplicate_data(self, order_no):
-        self.info(' + Get orders duplicate data with no : {}.'.format(order_no))
+        self.info('Get orders duplicate data with no : {}.'.format(order_no))
         orders = self.search(order_no)[:-1]
         orders_data = [self.base_selenium.get_row_cells_dict_related_to_header(order) for order in orders]
-        self.info(' + {} duplicate orders.'.format(len(orders)))
+        self.info('{} duplicate orders.'.format(len(orders)))
         return orders_data, orders
 
     # Return all filter fields used in order
@@ -286,7 +286,7 @@ class Orders(BasePages):
         return order_data
 
     def get_random_main_order_with_sub_orders_data(self):
-        self.info('+ Get Main order data with related subOrders')
+        self.info('Get Main order data with related subOrders')
         # get all the order rows
         all_orders = self.base_selenium.get_table_rows(element='orders:orders_table')
         # select random order
@@ -305,7 +305,7 @@ class Orders(BasePages):
         return main_order
 
     def get_orders_and_suborders_data(self, order_no):
-        self.info(' + Get orders data with no : {}.'.format(order_no))
+        self.info('Get orders data with no : {}.'.format(order_no))
         orders = self.search(order_no)[:-1]
         orders_data = self.get_child_table_data()
         return orders_data, orders
