@@ -254,9 +254,11 @@ class BasePages:
 
     def get_random_table_row(self, table_element):
         rows = self.base_selenium.get_table_rows(element=table_element)
-        row_id = randint(0, len(rows) - 2)
-        row = rows[row_id]
-        return row
+        if len(rows) > 1:
+            row_id = randint(0, len(rows) - 2)
+            row = rows[row_id]
+            return row
+        return ''
 
     def get_table_info(self):
         return self.base_selenium.get_text(element='general:table_info')

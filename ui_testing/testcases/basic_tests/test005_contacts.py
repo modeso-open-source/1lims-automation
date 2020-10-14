@@ -11,6 +11,7 @@ from api_testing.apis.contacts_api import ContactsAPI
 from api_testing.apis.users_api import UsersAPI
 from parameterized import parameterized
 from nose.plugins.attrib import attr
+from unittest import skip
 import re, random
 
 
@@ -211,7 +212,7 @@ class ContactsTestCases(BaseTest):
         self.assertEqual(response['status'], 1, 'can not create contact with {}'.format(payload))
         self.info('open contact edit page')
         self.contacts_page.get_contact_edit_page_by_id(response['company']['companyId'])
-        self.info("Navigate to contact persons page")
+        self.info("navigate to contact persons page")
         self.contact_page.get_contact_persons_page()
         contact_person_data_before_delete = self.contact_page.get_contact_persons_data()
         self.info('contact_persons data before delete {}'.format(contact_person_data_before_delete))
@@ -219,11 +220,11 @@ class ContactsTestCases(BaseTest):
         self.contact_page.delete_contact_persons()
         self.info('refresh to make sure that data are saved correctly')
         self.base_selenium.refresh()
-        self.contact_page.get_contact_persons_page()
         self.info('compare contact person data before refresh and after refresh')
         contact_person_data_after_save = self.contact_page.get_contact_persons_data()
         self.assertFalse(contact_person_data_after_save)
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-388')
     def test010_delete_contact_used_in_other_data(self):
         """
         New: Contact: Delete Approach: I can't delete any contact if this contact related to some data 
@@ -231,8 +232,8 @@ class ContactsTestCases(BaseTest):
         LIMS-3565
         """
         self.info("get random order data")
-        random_order = random.choice(OrdersAPI().get_all_orders_json())
-        contact_No = random_order['company'][0]['number']
+        response, payload = OrdersAPI().create_new_order()
+        contact_No = payload[0]['contact'][0]['No']
         self.info('filter by contact No: {}'.format(contact_No))
         self.contact_page.filter_by_contact_no(contact_No)
         contact_record = self.contacts_page.result_table()[0]
@@ -249,6 +250,7 @@ class ContactsTestCases(BaseTest):
         contact_archived_records = self.contacts_page.result_table()[0]
         self.assertFalse(self.contact_page.check_if_table_is_empty())
         self.info('delete selected record')
+
         self.contact_page.click_check_box(source=contact_archived_records)
         self.assertFalse(self.contact_page.delete_selected_contacts())
 
@@ -528,7 +530,7 @@ class ContactsTestCases(BaseTest):
         LIMS-6421
         """
         data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute='type')
-        self.assertNotEqual(data_to_filter_with, False)
+        self.assertTrue(data_to_filter_with)
         data_to_filter_with = self.contact_page.get_mapped_contact_type(contact_type=data_to_filter_with[0])
 
         self.info('filter with {}'.format(data_to_filter_with))
@@ -565,7 +567,7 @@ class ContactsTestCases(BaseTest):
         self.info('Asserting the title was changed successfully to Ms')
         self.assertEqual(new_contact_person_data[0]['title'], 'Ms')
 
-    #@attr(series=True)
+    @attr(series=True)
     def test023_contact_title_translation(self):
         """
         Contacts: Title translation approach:

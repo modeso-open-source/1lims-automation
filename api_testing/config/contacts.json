@@ -1,13 +1,15 @@
 {
    "fields":[
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
          "section":1,
          "archivable":false,
-         "id":14,
+         "id":22,
          "name":"number",
          "isDynamic":false,
          "isArchived":false,
@@ -19,16 +21,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":2,
          "section":1,
          "archivable":false,
-         "id":15,
+         "id":23,
          "name":"companyName",
          "isDynamic":false,
          "isArchived":false,
@@ -40,16 +46,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":3,
          "section":1,
          "archivable":true,
-         "id":17,
+         "id":25,
          "name":"address",
          "isDynamic":false,
          "isArchived":false,
@@ -61,16 +71,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":4,
          "section":1,
          "archivable":true,
-         "id":23,
+         "id":31,
          "name":"postalCode",
          "isDynamic":false,
          "isArchived":false,
@@ -82,16 +96,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":5,
          "section":1,
          "archivable":true,
-         "id":20,
+         "id":28,
          "name":"location",
          "isDynamic":false,
          "isArchived":false,
@@ -103,16 +121,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":6,
          "section":1,
          "archivable":true,
-         "id":18,
+         "id":26,
          "name":"country",
          "isDynamic":false,
          "isArchived":false,
@@ -124,16 +146,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
          "section":2,
          "archivable":true,
-         "id":19,
+         "id":27,
          "name":"email",
          "isDynamic":false,
          "isArchived":false,
@@ -145,16 +171,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":2,
          "section":2,
          "archivable":true,
-         "id":21,
+         "id":29,
          "name":"phone",
          "isDynamic":false,
          "isArchived":false,
@@ -166,16 +196,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":3,
          "section":2,
          "archivable":true,
-         "id":24,
+         "id":32,
          "name":"skype",
          "isDynamic":false,
          "isArchived":false,
@@ -187,16 +221,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":4,
          "section":2,
          "archivable":true,
-         "id":25,
+         "id":33,
          "name":"website",
          "isDynamic":false,
          "isArchived":false,
@@ -208,16 +246,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
-         "section":3,
+         "section":5,
          "archivable":true,
-         "id":16,
+         "id":24,
          "name":"type",
          "isDynamic":false,
          "isArchived":false,
@@ -229,16 +271,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":2,
-         "section":3,
+         "section":5,
          "archivable":true,
-         "id":29,
+         "id":37,
          "name":"departments",
          "isDynamic":false,
          "isArchived":false,
@@ -250,8 +296,12 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       }
    ],
-   "archivedFields":[""]
+   "archivedFields":[
+
+   ]
 }

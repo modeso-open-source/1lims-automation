@@ -126,7 +126,7 @@ class ContactsAPI(ContactsAPIFactory):
             return False
         contacts_records = contacts_request['contacts']
         for contact in contacts_records:
-            if contact[attribute] != '':
+            if contact[attribute]:
                 return contact[attribute]
 
     def delete_active_contact(self, id=1):
