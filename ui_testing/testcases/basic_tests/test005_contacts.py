@@ -435,7 +435,7 @@ class ContactsTestCases(BaseTest):
 
         LIMS-6288
         """
-        self.assertTrue(self.contacts_page.deselect_all_configurations())
+        self.assertFalse(self.contacts_page.deselect_all_configurations())
 
     @parameterized.expand([('name', 'name', 'Contact Name'),
                            ('skype', 'skype', 'Skype'),
