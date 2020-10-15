@@ -301,7 +301,6 @@ class TestPlanAPI(TestPlanAPIFactory):
             id=test_unit_id)[0]['testUnit']
         formated_testunit = TstUnit().map_testunit_to_testplan_format(testunit=testunit_data)
         formatted_article = ArticleAPI().get_formatted_article_with_formatted_material_type(formatted_material)
-        #import ipdb; ipdb.set_trace()
         testplan, payload = self.create_testplan(testUnits=[formated_testunit],
                                                  selectedArticles=[formatted_article],
                                                  materialType=[formatted_material],

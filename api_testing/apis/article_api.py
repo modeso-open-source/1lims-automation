@@ -205,8 +205,9 @@ class ArticleAPI(ArticleAPIFactory):
         return articles_list
 
     def get_formatted_article_with_formatted_material_type(self, material_type, avoid_article=''):
-        material_type = {"id": material_type['id'],
-                         "text": material_type['name']}
+        if 'name' in material_type.keys():
+            material_type = {"id": material_type['id'],
+                             "text": material_type['name']}
         articles, payload = self.get_all_articles(limit=500)
         self.info("search for article with material type {}".format(material_type))
         for article in articles['articles']:
