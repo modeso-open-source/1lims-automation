@@ -10,13 +10,15 @@ import random, json, os
 class TestPlanAPIFactory(BaseAPI):
     @api_factory('get')
     def get_all_test_plans(self, **kwargs):
-        api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
-        _payload = {"sort_value": "number",
-                    "limit": 100,
-                    "start": 0,
-                    "sort_order": "DESC",
-                    "filter": "{}",
-                    "deleted": "0"}
+        # api = '{}{}'.format(self.url, self.END_POINTS['test_plan_api']['list_all_test_plans'])
+        # _payload = {"sort_value": "number",
+        #             "limit": 100,
+        #             "start": 0,
+        #             "sort_order": "DESC",
+        #             "filter": "{}",
+        #             "deleted": "0"}
+        api = f"{self.url}/api/testPlans?sort_value=number&limit=100&start=0&sort_order=DESC&filter=%7B%22quickSearch%22:%22%22%7D&deleted=0"
+        _payload = {}
         return api, _payload
 
     @api_factory('get')

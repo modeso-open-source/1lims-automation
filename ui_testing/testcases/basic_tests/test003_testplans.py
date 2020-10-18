@@ -50,7 +50,6 @@ class TestPlansTestCases(BaseTest):
         self.assertFalse(deleted_test_unit_found)
 
     @parameterized.expand(['InProgress', 'Completed'])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-234')
     def test002_test_plan_edit_status(self, status):
         """
         Creation Approach: when the status converted from completed to completed, new version created
@@ -178,61 +177,52 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(len(restored_rows), len(testplans_numbers))
         self.info('Test plans numbers: {} are restored correctly'.format(testplans_numbers))
 
-    # @skip('https://modeso.atlassian.net/browse/LIMS-6403')
-    @skip('https://modeso.atlassian.net/browse/LIMSA-180')
+    @skip('https://modeso.atlassian.net/browse/LIMS-6403')
     def test007_exporting_test_plan_one_record(self):
         """
         Exporting one record
 
         LIMS-3508 Case 1
         """
-        self.info('Choosing a random testplan table row')
-        row = self.test_plan.get_random_table_row('test_plans:test_plans_table')
+        self.info('choosing a random testplan table row')
+        row = self.test_plan.get_random_table_row('general:table')
         row_data = self.base_selenium.get_row_cells_dict_related_to_header(row=row)
         testplan_number = row_data['Test Plan No.']
-        self.info('Testplan number: {} will be exported'.format(testplan_number))
+        self.info('testplan number: {} will be exported'.format(testplan_number))
         self.info('Selecting the test plan row')
         self.test_plan.click_check_box(source=row)
         self.info('download XSLX sheet of selected test plan')
         self.test_plan.download_xslx_sheet()
         row_data_list = list(row_data.values())
-        self.info('Comparing the testplan no. {} '.format(testplan_number))
+        self.info('comparing the testplan no. {} '.format(testplan_number))
         values = self.test_plan.sheet.iloc[0].values
         fixed_sheet_row_data = self.fix_data_format(values)
         fixed_row_data_list = self.fix_data_format(row_data_list)
-        self.assertCountEqual(fixed_sheet_row_data, fixed_row_data_list)
+        for item in fixed_row_data_list:
+            self.assertIn(item, fixed_sheet_row_data)
 
-    # @skip('https://modeso.atlassian.net/browse/LIMS-6403')
-    @skip('https://modeso.atlassian.net/browse/LIMSA-180')
+    @skip('https://modeso.atlassian.net/browse/LIMS-6403')
     def test008_exporting_test_plan_multiple_records(self):
         """
         Exporting multiple records
 
         LIMS-3508 Case 2
         """
-        self.info('Choosing random multiple testplans table rows')
-        rows = self.test_plan.select_random_multiple_table_rows(element='test_plans:test_plans_table')
-        testplans_numbers = []
-        for row in rows[0]:
-            testplans_numbers.append(row['Test Plan No.'])
-        self.info('Testplans numbers: {} will be exported'.format(testplans_numbers))
-
+        self.info('choosing random multiple testplans table rows')
+        row_data_list = self.test_plan.select_random_multiple_table_rows(element='general:table')[0]
         self.test_plan.download_xslx_sheet()
 
-        row_data_list = []
-        for row_data in rows:
-            row_data_list.append(list(row_data.values()))
-
-        self.info('Comparing the testplan no. {} '.format(testplans_numbers))
-        row_data_list = sorted(row_data_list, key=lambda x: x[1], reverse=True)
-
+        row_data = []
+        sheet_data = []
         for index in range(len(row_data_list)):
-            fixed_row_data = self.fix_data_format(row_data_list[index])
-            values = self.test_plan.sheet.iloc[index].values
-            fixed_sheet_row_data = self.fix_data_format(values)
-            for item in fixed_row_data:
-                if item != '' and item != '-':
-                    self.assertIn(item, fixed_sheet_row_data)
+            row_data.append(self.fix_data_format(row_data_list[index].values()))
+            sheet_data.append(self.fix_data_format(self.test_plan.sheet.iloc[index].values))
+
+        row_data = sorted(row_data)
+        sheet_data = sorted(sheet_data)
+        for index in range(len(row_data)):
+            for item in row_data[index]:
+                self.assertIn(item, sheet_data[index])
 
     def test009_test_plan_duplicate(self):
         """
@@ -268,7 +258,6 @@ class TestPlansTestCases(BaseTest):
         for testunit in testunits:
             self.assertIn(testunit['name'], duplicated_test_units)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-234')
     def test010_test_plan_completed_to_inprogress(self):
         """
         When the test plan status is converted from completed to in progress a new version is created
@@ -297,7 +286,6 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(completed_testplan['version'] + 1, int(inprogress_testplan_version))
         self.assertEqual(testplan_row_data_status, 'In Progress')
 
-    @skip("https://modeso.atlassian.net/browse/LIMSA-200")
     @parameterized.expand(['same', 'All'])
     def test011_create_testplans_same_name_article_materialtype(self, same):
         """
@@ -312,28 +300,11 @@ class TestPlansTestCases(BaseTest):
 
         LIMS-3500
         """
-        self.info(" get random test plan with article != 'all")
-        testplans = self.test_plan_api.get_all_test_plans_json()
-        self.assertTrue(testplans)
-        testplans_list = [testplan for testplan in testplans if testplan['article'] != ['all']]
-        self.assertTrue(testplans_list, 'No test plans with article != all')
-        first_testplan = random.choice(testplans_list)
-        self.info("selected random test plan {}".format(first_testplan))
-        self.info("create another testplan with the same data")
-        if "same" == same:
-            article_no = first_testplan['articleNo'][0]
-        else:
-            article_no = 'All'
+        payload = self.test_plan_api.create_completed_testplan_random_data()
+        self.test_plan.click_create_test_plan_button()
+        self.test_plan.set_test_plan(name=payload['testPlan']['text'])
+        self.assertFalse(self.test_plan.is_material_type_existing(material_type=payload['materialType'][0]['text']))
 
-        self.test_plan.create_new_test_plan(name=first_testplan['testPlanName'],
-                                            material_type=first_testplan['materialTypes'][0],
-                                            article=article_no)
-        self.info('Waiting for the error message')
-        validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
-        self.info('Assert the error message')
-        self.assertTrue(validation_result)
-
-    @skip("https://modeso.atlassian.net/browse/LIMSA-200")
     def test012_create_testplans_same_name_different_materialtype(self):
         """
         Testing the creation of two testplans with the same name, but different material type
@@ -373,7 +344,8 @@ class TestPlansTestCases(BaseTest):
         self.assertEqual(response['status'], 1, payolad)
         self.info("created order no {} has testplan name {}".format(payolad[0]['orderNo'],
                                                                     payolad[0]['testPlans'][0]['name']))
-        self.info('Testplan name: {} will be archived'.format(payolad[0]['testPlans'][0]['name']))
+        self.info('testplan name: {} will be archived'.format(payolad[0]['testPlans'][0]['name']))
+        self.test_plan.base_selenium.refresh()
         testplan_deleted = self.test_plan.delete_selected_item_from_active_table_and_from_archived_table(
             item_name=payolad[0]['testPlans'][0]['name'])
 
@@ -386,13 +358,15 @@ class TestPlansTestCases(BaseTest):
 
         LIMS-3708
         """
-        self.info("Navigate to orders page")
+        self.info("navigate to orders page")
         self.order_page = Order()
-        self.order_page.get_orders_page()
         self.info("get random archived testplan")
-        response, payload = self.test_plan_api.get_all_test_plans(deleted="1")
+        response, payload = self.test_plan_api.get_all_test_plans()
         self.assertEqual(response['status'], 1, payload)
         archived_test_plan = random.choice(response['testPlans'])
+        self.test_plan_api.archive_testplans(ids=[str(archived_test_plan['id'])])
+        self.order_page.get_orders_page()
+
         self.info("archived test plan data {}".format(archived_test_plan))
         self.info("create a new order with material type and article of archived testplan")
         if archived_test_plan['article'] != ['all']:
@@ -402,7 +376,6 @@ class TestPlansTestCases(BaseTest):
         else:
             self.order_page.create_new_order(material_type=archived_test_plan['materialTypes'][0],
                                              test_plans=[archived_test_plan['testPlanName']])
-
         order_data = self.order_page.get_suborder_data()
         self.info("get the first suborder's testplan and make sure it's an empty string")
         self.assertCountEqual(order_data['suborders'][0]['testplans'], [''])
@@ -457,7 +430,6 @@ class TestPlansTestCases(BaseTest):
             self.assertIn(str(random_testplan['testPlanName']), tp_text.replace("'", ""))
 
     @parameterized.expand(['Completed', 'In Progress'])
-    @skip("https://modeso.atlassian.net/browse/LIMSA-235")
     def test018_filter_by_testplan_status(self, status):
         """
         User can filter with status
@@ -474,7 +446,6 @@ class TestPlansTestCases(BaseTest):
             else:
                 self.assertNotIn('In Progress', tp_text)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-235')
     def test019_filter_by_testplan_changed_by(self):
         """
         User can filter with changed by field
@@ -534,7 +505,6 @@ class TestPlansTestCases(BaseTest):
         for tp_text in testplans_found_text:
             self.assertIn(str(random_testplan['article'][0]), tp_text)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-183')
     def test022_filter_by_testplan_created_on(self):
         """
         User can filter with created on field
@@ -607,16 +577,14 @@ class TestPlansTestCases(BaseTest):
         Articles().get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
-    @skip('DUPLICATE TEST PLAN CONFIGURATION')
     def test026_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
 
         LIMS-6288
         """
-        self.assertTrue(self.test_plan.deselect_all_configurations())
+        self.assertFalse(self.test_plan.deselect_all_configurations())
 
-    @skip("https://modeso.atlassian.net/browse/LIMSA-184")
     def test027_test_unit_update_version_in_testplan(self):
         """
         Test plan: Test unit Approach: In case I update category & iteration of
@@ -677,7 +645,6 @@ class TestPlansTestCases(BaseTest):
                   'same as the updated iterations')
         self.assertEqual(second_testplan_testunit_iteration, new_iteration)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test028_childtable_limits_of_quantification(self):
         """
         Limits of quantification should be viewed in the testplan's child table

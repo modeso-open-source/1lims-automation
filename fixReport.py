@@ -109,11 +109,11 @@ headers = {'Content-Type': "application/json",
 # import IPython
 # IPython.embed()
 #
-print(f'merge all launches with {LAUNCH_DES} description')
+# print(f'merge all launches with {LAUNCH_DES} description')
 merged_launch = merge_launchs_with_same_description(PROJECT_NAME, LAUNCH_DES)
 
-print(f'launch ID : {merged_launch.json()["id"]}')
+# print(f'launch ID : {merged_launch.json()["id"]}')
 res = delete_fliky_failed_test_items(PROJECT_NAME, merged_launch.json()["id"])
-print(res.json())
+# print(res.json())
 
 #IPython.embed()
