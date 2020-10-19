@@ -6,6 +6,8 @@ from api_testing.apis.roles_api import RolesAPI
 from parameterized import parameterized
 import re, random
 from unittest import skip
+from nose.plugins.attrib import attr
+
 
 
 class HeaderTestCases(BaseTest):
@@ -16,6 +18,7 @@ class HeaderTestCases(BaseTest):
         self.roles_api = RolesAPI()
         self.set_authorization(auth=self.roles_api.AUTHORIZATION_RESPONSE)
         self.header_page.get_users_page()
+        self.header_page.set_all_configure_table_columns_to_specific_value()
 
     def test001_archive_user_management(self):
         """
@@ -24,7 +27,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6379
         """
         self.info("select random users rows")
-        selected_user_management_data, _ = self.header_page.select_random_multiple_table_rows()
+        selected_user_management_data, _ = self.header_page.select_multiple_random_users_rows()
         self.info("Archive selected rows")
         self.header_page.archive_entity(menu_element='user_management:right_menu',
                                         archive_element='user_management:archive')
@@ -47,7 +50,7 @@ class HeaderTestCases(BaseTest):
         self.header_page.get_archived_entities(menu_element='user_management:right_menu',
                                                archived_element='user_management:archived')
         self.info("Select random archived users rows")
-        selected_user_data, _ = self.header_page.select_random_multiple_table_rows()
+        selected_user_data, _ = self.header_page.select_multiple_random_users_rows()
         self.assertTrue(selected_user_data, 'No archived users found')
         for user in selected_user_data:
             user_names.append(user['Name'])
@@ -60,7 +63,7 @@ class HeaderTestCases(BaseTest):
         for user_name in user_names:
             self.assertTrue(self.header_page.is_user_in_table(value=user_name))
 
-    @skip("https://modeso.atlassian.net/browse/LIMSA-199")
+    #@skip("https://modeso.atlassian.net/browse/LIMSA-199")
     def test003_user_search(self):
         """
         Header:  User management:  Search Approach: Make sure that you can search by
@@ -171,7 +174,6 @@ class HeaderTestCases(BaseTest):
         self.assertEqual(self.base_selenium.get_url(), '{}users'.format(self.base_selenium.url))
 
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip("There is no edit option in the user table [atlassian]")
     def test009_update_user_name_with_save_cancel_btn(self, save):
         """
         User management: User management: I can update user name with save & cancel button
@@ -205,7 +207,6 @@ class HeaderTestCases(BaseTest):
             self.assertEqual(current_name, user_name)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip("There is no edit option in the user table [atlassian]")
     def test010_update_user_role_with_save_cancel_btn(self, save):
         """
         User management: I can update user role with save & cancel button
@@ -239,7 +240,6 @@ class HeaderTestCases(BaseTest):
             self.assertEqual(current_role, user_role)
 
     @parameterized.expand(['save_btn', 'cancel'])
-    @skip("There is no edit option in the user table [atlassian]")
     def test011_update_user_email_with_save_cancel_btn(self, save):
         """
         User management: I can update user email with save & cancel button
@@ -293,7 +293,7 @@ class HeaderTestCases(BaseTest):
                            ('email', 'filter_email', 'Email'),
                            ('number', 'filter_number', 'No'),
                            ('created_on', 'filter_created_on', 'Created On')])
-    def test013_filter_by_text_feild(self, feild, filter_elem, header):
+    def test013_filter_by_text_field(self, field, filter_elem, header):
         """
         User management Approach: I can filter by name, email, number and created on successfully
 
@@ -303,7 +303,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6486
         """
         self.header_page.sleep_tiny()
-        filter_data = self.header_page.get_data_from_row()[feild]
+        filter_data = self.header_page.get_data_from_row()[field]
         self.info(" filter by  {}".format(filter_data))
         user_results = self.header_page.filter_user_by(filter_element='user_management:{}'.format(filter_elem),
                                                        filter_text=filter_data)
@@ -389,6 +389,7 @@ class LoginRandomUser(BaseTest):
         self.set_authorization(auth=self.roles_api.AUTHORIZATION_RESPONSE)
         super().tearDown()
 
+    @attr(series=True)
     def test016_delete_user_used_in_other_entity(self):
         """
         User management: Make sure that you can't delete any user record If this record used in other entity
@@ -407,6 +408,7 @@ class LoginRandomUser(BaseTest):
         self.header_page.delete_entity()
         self.assertTrue(self.base_selenium.element_is_displayed(element='general:confirmation_pop_up'))
 
+    @attr(series=True)
     def test017_filter_by_changed_by(self):
         """
         Header: Roles & Permissions Approach: Make sure that you can filter by role changed by
