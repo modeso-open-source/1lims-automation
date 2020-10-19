@@ -6,15 +6,11 @@ from ui_testing.pages.testunits_page import TstUnits
 from api_testing.apis.test_unit_api import TestUnitAPI
 from api_testing.apis.article_api import ArticleAPI
 from api_testing.apis.test_plan_api import TestPlanAPI
-from api_testing.apis.orders_api import OrdersAPI
 from ui_testing.pages.order_page import Order
-from ui_testing.pages.login_page import Login
-from api_testing.apis.users_api import UsersAPI
 from unittest import skip
-from random import randint
 from parameterized import parameterized
-from nose.plugins.attrib import attr
 import re, random
+from nose.plugins.attrib import attr
 
 
 class TestUnitsTestCases(BaseTest):
@@ -29,7 +25,7 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_api.set_configuration()
         self.test_unit_page.get_test_units_page()
 
-    #@skip('https://modeso.atlassian.net/browse/LIMS-5237')
+    # @skip('https://modeso.atlassian.net/browse/LIMS-5237')
     @skip('https://modeso.atlassian.net/browse/LIMSA-207')
     def test001_test_units_search(self):
         """
@@ -71,7 +67,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('Navigate to archived test unit table')
         self.test_unit_page.get_archived_test_units()
         for test_unit in selected_test_units_data:
-            self.info(' + {} Test Unit should be activated.'.format(test_unit['Test Unit No.']))
+            self.info('{} Test Unit should be activated.'.format(test_unit['Test Unit No.']))
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit['Test Unit No.']))
 
     @skip('https://modeso.atlassian.net/browse/LIMSA-207')
@@ -93,9 +89,10 @@ class TestUnitsTestCases(BaseTest):
         self.info('Navigate to active test unit table')
         self.test_unit_page.get_active_test_units()
         for test_unit in selected_test_unit:
-            self.info(' + {} Test Unit is restored'.format(test_unit))
+            self.info('{} Test Unit is restored'.format(test_unit))
             self.assertTrue(self.test_unit_page.is_test_unit_in_table(value=test_unit))
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-385')
     def test004_check_version_after_update(self):
         """
         Test unit: Version Approach: After I update any field then press on save and
@@ -117,9 +114,9 @@ class TestUnitsTestCases(BaseTest):
         self.assertEqual(update_data, test_unit_after_update)
         self.test_units_page.get_test_units_page()
         first_testunit_data = self.test_units_page.filter_and_get_result(text=test_unit_after_update['number'])
-        self.info('+ Assert testunit version is: {}, new version: {}'.
+        self.info('Assert testunit version is: {}, new version: {}'.
                   format(random_test_unit['version'], first_testunit_data['Version']))
-        self.assertEqual(str(random_test_unit['version']+1), first_testunit_data['Version'])
+        self.assertEqual(str(random_test_unit['version'] + 1), first_testunit_data['Version'])
 
     def test005_quantative_mibi_not_entering_dash_in_upper_limit(self):
         """
@@ -136,10 +133,11 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.save()
         self.info('Waiting for error message to make sure that validation forbids adding - in the upper limit')
         validation_result = self.base_selenium.wait_element(element='general:oh_snap_msg')
-        self.info('+ Assert error msg which indicates that it does not allow to add - in upper limit has appeared? {}'.
+        self.info('Assert error msg which indicates that it does not allow to add - in upper limit has appeared? {}'.
                   format(validation_result))
         self.assertEqual(validation_result, True)
 
+    @skip('https://modeso.atlassian.net/browse/LIMSA-382')
     def test006_search_by_archived_testunit(self):
         """
         Archived test units shouldn't display in the test plan step two & also in the analysis step two.
@@ -163,7 +161,6 @@ class TestUnitsTestCases(BaseTest):
             element='test_plan:test_unit', item_text=archived_test_unit['name']))
 
     @parameterized.expand(['spec', 'quan'])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test007_allow_unit_field_to_be_optional(self, specification_type):
         """
         Test unit: Limit of quantification Approach: Allow unit field to be optional field
@@ -187,19 +184,18 @@ class TestUnitsTestCases(BaseTest):
         test_unit_found = self.test_units_page.filter_and_get_latest_row_data(payload['number'])
         self.info('Checking with upper and lower limit to make sure that data saved normally')
         if specification_type == 'spec':
-            self.assertEqual(str(payload['lowerLimit'])+'-'+str(payload['upperLimit']),
+            self.assertEqual(str(payload['lowerLimit']) + '-' + str(payload['upperLimit']),
                              test_unit_found['Specifications'])
-            self.info('+ Assert unit value after save is: {}, and should be empty'.format(test_unit_found['Unit']))
+            self.info('Assert unit value after save is: {}, and should be empty'.format(test_unit_found['Unit']))
             self.assertEqual(test_unit_found['Unit'], '-')
         else:
-            self.assertEqual(str(payload['quantificationLowerLimit'])+'-'+str(payload['quantificationUpperLimit']),
+            self.assertEqual(str(payload['quantificationLowerLimit']) + '-' + str(payload['quantificationUpperLimit']),
                              test_unit_found['Quantification Limit'])
-            self.info('+ Assert unit value after save is: {}, and should be empty'.format(
+            self.info('Assert unit value after save is: {}, and should be empty'.format(
                 test_unit_found['Quantification Limit Unit']))
             self.assertEqual(test_unit_found['Quantification Limit Unit'], '-')
 
     @parameterized.expand(['spec', 'quan'])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test008_force_use_to_choose_specification_or_limit_of_quantification(self, specification_type):
         """
         The specification & Limit of quantification one of them should be mandatory.
@@ -262,7 +258,6 @@ class TestUnitsTestCases(BaseTest):
         self.info('Assert error msg')
         self.assertEqual(validation_result, True)
 
-    @skip('https://modeso.atlassian.net/browse/LIMS-8467')
     def test010_material_type_approach(self):
         """"
         In case I created test unit with 4 materiel type, when I go to test plan,
@@ -282,11 +277,11 @@ class TestUnitsTestCases(BaseTest):
         test_unit_data = self.test_plan.get_all_testunits_in_testplan(navigate_to_test_unit_selection=False)
         self.assertIn(testunit['name'], test_unit_data[0][0])
 
-        for i in range(0, len(testunit['selectedMaterialTypes'])-1):
-            if i+1 < len(testunit['selectedMaterialTypes']):
+        for i in range(0, len(testunit['selectedMaterialTypes']) - 1):
+            if i + 1 < len(testunit['selectedMaterialTypes']):
                 self.base_selenium.click('test_plan:back_button')
                 self.test_plan.clear_material_types()
-                self.test_plan.set_material_type(testunit['selectedMaterialTypes'][i+1]['name'])
+                self.test_plan.set_material_type(testunit['selectedMaterialTypes'][i + 1]['name'])
                 self.test_plan.set_article(random=True)
             else:
                 break
@@ -328,7 +323,6 @@ class TestUnitsTestCases(BaseTest):
                            ('lower', 'spec'),
                            ('lower', 'quan')
                            ])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test012_create_test_unit_with_one_limit_only(self, limit, spec_or_quan):
         """
         New: Test unit: Specification Approach: In case I entered the upper limit or the lower limit only,
@@ -412,7 +406,7 @@ class TestUnitsTestCases(BaseTest):
         self.info('Assert error msg')
         self.assertEqual(validation_result, True)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
+    @attr(series=True)
     def test015_specification_limit_of_quantification_approach(self):
         """
         New: Test unit: Specification/limit of quantification Approach: Allow user to select those both options
@@ -424,21 +418,20 @@ class TestUnitsTestCases(BaseTest):
         new_random_method = self.generate_random_string()
         new_random_upper_limit = self.generate_random_number(lower=500, upper=1000)
         new_random_lower_limit = self.generate_random_number(lower=1, upper=500)
-        spec_or_quan = 'spec_quan'
-        self.info('Create new testunit with qualitative and random generated data')
+        self.info('create new testunit with qualitative and random generated data')
         test_unit_no = self.test_unit_page.create_quantitative_testunit(
             name=new_random_name, method=new_random_method, upper_limit=new_random_upper_limit,
-            lower_limit=new_random_lower_limit, spec_or_quan=spec_or_quan)
+            lower_limit=new_random_lower_limit, spec_or_quan='spec_quan')
         self.test_unit_page.sleep_tiny()
         self.test_unit_page.save_and_wait()
         self.info('filter by test unit number: {}, to make sure that test unit created successfully'.
                   format(test_unit_no))
         test_unit_found = self.test_units_page.filter_and_get_latest_row_data(test_unit_no)
-        self.info('Assert upper and lower limits are in specifications')
+        self.info('assert upper and lower limits are in specifications')
         self.assertEqual("{}-{}".format(new_random_lower_limit, new_random_upper_limit),
                          test_unit_found['Specifications'])
 
-        self.info('Assert upper and lower limits are in quantification_limit')
+        self.info('assert upper and lower limits are in quantification_limit')
         self.assertEqual("{}-{}".format(new_random_lower_limit, new_random_upper_limit),
                          test_unit_found['Quantification Limit'])
 
@@ -460,7 +453,6 @@ class TestUnitsTestCases(BaseTest):
             self.assertNotIn('ng-valid', class_attr)
 
     @parameterized.expand(['quan', 'spec'])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test017_create_quantative_with_limits_of_quantative_only_and_specification_only(self, limits_type):
         """
         New:Test unit: Create Approach: User can create test unit with limits of quantification type only &
@@ -496,6 +488,7 @@ class TestUnitsTestCases(BaseTest):
             self.assertEqual(test_unit_found['Quantification Limit'], 'N/A')
 
     @skip('https://modeso.atlassian.net/browse/LIMSA-222')
+    @skip('https://modeso.atlassian.net/browse/LIMSA-387')
     def test018_download_test_units_sheet(self):
         """
         I can download all the data in the table view in the excel sheet
@@ -533,7 +526,6 @@ class TestUnitsTestCases(BaseTest):
         self.info('Assert upper and lower limits are in specifications with N/A values')
         self.assertEqual("N/A", test_unit_found['Specifications'])
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test020_change_quantification_limits_not_effect_test_plan(self):
         """
         New: Test units/effect on test plan: Limits of quantification Approach: In case I
@@ -734,7 +726,7 @@ class TestUnitsTestCases(BaseTest):
         if 'ok' == ok:
             self.test_unit_page.confirm_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(), '{}testUnits'.format(self.base_selenium.url))
-            self.info(' + clicking on Overview confirmed')
+            self.info('clicking on Overview confirmed')
         else:
             self.test_unit_page.cancel_overview_pop_up()
             self.assertEqual(self.base_selenium.get_url(), '{}testUnits/add'.format(self.base_selenium.url))
@@ -857,7 +849,6 @@ class TestUnitsTestCases(BaseTest):
         self.info('search for value of the unit field: {}'.format(test_unit_found['Unit']))
         self.assertIn(test_unit_found['Unit'], fixed_sheet_row_data)
 
-    @skip('need API to take round option ID and returns round option name')
     def test032_edit_category_affects_testplan_step_two(self):
         """
         New: Test unit: Category Approach: Any update in test unit category should
@@ -865,7 +856,7 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-3687
         """
-        self.info('Create new test unit with qualitative and random generated data')
+        self.info('create new test unit with qualitative and random generated data')
         response, payload = self.test_unit_api.create_qualitative_testunit()
         self.assertEqual(response['status'], 1, payload)
         self.info('create new test plan with created test unit with name {}'.format(payload['name']))
@@ -873,7 +864,7 @@ class TestUnitsTestCases(BaseTest):
         test_plan = TestPlanAPI().create_testplan_from_test_unit_id(response['testUnit']['testUnitId'])
         self.assertTrue(test_plan, "Test plan not created")
         self.info('created test unit with number {}'.format(test_plan['number']))
-        self.info('Navigate to test plan edit page and get test unit category')
+        self.info('navigate to test plan edit page and get test unit category')
         self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
         self.test_plan.sleep_small()
         random_category_before_edit = self.test_plan.get_test_unit_category()
@@ -885,14 +876,13 @@ class TestUnitsTestCases(BaseTest):
         self.info('update test unit category to {}'.format(new_random_category_edit))
         self.test_unit_page.set_category(new_random_category_edit)
         self.test_unit_page.save_and_wait()
-        self.info('Navigate to test plan edit page and get test unit category')
+        self.info('navigate to test plan edit page and get test unit category')
         self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
         self.test_plan.sleep_small()
         test_plan_category_after_edit = self.test_plan.get_test_unit_category()
-        self.info('Assert that category updated successfully')
+        self.info('assert that category updated successfully')
         self.assertEqual(test_plan_category_after_edit, new_random_category_edit)
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-208')
     def test033_editing_limit_of_quantification_fields_should_affect_table_and_version(self):
         """
         New: Test unit: Limits of quantification Approach: Versions:In case I edit any field
@@ -924,13 +914,13 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.get_test_units_page()
         test_unit_found, version_data = self.test_unit_page.filter_and_get_version(random_testunit['number'])
         self.info('version is {}, ant it should be {}'.format(test_unit_found['Version'],
-                                                              str(random_testunit['version']+1)))
+                                                              str(random_testunit['version'] + 1)))
 
-        self.assertEqual(test_unit_found['Version'], str(random_testunit['version']+1))
+        self.assertEqual(test_unit_found['Version'], str(random_testunit['version'] + 1))
         self.assertEqual(test_unit_found['Quantification Limit'],
                          str(random_lower_limit) + '-' + str(random_upper_limit))
         self.info('assert that version data created sucesssfully')
-        self.assertEqual(len(version_data), random_testunit['version']+1)
+        self.assertEqual(len(version_data), random_testunit['version'] + 1)
         self.assertEqual(version_data[-1]['Quantification Limit'],
                          str(random_lower_limit) + '-' + str(random_upper_limit))
 
@@ -966,232 +956,13 @@ class TestUnitsTestCases(BaseTest):
 
         LIMS-8309
         """
+        self.test_unit_api.create_quantitative_testunit(useSpec=False, useQuantification=True,
+                                                        quantificationUpperLimit=1000,
+                                                        quantificationLowerLimit=100)
         self.test_unit_page.open_configurations()
         self.assertTrue(self.test_unit_page.archive_quantification_limit_field())
         validation_result = self.base_selenium.wait_element(element='test_units:archive_config_error')
         self.assertTrue(validation_result)
-
-    @skip('waiting for API deleting')
-    def test036_archive_quantifications_limit_field(self):
-        """
-        User can archive the quantification limits field from the configuration section if not used.
-        "Archive-allowed"
-        LIMS-4164
-        """
-        self.test_unit_page.open_configurations()
-        self.assertTrue(self.test_unit_page.archive_quantification_limit_field())
-        self.assertFalse(
-            self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
-        self.test_unit_page.get_archived_fields_tab()
-        self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
-        self.test_unit_page.get_test_units_page()
-        self.test_unit_page.click_create_new_testunit()
-        self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
-        self.assertFalse(self.base_selenium.check_element_is_exist(element='test_unit:use_quantification'))
-
-    @skip('waiting for API deleting')
-    def test037_restore_quantifications_limit_field(self):
-        """
-        User can archive the quantification limits field from the configuration section if not used.
-
-        "Restore"
-        LIMS-4164
-        """
-        self.test_unit_page.open_configurations()
-        self.test_unit_page.get_archived_fields_tab()
-        self.assertTrue(self.test_unit_page.restore_quantification_limit_field())
-        self.assertFalse(
-            self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
-        self.test_unit_page.get_active_fields_tab()
-        self.assertTrue(self.base_selenium.check_element_is_exist('test_unit:configuration_testunit_useQuantification'))
-        self.test_unit_page.get_test_units_page()
-        self.test_unit_page.click_create_new_testunit()
-        self.test_unit_page.set_testunit_type(testunit_type='Quantitative')
-        self.assertTrue(self.base_selenium.check_element_is_exist(element='test_unit:use_quantification'))
-
-    @attr(series=True)
-    def test038_test_unit_name_is_mandatory(self):
-        """
-        New: Test unit: Configuration: Test unit Name Approach: Make the test units field
-        as as mandatory field (This mean you can't remove it )
-
-        LIMS- 5651
-        """
-        self.test_unit_page.open_configurations()
-        self.test_unit_page.open_testunit_name_configurations_options()
-        self.assertTrue(self.test_unit_page.check_all_options_of_search_view_menu())
-
-    @parameterized.expand(['Name', 'Method', 'Type', 'No'])
-    @attr(series=True)
-    def test039_test_unit_name_allow_user_to_search_with_selected_options_testplan(self, search_view_option):
-        """
-        New: Test Unit: Configuration: Test unit Name Approach: Allow user to search with
-        (name, number, type, method) in the drop down list of the test plan for.
-
-        LIMS- 6422
-        """
-        self.test_unit_page.open_configurations()
-        self.test_unit_page.open_testunit_name_configurations_options()
-        old_values = self.test_unit_page.select_option_to_view_search_with(view_search_options=[search_view_option])
-        self.info('Create new testunit with qualitative and random generated data')
-        response, payload = self.test_unit_api.create_qualitative_testunit()
-        self.assertEqual(response['status'], 1, payload)
-        self.info('new testunit created with number  {}'.format(payload['number']))
-        self.info('get random In Progrees test plan')
-        test_plan = random.choice(TestPlanAPI().get_inprogress_testplans())
-        self.assertTrue(test_plan, 'No test plan selected')
-        self.info('Navigate to test plan edit page')
-        self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
-        is_name_exist = self.test_plan.search_test_unit_not_set(test_unit=payload['name'])
-        is_number_exist = self.test_plan.search_test_unit_not_set(test_unit=str(payload['number']))
-        is_type_exist = self.test_plan.search_test_unit_not_set(test_unit='Qualitative')
-        is_method_exist = self.test_plan.search_test_unit_not_set(test_unit=payload['method'])
-
-        if search_view_option == 'Name':
-            self.assertTrue(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertFalse(is_method_exist)
-        elif search_view_option == 'Type':
-            self.assertFalse(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertTrue(is_type_exist)
-            self.assertFalse(is_method_exist)
-        elif search_view_option == 'Method':
-            self.assertFalse(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertTrue(is_method_exist)
-        elif search_view_option == 'No':
-            self.assertFalse(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertFalse(is_method_exist)
-
-    @attr(series=True)
-    def test040_test_unit_name_search_default_options_name_type_in_testplan(self):
-        """
-        New: Test unit: Configuration: Test units field Approach: Allow name & type
-        to display by default in the test plan form In case I select them from the
-        test unit configuration
-
-        LIMS-6423
-        """
-        # in set_configuration() I set search to be by name and type so I don't need to add this steps here
-        self.info('Create new test unit with qualitative and random generated data')
-        response, payload = self.test_unit_api.create_qualitative_testunit()
-        self.assertEqual(response['status'], 1, payload)
-        self.info('new test unit created with number  {}'.format(payload['number']))
-        self.info('get random In Progress test plan')
-        test_plan = random.choice(TestPlanAPI().get_inprogress_testplans())
-        self.assertTrue(test_plan, 'No test plan selected')
-        self.info('Navigate to test plan edit page')
-        self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
-        self.test_plan.sleep_small()
-        is_name_exist = self.test_plan.search_test_unit_not_set(test_unit=payload['name'])
-        is_number_exist = self.test_plan.search_test_unit_not_set(test_unit=str(payload['number']))
-        is_type_exist = self.test_plan.search_test_unit_not_set(test_unit='Qualitative')
-        is_method_exist = self.test_plan.search_test_unit_not_set(test_unit=payload['method'])
-        self.assertTrue(is_name_exist)
-        self.assertFalse(is_number_exist)
-        self.assertTrue(is_type_exist)
-        self.assertFalse(is_method_exist)
-
-    @attr(series=True)
-    def test041_test_unit_name_view_method_option_multiple_line_in_testplan(self):
-        """
-        New: Test Unit: Configuration: Test unit Name Approach: In case you select
-        the method to display and you entered long text in it, the method should
-        display into multiple lines (test plan)
-
-        LIMS-6424
-        """
-        self.info('Generate random data for update')
-        new_random_method = self.generate_random_string() + \
-                            self.generate_random_string() + \
-                            self.generate_random_string()
-
-        self.test_unit_page.open_configurations()
-        self.test_unit_page.open_testunit_name_configurations_options()
-        self.test_unit_page.select_option_to_view_search_with(view_search_options=['Method'])
-        self.info('Create new testunit with qualitative and random generated data')
-        response, payload = self.test_unit_api.create_qualitative_testunit(method=new_random_method)
-        self.assertEqual(response['status'], 1, payload)
-        self.info('new testunit created with number  {}'.format(payload['number']))
-        self.info('get random In Progrees test plan')
-        test_plan = random.choice(TestPlanAPI().get_inprogress_testplans())
-        self.assertTrue(test_plan, 'No test plan selected')
-        self.info('Navigate to test plan edit page')
-        self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
-        self.test_plan.set_test_unit(test_unit=new_random_method)
-        multiple_lines_properties = self.test_plan.get_testunit_in_testplan_title_multiple_line_properties()
-        self.assertEquals(multiple_lines_properties['textOverflow'], 'clip')
-        self.assertEquals(multiple_lines_properties['lineBreak'], 'auto')
-
-    @parameterized.expand([('Name', 'Type'),
-                           ('Name', 'Method'),
-                           ('Name', 'No'),
-                           ('Type', 'Method'),
-                           ('Type', 'No'),
-                           ('Method', 'No')])
-    @attr(series=True)
-    def test042_test_unit_name_allow_user_to_search_with_selected_two_options_testplan(self, search_view_option1,
-                                                                                       search_view_option2):
-        """
-        New: Test Unit: Configuration: Test unit Name Approach: Allow user to search with
-        (name, number, type, method) in the drop down list of the analysis for
-
-        LIMS- 6426
-        """
-        self.test_unit_page.open_configurations()
-        self.test_unit_page.open_testunit_name_configurations_options()
-        self.test_unit_page.select_option_to_view_search_with(
-            view_search_options=[search_view_option1, search_view_option2])
-        self.info('Create new test unit with qualitative and random generated data')
-        response, payload = self.test_unit_api.create_qualitative_testunit()
-        self.assertEqual(response['status'], 1, payload)
-        self.info('new test unit created with number  {}'.format(payload['number']))
-        self.info('get random In Progress test plan')
-        test_plan = random.choice(TestPlanAPI().get_inprogress_testplans())
-        self.assertTrue(test_plan, 'No test plan selected')
-        self.info('Navigate to test plan edit page')
-        self.test_plan.get_test_plan_edit_page_by_id(test_plan['id'])
-        self.test_plan.sleep_small()
-        is_name_exist = self.test_plan.search_test_unit_not_set(test_unit=payload['name'])
-        is_number_exist = self.test_plan.search_test_unit_not_set(test_unit=str(payload['number']))
-        is_type_exist = self.test_plan.search_test_unit_not_set(test_unit='Qualitative')
-        is_method_exist = self.test_plan.search_test_unit_not_set(test_unit=payload['method'])
-
-        if search_view_option1 == 'Name' and search_view_option2 == 'Type':
-            self.assertTrue(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertTrue(is_type_exist)
-            self.assertFalse(is_method_exist)
-        elif search_view_option1 == 'Name' and search_view_option2 == 'Method':
-            self.assertTrue(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertTrue(is_method_exist)
-        elif search_view_option1 == 'Name' and search_view_option2 == 'No':
-            self.assertTrue(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertFalse(is_method_exist)
-        elif search_view_option1 == 'Type' and search_view_option2 == 'Method':
-            self.assertFalse(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertTrue(is_type_exist)
-            self.assertTrue(is_method_exist)
-        elif search_view_option1 == 'Type' and search_view_option2 == 'No':
-            self.assertFalse(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertTrue(is_type_exist)
-            self.assertFalse(is_method_exist)
-        elif search_view_option1 == 'Method' and search_view_option2 == 'No':
-            self.assertFalse(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertTrue(is_method_exist)
 
     @skip('https://modeso.atlassian.net/browse/LIMSA-207')
     def test043_testunits_search_then_navigate(self):
@@ -1215,7 +986,6 @@ class TestUnitsTestCases(BaseTest):
         Articles().get_articles_page()
         self.assertEqual(self.base_selenium.get_url(), '{}articles'.format(self.base_selenium.url))
 
-    @skip('https://modeso.atlassian.net/browse/LIMSA-212')
     def test044_hide_all_table_configurations(self):
         """
         Table configuration: Make sure that you can't hide all the fields from the table configuration
@@ -1317,31 +1087,6 @@ class TestUnitsTestCases(BaseTest):
             testunit_material_types = row_data['Material Type'].split(',')
             self.assertIn(str(data_to_filter_with[0]), testunit_material_types)
 
-    @attr(series=True)
-    def test049_filter_by_testunit_changed_by(self):
-        """
-        New: Test units: Filter Approach: Make sure you can filter by changed by
-
-        LIMS-6428
-        """
-        self.login_page = Login()
-        self.info('Calling the users api to create a new user with username')
-        response, payload = UsersAPI().create_new_user()
-        self.assertEqual(response['status'], 1, payload)
-        self.login_page.logout()
-        self.login_page.login(username=payload['username'], password=payload['password'])
-        self.base_selenium.wait_until_page_url_has(text='dashboard')
-        self.test_units_page.get_test_units_page()
-        new_name = self.generate_random_string()
-        method = self.generate_random_string()
-        test_unit_no = self.test_unit_page.create_qualitative_testunit(name=new_name, method=method)
-        self.test_unit_page.save_and_wait()
-        self.assertTrue(test_unit_no, 'Test unit not created')
-        self.info('New unit is created successfully with number: {}'.format(test_unit_no))
-        self.test_units_page.sleep_tiny()
-        test_unit_found = self.test_units_page.filter_by_user_get_result(payload['username'])
-        self.assertTrue(test_unit_found)
-        
     def test050_sub_and_super_scripts_in_active_table(self):
         """
             New: Test units: Active table/unit: Sub & Super scripts: Allow unit to display
@@ -1362,108 +1107,6 @@ class TestUnitsTestCases(BaseTest):
         required_value = span.get_attribute('ng-reflect-ngb-tooltip')
         self.assertEqual(payload['unit'], required_value)
 
-    @parameterized.expand([('Name', 'Type'),
-                           ('Name', 'Method'),
-                           ('Name', 'No'),
-                           ('Type', 'Method'),
-                           ('Type', 'No'),
-                           ('No', 'Method'),
-                           ('Unit', 'No'),
-                           ('Quantification Limit', '')
-                           ])
-    @attr(series=True)
-    def test051_test_unit_name_allow_user_to_search_with_selected_two_options_order(self, search_view_option1,
-                                                                                       search_view_option2):
-        """
-        Test Unit: Configuration: Test units Name Approach: When the user select any two options f
-        rom the test unit configuration, this action should reflect on the order form
-
-        LIMS-6672
-
-        Orders: Default filter test unit Approach: Allow the search criteria in the drop down list
-        in the filter section to be same as in the form
-
-        LIMS-7414
-        """
-        self.order_page = Order()
-        self.test_unit_page.open_configurations()
-        self.test_unit_page.open_testunit_name_configurations_options()
-        self.test_unit_page.select_option_to_view_search_with(
-            view_search_options=[search_view_option1, search_view_option2])
-        upperLimit = self.generate_random_number(lower=50, upper=100)
-        lowerLimit = self.generate_random_number(lower=1, upper=49)
-        self.info('Create new quantitative test unit with unit and quantification')
-        response, payload = self.test_unit_api.create_quantitative_testunit(
-            useSpec=False, useQuantification=True, quantificationUpperLimit=upperLimit,
-            quantificationLowerLimit=lowerLimit, unit='m[g]{o}')
-        self.assertEqual(response['status'], 1, payload)
-        quantification_limit = '{}-{}'.format(payload['quantificationLowerLimit'],
-                                              payload['quantificationUpperLimit'])
-        self.info('new test unit created with number  {}'.format(payload['number']))
-        self.info('get random order')
-        radndom_order = random.choice(OrdersAPI().get_all_orders_json())
-        self.assertTrue(radndom_order, 'No order selected')
-        self.info('Navigate to order edit page')
-        self.order_page.get_order_edit_page_by_id(radndom_order['orderId'])
-        self.order_page.sleep_small()
-        self.info("select first suborder")
-        is_name_exist = self.order_page.search_test_unit_not_set(test_unit=payload['name'])
-        is_number_exist = self.order_page.search_test_unit_not_set(test_unit=str(payload['number']))
-        is_type_exist = self.order_page.search_test_unit_not_set(test_unit='Quantitative')
-        is_method_exist = self.order_page.search_test_unit_not_set(test_unit=payload['method'])
-        is_unit_exist = self.order_page.search_test_unit_not_set(test_unit=payload['unit'])
-        is_quant_limit_exist = self.order_page.search_test_unit_not_set(test_unit=quantification_limit)
-
-        if search_view_option1 == 'Name' and search_view_option2 == 'Type':
-            self.assertTrue(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertTrue(is_type_exist)
-            self.assertFalse(is_method_exist)
-            self.assertFalse(is_unit_exist)
-        elif search_view_option1 == 'Name' and search_view_option2 == 'Method':
-            self.assertTrue(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertTrue(is_method_exist)
-            self.assertFalse(is_unit_exist)
-        elif search_view_option1 == 'Name' and search_view_option2 == 'No':
-            self.assertTrue(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertFalse(is_method_exist)
-            self.assertFalse(is_unit_exist)
-        elif search_view_option1 == 'Type' and search_view_option2 == 'Method':
-            self.assertFalse(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertTrue(is_type_exist)
-            self.assertTrue(is_method_exist)
-            self.assertFalse(is_unit_exist)
-        elif search_view_option1 == 'Type' and search_view_option2 == 'No':
-            self.assertFalse(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertTrue(is_type_exist)
-            self.assertFalse(is_method_exist)
-            self.assertFalse(is_unit_exist)
-        elif search_view_option1 == 'No' and search_view_option2 == 'Method':
-            self.assertFalse(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertTrue(is_method_exist)
-            self.assertFalse(is_unit_exist)
-        elif search_view_option1 == 'Unit' and search_view_option2 == 'No':
-            self.assertFalse(is_name_exist)
-            self.assertTrue(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertFalse(is_method_exist)
-            self.assertTrue(is_unit_exist)
-        elif search_view_option1 == 'Quantification Limit':
-            self.assertFalse(is_name_exist)
-            self.assertFalse(is_number_exist)
-            self.assertFalse(is_type_exist)
-            self.assertFalse(is_method_exist)
-            self.assertFalse(is_unit_exist)
-            self.assertTrue(is_quant_limit_exist)
-            
     def test052_cancel_testunit_name_configuration(self):
         """
         Test unit: Configuration: make sure that when you select from test unit name configuration
@@ -1478,4 +1121,4 @@ class TestUnitsTestCases(BaseTest):
         self.test_unit_page.set_view_and_search_option(save=False)
         self.info('open test unit configuration pop up to assert that nothing changed ')
         selected_option_after_cancel = self.test_unit_page.get_view_and_search_options()
-        self.assertEqual(selected_option, selected_option_after_cancel)        
+        self.assertEqual(selected_option, selected_option_after_cancel)

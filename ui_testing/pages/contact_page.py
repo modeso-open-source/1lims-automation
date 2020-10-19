@@ -207,7 +207,7 @@ class Contact(Contacts):
                               departments=[''], contact_persons=True, save=True):
 
         if create:
-            self.info(' + Create new contact.')
+            self.info('Create new contact.')
             self.base_selenium.click(element='contacts:new_contact')
             self.info('Wait until data are loaded')
             self.sleep_small()
@@ -343,9 +343,12 @@ class Contact(Contacts):
             self.get_contact_persons_page()
         contact_persons_arr = []
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
-        self.info('Collecting persons data')
+        self.info('collecting persons data')
         contact_persons_table_records = self.base_selenium.get_table_rows(element='contact:contact_persons_table')
         self.sleep_medium()
+        if contact_persons_table_records[0].text == 'No Results Found':
+            self.info("contact persons table is empty")
+            return contact_persons_arr
         if len(contact_persons_table_records) >= 1:
             for person in contact_persons_table_records:
                 row_data = self.base_selenium.get_row_cells_elements_related_to_header(
@@ -360,7 +363,7 @@ class Contact(Contacts):
                     'info': row_data['Info:'].text
                 })
         else:
-            self.info("-- contact persons table is empty")
+            self.info("contact persons table is empty")
         return contact_persons_arr
 
     def get_contact_persons_count(self):

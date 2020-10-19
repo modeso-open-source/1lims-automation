@@ -79,7 +79,7 @@ class HeaderTestCases(BaseTest):
         for column in row_data:
             if re.findall(r'\d{1,}.\d{1,}.\d{4}', row_data[column]) or row_data[column] == '':
                 continue
-            self.info(' + search for {} : {}'.format(column, row_data[column]))
+            self.info('search for {} : {}'.format(column, row_data[column]))
             search_results = self.header_page.search(row_data[column])
             self.assertGreater(len(search_results), 1, " * There is no search results for it, Report a bug.")
             for search_result in search_results:

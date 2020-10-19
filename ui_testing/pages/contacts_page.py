@@ -114,8 +114,8 @@ class Contacts(BasePages):
 
     def get_mapped_contact_type(self, contact_type):
         types = {'supplier': 'Contact',
-                        'client': 'Client',
-                        'laboratory': 'Laboratory'}
+                 'client': 'Client',
+                 'laboratory': 'Laboratory'}
         return types[contact_type]
 
     def get_contact_edit_page_by_id(self, id):

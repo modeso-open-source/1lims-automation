@@ -1,13 +1,15 @@
 {
    "fields":[
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
          "section":1,
          "archivable":false,
-         "id":61,
+         "id":69,
          "name":"number",
          "isDynamic":false,
          "isArchived":false,
@@ -19,16 +21,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":2,
          "section":1,
          "archivable":false,
-         "id":62,
+         "id":70,
          "name":"name",
          "isDynamic":false,
          "isArchived":false,
@@ -40,16 +46,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":3,
          "section":1,
          "archivable":false,
-         "id":63,
+         "id":71,
          "name":"materialType",
          "isDynamic":false,
          "isArchived":false,
@@ -61,16 +71,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":4,
          "section":1,
          "archivable":false,
-         "id":64,
+         "id":72,
          "name":"articleName",
          "isDynamic":false,
          "isArchived":false,
@@ -82,16 +96,20 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       },
       {
-         "options":[""],
+         "options":[
+
+         ],
          "isEditable":false,
          "isDragable":true,
          "order":1,
          "section":2,
          "archivable":true,
-         "id":71,
+         "id":79,
          "name":"attachment",
          "isDynamic":false,
          "isArchived":false,
@@ -103,8 +121,12 @@
             "name"
          ],
          "error":false,
-         "optionsInUse":[""]
+         "optionsInUse":[
+
+         ]
       }
    ],
-   "archivedFields":[""]
+   "archivedFields":[
+
+   ]
 }

@@ -117,7 +117,7 @@ class OrdersTestCases(BaseTest):
         self.orders_page.get_order_edit_page_by_id(order_response['order']['mainOrderId'])
         order_url = self.base_selenium.get_url()
         self.info('order_url : {}'.format(order_url))
-        self.order_page.open_suborder_edit()
+        self.order_page.open_suborder_edit_mode()
         order_department = self.order_page.get_departments()
         new_department = payload['departments'][1]['text']
         self.info("update department to {}".format(new_department))
@@ -128,7 +128,7 @@ class OrdersTestCases(BaseTest):
             self.order_page.cancel(force=True)
 
         self.base_selenium.get(url=order_url, sleep=self.base_selenium.TIME_SMALL)
-        self.order_page.open_suborder_edit()
+        self.order_page.open_suborder_edit_mode()
         current_department = self.order_page.get_departments()
         if 'save_btn' == save:
             self.info('Assert {} (current_department) == {} (new_department)'.
@@ -3262,7 +3262,7 @@ class OrdersTestCases(BaseTest):
         self.info('Delete one of the testplans from the order ')
         self.order_page.sleep_tiny()
         self.info('click on first row and remove a testplan')
-        self.order_page.open_suborder_edit()
+        self.order_page.open_suborder_edit_mode()
         self.base_selenium.clear_items_in_drop_down(element='order:test_plan', confirm_popup=True, one_item_only=True)
         self.order_page.save(save_btn='order:save')
         self.order_page.get_orders_page()

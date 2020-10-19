@@ -154,6 +154,11 @@ class TstPlan(TestPlans):
         self.info(' Test plan name : {}'.format(self.test_plan_name))
         return self.test_plan_name
 
+    def is_material_type_existing(self, material_type):
+        self.set_material_type(material_type)
+        return self.base_selenium.check_item_partially_in_items(element='test_plan:material_type',
+                                                                item_text=material_type)
+
     def is_article_existing(self, article):
         self.set_article(article=article)
         return self.base_selenium.check_item_partially_in_items(element='test_plan:article', item_text=article)

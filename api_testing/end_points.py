@@ -27,7 +27,7 @@ end_points = {
         'get_auto_generated_number': '/api/testUnits/auto/generatedId'
     },
     'test_plan_api': {
-        'list_all_test_plans': '/api/testPlans',
+        'list_all_test_plans': '/api/testPlans/get/names/all',
         'get_testunits_in_testplan': '/api/testPlans/get/',
         'list_testplan_testunits': '/api/testPlans/get/list/specifications',
         'form_data': '/api/testPlans/get/',
