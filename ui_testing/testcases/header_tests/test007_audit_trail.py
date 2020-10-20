@@ -37,7 +37,6 @@ class AuditTrailTestCases(BaseTest):
 
     # @parameterized.expand(['action_date', 'changed_by', 'action', 'entity', 'entity_number'])
     @parameterized.expand(['changed_by', 'action', 'entity', 'entity_number'])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-233')
     def test002_audit_trail_filter(self, filter):
         """
         Header: Audit trail Approach: Make sure that I can filter by all the following fields 
@@ -59,7 +58,6 @@ class AuditTrailTestCases(BaseTest):
         self.assertIn(audit_trail[filter], result)
 
     @parameterized.expand(['changed_by', 'action', 'entity', 'entity_number'])
-    @skip('https://modeso.atlassian.net/browse/LIMSA-233')
     def test003_search_audit_trail(self, search_feild):
         """
         Header: Audit trail: Approach: Make sure that you can search by all the followings entities 

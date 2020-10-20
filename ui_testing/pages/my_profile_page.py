@@ -42,6 +42,7 @@ class MyProfile(BasePages):
             self.save(save_btn="my_profile:save_button")
             self.base_selenium.wait_until_element_is_not_displayed("general:alert_confirmation")
             self.base_selenium.driver.execute_script("document.querySelector('.dz-details').style.opacity = 'initial';")
+            self.sleep_small()
             uploaded_file_name = self.base_selenium.find_element(element='general:uploaded_file_name').text
             return uploaded_file_name
         else:

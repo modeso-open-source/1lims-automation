@@ -728,6 +728,15 @@ class BaseSelenium:
 
         return cells_elements
 
+    def select_multiple_table_rows_by_header_values(self, header, list_of_value, table_element='general:table'):
+        for row in self.get_table_rows(element=table_element):
+            row_data = self.get_row_cells_dict_related_to_header(row=row)
+            if row_data:
+                if row_data[header] in list_of_value:
+                    check_box = self.find_element_in_element(
+                        destination_element='general:checkbox', source=row)
+                    check_box.click()
+
     def maximize_window(self):
         time.sleep(1)
         screen_dimention = self.driver.get_window_size()

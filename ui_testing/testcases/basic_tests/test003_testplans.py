@@ -361,6 +361,7 @@ class TestPlansTestCases(BaseTest):
         self.info("navigate to orders page")
         self.order_page = Order()
         self.info("get random archived testplan")
+        import ipdb; ipdb.set_trace()
         response, payload = self.test_plan_api.get_all_test_plans()
         self.assertEqual(response['status'], 1, payload)
         archived_test_plan = random.choice(response['testPlans'])

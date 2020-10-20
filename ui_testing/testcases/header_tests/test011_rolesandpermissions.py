@@ -7,7 +7,6 @@ from ui_testing.pages.order_page import Order
 from ui_testing.pages.orders_page import Orders
 from ui_testing.pages.contacts_page import Contacts
 from ui_testing.pages.header_page import Header
-from ui_testing.pages.analysis_page import SingleAnalysisPage
 from api_testing.apis.users_api import UsersAPI
 from api_testing.apis.roles_api import RolesAPI
 from parameterized import parameterized
@@ -31,16 +30,22 @@ class HeaderTestCases(BaseTest):
         
         LIMS-6400
         """
-        self.info("select random rows to archive")
-        selected_roles_and_permissions_data, _ = self.header_page.select_random_multiple_users_table_rows()
-        self.info("Archive selected rows")
+        self.info('create multiple roles')
+        roles_name = []
+        for _ in range(3):
+            re, payload = self.roles_api.create_role(self.roles_api.generate_random_string())
+            roles_name.append(payload['name'])
+        self.base_selenium.refresh()
+        self.info("select rows to archive")
+        self.base_selenium.select_multiple_table_rows_by_header_values(header='Name', list_of_value=roles_name)
+
+        self.info("archive selected rows")
         self.header_page.archive_entity(menu_element='roles_and_permissions:right_menu',
                                         archive_element='roles_and_permissions:archive')
-        self.info("Navigate to archived roles table")
+        self.info("navigate to archived roles table")
         self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
                                                archived_element='roles_and_permissions:archived')
-        for role in selected_roles_and_permissions_data:
-            role_name = role['Name']
+        for role_name in roles_name:
             self.info('{} role should be activated.'.format(role_name))
             self.assertTrue(self.header_page.is_role_in_table(value=role_name))
 
@@ -55,17 +60,18 @@ class HeaderTestCases(BaseTest):
         self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
                                                archived_element='roles_and_permissions:archived')
         self.info("select random rows to restore")
-        selected_role_data, _ = self.header_page.select_random_multiple_users_table_rows()
-        for role in selected_role_data:
-            role_names.append(role['Name'])
-        self.info("Restore selected roles")
-        self.header_page.restore_entity(menu_element='roles_and_permissions:right_menu',
-                                        restore_element='roles_and_permissions:restore')
-        self.info("Navigate to active roles table")
-        self.header_page.get_active_entities(menu_element='roles_and_permissions:right_menu',
-                                             active_element='roles_and_permissions:active')
-        for role_name in role_names:
-            self.assertTrue(self.header_page.is_role_in_table(value=role_name))
+        selected_role_data, _ = self.header_page.select_multiple_random_users_rows()
+        if selected_role_data:
+            for role in selected_role_data:
+                role_names.append(role['Name'])
+            self.info("Restore selected roles")
+            self.header_page.restore_entity(menu_element='roles_and_permissions:right_menu',
+                                            restore_element='roles_and_permissions:restore')
+            self.info("Navigate to active roles table")
+            self.header_page.get_active_entities(menu_element='roles_and_permissions:right_menu',
+                                                 active_element='roles_and_permissions:active')
+            for role_name in role_names:
+                self.assertTrue(self.header_page.is_role_in_table(value=role_name))
 
     def test003_search_roles_and_permissions(self):
         """

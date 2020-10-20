@@ -22,7 +22,6 @@ class Header(BasePages):
         self.sleep_tiny()
 
     def get_random_user(self):
-        # we need to make sure that user selected not admin user or your username
         if self.base_selenium.username == 'admin':
             rejected_users = ['admin']
         else:
@@ -46,7 +45,6 @@ class Header(BasePages):
         self.sleep_small()
 
     def select_multiple_random_users_rows(self):
-        # we need to make sure that user selected not admin user or your username
         if self.base_selenium.username == 'admin':
             rejected_users = ['admin']
         else:
@@ -67,7 +65,7 @@ class Header(BasePages):
 
         no_of_rows = randint(min(2, len(all_users_rows_without_admin) - 1),
                              min(5, len(all_users_rows_without_admin) - 1))
-        self.info(' No. of selected rows {} '.format(no_of_rows))
+        self.info('no. of selected rows {} '.format(no_of_rows))
         selected_user_rows = random.sample(all_users_rows_without_admin, no_of_rows)
         selected_users_data = []
         for selected_row in selected_user_rows:
@@ -320,7 +318,7 @@ class Header(BasePages):
         self.sleep_small()
 
     def create_role_with_mater_data_permissions(self, sleep=True, role_name=''):
-        self.info('Create new role.')
+        self.info('create new role.')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
         self.sleep_small()
         role_name = self.set_role_name(role_name)
@@ -334,12 +332,12 @@ class Header(BasePages):
         return role_data
 
     def click_on_user_management_button(self):
-        self.info('Press on the user management button')
+        self.info('press on the user management button')
         self.base_selenium.click(element='header:user_management_button')
         self.sleep_small()
 
     def click_on_sample_management_permissions(self):
-        self.info('Press on logout button')
+        self.info('press on logout button')
         self.base_selenium.click(element='roles_and_permissions:order_view_permissions')
         self.base_selenium.click(element='roles_and_permissions:order_edit_permissions')
         self.base_selenium.click(element='roles_and_permissions:analysis_view_permissions')
@@ -347,7 +345,7 @@ class Header(BasePages):
         self.sleep_small()
 
     def create_role_with_sample_management_permissions(self, sleep=True, role_name=''):
-        self.info('Create new role.')
+        self.info('create new role.')
         self.base_selenium.click(element='roles_and_permissions:new_role_btn')
         self.sleep_small()
         role_name = self.set_role_name(role_name)

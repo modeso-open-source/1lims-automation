@@ -9,7 +9,6 @@ from unittest import skip
 from nose.plugins.attrib import attr
 
 
-
 class HeaderTestCases(BaseTest):
     def setUp(self):
         super().setUp()

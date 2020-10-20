@@ -113,8 +113,10 @@ headers = {'Content-Type': "application/json",
 merged_launch = merge_launchs_with_same_description(PROJECT_NAME, LAUNCH_DES)
 
 # print(f'launch ID : {merged_launch.json()["id"]}')
-if "id" in merged_launch.json().keys():
+try:
     res = delete_fliky_failed_test_items(PROJECT_NAME, merged_launch.json()["id"])
-# print(res.json())
+except:
+    print(merged_launch.json())
 
-#IPython.embed()
+
+

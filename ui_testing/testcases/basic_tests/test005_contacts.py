@@ -124,7 +124,6 @@ class ContactsTestCases(BaseTest):
                     break
             self.assertIn(search_data[column].replace("'", ''), row_data[column].replace("'", ''))
 
-    #@skip('https://modeso.atlassian.net/browse/LIMS-6402')
     def test006_download_contact_sheet(self):
         """
         New: Contact: XSLX File: I can download all the data in the table view in the excel sheet
@@ -238,7 +237,7 @@ class ContactsTestCases(BaseTest):
         self.contact_page.filter_by_contact_no(contact_No)
         contact_record = self.contacts_page.result_table()[0]
         if self.contact_page.check_if_table_is_empty():
-            self.info('Contact "{}" doesn\'t exist in active table'.format(contact_No))
+            self.info('contact "{}" doesn\'t exist in active table'.format(contact_No))
         else:
             self.contact_page.click_check_box(source=contact_record)
             self.contact_page.archive_selected_items()
@@ -250,7 +249,6 @@ class ContactsTestCases(BaseTest):
         contact_archived_records = self.contacts_page.result_table()[0]
         self.assertFalse(self.contact_page.check_if_table_is_empty())
         self.info('delete selected record')
-
         self.contact_page.click_check_box(source=contact_archived_records)
         self.assertFalse(self.contact_page.delete_selected_contacts())
 
