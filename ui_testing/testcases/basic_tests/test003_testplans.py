@@ -312,26 +312,26 @@ class TestPlansTestCases(BaseTest):
 
         LIMS-3498
         """
-        self.info(" get random test plan with article != 'all")
-        testplans = self.test_plan_api.get_all_test_plans_json()
-        self.assertTrue(testplans, "can't get random test plan")
-        testplans_list = [testplan for testplan in testplans if testplan['article'] != ['all']]
-        self.assertTrue(testplans_list, 'No test plans with article != all')
-        first_testplan = random.choice(testplans_list)
-        self.info("selected random test plan ID : {}".format(first_testplan['id']))
-        for testplan in testplans:
-            if testplan['materialTypes'][0] != first_testplan['materialTypes'][0]:
-                second_testplan_data = testplan
-                break
-        self.info('Create another testplan with the same name, but with different material type and article name')
-        second_testplan_name = self.test_plan.create_new_test_plan(name=first_testplan['testPlanName'],
-                                                                   material_type=second_testplan_data['materialTypes'][0])
-        self.info('New testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
-            second_testplan_name, self.test_plan.article, self.test_plan.material_type))
+        self.info('create complete test plan')
+        payload = self.test_plan_api.create_completed_testplan_random_data()
+        self.assertTrue(payload, 'can not create a tesplan')
+        articles = self.article_api.get_all_articles_json()
+        for article in articles:
+            if article['name'] != payload['selectedArticles'][0]['text'] and article['materialType'] != \
+                    payload['materialType'][0]['text']:
+                self.info(
+                    'create another testplan with the same name, but with different material type and article name')
+                second_testplan_name = self.test_plan.create_new_test_plan(name=payload['testPlan']['text'],
+                                                                           material_type=article['materialType'],
+                                                                           article=article['name'])
+                self.info(
+                    'new testplan is created successfully with name: {}, article name: {} and material type: {}'.format(
+                        second_testplan_name, self.test_plan.article, self.test_plan.material_type))
 
-        self.assertEqual(first_testplan['testPlanName'], second_testplan_name)
-        data = self.test_plan.search(second_testplan_name)
-        self.assertGreaterEqual(len(data), 2)
+                self.assertEqual(payload['testPlan']['text'], second_testplan_name)
+                data = self.test_plan.search(second_testplan_name)
+                self.assertGreaterEqual(len(data), 2)
+                break
 
     def test013_delete_used_testplan(self):
         """
@@ -361,7 +361,6 @@ class TestPlansTestCases(BaseTest):
         self.info("navigate to orders page")
         self.order_page = Order()
         self.info("get random archived testplan")
-        import ipdb; ipdb.set_trace()
         response, payload = self.test_plan_api.get_all_test_plans()
         self.assertEqual(response['status'], 1, payload)
         archived_test_plan = random.choice(response['testPlans'])

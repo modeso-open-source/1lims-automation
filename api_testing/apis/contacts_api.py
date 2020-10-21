@@ -123,7 +123,7 @@ class ContactsAPI(ContactsAPIFactory):
     def get_first_record_with_data_in_attribute(self, attribute):
         contacts_request, _ = self.get_all_contacts()
         if (contacts_request['status'] != 1) or (contacts_request['count'] == 0):
-            return False
+            return ''
         contacts_records = contacts_request['contacts']
         for contact in contacts_records:
             if contact[attribute]:

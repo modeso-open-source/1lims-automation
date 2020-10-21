@@ -453,7 +453,7 @@ class ContactsTestCases(BaseTest):
         LIMS-6415, LIMS-6420, LIMS-6412 and LIMS-6417
         """
         data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute=attribute)
-        self.assertNotEqual(data_to_filter_with, False)
+        self.assertTrue(data_to_filter_with)
         if attribute == 'createdAt':
             data_to_filter_with = self.contact_page.convert_to_dot_date_format(date=data_to_filter_with)
         self.info('filter with {} {}'.format(attribute, data_to_filter_with))
@@ -477,7 +477,7 @@ class ContactsTestCases(BaseTest):
         LIMS-6411
         """
         data_to_filter_with = self.contacts_api.get_first_record_with_data_in_attribute(attribute=attribute)
-        self.assertNotEqual(data_to_filter_with, False)
+        self.assertTrue(data_to_filter_with)
         if attribute == 'departments':
             data_to_filter_with = data_to_filter_with.split(',')[0]
         self.info('filter with {} {}'.format(attribute, data_to_filter_with))

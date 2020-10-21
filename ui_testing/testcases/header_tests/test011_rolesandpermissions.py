@@ -56,7 +56,7 @@ class HeaderTestCases(BaseTest):
         LIMS-6104
         """
         role_names = []
-        self.info("Navigate to archived roles table")
+        self.info("navigate to archived roles table")
         self.header_page.get_archived_entities(menu_element='roles_and_permissions:right_menu',
                                                archived_element='roles_and_permissions:archived')
         self.info("select random rows to restore")
@@ -64,10 +64,10 @@ class HeaderTestCases(BaseTest):
         if selected_role_data:
             for role in selected_role_data:
                 role_names.append(role['Name'])
-            self.info("Restore selected roles")
+            self.info("restore selected roles")
             self.header_page.restore_entity(menu_element='roles_and_permissions:right_menu',
                                             restore_element='roles_and_permissions:restore')
-            self.info("Navigate to active roles table")
+            self.info("navigate to active roles table")
             self.header_page.get_active_entities(menu_element='roles_and_permissions:right_menu',
                                                  active_element='roles_and_permissions:active')
             for role_name in role_names:

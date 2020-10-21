@@ -71,13 +71,13 @@ class TstPlan(TestPlans):
         self.base_selenium.select_item_from_drop_down(element='test_plan:test_unit',
                                                       item_text=test_unit, avoid_duplicate=True)
         if 'upper' in kwargs:
-            self.info(' set upper : {}'.format(kwargs['upper']))
+            self.info('set upper : {}'.format(kwargs['upper']))
             elems = self.base_selenium.find_elements('general:col_6')
             upper = self.base_selenium.find_element_in_element(source=elems[4], destination_element='general:input')
             upper.clear()
             upper.send_keys(kwargs['upper'])
         if 'lower' in kwargs:
-            self.info(' set lower : {}'.format(kwargs['lower']))
+            self.info('set lower : {}'.format(kwargs['lower']))
             elems = self.base_selenium.find_elements('general:col_6')
             lower = self.base_selenium.find_element_in_element(source=elems[5], destination_element='general:input')
             lower.clear()
@@ -118,7 +118,7 @@ class TstPlan(TestPlans):
 
 
     def create_new_test_plan(self, name='', material_type='', article='', test_unit='', save=True, **kwargs):
-        self.info(' Create new test plan')
+        self.info('create new test plan')
         self.test_plan_name = name or self.generate_random_text()
         self.material_type = material_type
         self.article = article
@@ -126,15 +126,15 @@ class TstPlan(TestPlans):
         self.sleep_small()
         self.set_test_plan(name=self.test_plan_name)
         if self.material_type:
-            self.info(' With {} material type'.format(material_type))
+            self.info('2ith {} material type'.format(material_type))
             self.set_material_type(material_type=self.material_type)
         else:
-            self.info(' With random material type')
+            self.info('with random material type')
             self.material_type = self.set_material_type(random=True)
         self.sleep_tiny()
 
         if self.article:
-            self.info(' With {} article'.format(article))
+            self.info('with {} article'.format(article))
             self.set_article(article=article)
         else:
             self.article = self.set_article(random=True)
@@ -151,7 +151,7 @@ class TstPlan(TestPlans):
             self.save(save_btn='test_plan:save_btn')
             self.wait_until_page_is_loaded()
 
-        self.info(' Test plan name : {}'.format(self.test_plan_name))
+        self.info('test plan name : {}'.format(self.test_plan_name))
         return self.test_plan_name
 
     def is_material_type_existing(self, material_type):

@@ -61,7 +61,7 @@ class Header(BasePages):
                     all_users_rows_without_admin.append(row)
 
         if len(all_users_rows_without_admin) == 0:
-            raise Exception(f'users available only are your users : {rejected_users}')
+            return None, None
 
         no_of_rows = randint(min(2, len(all_users_rows_without_admin) - 1),
                              min(5, len(all_users_rows_without_admin) - 1))
