@@ -7,7 +7,6 @@ on:
 jobs:
   execute_basic_test002_articles_parallel_test_cases:
     runs-on: ubuntu-20.04
-    needs:
     if: ${{ always()  &&  !cancelled() }}
     strategy:
       fail-fast: false
