@@ -5,12 +5,12 @@ on:
     branches: [ master ]
 
 jobs:
-  test_pull_request_in_parallel:
+  excute_parallel_test_cases:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-        test_cases: [0]
+        test_cases: [0, 1, 2, 3]
 
     steps:
       - uses: actions/checkout@master
@@ -18,13 +18,86 @@ jobs:
       - name: pull docker image
         run:  docker pull 0xislamtaha/seleniumchromenose:83
 
-      - name: parallel execution for each module
-        run: timeout 2h bash .github/workflows/execution.sh ${{ strategy.job-total }} ${{ matrix.test_cases }} ${{ github.head_ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'not series' ${{ secrets.UUID }}
+      - name: execute BASIC ARTICLE parallel test cases
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test002_articles.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
 
-  test_pull_request_in_series:
+      - name: execute AUDIT TRIAL parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test007_audit_trail.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute COMPANY PROFILE parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test008_company_profile.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute TEST PLANS parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test003_testplans.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute MY PROFILE parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test010_my_profile.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute USER MANAGMENT parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test009_usermanagement.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute CONTACTS parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test005_contacts.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute ROLES AND PERMUSSIONS parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test011_rolesandpermissions.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute TEST UNITS parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test004_testunits.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute EXTENDED ARTICLE parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/extended_tests/test002_article.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute EXTENDED TEST UNITS parallel test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/extended_tests/test003_testunits.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "NODE_TOTAL=${{ strategy.job-total }} NODE_INDEX=${{ matrix.test_cases }} nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 --with-parallel -A 'not series' -m '$TEST_REG' $TEST_FILE"
+
+  excute_series_test_cases:
     runs-on: ubuntu-20.04
-    needs: test_pull_request_in_parallel
-    if: always()
+    needs: excute_parallel_test_cases
+    if: ${{ always()  &&  !cancelled() }}
     strategy:
       fail-fast: false
 
@@ -34,12 +107,135 @@ jobs:
       - name: pull docker image
         run:  docker pull 0xislamtaha/seleniumchromenose:83
 
-      - name: sequal execution for series
-        run: timeout 1h bash .github/workflows/execution.sh 1 1 ${{ github.head_ref }} ${{ github.run_id }} ${{ github.run_number }} $(pwd) 'series' ${{ secrets.UUID }}
+      - name: execute BASIC ARTICLE series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test002_articles.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute AUDIT TRIAL series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test007_audit_trail.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute COMPANY PROFILE series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test008_company_profile.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute TEST PLANS series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test003_testplans.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute MY PROFILE series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test010_my_profile.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute USER MANAGMENT series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test009_usermanagement.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute CONTACTS series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test005_contacts.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute ROLES AND PERMUSSIONS series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/header_tests/test011_rolesandpermissions.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute TEST UNITS series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/basic_tests/test004_testunits.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute EXTENDED ARTICLE series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/extended_tests/test002_article.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute EXTENDED TEST UNITS series test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/extended_tests/test003_testunits.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -A 'series' -m '$TEST_REG' $TEST_FILE"
+
+  excute_order_in_series_test_cases:
+    runs-on: ubuntu-20.04
+    needs: excute_series_test_cases
+    if: ${{ always()  &&  !cancelled() }}
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: pull docker image
+        run:  docker pull 0xislamtaha/seleniumchromenose:83
+
+
+      - name: execute ORDERS ACTIVE TABLE test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/order_tests/test001_orders_active_table.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute ORDERS CREATE EDIT test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/order_tests/test002_orders_create_edit.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute ORDERS DUPLICATE test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/order_tests/test003_orders_duplicate.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute ORDERS EXTENDED test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/order_tests/test005_order_extended.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -m '$TEST_REG' $TEST_FILE"
+
+      - name: execute ORDERS WITHOUT ARTICLE test cases
+        if: ${{ always()  &&  !cancelled() }}
+        env:
+          TEST_FILE: ui_testing/testcases/order_tests/test004_orders_without_article.py
+          TEST_REG: test[0-9]{3}
+        run: timeout 30m bash docker container run -t -v /dev/shm:/dev/shm -v `pwd`:/1lims-automation -e "PYTHONPATH='$PYTHONPATH:/1lims-automation" -w /1lims-automation 0xislamtaha/seleniumchromenose:83 bash -c "nosetests -vs --nologcapture --with-reportportal --rp-config-file rp.ini --rp-uuid ${{ secrets.UUID }} --rp-launch-description=${{ github.head_ref }}-${{ github.run_id }}-${{ github.run_number }} --rp-logging-level=WARNING --tc-file=config.ini --tc=browser.headless:True  --with-flaky --force-flaky --max-runs=3 --min-passes=1 -m '$TEST_REG' $TEST_FILE"
 
   merge_launches:
     runs-on: ubuntu-20.04
-    needs: [test_pull_request_in_parallel, test_pull_request_in_series]
+    needs: excute_order_in_series_test_cases
     if: always()
     strategy:
       fail-fast: false
