@@ -12,6 +12,10 @@ class Orders(BasePages):
         self.base_selenium.get(url=self.orders_url)
         self.wait_until_page_is_loaded()
         self.sleep_tiny()
+        if "sample/analysis" in self.base_selenium.get_url():
+            self.info("analysis page selected so press on orders tab")
+            self.navigate_to_order_active_table()
+            self.sleep_tiny()
 
     def get_order_edit_page_by_id(self, id):
         self.info(f'get order : {id} edit page')
@@ -80,8 +84,9 @@ class Orders(BasePages):
         table_records = self.result_table(element='general:table')
         self.open_row_options(row=table_records[index])
         self.base_selenium.click(element='orders:mainorder_duplicate')
-        self.wait_until_page_is_loaded()
+        self.sleep_tiny()
         self.base_selenium.refresh()
+        self.sleep_tiny()
 
     def duplicate_sub_order_from_table_overview(self, index=0, number_of_copies=1):
         self.info('duplicate suborder from the order\'s active table')
@@ -90,7 +95,9 @@ class Orders(BasePages):
         self.base_selenium.click(element='orders:suborder_duplicate')
         self.base_selenium.set_text(element='orders:number_of_copies', value=number_of_copies)
         self.base_selenium.click(element='orders:create_copies')
-        self.sleep_medium()
+        self.sleep_tiny()
+        self.base_selenium.refresh()
+        self.sleep_tiny()
 
     def archive_sub_order_from_active_table(self, index=0):
         self.info('archive suborder from the order\'s active table')
@@ -150,7 +157,7 @@ class Orders(BasePages):
                                                             destination_element='general:filter')
         filter.click()
 
-    def list_filter_feilds(self):
+    def list_filter_fields(self):
         config_btn = self.base_selenium.find_element('general:filter_configuration')
         config_btn.click()
         self.sleep_tiny()
@@ -165,6 +172,7 @@ class Orders(BasePages):
         self.info('Filter by analysis number : {}'.format(filter_text))
         self.filter_by(filter_element='orders:analysis_filter', filter_text=filter_text, field_type='text')
         self.filter_apply()
+        self.close_filter_menu()
         self.sleep_tiny()
 
     def filter_by_contact(self, filter_text):
@@ -190,15 +198,20 @@ class Orders(BasePages):
         return orders_data, orders
 
     # Return all filter fields used in order
-    def order_filters_element(self, key='all'):
-        filter_fileds = {'orderNo': {'element': 'orders:order_filter', 'type': 'text'},
+    def order_filters_element(self, key='all', payload={}):
+        """
+        :param key:
+        :param payload:you can get it from  response, payload = self.orders_api.create_new_order()
+        :return:
+        """
+        filter_fields = {'orderNo': {'element': 'orders:order_filter', 'type': 'text'},
                          'analysis': {'element': 'orders:analysis_filter', 'type': 'text',
                                       'result_key': 'Analysis No.'},
                          'Contact Name': {'element': 'orders:contact_filter', 'type': 'drop_down'},
                          'lastModifiedUser': {'element': 'orders:changed_by', 'type': 'drop_down',
-                                             'result_key':'Changed By'},
+                                              'result_key': 'Changed By'},
                          'materialType': {'element': 'orders:material_type_filter', 'type': 'drop_down',
-                                          'result_key':'Material Type'},
+                                          'result_key': 'Material Type'},
                          'article': {'element': 'orders:article_filter', 'type': 'drop_down',
                                      'result_key': 'Article Name'},
                          'shipmentDate': {'element': ['orders:shipment_date_filter', 'orders:shipment_date_filter_end'],
@@ -215,11 +228,20 @@ class Orders(BasePages):
                          'testPlans': {'element': 'orders:test_plans_filter', 'type': 'drop_down',
                                        'result_key': 'Test Plans'}
                          }
+        if payload:
+            if 'testPlans' in payload.keys():
+                filter_fields['testPlans']['value'] = payload['testPlans'][0]['name']
+            if 'testUnits' in payload.keys():
+                filter_fields['testUnit']['value'] = payload['testUnits'][0]['name']
+            if 'article' in payload.keys():
+                filter_fields['article']['value'] = payload['article']['text']
+            if 'materialType' in payload.keys():
+                filter_fields['materialType']['value'] = payload['materialType']['text']
 
         if key == 'all':
-            return filter_fileds
+            return filter_fields
         else:
-            return filter_fileds[key]
+            return filter_fields[key]
 
     def archive_table_suborder(self, index=0):
         self.info('archive suborder from the order\'s active table')
@@ -368,3 +390,7 @@ class Orders(BasePages):
     def navigate_to_order_active_table(self):
         self.base_selenium.click(element='orders:order_tab')
         self.sleep_medium()
+
+    def get_last_order_row(self):
+        rows = self.result_table()
+        return rows[0]

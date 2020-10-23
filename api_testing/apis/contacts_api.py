@@ -1,6 +1,6 @@
 from api_testing.apis.base_api import BaseAPI
 from api_testing.apis.base_api import api_factory
-import json, os
+import json, os, random
 
 
 class ContactsAPIFactory(BaseAPI):
@@ -120,6 +120,10 @@ class ContactsAPIFactory(BaseAPI):
 
 
 class ContactsAPI(ContactsAPIFactory):
+    def get_all_contacts_json(self, **kwargs):
+        response, _ = self.get_all_contacts(**kwargs)
+        return response['contacts']
+
     def get_first_record_with_data_in_attribute(self, attribute):
         contacts_request, _ = self.get_all_contacts()
         if (contacts_request['status'] != 1) or (contacts_request['count'] == 0):
@@ -168,6 +172,12 @@ class ContactsAPI(ContactsAPIFactory):
                                 'departments': departments}
                 departments_list_with_contacts.append(contact_dict)
         return departments_list_with_contacts
+
+    def get_department_and_contact_lists(self, no_of_contacts=3):
+        contact_list = random.sample(self.get_contacts_with_department(), k=no_of_contacts)
+        contact_names_list = [contact['name'] for contact in contact_list]
+        departments_list_with_contacts = self.get_department_contact_list(contact_names_list)
+        return contact_names_list, departments_list_with_contacts
 
     def create_contact_with_person(self, gender='Mr.'):
         person_name = self.generate_random_string()

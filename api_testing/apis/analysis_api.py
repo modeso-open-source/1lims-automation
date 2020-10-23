@@ -1,8 +1,9 @@
 from api_testing.apis.base_api import BaseAPI
 from api_testing.apis.base_api import api_factory
+import json, os
 
 
-class AnalysisAPI(BaseAPI):
+class AnalysisAPIFactory(BaseAPI):
     @api_factory('get')
     def get_all_analysis(self, **kwargs):
         api = '{}{}'.format(self.url, self.END_POINTS['analysis_api']['list_all_analysis'])
@@ -43,3 +44,11 @@ class AnalysisAPI(BaseAPI):
         """
         api = '{}{}{}'.format(self.url, self.END_POINTS['analysis_api']['delete_analysis'], str(analysis_id)) 
         return api, {}
+
+class AnalysisAPI(AnalysisAPIFactory):
+    def set_filter_configuration(self):
+        self.info('set order filter configuration')
+        config_file = os.path.abspath('api_testing/config/analysis_filter_config.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_filter_configuration(payload=payload, module='orders_api')

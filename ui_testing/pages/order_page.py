@@ -1,83 +1,102 @@
 from ui_testing.pages.orders_page import Orders
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
-from api_testing.apis.orders_api import OrdersAPI
-from random import randint
+import random
 
 
 class Order(Orders):
-    def get_order(self):
-        return self.base_selenium.get_text(element='order:order').split('\n')[0]
+    def get_order_id(self):
+        current_splited_url = self.base_selenium.get_url().split('/')
+        order_id = current_splited_url[(len(current_splited_url) - 1)]
+        return order_id
 
-    def get_order_number(self):
-        return self.base_selenium.get_text(element='order:order_number_add_form').split('\n')[0]
+    def navigate_to_analysis_tab(self):
+        self.base_selenium.scroll()
+        self.base_selenium.click('orders:analysis_order_tab')
+        self.wait_until_page_is_loaded()
 
-    def set_order_number(self, no):
-        self.base_selenium.set_text(element="order:order_number", value=no)
+    def get_table_with_add(self):
+        table = self.base_selenium.find_element(element='order:suborder_table')
+        return table
+
+    def check_suborders_appear(self):
+        is_suborder_exist = self.base_selenium.check_element_is_exist(
+            element='table_element=general:table_child')
+        return is_suborder_exist
+
+    def get_data_first_row(self, index=0):
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = suborders[index]
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        return suborders_elements
 
     def set_new_order(self):
         self.info('Set new order.')
-        self.base_selenium.select_item_from_drop_down(
-            element='order:order', item_text='New Order')
+        self.base_selenium.select_item_from_drop_down(element='order:order', item_text='New Order')
 
     def set_existing_order(self):
-        self.base_selenium.select_item_from_drop_down(
-            element='order:order', item_text='Existing Order')
+        self.base_selenium.select_item_from_drop_down(element='order:order', item_text='Existing Order')
 
-    def open_suborder_edit_mode(self, suborder_index=0):
-        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
-        suborder_row.click()
-        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
-        return suborder_row
+    def click_auto_fill(self):
+        button = self.base_selenium.find_element_in_element(source_element='order:auto_fill_container',
+                                                            destination_element='order:auto_fill')
+        button.click()
 
-    def set_material_type(self, material_type=''):
-        if material_type:
-            self.base_selenium.select_item_from_drop_down(element='order:material_type', item_text=material_type)
+    def create_existing_order_check_order_no_suggestion_list(self, no):
+        self.info('press on create new order button')
+        self.click_create_order_button()
+        self.set_existing_order()
+        self.sleep_small()
+        self.info('checking if the order number is in the existing order numbers list')
+        return self.base_selenium.is_item_in_drop_down(element='order:existing_order_number', item_text=no)
+
+    def get_order_no(self):
+        return self.base_selenium.get_value(element="order:order_number").replace("'", "")
+
+    def set_order_no(self, no):
+        self.info('set no. {}'.format(no))
+        self.base_selenium.set_text(element="order:order_number", value=no)
+        self.sleep_small()
+        return self.get_order_no()
+
+    def create_existing_order_with_auto_fill(self, no=''):
+        self.info('Create order from existing order')
+        self.click_create_order_button()
+        self.set_existing_order()
+        order_no = self.set_existing_number(no)
+        self.sleep_tiny()
+        self.click_auto_fill()
+        self.info('Order Auto filled with data from order no : {} '.format(order_no))
+        return order_no
+
+    def set_existing_number(self, no=''):
+        if no:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:existing_order_number', item_text=no)
         else:
             self.base_selenium.select_item_from_drop_down(
-                element='order:material_type', avoid_duplicate=True)
-            self.sleep_tiny()
-            return self.get_material_type()
+                element='order:existing_order_number')
+            return self.get_order_number_existing_order()
 
-    def get_material_type(self, suborder_index=0):
-        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
-        suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(suborder_row, table_element='order:suborder_table')
-        return suborder_data['Material Type: *']
+    def get_order_number_existing_order(self):
+        return self.base_selenium.get_text(element='order:existing_order_number').split('\n')[0]
 
-    def get_article(self):
-        article = self.base_selenium.get_text(element='order:article').split(' No')[0]
-        if article == 'Search':
-            return None
-        else:
-            return article
-
-    def set_article(self, article=''):
-        if article is None:
-            return
-        if article:
-            self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
-        else:
-            self.base_selenium.select_item_from_drop_down(element='order:article')
-            return self.get_article()
-
-    def is_article_existing(self, article):
-        self.set_article(article=article)
-        return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
-
-    def is_testunit_existing(self, test_unit):
-        self.set_test_unit(test_unit=test_unit)
-        return self.base_selenium.check_item_partially_in_items(element='order:test_unit', item_text=test_unit)
-
-    def set_contact(self, contact='', remove_old=False):
+    def set_contacts(self, contacts=[''], remove_old=False):
         if remove_old:
             self.base_selenium.clear_items_in_drop_down(element='order:contact')
-        if contact:
-            self.base_selenium.select_item_from_drop_down(element='order:contact', item_text=contact)
+        if contacts:
+            for name in contacts:
+                self.base_selenium.select_item_from_drop_down(element='order:contact', item_text=name)
         else:
             self.base_selenium.select_item_from_drop_down(element='order:contact', avoid_duplicate=True)
-        return self.get_contact()
+        return self.get_contacts()
 
-    def get_contact(self):
+    def get_contacts(self):
+        """
+        This function implemented with contact name configured to be searchable by "name and number"
+        :return: selected contacts names only
+        """
         contacts = self.base_selenium.get_text(element='order:contact').split("\n")
         all_contacts = []
         for contact in contacts:
@@ -85,138 +104,55 @@ class Order(Orders):
                 all_contacts.append(contact.replace("×", "").split(' No')[0])
         return all_contacts
 
-    def set_test_plan(self, test_plan=''):
-        if test_plan:
-            self.base_selenium.select_item_from_drop_down(element='order:test_plan', item_text=test_plan)
-        else:
-            self.base_selenium.select_item_from_drop_down(element='order:test_plan')
-            self.sleep_small()
-            return self.get_test_plan()
-
-    def get_test_plan(self):
-        test_plans = self.base_selenium.get_text(element='order:test_plan')
-        if "×" in test_plans:
-            return test_plans.replace("× ", "").split('\n')
-        else:
-            return []
-
-    def clear_test_plan(self):
-        if self.get_test_plan():
-            self.base_selenium.clear_items_in_drop_down(element='order:test_plan')
-
     def clear_contact(self):
-        if self.get_contact():
+        if self.get_contacts():
             self.base_selenium.clear_items_in_drop_down(element='order:contact')
 
-    def clear_test_unit(self, confirm=True):
-        if self.get_test_unit():
-            self.base_selenium.clear_items_in_drop_down(element='order:test_unit', confirm_popup=confirm)
+    def is_contact_existing(self, contact):
+        self.set_contacts(contacts=[contact])
+        return self.base_selenium.check_item_in_items(element='order:contact', item_text=contact)
 
-    def set_test_unit(self, test_unit='', remove_old=False):
-        if remove_old:
-            self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
-        if test_unit:
-            self.base_selenium.select_item_from_drop_down(element='order:test_unit', item_text=test_unit)
+    def duplicate_main_order_from_order_option(self, order_number):
+        super().duplicate_main_order_from_order_option()
+        self.set_order_no(order_number)
+
+class SubOrders(Order):
+    def get_suborder_table(self):
+        self.info('Get suborder table list.')
+        self.base_selenium.click(element='order:suborder_list')
+
+    def open_suborder_edit_mode(self, suborder_index=0):
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        suborder_row.click()
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        return suborder_row
+
+    def set_departments(self, departments=[''], remove_old=False, suborder_index=0):
+        self.open_suborder_edit_mode(suborder_index)
+        if remove_old and self.get_departments():
+            self.base_selenium.clear_items_in_drop_down(element='order:departments')
+        if departments:
+            for dep in departments:
+                self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=dep)
         else:
-            self.base_selenium.select_item_from_drop_down(element='order:test_unit')
-            return self.get_test_unit()
-
-    def get_test_unit(self):
-        test_units = self.base_selenium.get_text(element='order:test_unit')
-        if test_units and test_units != 'Search':
-            return test_units.replace("×", "").split("\n")
-        else:
-            return []
-
-    def is_test_unit_option_exist(self, search_field='', checked_text=None):
-        webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
-        self.open_suborder_edit_mode()
-        if self.get_test_unit():
-            self.debug("clear test unit")
-            self.clear_test_unit()
-        self.debug("set test unit to {}, is option existing?".format(search_field))
-        suggestion_list = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
-                                                                          item_text=search_field)
-        if checked_text:
-            is_item_exist = checked_text in suggestion_list
-        else:
-            for suggestion_item in suggestion_list:
-                if search_field in suggestion_item:
-                    is_item_exist = True
-                    break
-            else:
-                is_item_exist = False
-        self.debug(is_item_exist)
-        return is_item_exist
-
-    def create_new_order(self, material_type='', article='', contact='', test_plans=[''], test_units=[''],
-                         multiple_suborders=0, departments='', order_no='', save=True, check_testunits_testplans=False):
-
-        self.info('create new order.')
-        self.click_create_order_button()
-        self.set_new_order()
-        self.sleep_small()
-        self.set_contact(contact=contact)
-        self.sleep_small()
-        self.set_departments(departments=departments)
-        self.set_material_type(material_type=material_type)
-        self.sleep_small()
-
-        self.set_article(article=article)
-        self.sleep_small()
-
-        if order_no:
-            self.set_no(order_no)
-
-        order_no = self.get_no()
-
-        if check_testunits_testplans:
-            suggested_testplans = self.base_selenium.get_drop_down_suggestion_list(element='order:test_plan',
-                                                                         item_text=' ')
-            suggested_test_units = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
-                                                                          item_text=' ')
-        for test_plan in test_plans:
-            self.set_test_plan(test_plan=test_plan)
-
-        for test_unit in test_units:
-            self.set_test_unit(test_unit=test_unit)
+            self.base_selenium.select_item_from_drop_down(element='order:departments')
             self.sleep_small()
+            return self.get_departments()
 
-        if multiple_suborders > 0:
-            self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
-
-        if save:
-            self.save(save_btn='order:save_btn')
-        self.info(' Order created with no : {} '.format(order_no))
-        if check_testunits_testplans:
-            return order_no, suggested_test_units, suggested_testplans
+    def get_departments(self, suborder_index=0):
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            suborder_row, table_element='order:suborder_table')
+        if suborder_data['Departments:'] == 'Search':
+            return None
         else:
-            return order_no
-
-    def create_multiple_contacts_new_order(self, contacts, material_type, article, test_plan):
-        self.click_create_order_button()
-        self.sleep_small()
-        self.set_new_order()
-        self.sleep_tiny()
-        for contact in contacts:
-            self.set_contact(contact)
-            self.sleep_tiny()
-        self.set_material_type(material_type)
-        self.sleep_small()
-        self.set_article(article)
-        self.sleep_small()
-        self.set_test_plan(test_plan)
-        self.sleep_small()
-        order_no = self.get_no()
-        self.save(save_btn='order:save_btn', sleep=True)
-        return order_no
+            return suborder_data['Departments:'].replace('×', '').split('\n')
 
     def get_department_suggestion_lists(self, open_suborder_table=False, contacts=[], index=0):
         """
         :param open_suborder_table:
-
-        in create mode let open_suborder_table = false
-        in edit mode let open_suborder_table = True
+                            in create mode let open_suborder_table = false
+                            in edit mode let open_suborder_table = True
         :return: 2 lists , departments with contacts and departments only
         """
         if open_suborder_table:
@@ -243,76 +179,192 @@ class Order(Orders):
 
         return contact_dep_list, departments_only_list
 
-    def create_existing_order(self, no='', material_type='', article='', contact='', test_units=[],
-                              multiple_suborders=0):
-        self.info(' Create new order.')
-        self.click_create_order_button()
-        self.set_existing_order()
-        order_no = self.set_existing_number(no)
-        self.set_material_type(material_type=material_type)
+    def set_material_type(self, material_type='', suborder_index=0):
+        self.open_suborder_edit_mode(suborder_index)
+        if material_type:
+            self.base_selenium.select_item_from_drop_down(element='order:material_type', item_text=material_type)
+        else:
+            self.base_selenium.select_item_from_drop_down(
+                element='order:material_type', avoid_duplicate=True)
+            self.sleep_tiny()
+            return self.get_material_type()
 
-        self.sleep_small()
+    def get_material_type(self, suborder_index=0):
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            suborder_row, table_element='order:suborder_table')
+        if suborder_data['Material Type: *'] == 'Search':
+            return None
+        else:
+            return suborder_data['Material Type: *'].replace('\n×', '')
+
+    def get_testplan_according_to_material_type(self, material_type, article, index=0):
+        self.set_material_type(material_type=material_type, suborder_index=index)
         self.set_article(article=article)
-        self.sleep_small()
-        self.set_contact(contact=contact)
-        self.sleep_small()
+        return self.base_selenium.get_drop_down_suggestion_list(element='order:test_plan', item_text=' ')
 
-        for test_unit in test_units:
-            self.set_test_unit(test_unit=test_unit)
-
-        self.sleep_small()
-        self.save(save_btn='order:save_btn')
-        self.info(' Order created with no : {} '.format(order_no))
-        return order_no
-
-    def create_existing_order_with_auto_fill(self, no=''):
-        self.info('Create order from existing order')
-        self.click_create_order_button()
-        self.set_existing_order()
-        order_no = self.set_existing_number(no)
-        self.sleep_tiny()
-        self.click_auto_fill()
-        self.info('Order Auto filled with data from order no : {} '.format(order_no))
-        return order_no
-
-    def get_no(self, order_row=None):
-        if order_row:
-            return order_row['Order No.']
+    def set_article(self, article='', suborder_index=0):
+        if article is None:
+            return
+        self.open_suborder_edit_mode(suborder_index)
+        if article:
+            self.base_selenium.select_item_from_drop_down(element='order:article', item_text=article)
         else:
-            return self.base_selenium.get_value(element="order:no")
+            self.base_selenium.select_item_from_drop_down(element='order:article')
+            return self.get_article()
 
-    def set_no(self, no):
-        self.info(' set no. {}'.format(no))
-        self.base_selenium.set_text(element="order:no", value=no)
+    def get_article(self, suborder_index=0):
+        """
+        this function implemented while article name set to be searchable by name and number
+        """
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            suborder_row, table_element='order:suborder_table')
+        if suborder_data['Article: *'] == 'Search':
+            return None
+        else:
+            return suborder_data['Article: *'].split(' No:')
+
+    def remove_article(self, testplans=''):
+        self.info('clear article data')
+        self.base_selenium.clear_single_select_drop_down(element='order:article')
+        if testplans:
+            self.base_selenium.wait_element(element='general:form_popup_warning_window')
+            self.base_selenium.click(element='general:confirmation_button')
         self.sleep_small()
 
-    def set_existing_number(self, no=''):
-        if no:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:order_number_add_form', item_text=no)
+    def is_article_existing(self, article, suborder_index=0):
+        self.open_suborder_edit_mode(suborder_index)
+        self.set_article(article=article)
+        return self.base_selenium.check_item_in_items(element='order:article', item_text=article)
+
+    def set_test_plans(self, test_plans=[''], suborder_index=0):
+        self.open_suborder_edit_mode(suborder_index)
+        if test_plans:
+            for tp in test_plans:
+                self.base_selenium.select_item_from_drop_down(element='order:test_plan', item_text=tp)
         else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:order_number_add_form')
-            return self.get_order_number()
+            self.base_selenium.select_item_from_drop_down(element='order:test_plan')
+            self.sleep_small()
+            return self.get_test_plans()
 
-    def edit_random_order(self, edit_method, edit_value, save=True):
-        if 'contact' in edit_method:
-            self.set_contact(edit_value)
-        elif 'departments' in edit_method:
-            self.set_departments(edit_value)
-        # elif 'material_type' in edit_method:
-        # self.set_material_type(edit_value)
-        # elif '' in edit_method:
-        # self.set_contact(edit_value)
+    def get_test_plans(self, suborder_index=0):
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            suborder_row, table_element='order:suborder_table')
 
-        if save:
-            self.save()
+        if 'Test Plan:' in suborder_data.keys():
+            key = 'Test Plan:'
         else:
-            self.cancel()
+            key = 'Test Plan: *'
 
-    def get_last_order_row(self):
-        rows = self.result_table()
-        return rows[0]
+        if suborder_data[key] == 'Search':
+            return None
+        else:
+            return suborder_data[key].replace('×', '').split('\n')
+
+    def clear_test_plan(self, suborder_index=0, confirm_pop_up=False):
+        self.open_suborder_edit_mode(suborder_index)
+        if self.get_test_plans():
+            self.base_selenium.clear_items_in_drop_down(element='order:test_plan', confirm_popup=confirm_pop_up)
+
+    def remove_testplan_by_name(self, index, testplan_name):
+        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = suborder_table_rows[index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        self.base_selenium.update_item_value(item=suborder_elements_dict['testPlans'],
+                                             item_text=testplan_name.replace("'", ''))
+
+    def get_test_plans_pop_up_content(self, index=0):
+        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
+            row=suborders[index], table_element='order:suborder_table')
+
+        if 'Test Plan:' in suborders_elements.keys():
+            popup_element = self.base_selenium.find_element_in_element(
+                source=suborders_elements['Test Plan:'], destination_element='order:testplan_popup_btn')
+        else:
+            popup_element = self.base_selenium.find_element_in_element(
+                source=suborders_elements['Test Plan: *'], destination_element='order:testplan_popup_btn')
+        popup_element.click()
+        self.sleep_small()
+        results = []
+        elements = self.base_selenium.find_elements('order:popup_data')
+        for element in elements:
+            test_plan, test_units = element.text.split('\n')[0], element.text.split('\n')[1:]
+            results.append({'test_plan': test_plan, 'test_units': test_units})
+        return results
+
+    def set_test_units(self, test_units=[''], remove_old=False, suborder_index=0):
+        if remove_old:
+            self.base_selenium.clear_items_in_drop_down(element='order:test_unit')
+        self.open_suborder_edit_mode(suborder_index)
+        if test_units:
+            for tu in test_units:
+                self.base_selenium.select_item_from_drop_down(element='order:test_unit', item_text=tu)
+        else:
+            self.base_selenium.select_item_from_drop_down(element='order:test_unit')
+            return self.get_test_units()
+
+    def get_test_units(self, suborder_index=0):
+        suborder_row = self.base_selenium.get_table_rows(element='order:suborder_table')[suborder_index]
+        suborder_data = self.base_selenium.get_row_cells_dict_related_to_header(
+            suborder_row, table_element='order:suborder_table')
+
+        if 'Test Unit:' in suborder_data.keys():
+            key = 'Test Unit:'
+        else:
+            key = 'Test Unit: *'
+
+        if suborder_data[key] == 'Search':
+            return None
+        else:
+            return suborder_data[key].replace('×', '').split('\n')
+
+    def is_testunit_existing(self, test_unit, suborder_index=0):
+        self.open_suborder_edit_mode(suborder_index)
+        self.set_test_units(test_units=[test_unit])
+        return self.base_selenium.check_item_partially_in_items(element='order:test_unit', item_text=test_unit)
+
+    def clear_test_unit(self, confirm=True):
+        if self.get_test_units():
+            self.base_selenium.clear_items_in_drop_down(element='order:test_unit', confirm_popup=confirm)
+
+    def remove_testunit_by_name(self, index, testunit_name):
+        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
+        suborder_row = suborder_table_rows[index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
+        self.base_selenium.update_item_value(item=suborder_elements_dict['testUnits'],
+                                             item_text=testunit_name.replace("'", ''))
+
+    def search_test_unit_not_set(self, test_unit='', suborder_index=0):
+        webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
+        self.open_suborder_edit_mode(suborder_index)
+        if self.get_test_units():
+            self.info("clear test unit")
+            self.clear_test_unit()
+        self.info("Try to set test unit to {} and check if option exist".format(test_unit))
+        is_option_exist = self.base_selenium.select_item_from_drop_down(element='order:test_unit', item_text=test_unit)
+        return is_option_exist
+
+    def get_testunit_multiple_line_properties(self):
+        dom_element = self.base_selenium.find_element(element='order:test_unit')
+        multiple_line_properties = dict()
+        multiple_line_properties['textOverflow'] = self.base_selenium.driver.execute_script('return '
+                                                                                            'window'
+                                                                                            '.getComputedStyle('
+                                                                                            'arguments[0], '
+                                                                                            '"None").textOverflow',
+                                                                                            dom_element)
+        multiple_line_properties['lineBreak'] = self.base_selenium.driver.execute_script('return '
+                                                                                         'window'
+                                                                                         '.getComputedStyle('
+                                                                                         'arguments[0], '
+                                                                                         '"None").lineBreak',
+                                                                                         dom_element)
+        return multiple_line_properties
 
     def get_test_date(self, row_id=None):
         # open the row in edit mode
@@ -360,94 +412,198 @@ class Order(Orders):
         self.sleep_small()
         return date
 
-    def get_departments(self):
-        departments = self.base_selenium.get_text(element='order:departments').replace('×', '').split('\n')
-        if departments == ['Search']:  # empty
-            return []
-        return departments
+    def set_analysis_no(self, anaylsis_no):
+        self.base_selenium.set_text(element='order:analysis_no', value=anaylsis_no)
 
-    def get_department(self, sub_order_index=0):
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        suborder_row.click()
-        return self.base_selenium.get_text(element='order:departments').split('\n')[0]
+    def create_new_order(self, material_type='', article='', contacts=[''], test_plans=[''], test_units=[''],
+                         multiple_suborders=0, departments=[''], order_no='', save=True,
+                         check_testunits_testplans=False):
 
-    def set_departments(self, departments='', remove_old=False):
-        if remove_old:
-            self.base_selenium.clear_items_in_drop_down(element='order:departments')
+        self.info('Create new order.')
+        self.click_create_order_button()
+        self.sleep_small()
+        self.set_new_order()
+        self.sleep_small()
+        self.info("set contacts to {}".format(contacts))
+        self.set_contacts(contacts=contacts)
+        self.sleep_small()
         if departments:
-            self.base_selenium.select_item_from_drop_down(element='order:departments', item_text=departments)
+            self.info("set departments to {}".format(departments))
+            self.set_departments(departments=departments)
+        self.info("set material type to {}".format(material_type))
+        self.set_material_type(material_type=material_type)
+        self.sleep_small()
+        self.info("set article to {}".format(article))
+        self.set_article(article=article)
+        self.sleep_small()
+        if order_no:
+            self.info("set order number to {}".format(order_no))
+            self.set_order_no(order_no)  # else it is autogenerated
         else:
-            self.base_selenium.select_item_from_drop_down(element='order:departments')
-            self.sleep_small()
-            return self.get_departments()
+            order_no = random.randint(999, 99999)
+            order_no_with_year = str(order_no)+"-2020"
+            self.set_order_no(order_no_with_year)
 
-    def get_suborder_table(self):
-        self.info(' Get suborder table list.')
-        self.base_selenium.click(element='order:suborder_list')
+        order_no = self.get_order_no()
+        if check_testunits_testplans:
+            # return test plan and test unit suggestion list according to selected material type and article
+            suggested_testplans = self.base_selenium.get_drop_down_suggestion_list(element='order:test_plan',
+                                                                                   item_text=' ')
+            suggested_test_units = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
+                                                                                    item_text=' ')
 
-    def create_new_suborder(self, material_type='', article_name='', test_plans=[''], test_units=[''],
-                            add_new_suborder_btn='order:add_another_suborder'):
-        # self.get_suborder_table()
-        rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
+        if test_plans:
+            self.info("set test plans to {}".format(test_plans))
+            self.set_test_plans(test_plans=test_plans)
+        if test_units:
+            self.info("set test units to {}".format(test_units))
+            self.set_test_units(test_units=test_units)
+            self.sleep_tiny()
+
+        if multiple_suborders > 0:
+            self.info("duplicate first suborder to {} copies".format(multiple_suborders))
+            self.duplicate_from_table_view(number_of_duplicates=multiple_suborders)
+
+        if save:
+            self.save(save_btn='order:save_btn')
+
+        self.info('Order created with no : {} '.format(order_no))
+        if check_testunits_testplans:
+            return order_no, suggested_test_units, suggested_testplans
+        else:
+            return order_no
+
+    def create_new_order_get_test_unit_suggetion_list(self, material_type='', test_unit_name=' ', check_option=False):
+        self.info('Create new order.')
+        self.click_create_order_button()
+        self.sleep_small()
+        self.set_new_order()
+        self.set_contacts(contacts=[''])
+        self.sleep_tiny()
+        self.set_material_type(material_type=material_type)
+        self.sleep_small()
+        self.set_article(article='')
+        self.sleep_small()
+        self.info('get test unit suggestion list')
+        if check_option:
+            is_option_exist = self.base_selenium.select_item_from_drop_down(element='order:test_unit',
+                                                                            item_text=test_unit_name)
+            return is_option_exist
+        else:
+            test_units = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
+                                                                          item_text=test_unit_name)
+            return test_units
+
+    def create_existing_order(self, no='', material_type='', article='', contacts=[''], test_units=['']):
+        self.info('Create new order.')
+        self.click_create_order_button()
+        self.set_existing_order()
+        order_no = self.set_existing_number(no)
+        self.set_material_type(material_type=material_type)
+        self.sleep_small()
+        self.set_article(article=article)
+        self.sleep_small()
+        self.set_contacts(contacts=contacts)
+        self.sleep_small()
+        self.set_test_units(test_units=test_units)
+        self.sleep_small()
+        self.save(save_btn='order:save_btn')
+        self.info('Order created with no : {} '.format(order_no))
+        return order_no
+
+    def add_new_suborder(self, material_type='', article_name='', test_plans=[''], test_units=['']):
         self.info('Add new suborder.')
-        self.base_selenium.click(element=add_new_suborder_btn)
-        rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = rows_after[len(rows_before)]
-        suborder_elements_dict = self.base_selenium.get_row_cells_elements_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
+        self.base_selenium.click(element='order:add_new_item')
         self.info('Set material type : {}'.format(material_type))
-        self.set_material_type(material_type)
+        self.set_material_type(material_type=material_type, suborder_index=-1)
         self.sleep_tiny()
         self.info('Set article name : {}'.format(article_name))
         if article_name == 'all':
-            self.set_article('')
+            self.set_article(article='', suborder_index=-1)
         else:
             self.sleep_tiny()
-            self.set_article(article_name)
+            self.set_article(article=article_name, suborder_index=-1)
         self.sleep_tiny()
-
         self.info('Set test plan : {}'.format(test_plans))
-        for test_plan in test_plans:
-            self.set_test_plan(test_plan)
+        if test_plans:
+            self.set_test_plans(test_plans=test_plans, suborder_index=-1)
         self.sleep_tiny()
-        for test_unit in test_units:
-            self.set_test_unit(test_unit)
+        if test_units:
+            self.set_test_units(test_units=test_units, suborder_index=-1)
         self.sleep_tiny()
         return self.get_suborder_data()
 
-    def duplicate_from_table_view(self, number_of_duplicates=1, index_to_duplicate_from=0):
-        for duplicate in range(0, number_of_duplicates):
-            suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-            suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
-                row=suborders[index_to_duplicate_from],
-                table_element='order:suborder_table')
+    def update_suborder(self, sub_order_index=0, contacts=[], departments=[], material_type='', article='',
+                        test_plans=[], test_units=[], shipment_date='', test_date='',
+                        remove_old=False, confirm_pop_up=False):
 
-            duplicate_element = self.base_selenium.find_element_in_element(
-                source=suborders_elements['Options'], destination_element='order:duplicate_table_view')
-            duplicate_element.click()
+        suborder_table_rows = \
+            self.base_selenium.get_table_rows(element='order:suborder_table')
 
-    def duplicate_suborder(self):
-        self.get_suborder_table()
-        self.info(' Duplicate order')
-        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[0],
-                                                                                         table_element='order:suborder_table')
-        duplicate_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
-                                                                       destination_element='order:duplicate_table_view')
-        duplicate_element.click()
+        suborder_row = suborder_table_rows[sub_order_index]
+        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
+            row=suborder_row, table_element='order:suborder_table')
 
-    # this method to be used while you are order's table with add page ONLY, and you can get the required data by sending the index, and the needed fields of the suborder
+        if contacts:
+            self.set_contacts(contacts=contacts)
+        if departments:
+            self.info('Set departments : {}'.format(departments))
+            self.set_departments(departments=departments, suborder_index=sub_order_index)
+            self.sleep_small()
+
+        suborder_row.click()
+        self.base_selenium.scroll()
+        self.sleep_small()
+        if material_type:
+            self.info('Set material type : {}'.format(material_type))
+            self.set_material_type(material_type=material_type, suborder_index=sub_order_index)
+            if confirm_pop_up:
+                self.confirm_popup(True)
+
+        if article:
+            if remove_old:
+                self.sleep_small()
+                self.remove_article(testplans=suborder_elements_dict['testPlans'])
+
+            self.info('Set article name : {}'.format(article))
+            self.set_article(article=article, suborder_index=sub_order_index)
+            if confirm_pop_up:
+                self.confirm_popup(True)
+            self.sleep_small()
+
+        self.info('Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
+        if test_plans:
+            if remove_old:
+                self.clear_test_plan(suborder_index=sub_order_index)
+                self.confirm_popup()
+                self.sleep_small()
+            self.set_test_plans(test_plans=test_plans, suborder_index=sub_order_index)
+            self.sleep_small()
+
+        self.info('Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
+        if test_units:
+            if remove_old:
+                self.clear_test_unit(confirm_pop_up)
+                self.sleep_small()
+            self.set_test_units(test_units=test_units, suborder_index=sub_order_index)
+            self.sleep_small()
+
+        anaysis_no = self.generate_random_number(99, 999999)
+        self.info(f'update the analysis no {anaysis_no} ')
+        self.set_analysis_no(anaysis_no)
+
+        if shipment_date:
+            return self.set_shipment_date(row_id=sub_order_index)
+        if test_date:
+            return self.set_test_date(row_id=sub_order_index)
+
     def get_suborder_data(self):
         webdriver.ActionChains(self.base_selenium.driver).send_keys(Keys.ESCAPE).perform()
         table_suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
         self.info('getting main order data')
         order_data = {
-            "orderNo": self.get_no(),
-            "contacts": self.get_contact(),
+            "orderNo": self.get_order_no(),
+            "contacts": self.get_contacts(),
             "suborders": []
         }
         suborders_data = []
@@ -496,224 +652,20 @@ class Order(Orders):
         order_data['suborders'] = suborders_data
         return order_data
 
-    def remove_testplan_by_name(self, index, testplan_name):
-        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = suborder_table_rows[index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(row=suborder_row,
-                                                                                                table_element='order:suborder_table')
-        self.base_selenium.update_item_value(item=suborder_elements_dict['testPlans'],
-                                             item_text=testplan_name.replace("'", ''))
+    def duplicate_from_table_view(self, number_of_duplicates=1, index_to_duplicate_from=0):
+        for duplicate in range(0, number_of_duplicates):
+            suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
+            suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
+                row=suborders[index_to_duplicate_from],
+                table_element='order:suborder_table')
+            duplicate_element = self.base_selenium.find_element_in_element(
+                source=suborders_elements['Options'], destination_element='order:duplicate_table_view')
+            duplicate_element.click()
+            self.sleep_tiny()
 
-    def remove_testunit_by_name(self, index, testunit_name):
-        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = suborder_table_rows[index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_elements_related_to_header(row=suborder_row,
-                                                                                                table_element='order:suborder_table')
-        self.base_selenium.update_item_value(item=suborder_elements_dict['testUnits'],
-                                             item_text=testunit_name.replace("'", ''))
-
-    def update_suborder(self, sub_order_index=0, contacts=False, departments=[], material_type=False, articles=False,
-                        test_plans=[], test_units=[], shipment_date=False, test_date=False, remove_old=False,
-                        confirm_pop_up=False):
-
-        suborder_table_rows = \
-            self.base_selenium.get_table_rows(element='order:suborder_table')
-
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        contacts_record = 'contact with many departments'
-        suborder_row.click()
-        self.base_selenium.scroll()
-        self.sleep_small()
-        if material_type:
-            self.info('Set material type : {}'.format(material_type))
-            self.set_material_type(material_type=material_type)
-            if confirm_pop_up:
-                self.confirm_popup(True)
-
-        if articles:
-            if remove_old:
-                self.sleep_small()
-                self.remove_article(testplans=suborder_elements_dict['testPlans'])
-
-            self.info('Set article name : {}'.format(articles))
-            self.set_article(article=articles[0])
-            if confirm_pop_up:
-                self.confirm_popup(True)
-            self.sleep_small()
-
-        self.info(' Set test plan : {} for {} time(s)'.format(test_plans, len(test_plans)))
-        for testplan in test_plans:
-            if remove_old:
-                self.clear_test_plan()
-                self.confirm_popup()
-                self.sleep_small()
-            self.set_test_plan(test_plan=testplan)
-            self.sleep_small()
-
-        self.info(' Set test unit : {} for {} time(s)'.format(test_units, len(test_units)))
-        for testunit in test_units:
-            if remove_old:
-                self.clear_test_unit(confirm_pop_up)
-                self.sleep_small()
-            self.set_test_unit(test_unit=testunit)
-            self.sleep_small()
-
-        if shipment_date:
-            return self.set_shipment_date(row_id=sub_order_index)
-        if test_date:
-            return self.set_test_date(row_id=sub_order_index)
-        if contacts:
-            self.set_contact(contact=contacts_record)
-        if departments:
-            self.info(' Set departments : {}'.format(departments))
-            self.set_departments(departments=departments)
-            self.sleep_small()
-
-    def update_material_type_suborder(self, row, material_type):
-        self.info(' Set material type : {}'.format(material_type))
-        self.base_selenium.update_item_value(item=row['materialType'],
-                                             item_text=material_type.replace("'", ''))
-
-    def update_article_suborder(self, suborder_index, article):
-        self.info('set article name : {}'.format(article))
-        suborder_row = self.open_suborder_edit_mode(suborder_index)
-        self.base_selenium.update_item_value(item=suborder_row['Article: *'],
-                                             item_text=article.replace("'", ''))
-
-    def add_multiple_testplans_suborder(self, row, testplans):
-        self.info('set test plan : {} for {} time(s)'.format(testplans, len(testplans)))
-        for testplan in testplans:
-            self.base_selenium.update_item_value(item=row['testUnits'],
-                                                 item_text=testplan.replace("'", ''))
-
-    def add_multiple_testunits_suborder(self, row, testunits):
-        self.info(' Set test unit : {} for {} time(s)'.format(testunits, len(testunits)))
-        for testunit in testunits:
-            self.base_selenium.update_item_value(item=row['testUnits'],
-                                                 item_text=testunit.replace("'", ''))
-
-    def update_departments_suborder(self, row, departments):
-        self.info(' Set departments : {}'.format(departments))
-        for department in departments:
-            self.base_selenium.update_item_value(item=row['departments'], item_text=department)
-
-    def archive_suborder(self, index, check_pop_up=False):
-        self.get_suborder_table()
-        self.sleep_tiny()
-        self.info('archive suborder with index {}'.format(index + 1))
-        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        self.info(' Archive order no #{}'.format(index + 1))
-        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(row=suborders[index],
-                                                                                         table_element='order:suborder_table')
-        archive_element = self.base_selenium.find_element_in_element(source=suborders_elements['Options'],
-                                                                     destination_element='order:delete_table_view')
-
-        archive_element.click()
-        self.sleep_tiny()
-        if check_pop_up:
-            self.info('confirm archiving')
-            self.base_selenium.click(element='articles:confirm_archive')
-        else:
-            self.info('cancel archiving')
-            self.base_selenium.click(element='articles:cancel_archive')
-
-    def click_auto_fill(self):
-        button = self.base_selenium.find_element_in_element(source_element='order:auto_fill_container',
-                                                            destination_element='order:auto_fill')
-        button.click()
-
-    def create_new_suborder_with_test_units(self, material_type='', article_name='', test_unit='', **kwargs):
-        rows_before = self.base_selenium.get_table_rows(element='order:suborder_table')
-        self.info(' Add new suborder.')
-        self.base_selenium.click(element='order:add_new_item')
-
-        rows_after = self.base_selenium.get_table_rows(element='order:suborder_table')
-        self.info(' Set material type : {}'.format(material_type))
-        self.set_material_type(material_type=material_type)
-        self.sleep_small()
-        self.info(' Set article name : {}'.format(article_name))
-        self.set_article(article=article_name)
-        self.sleep_small()
-        self.info(' Set Test Unit  : {}'.format(test_unit))
-        self.set_test_unit(test_unit=test_unit)
-        self.sleep_small()
-
-    def get_order_id(self):
-        current_splited_url = self.base_selenium.get_url().split('/')
-        order_id = current_splited_url[(len(current_splited_url) - 1)]
-        return order_id
-
-    def navigate_to_analysis_tab(self):
-        self.base_selenium.scroll()
-        self.base_selenium.click('orders:analysis_order_tab')
-        self.wait_until_page_is_loaded()
-
-    def set_material_type_of_first_suborder(self, material_type='', sub_order_index=0):
-        suborder_table_rows = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_elements_dict = self.base_selenium.get_row_cells_id_dict_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        suborder_row.click()
-        if material_type:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:material_type', item_text=material_type)
-        else:
-            self.base_selenium.select_item_from_drop_down(
-                element='order:material_type')
-            return self.get_material_type()
-
-    def remove_article(self, testplans=''):
-        self.info('clear article data')
-        self.base_selenium.clear_single_select_drop_down(element='order:article')
-        if testplans:
-            self.base_selenium.wait_element(element='general:form_popup_warning_window')
-            self.base_selenium.click(element='general:confirmation_button')
-        self.sleep_small()
-
-    def get_data_first_row(self, index=0):
-        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = suborders[index]
-        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
-            row=suborder_row, table_element='order:suborder_table')
-        return suborders_elements
-
-    def update_duplicated_order_article(self, sub_order_index=0, article=''):
-        suborder_table_rows = self.base_selenium.get_table_rows(
-            element='order:suborder_table')
-        suborder_row = suborder_table_rows[sub_order_index]
-        suborder_row.click()
-
-        self.info('clear article data')
-        self.base_selenium.clear_single_select_drop_down(element='order:article')
-        self.info('Set article name : {}'.format(article))
-        self.set_article(article=article)
-        self.sleep_small()
-
-    def match_format_to_sheet_format(self, list_of_orders=[]):
-        formatted_orders_list = []
-        orders_list = []
-        for order in list_of_orders:
-            for key in order:
-                if key in ['', 'Options']:
-                    continue
-                if key in ['Contact Name', 'Test Plans', 'Departments', 'Test Units']:
-                    formatted_orders_list.append(order[key].replace(',\n', ' & ').replace("'", ""))
-                else:
-                    formatted_orders_list.append(order[key].replace("'", ""))
-            orders_list.append(formatted_orders_list)
-            formatted_orders_list = []
-
-        return orders_list
-
-    def get_sub_order_data_first_row(self, index=0):
-        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborder_row = suborders[index]
-        suborder_data = self.get_suborder_data()
-        return suborder_data
-
-    def upload_attachment(self, file_name, drop_zone_element, remove_current_file=False, save=False):
+    def upload_attachment(self, file_name, drop_zone_element, remove_current_file=False, save=False, index=0):
+        self.open_suborder_edit_mode(suborder_index=index)
+        self.base_selenium.click(element='order:attachment_btn')
         super().upload_file(file_name, drop_zone_element, remove_current_file)
         if save:
             self.base_selenium.driver.execute_script("document.querySelector('.dz-details').style.opacity = 'initial';")
@@ -725,79 +677,3 @@ class Order(Orders):
         else:
             self.base_selenium.click('order:uploader_close_btn')
             self.cancel(True)
-
-    def get_testplan_pop_up(self, index=0):
-        suborders = self.base_selenium.get_table_rows(element='order:suborder_table')
-        suborders_elements = self.base_selenium.get_row_cells_elements_related_to_header(
-            row=suborders[index],
-            table_element='order:suborder_table')
-        popup_element = self.base_selenium.find_element_in_element(
-            source=suborders_elements['Test Plan:'], destination_element='order:testplan_popup_btn')
-        popup_element.click()
-        self.sleep_small()
-        results = []
-        elements = self.base_selenium.find_elements('order:popup_data')
-        for element in elements:
-            test_plan, test_units = element.text.split('\n')[0], element.text.split('\n')[1:]
-            results.append({'test_plan': test_plan, 'test_units': test_units})
-        return results
-
-    def create_new_order_get_test_unit_suggetion_list(self, material_type='', test_unit_name=' ', check_option=False):
-        self.info('Create new order.')
-        self.click_create_order_button()
-        self.sleep_small()
-        self.set_new_order()
-        self.set_contact(contact='')
-        self.sleep_tiny()
-        self.set_material_type(material_type=material_type)
-        self.sleep_small()
-        self.set_article(article='')
-        self.sleep_small()
-        self.info('get test unit suggestion list')
-        if check_option:
-            is_option_exist = self.base_selenium.select_item_from_drop_down(element='order:test_unit',
-                                                                            item_text=test_unit_name)
-            return is_option_exist
-        else:
-            test_units = self.base_selenium.get_drop_down_suggestion_list(element='order:test_unit',
-                                                                          item_text=test_unit_name)
-            return test_units
-
-    def is_contact_existing(self, contact):
-        self.set_contact(contact=contact)
-        return self.base_selenium.check_item_in_items(element='order:contact', item_text=contact)
-
-    def get_table_with_add(self):
-        table = self.base_selenium.find_element(element='order:suborder_table')
-        return table
-
-    def check_suborders_appear(self):
-        is_suborder_exist = self.base_selenium.check_element_is_exist(
-            element='table_element=general:table_child')
-        return is_suborder_exist
-
-    def create_existing_order_check_no_in_suggestion_list(self, no):
-        self.get_orders_page()
-        self.info('Create new order.')
-        self.click_create_order_button()
-        self.set_existing_order()
-        self.sleep_small()
-        self.info('checking if the order number is in the existing order numbers list')
-        return self.base_selenium.is_item_in_drop_down(element='order:order_number_add_form', item_text=no)
-
-    def get_testunit_multiple_line_properties(self):
-        dom_element = self.base_selenium.find_element(element='order:test_unit')
-        multiple_line_properties = dict()
-        multiple_line_properties['textOverflow'] = self.base_selenium.driver.execute_script('return '
-                                                                                            'window'
-                                                                                            '.getComputedStyle('
-                                                                                            'arguments[0], '
-                                                                                            '"None").textOverflow',
-                                                                                            dom_element)
-        multiple_line_properties['lineBreak'] = self.base_selenium.driver.execute_script('return '
-                                                                                         'window'
-                                                                                         '.getComputedStyle('
-                                                                                         'arguments[0], '
-                                                                                         '"None").lineBreak',
-                                                                                         dom_element)
-        return multiple_line_properties

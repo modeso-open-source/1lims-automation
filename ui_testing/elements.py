@@ -590,6 +590,8 @@ elements = {
                          'value': 'orderNofield'},
         'contact_filter': {'method': 'id',
                            'value': 'companyfield'},
+        'contact_filter_switch': {'method': 'xpath',
+                                  'value': "//div[@id='contact']//label[@class='switch']"},
         'changed_by': {'method': 'id',
                        'value': 'lastModifiedUserfield'},
         'material_type_filter': {'method': 'id',
@@ -617,6 +619,8 @@ elements = {
         'shipment_date_filter': {'method': 'id',
                                  'value': 'start_shipmentDate',
                                  'order': 1},
+        'save_filter_config': {'method': 'xpath',
+                               'value': "//div[@id='filterConfig']//button[@class='btn btn-primary'][contains(text(),'Save')]"},
         'analysis_tab': {
             'method': 'xpath',
             'value': "//label[@class='btn tab']"},
@@ -677,8 +681,6 @@ elements = {
                           'order': 1},
         'save_btn': {'method': 'xpath',
                      'value': '//button[@id="button_save_order"]'},
-        'no': {'method': 'id',
-               'value': 'orderNoWithYearfield'},
         'error_in_number_mssg': {'method': 'xpath',
                     'value': '//span[@class="m-form__help"]',
                     'order': 0},
@@ -696,10 +698,9 @@ elements = {
         'cancel': {'method': 'class_name',
                    'value': 'btn-secondary',
                    'order': 1},
-
         'order_number': {'method': 'id',
                          'value': 'orderNoWithYearfield'},
-        'order_number_add_form': {'method': 'id',
+        'existing_order_number': {'method': 'id',
                                   'value': 'selectedOrderNofield'},
         'shipment_date': {'method': 'id',
                           'value': 'date_shipmentDate_0'},
@@ -720,14 +721,6 @@ elements = {
                           'order': 0},
 
         'add_new_item': {'method': 'class_name',
-                         'value': 'addNewItem',
-                         'order': 0},
-        'add_another_suborder': {
-            'method': 'class_name',
-            'value': 'add-another',
-            'order': 0
-        },
-        'add_new_item11': {'method': 'class_name',
                          'value': 'addNewItem',
                          'order': 0},
         'order_no_error_message': {'method': 'xpath',
@@ -766,6 +759,8 @@ elements = {
                 'method': 'id',
                 'value': 'orderNofield'}
         },
+        'analysis_no': {'method': 'css_selector',
+                        'value': 'input[id="analysisNo"]'},
         'filter_analysis_no': {
             'method': 'id',
             'value': 'nofield'
@@ -1164,6 +1159,8 @@ elements = {
            'method': 'xpath',
            'value': "//*[contains(@id,'testunit_')]"
         },
+        'save_analysis': {'method': 'xpath',
+                          'value': "//span[contains(text(),'Save')]"}
 
     },
     'company_profile': {

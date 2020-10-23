@@ -87,7 +87,8 @@ class BasePages:
         self.sleep_small()
 
     def get_confirmation_pop_up_text(self):
-        return self.base_selenium.get_text(element='general:confirmation_pop_up')
+        if self.base_selenium.wait_element(element='general:confirmation_pop_up'):
+            return self.base_selenium.get_text(element='general:confirmation_pop_up')
 
     def open_filter_menu(self):
         self.info('open Filter')
@@ -357,6 +358,8 @@ class BasePages:
         self.base_selenium.click(element='general:configurations_archived')
 
     def open_analysis_configuration(self):
+        self.base_selenium.refresh()
+        self.sleep_tiny()
         self.open_configuration()
         self.sleep_tiny()
         self.base_selenium.click(element='general:configurations_analysis')
@@ -423,6 +426,35 @@ class BasePages:
                     "element with the id '{}' doesn't  exit in the configure table".format(column.get_attribute('id')))
                 self.base_selenium.LOGGER.exception(' * %s Exception ' % (str(e)))
                 return ''
+
+    def set_specific_configure_table_column_to_specific_value(self, fields=[''], value=True, child=False,
+                                                              element='general:configure_table_items'):
+        """
+        :param fields: list of items to select or deslect in table
+        :param value: True to select, False to deselect
+        :param child: true if want child table
+        :param element: configure_child_table_items if child table selected
+        :return:
+        """
+        self.open_configure_table()
+        if child:
+            self.base_selenium.click(element='general:configure_child_table')
+        total_columns = self.base_selenium.find_elements_in_element(
+            source_element=element, destination_element='general:li')
+        for column in total_columns:
+            if column.text in fields:
+                self.change_column_view(column=column, value=value)
+        self.press_apply_in_configure_table()
+        self.sleep_tiny()
+        self.base_selenium.refresh()
+        self.sleep_tiny()
+        if child:
+            self.open_child_table(self.result_table()[0])
+            headers = self.base_selenium.get_table_head_elements(element='general:table_child')
+            child_table_headings = [i.text for i in headers]
+            return child_table_headings
+        else:
+            return self.base_selenium.get_table_head_elements_with_tr(element='general:table')[0].text.split('\n')
 
     def generate_random_indices(self, max_index=3, count=3):
         counter = 0

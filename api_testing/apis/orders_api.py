@@ -61,7 +61,8 @@ class OrdersAPIFactory(BaseAPI):
         :param kwargs:
         :return: response, payload
         """
-        order_no = self.get_auto_generated_order_no()[0]['id']
+        #order_no = self.get_auto_generated_order_no()[0]['id']
+        order_no = random.randint(999, 999999999)
         testplan = TestPlanAPI().create_completed_testplan_random_data()
         material_type = testplan['materialType'][0]['text']
         material_type_id = testplan['materialType'][0]['id']
@@ -116,19 +117,20 @@ class OrdersAPIFactory(BaseAPI):
 
     @api_factory('post')
     def create_order_with_multiple_suborders(self, no_suborders=3, suborders_fields=[]):
-        order_no = self.get_auto_generated_order_no()[0]['id']
+        #order_no = self.get_auto_generated_order_no()[0]['id']
+        order_no = random.randint(999, 99999)
         test_date = self.get_current_date()
         test_date_arr = test_date.split('-')
         shipment_date = self.get_current_date()
         shipment_date_arr = shipment_date.split('-')
         current_year = self.get_current_year()
-        orderNoWithYear = "{}-{}".format(current_year, order_no)
+        orderNoWithYear = "{}-{}".format(order_no, current_year)
         contacts = random.choice(ContactsAPI().get_all_contacts()[0]['contacts'])
         test_plan = TestPlanAPI().create_completed_testplan_random_data()
         suborders_common_data = {
             'orderNo': int(order_no),
             'orderNoWithYear': orderNoWithYear,
-            'contact': [{"id": contacts['id'], "text": contacts['name'], 'No': contacts['companyNo']}],
+            'contact': [{"id": contacts['id'], "text": contacts['name']}],
             'deletedTestPlans': [],
             'deletedAnalysisIds': [],
             'dynamicFieldsValues': [],
@@ -303,7 +305,7 @@ class OrdersAPI(OrdersAPIFactory):
         return orders_response['orders']
 
     def get_order_with_multiple_sub_orders(self, no_suborders=1):
-        api, payload = self.get_all_orders(limit=100)
+        api, payload = self.get_all_orders()
         for order in api['orders']:
             suborder = self.get_suborder_by_order_id(id=order['orderId'])[0]['orders']
             if len(suborder) > no_suborders:
@@ -382,20 +384,17 @@ class OrdersAPI(OrdersAPIFactory):
         testplan2, _ = TestPlanAPI().create_testplan(testUnits=[formated_testunit],
                                                      selectedArticles=[formatted_article],
                                                      materialTypes=material_type)
-        firsr_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan1['testPlan']['id'])
+        first_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan1['testPlan']['id'])
         testPlan1 = {
-            'id': int(firsr_testPlan_data[0]['testPlan']['testPlanEntity']['id']),  # article_test_plan_id
-            'testPlanName': firsr_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
-            'number': int(firsr_testPlan_data[0]['testPlan']['number']),
-            'version': 1
-        }
+            'testPlan': {'id': int(first_testPlan_data[0]['testPlan']['testPlanEntity']['id']),
+                         'text': first_testPlan_data[0]['testPlan']['testPlanEntity']['name']},
+            'number': int(first_testPlan_data[0]['testPlan']['number'])}
+
         second_testPlan_data = TestPlanAPI()._get_testplan_form_data(id=testplan2['testPlanDetails']['id'])
         testPlan2 = {
-            'id': int(second_testPlan_data[0]['testPlan']['testPlanEntity']['id']),  # article_test_plan_id
-            'testPlanName': second_testPlan_data[0]['testPlan']['testPlanEntity']['name'],
-            'number': int(second_testPlan_data[0]['testPlan']['number']),
-            'version': 1
-        }
+            'testPlan': {'id': int(second_testPlan_data[0]['testPlan']['testPlanEntity']['id']),
+                         'text': second_testPlan_data[0]['testPlan']['testPlanEntity']['name']},
+            'number': int(second_testPlan_data[0]['testPlan']['number'])}
         testplan_list = [testPlan1, testPlan2]
 
         payload = {
@@ -409,38 +408,31 @@ class OrdersAPI(OrdersAPIFactory):
         return self.create_new_order(**payload)
 
     def create_order_with_multiple_contacts(self):
-        contacts = random.choices(ContactsAPI().get_contacts_with_department(), k=3)
+        if len(ContactsAPI().get_contacts_with_department()) < 3:
+            for i in range(3):
+                ContactsAPI().create_contact_with_multiple_departments()
+        contacts = random.sample(ContactsAPI().get_contacts_with_department(), k=3)
         first_contact = contacts[0]
         second_contact = contacts[1]
         third_contact = contacts[2]
         payload = {
             'contact': [
-                {"id": first_contact['id'],
-                 "text": first_contact['name'],
-                 'No': first_contact['companyNo']},
-                {"id": second_contact['id'],
-                 "text": second_contact['name'],
-                 'No': second_contact['companyNo']},
-                {"id": third_contact['id'],
-                 "text": third_contact['name'],
-                 'No': third_contact['companyNo']}
+                {"id": first_contact['id'], "text": first_contact['name']},
+                {"id": second_contact['id'], "text": second_contact['name']},
+                {"id": third_contact['id'], "text": third_contact['name']}
             ]
-
         }
         return self.create_new_order(**payload)
 
     def create_order_with_department(self):
+        if len(ContactsAPI().get_contacts_with_department()) < 1:
+            ContactsAPI().create_contact_with_multiple_departments()
         contact = random.choice(ContactsAPI().get_contacts_with_department())
         department_data = ContactsAPI().get_contact_form_data(contact['id'])[0]['contact']['departments'][0]
         payload = {
-            'contact': [
-                {"id": contact['id'],
-                 "text": contact['name'],
-                 'No': contact['companyNo']},
-            ],
+            'contact': [{"id": contact['id'], "text": contact['name']}],
             'departments': [{"id": department_data['id'], "text": department_data['name'],
-                             "group": contact['id'], "groupName": contact['name']}],
-        }
+                             "group": contact['id'], "groupName": contact['name']}]}
         return self.create_new_order(**payload)
 
     def create_order_with_department_by_contact_id(self, contact_id):
@@ -448,13 +440,9 @@ class OrdersAPI(OrdersAPIFactory):
         department_data = contact['departments'][0]
         payload = {
             'contact': [
-                {"id": contact['id'],
-                 "text": contact['name'],
-                 'No': contact['companyNumber']},
-            ],
+                {"id": contact['id'], "text": contact['name']}],
             'departments': [{"id": department_data['id'], "text": department_data['name'],
-                             "group": contact['id'], "groupName": contact['name']}],
-        }
+                             "group": contact['id'], "groupName": contact['name']}]}
         return self.create_new_order(**payload)
 
     def create_order_with_test_units(self, no_of_test_units):
@@ -501,6 +489,13 @@ class OrdersAPI(OrdersAPIFactory):
             payload = json.load(read_file)
         super().set_configuration(payload=payload)
 
+    def set_filter_configuration(self):
+        self.info('set order filter configuration')
+        config_file = os.path.abspath('api_testing/config/order_filter_config.json')
+        with open(config_file, "r") as read_file:
+            payload = json.load(read_file)
+        super().set_filter_configuration(payload=payload, module='orders_api')
+
     def set_contact_configuration_to_number_only(self):
         self.info('set order configuration')
         config_file = os.path.abspath('api_testing/config/order_contact_number.json')
@@ -546,4 +541,3 @@ class OrdersAPI(OrdersAPIFactory):
                             'article': second_article,
                             'articleId': second_article['id']}]
         return update_suborder
-

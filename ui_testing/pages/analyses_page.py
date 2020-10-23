@@ -16,6 +16,8 @@ class AllAnalysesPage(BasePages):
         self.sleep_small()
         self.filter_by(filter_element='analysis_page:analysis_no_filter', filter_text=str(filter_text), field_type='text')
         self.filter_apply()
+        self.base_selenium.scroll()
+        self.close_filter_menu()
         self.sleep_tiny()
 
     def filter_by_order_no(self, filter_text):

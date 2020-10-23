@@ -73,6 +73,12 @@ class BaseAPI:
         self.info('status code: {}'.format(response_json['status']))
         return response_json
 
+    def set_filter_configuration(self, payload, module):
+        api = f'{self.url}{self.END_POINTS[module]["set_filter_configurations"]}'
+        response_json = self.session.put(api, json=payload, headers=self.headers, verify=False).json()
+        self.info('status code: {}'.format(response_json['status']))
+        return response_json
+
     @staticmethod
     def _update_payload(payload, **kwargs):
         for key in kwargs:
